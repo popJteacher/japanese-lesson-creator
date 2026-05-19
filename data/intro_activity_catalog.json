@@ -1,0 +1,805 @@
+{
+  "_meta": {
+    "version": "1.2",
+    "createdAt": "2026-05-15",
+    "lastModified": "2026-05-17",
+    "purpose": "文型導入前の語彙・文型導入アクティビティのカタログ（教育設計系 SSOT）。lesson_NN.json の flow[] に記述された intro_activity エントリが参照する母集団を提供する。activity_catalog.json（授業後半のメインアクティビティ）とは別ファイルで管理する。",
+    "vsActivityCatalog": {
+      "_note": "activity_catalog.json との役割分担を明記する。",
+      "activity_catalog": {
+        "role": "授業後半のメインアクティビティ",
+        "selection": "教師がセッション作成時に手動選択",
+        "output": "アクティビティHTMLとして独立生成（activity_html.js）",
+        "reuse": "複数の課・複数のセッションで再利用可能"
+      },
+      "intro_activity_catalog": {
+        "role": "文型導入前の語彙・文型導入アクティビティ",
+        "selection": "lesson_NN.json の flow[].activityId で自動決定（教師はスキップ・変更可）",
+        "output": "スライドHTMLに組み込まれる（slide_html.js が参照）",
+        "reuse": "全課共通（活動構造は課に依存しない）"
+      }
+    },
+    "designPrinciples": [
+      "活動の構造・手順 → このカタログで管理（課に依存しない・再利用可能）",
+      "使う素材・コンテンツ → lesson_NN.json で管理（課固有）",
+      "namedCharacters は lesson_NN.json に定義し、カタログは materialType で参照のみ",
+      "playerSteps / teacherSteps はカタログの抽象ステップが SSOT。lesson_NN.json の ABCactivityRef.playerSteps はこちらへ統合",
+      "slideDisplay セクションは slide_html.js がスライドをレンダリングするための仕様書"
+    ],
+    "changes": [
+      "v1.0 (2026-05-15): 初版。v16 handoff 確定事項に基づき新規作成。3件のエントリ（act_picture_card_vocab_intro / act_qa_pattern_intro / act_attribute_modeling_intro）。lesson_01.json の ABCactivityRef.playerSteps をこのカタログに統合。",
+      "v1.1 (2026-05-17): 第2課エントリ3件追加（act_kosoado_object_intro / act_possession_intro / act_famous_person_intro）。handoff_v2_2.md §2 優先②に基づく。",
+      "v1.2 (2026-05-17): p2・p4 の専用 intro アクティビティを新規追加。act_nani_desu_ka_intro（何ですか・wh疑問文）/ act_which_one_intro（どれですか・選択疑問）。act_qa_pattern_intro（はい/いいえ型）との責務分離を明確化。materialTypes に teacher_real_object を追加。"
+    ],
+    "knownLimitations": [
+      "第1〜2課の計8件登録済み。第3課以降の intro_activity は Phase 3 以降で順次追加する",
+      "slideDisplay.layout の詳細レンダリング仕様（HTML/CSS）は Stage 6（slide_html.js 更新）で実装する",
+      "teacher_photo タイプ（有名人写真）は教師が自前で用意するため自動生成対象外"
+    ],
+    "architectureDecision": {
+      "decision": "スライド埋め込み維持（別HTML出力不要）",
+      "decidedAt": "2026-05-15",
+      "basis": "全30課のintro_activityを分析した結果、すべての課で学習者操作は口頭リピート・口頭回答のみ。UIへの能動的操作（タップ・ドラッグ・入力）・タイマー・スコア・状態保存が必要な課はゼロ。",
+      "scope": "第1〜30課（日本語の教え方ABC 全課）",
+      "boundary": "メインアクティビティ（ロールプレイ・マッチングゲーム等）は引き続き別HTML出力。intro_activityとmain_activityの境界は課データ設計時に明示すること。",
+      "reviewTrigger": "将来的に学習者がUIを操作するintro_activityを追加する場合は本決定を再検討する"
+    }
+  },
+  "materialTypes": {
+    "_note": "intro_activity スライドで使用する素材タイプの定義。activity_catalog.json の materialTypes（6タイプ体制）とは独立した体系。",
+    "named_character_card": {
+      "description": "課固有の名前付き人物カード。lesson_NN.json の namedCharacters[] から自動生成する。人物名・職業・国籍・imageId を含む。",
+      "source": "lesson_NN.json > namedCharacters[]",
+      "generatedBy": "slide_html.js（namedCharacters[] を読み取ってカードをレンダリング）",
+      "example": "鈴木さん（先生・日本人）/ リンさん（学生・中国人）"
+    },
+    "auto_generated_vocab": {
+      "description": "lesson_NN.json の vocabulary から自動生成する語彙カード。imageId + word + reading + en を含む。patternRef で絞り込んで使用する。",
+      "source": "lesson_NN.json > vocabulary.byPattern",
+      "generatedBy": "slide_html.js（vocabulary を patternRef で絞り込んでカードをレンダリング）",
+      "example": "医者・先生・会社員 など"
+    },
+    "building_card": {
+      "description": "施設・建物の語彙カード（大学・病院・銀行・学校・デパートなど）。imageRole: vocab_building の語彙から自動生成する。",
+      "source": "lesson_NN.json > vocabulary（imageRole: vocab_building）",
+      "generatedBy": "slide_html.js",
+      "example": "大学・病院・銀行"
+    },
+    "world_map": {
+      "description": "国旗付き世界地図。国籍語彙の導入時に使用するスタティック素材。学習者の出身国を指しながら国籍・国名を導入する。",
+      "source": "static asset（master_image_registry.json > world_map）",
+      "generatedBy": "スライド上にスタティック画像として表示",
+      "example": "日本・中国・韓国・アメリカ・ベトナムなどの国旗付き地図"
+    },
+    "teacher_photo": {
+      "description": "学習者が知っている有名人（スポーツ選手・俳優など）の写真。「だれですか」クイズ形式で疑問詞を導入するために使用。教師が自分で用意するため、自動生成対象外。",
+      "source": "teacher_prepared（教師が授業前に手動で用意）",
+      "generatedBy": "N/A（スライドにはプレースホルダーを表示）",
+      "example": "著名スポーツ選手・俳優の写真（著作権配慮のため似顔絵でも可）"
+    },
+    "kosoado_diagram": {
+      "description": "こ・そ・あ領域対立図（図1〜4）。話し手・聞き手の空間領域を視覚化した概念図。ABCテキスト p.027 に記載。",
+      "source": "static asset（master_image_registry.json or inline SVG）",
+      "generatedBy": "slide_html.js（SVGインライン描画 or 静的画像）",
+      "example": "話し手のなわばり（こ）・聞き手のなわばり（そ）・共通の外（あ）を色分けした平面図"
+    },
+    "famous_person_card": {
+      "description": "有名人・著名人の似顔絵カード（フラットベクターイラスト）。p5/p6 の指示連体詞導入に使用。",
+      "source": "master_image_registry.json（ex_L02_024〜026）または teacher_prepared",
+      "generatedBy": "image_prompts_lesson2.json 経由で生成（ex_L02_024〜026）",
+      "example": "アインシュタイン風の白髪・口ひげの老齢男性のフラットベクターイラスト（複数枚）"
+    },
+    "teacher_real_object": {
+      "description": "見た目と実態が違う実物（ケーキに見える消しゴム・きれいな石けん・カービングされた野菜等）。学習者が自然に「何?」と聞きたくなる状況を作るために使用。教師が授業前に自前で用意するため自動生成対象外。",
+      "source": "teacher_prepared（教師が授業前に手動で用意）",
+      "generatedBy": "N/A（スライドにはプレースホルダーを表示）",
+      "example": "ケーキに見える消しゴム・きれいな石けん・花のようにカービングされた野菜（実物がない場合は写真で代替可）"
+    }
+  },
+  "activities": [
+    {
+      "id": "act_picture_card_vocab_intro",
+      "name": "絵カードによる語彙・基本文型導入",
+      "nameEn": "Picture Card Vocabulary & Basic Sentence Introduction",
+      "purpose": "人物・職業・国籍の語彙を導入し、基本肯定文「〜は〜です」を構築する。named_character_card を提示しながらモデルを示し、学習者のリピートへとつなぐ。",
+      "applicablePatternScope": "vocab_and_basic_affirmative",
+      "_applicablePatternScope_note": "p1（名詞述語文・肯定形）型の課で使用する。課固有のpatternRefは lesson_NN.json の flow[].patternRef で指定する。",
+      "duration": "5-10min",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative"
+      ],
+      "reusableInLessons": "all",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "character_card_grid",
+        "_layout_note": "named_character_card を格子状に並べる。カード枚数は lesson_NN.json の namedCharacters[] の件数に依存する。",
+        "primaryMaterialTypes": [
+          "named_character_card"
+        ],
+        "supplementaryMaterialTypes": [
+          "world_map"
+        ],
+        "_supplementary_note": "world_map はスライド下部または補助パネルとして表示する。国籍語彙が含まれる課では必須。",
+        "slideTitle": "語彙を覚えましょう",
+        "slideTitleEn": "Let's Learn Vocabulary",
+        "instructionText": {
+          "ja": "絵カードを見て、先生のあとについて言ってみましょう。",
+          "en": "Look at the picture cards and repeat after the teacher."
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "絵カードを見て、先生の言葉をよく聞きましょう。",
+          "en": "Look at the picture cards and listen carefully to the teacher."
+        },
+        {
+          "step": 2,
+          "ja": "先生のあとについて、声に出して言ってみましょう。",
+          "en": "Repeat the words and phrases out loud after the teacher."
+        },
+        {
+          "step": 3,
+          "ja": "文字を見ないで言えるか、やってみましょう。",
+          "en": "Try saying the words without looking at the text."
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "named_character_card を1枚ずつ提示する（例：鈴木さんのカード）"
+        },
+        {
+          "step": 2,
+          "ja": "キャラクター名を3回はっきり発音する（例：「鈴木さん」「鈴木さん」「鈴木さん」）→ 学習者リピート（全体→個別）。続けて職業・国籍の語彙を同様に導入する（例：「先生」「日本人」）"
+        },
+        {
+          "step": 3,
+          "ja": "絵カードと共に短い文を提示する（例：「鈴木さんです」）→ 学習者リピート"
+        },
+        {
+          "step": 4,
+          "ja": "文を基本文型に拡張する（例：「鈴木さんは先生です」）→ 学習者リピート"
+        },
+        {
+          "step": 5,
+          "ja": "world_map を指しながら国籍語彙を導入する（例：「日本人」「中国人」）"
+        },
+        {
+          "step": 6,
+          "ja": "板書：「〜は〜です。」の構造を可視化する"
+        },
+        {
+          "step": 7,
+          "ja": "文字あり提示で慣れたら、文字を隠して（または見せずに）言えるか確認する"
+        }
+      ],
+      "teacherTip": "文字を見せて慣れさせたあと、文字を隠して言えるか確認するステップが定着に直結する。絵カードは1枚ずつ、ゆっくり間を取って提示すること。",
+      "materialNeeds_catalog": {
+        "_note": "カタログ側の素材タイプ定義。具体的な内容（キャラクター名・語彙リスト）は lesson_NN.json の namedCharacters[] / vocabulary から取得する。",
+        "primary": "named_character_card",
+        "supplementary": [
+          "auto_generated_vocab",
+          "world_map"
+        ]
+      }
+    },
+    {
+      "id": "act_qa_pattern_intro",
+      "name": "絵カードによる疑問文・応答導入",
+      "nameEn": "Picture Card Q&A Pattern Introduction",
+      "purpose": "教師の自問自答 → 学習者への振り → 否定形の対比という段階的な手順で、疑問文「〜ですか」と応答パターン「はい/いいえ」を導入する。前のアクティビティで使ったカードを再利用する。",
+      "applicablePatternScope": "question_and_response",
+      "_applicablePatternScope_note": "p2（名詞述語文・疑問形）型の課で使用する。課固有のpatternRefは lesson_NN.json の flow[].patternRef で指定する。",
+      "duration": "5-10min",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "reusableInLessons": "all",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "qa_card_pair",
+        "_layout_note": "named_character_card を1枚提示し、右側に「〜ですか？ / はい・いいえ」の応答パターンを並べる。教師がカードを切り替えながら進行する。",
+        "primaryMaterialTypes": [
+          "named_character_card"
+        ],
+        "supplementaryMaterialTypes": [
+          "teacher_photo"
+        ],
+        "_supplementary_note": "teacher_photo はスライド上にプレースホルダーを表示する。教師が授業前に実際の写真を準備する。",
+        "slideTitle": "質問してみましょう",
+        "slideTitleEn": "Let's Practice Q&A",
+        "instructionText": {
+          "ja": "先生の質問を聞いて、「はい」か「いいえ」で答えましょう。",
+          "en": "Listen to the teacher's question and answer 'yes' or 'no'."
+        },
+        "patternDisplay": {
+          "affirmative": "はい、〜です。",
+          "negative": "いいえ、〜じゃありません。",
+          "question": "〜ですか。"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生の質問を聞いて、「はい、〜です」か「いいえ、〜じゃありません」で答えましょう。",
+          "en": "Listen to the teacher's question and answer 'Yes, ~ desu' or 'No, ~ ja arimasen'."
+        },
+        {
+          "step": 2,
+          "ja": "「だれですか」という質問にも答えてみましょう。",
+          "en": "Also try answering the question 'Dare desu ka?' (Who is it?)."
+        },
+        {
+          "step": 3,
+          "ja": "慣れてきたら、自分でも質問してみましょう。",
+          "en": "When you're ready, try asking the questions yourself."
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "前のアクティビティの named_character_card を再提示する"
+        },
+        {
+          "step": 2,
+          "ja": "カードを示しながら自問自答する（例：「鈴木さんですか」→「はい、鈴木さんです」）"
+        },
+        {
+          "step": 3,
+          "ja": "別のカードで学習者に振る（例：「〜さんですか」→ 学習者「はい、〜さんです」）"
+        },
+        {
+          "step": 4,
+          "ja": "違う人物のカードを示し、首を振りながら「いいえ、〜じゃありません」を導入する"
+        },
+        {
+          "step": 5,
+          "ja": "疑問詞「だれですか」を導入する（「どなたですか」との丁寧語の区別も簡単に触れる）"
+        },
+        {
+          "step": 6,
+          "ja": "teacher_photo（有名人写真）を使い「だれですか」のクイズ形式で疑問詞を定着させる"
+        },
+        {
+          "step": 7,
+          "ja": "板書：「〜ですか。」「はい、〜です。」「いいえ、〜じゃありません。」"
+        },
+        {
+          "step": 8,
+          "ja": "職業・国籍についても質問・答えの練習をする。慣れたら学習者に質問させる"
+        }
+      ],
+      "teacherTip": "質問後は2〜3秒間を取り、学習者の反応（うなずき・首振り）を確認してから答えを言う。急いで正解を言うと学習者が考える機会を失う。1対1オンラインでは「学習者同士のペア練習」は「教師↔学習者の交代制」に置き換わる。",
+      "materialNeeds_catalog": {
+        "_note": "カタログ側の素材タイプ定義。named_character_card は前のアクティビティ（act_picture_card_vocab_intro）で生成したカードを再利用する。",
+        "primary": "named_character_card",
+        "reusedFrom": "act_picture_card_vocab_intro",
+        "supplementary": [
+          "teacher_photo"
+        ]
+      }
+    },
+    {
+      "id": "act_attribute_modeling_intro",
+      "name": "モデル文拡張による所属・修飾の導入",
+      "nameEn": "Attribute Modeling via Sentence Expansion",
+      "purpose": "既出のモデル文を起点に「〜の〜」（所属・修飾）を段階的に拡張する。短い文から修飾を加えた長い文の順で示し、学習者にリピートさせる。慣れてきたら自分の国・職業・所属を言わせ、自己紹介の予備練習につなげる。",
+      "applicablePatternScope": "attribute_and_affiliation",
+      "_applicablePatternScope_note": "p3（〜の〜修飾）型の課で使用する。課固有のpatternRefは lesson_NN.json の flow[].patternRef で指定する。",
+      "duration": "5-10min",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question",
+        "noun_no_affiliation"
+      ],
+      "reusableInLessons": "all",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "attribute_expansion",
+        "_layout_note": "named_character_card と building_card を横並びで表示し、「〜の〜」の拡張構造を視覚化する。短い文 → 長い文の2段表示。",
+        "primaryMaterialTypes": [
+          "named_character_card",
+          "building_card"
+        ],
+        "supplementaryMaterialTypes": [],
+        "slideTitle": "〜の〜を使ってみましょう",
+        "slideTitleEn": "Let's Use the '~ no ~' Pattern",
+        "instructionText": {
+          "ja": "先生のモデル文を聞いて、同じように言ってみましょう。自分のことも言えるかやってみましょう。",
+          "en": "Listen to the teacher's model sentence and repeat. Then try saying the same pattern about yourself."
+        },
+        "expansionDisplay": {
+          "shortForm": "〜さんは学生です。",
+          "longForm": "〜さんは○○大学の学生です。",
+          "_note": "具体的な名前・所属は lesson_NN.json の namedCharacters[] と vocabulary から動的に取得する"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生のモデル文を聞いて、同じように言ってみましょう。",
+          "en": "Listen to the teacher's model sentence and repeat it the same way."
+        },
+        {
+          "step": 2,
+          "ja": "「〜の〜です」を使って、自分の国や職業・所属を言ってみましょう。",
+          "en": "Use the pattern '~ no ~ desu' to talk about your own country, job, or organization."
+        },
+        {
+          "step": 3,
+          "ja": "先生に「〜は〜の〜ですか」と質問してもらって、答えてみましょう。",
+          "en": "Try answering your teacher's question: '~ wa ~ no ~ desu ka?'"
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "前のアクティビティの named_character_card を再提示し、短い文をリピートさせる（例：「〜さんは学生です」）"
+        },
+        {
+          "step": 2,
+          "ja": "building_card（大学・病院など）を提示し、修飾を加えた長い文を示す（例：「〜さんは東西大学の学生です」）→ 学習者リピート"
+        },
+        {
+          "step": 3,
+          "ja": "板書：「〜の〜です。」"
+        },
+        {
+          "step": 4,
+          "ja": "他の人物・所属の組み合わせで反復練習する（building_card を入れ替えながら）"
+        },
+        {
+          "step": 5,
+          "ja": "学習者自身の国・職業・所属を言わせる（自己紹介の予備練習）"
+        },
+        {
+          "step": 6,
+          "ja": "「〜は〜の〜ですか」で質問し、学習者に答えさせる"
+        }
+      ],
+      "teacherTip": "学習者自身の所属・職業・国籍を事前に把握しておくと、自己紹介予備練習がスムーズになる。初回授業前に情報収集しておくこと。所属概念だけでなく「〜の〜」の一般的な修飾としても使えることを意識して教えると、第2課以降の応用が広がる。",
+      "materialNeeds_catalog": {
+        "_note": "カタログ側の素材タイプ定義。named_character_card は前のアクティビティで生成したカードを再利用する。building_card は lesson_NN.json の vocabulary（imageRole: vocab_building）から生成する。",
+        "primary": "named_character_card",
+        "reusedFrom": "act_picture_card_vocab_intro",
+        "supplementary": [
+          "building_card"
+        ]
+      }
+    },
+    {
+      "id": "act_kosoado_object_intro",
+      "name": "実物・絵カードによるこそあど語彙導入",
+      "nameEn": "Object & Picture Card Introduction for Kosoado Demonstratives",
+      "purpose": "身近な実物または絵カードを使って「これ・それ・あれ」の指示代名詞と領域対立（こ/そ/あ）を導入する。kosoado_diagram で空間的なわばり理論を視覚化しながら、各語彙をリピート練習につなぐ。",
+      "applicablePatternScope": "kosoado_demonstrative_pronoun",
+      "_applicablePatternScope_note": "p1（これ・それ・あれ）型の課で使用する。flow[].patternRef: 'p1' に対応。",
+      "duration": "7-10min",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative"
+      ],
+      "reusableInLessons": "all_kosoado_courses",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "kosoado_vocab_grid_with_diagram",
+        "_layout_note": "語彙カードをグリッド状に配置し、スライド下部に kosoado_diagram を表示する。",
+        "primaryMaterialTypes": [
+          "auto_generated_vocab",
+          "kosoado_diagram"
+        ],
+        "supplementaryMaterialTypes": [
+          "building_card"
+        ],
+        "_supplementary_note": "building_card は「あれ」導入時（遠景の物）に表示する。PDF p.029 参照。",
+        "slideTitle": "これ・それ・あれ",
+        "slideTitleEn": "This / That / That over there",
+        "instructionText": {
+          "ja": "先生が指しているものを見て、「これ」「それ」「あれ」を使って言ってみましょう。",
+          "en": "Look at what the teacher points to and say 'kore', 'sore', or 'are'."
+        },
+        "diagramDisplay": {
+          "showDiagramTypes": [
+            "図1（対立）",
+            "図4（あれ）"
+          ],
+          "_note": "図1（話し手/聞き手対立）を基本として導入。図4（あれ）は「あれ」導入時に表示。図2・図3は余裕があればplusAlphaで紹介。"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生が指している物をよく見ましょう。",
+          "en": "Look carefully at what the teacher is pointing to."
+        },
+        {
+          "step": 2,
+          "ja": "先生のあとについて「これは〜です」「それは〜です」「あれは〜です」と言いましょう。",
+          "en": "Repeat after the teacher: 'This is ~', 'That is ~', 'That over there is ~'."
+        },
+        {
+          "step": 3,
+          "ja": "近くのものは「これ」、相手のそばのものは「それ」と自分で言ってみましょう。",
+          "en": "Try saying 'kore' for nearby objects and 'sore' for objects near the other person."
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "auto_generated_vocab カード（時計・ペン・本等）を手元に用意する。kosoado_diagram（図1）を表示する"
+        },
+        {
+          "step": 2,
+          "ja": "語彙カードを1枚ずつ自分の手元に示しながら「これは〜です」と発話 → 学習者リピート（全体→個別）"
+        },
+        {
+          "step": 3,
+          "ja": "カードを学習者側に向けて示し「それは〜です」と発話 → 学習者リピート"
+        },
+        {
+          "step": 4,
+          "ja": "building_card（ビル・市役所等）を遠くに見立てて提示し「あれは〜です」を導入 → kosoado_diagram（図4）を参照"
+        },
+        {
+          "step": 5,
+          "ja": "文字あり→文字なしの順で練習し、カードだけ見て言えるか確認する"
+        },
+        {
+          "step": 6,
+          "ja": "オンライン授業では: 自分の画面のものは「これ」、学習者の画面のものは「それ」で練習する（PDF p.029 コラム参照）"
+        }
+      ],
+      "teacherTip": "話し手と聞き手の「なわばり」感覚をジェスチャーで強調すること。オンライン授業ではPDF p.029のオンライン授業コラムを参照。「あれ」は building_card や遠景スライドで代替する。文字を隠してカードだけで言えるか確認するステップを必ず含めること。",
+      "materialNeeds_catalog": {
+        "_note": "具体的な語彙リストは lesson_NN.json の vocabulary.byPattern（p1_p4_thing / p1_distant_building）から取得する。",
+        "primary": "auto_generated_vocab",
+        "supplementary": [
+          "kosoado_diagram",
+          "building_card"
+        ]
+      }
+    },
+    {
+      "id": "act_possession_intro",
+      "name": "持ち物・所有表現の導入（〜の〜）",
+      "nameEn": "Possession Introduction using '~ no ~'",
+      "purpose": "教師・学習者自身の持ち物を使って「わたしの〜」「〜さんの〜」という所有格（〜の〜）を導入する。自分のかばんを指して「これはわたしのかばんです」と示し、次に学習者の持ち物を指して「それは〜さんの〜です」のモデル文を提示する。p4（どれ）の導入準備も兼ねる。",
+      "applicablePatternScope": "possession_no_pattern",
+      "_applicablePatternScope_note": "p3（〜の〜所有）型の課で使用する。flow[].patternRef: 'p3' に対応。",
+      "duration": "5-8min",
+      "prerequisitePatterns": [
+        "kosoado_demonstrative_pronoun",
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "reusableInLessons": "all",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "possession_qa_display",
+        "_layout_note": "語彙カード（かばん・ペン・本等）を1枚表示し、文型パターン（わたしの〜 / 〜さんの〜）を横に表示する。",
+        "primaryMaterialTypes": [
+          "auto_generated_vocab"
+        ],
+        "supplementaryMaterialTypes": [],
+        "slideTitle": "〜の〜（所有）",
+        "slideTitleEn": "Possession: ~ no ~",
+        "instructionText": {
+          "ja": "「わたしの〜」「〜さんの〜」を使って、だれのものかを言ってみましょう。",
+          "en": "Use 'watashi no ~' and '~ san no ~' to say whose item it is."
+        },
+        "patternDisplay": {
+          "affirmative": "これは　わたしの　〜　です。",
+          "question": "これは　〜さんの　〜　ですか。",
+          "answer_yes": "はい、わたしの　〜　です。",
+          "shortForm": "わたしのです。"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生のモデル文を聞いて、同じように言ってみましょう。",
+          "en": "Listen to the teacher's model sentence and repeat it."
+        },
+        {
+          "step": 2,
+          "ja": "自分の持ち物を指して「これはわたしの〜です」と言ってみましょう。",
+          "en": "Point to your own belongings and say 'Kore wa watashi no ~ desu'."
+        },
+        {
+          "step": 3,
+          "ja": "先生に「〜さんの〜はどれですか」と聞いてもらって、答えてみましょう。",
+          "en": "When the teacher asks 'Which one is ~-san's ~?', point to the correct item."
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "auto_generated_vocab カード（かばん・ペン等）または実物を用意する"
+        },
+        {
+          "step": 2,
+          "ja": "自分のかばんを持ち、自分の胸を指して「わたし」→「これはわたしのかばんです」とモデル発話 → 学習者リピート"
+        },
+        {
+          "step": 3,
+          "ja": "学習者のかばんを指して「それはAさんのかばんです」とモデル発話 → 学習者リピート（PDF p.030 教え方の例3参照）"
+        },
+        {
+          "step": 4,
+          "ja": "「これはBさんの本ですか」→「はい/いいえ」の Q&A 練習を行う"
+        },
+        {
+          "step": 5,
+          "ja": "省略形「わたしのです」を導入する（「わたしの本です」→「わたしのです」の短縮）"
+        },
+        {
+          "step": 6,
+          "ja": "慣れたら「〜さんの〜はどれですか」（p4への橋渡し）を導入し、複数の物から1つを指させる"
+        }
+      ],
+      "teacherTip": "「わたし」を自分の胸を指すジェスチャーで補強することが定着のカギ。持ち物 Q&A では学習者の身の回りの物（画面に映るもの）を使うと現実感が高まる。オンライン授業では事前に学習者の持ち物の写真を送ってもらうと効果的（PDF p.030 プラスα参照）。",
+      "materialNeeds_catalog": {
+        "_note": "auto_generated_vocab は lesson_NN.json の vocabulary.byPattern（p1_p4_thing）から取得する。実物が用意できる場合は実物優先。",
+        "primary": "auto_generated_vocab",
+        "supplementary": []
+      }
+    },
+    {
+      "id": "act_famous_person_intro",
+      "name": "有名人写真による指示連体詞・疑問詞の導入（この/その/あの + どの）",
+      "nameEn": "Famous Person Card Introduction for Kosoado Attributives (kono/sono/ano/dono)",
+      "purpose": "有名人の似顔絵カードを複数枚使って「この人はアインシュタインです」のように指示連体詞（この/その/あの + 名詞）を導入する。複数の写真を並べて「どの人ですか」（p6）へと展開する。教師が全体を大きく輪を描くジェスチャーで「どの人ですか」を導入するジェスチャー指導が教育的効果を高める（PDF p.033 参照）。",
+      "applicablePatternScope": "kosoado_attributive_and_which_person",
+      "_applicablePatternScope_note": "p5（この/その/あの + N）・p6（どの + N）型の課で使用する。flow[].patternRef: 'p5', 'p6' に対応。",
+      "duration": "6-10min",
+      "prerequisitePatterns": [
+        "kosoado_demonstrative_pronoun",
+        "interrogative_which_thing"
+      ],
+      "reusableInLessons": "all_kosoado_courses",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "famous_person_grid_with_pattern",
+        "_layout_note": "famous_person_card を3〜4枚グリッド表示する。スライド下部にパターン表示。教師が1枚ずつ指しながら進行。",
+        "primaryMaterialTypes": [
+          "famous_person_card"
+        ],
+        "supplementaryMaterialTypes": [],
+        "slideTitle": "この人・その人・あの人・どの人",
+        "slideTitleEn": "This / That / That over there / Which person",
+        "instructionText": {
+          "ja": "先生が指している人を見て「この人は〜です」と言ってみましょう。「どの人ですか」にも答えましょう。",
+          "en": "Look at who the teacher points to and say 'kono hito wa ~ desu'. Also answer 'Which person is it?'"
+        },
+        "patternDisplay": {
+          "thisOne": "この人は　〜　です。",
+          "thatOne": "その人は　〜　です。",
+          "overThere": "あの人は　〜　です。",
+          "question": "どの人ですか。",
+          "answer": "この人です。"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生が指している人を見て「この人は〜です」「その人は〜です」「あの人は〜です」と言ってみましょう。",
+          "en": "Look at the person the teacher points to and say 'kono hito wa ~', 'sono hito wa ~', or 'ano hito wa ~ desu'."
+        },
+        {
+          "step": 2,
+          "ja": "複数の写真を見て「どの人ですか」と質問し、「この人です」と答えてみましょう。",
+          "en": "Look at the group of photos, ask 'Which person is it?', and answer 'This person'."
+        },
+        {
+          "step": 3,
+          "ja": "「その人は〜です」と答えを確認しましょう。",
+          "en": "Confirm the answer by saying 'Sono hito wa ~ desu'."
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "famous_person_card（アインシュタイン風イラスト等）を1枚提示し「この人はアインシュタインです」とモデル発話 → 学習者リピート"
+        },
+        {
+          "step": 2,
+          "ja": "カードを学習者側に向けて「その人はアインシュタインです」→ 遠ざけて「あの人は〜」と空間的距離を変えながら導入"
+        },
+        {
+          "step": 3,
+          "ja": "『この・その・あの』と『これ・それ・あれ』の違いを板書で示す（連体詞のあとには名詞が必要）"
+        },
+        {
+          "step": 4,
+          "ja": "famous_person_card を3〜4枚並べ、少し離れた位置から全体を大きく輪を描いて指して「どの人ですか」を導入（PDF p.033 ジェスチャー参照）"
+        },
+        {
+          "step": 5,
+          "ja": "1枚ずつ「この人ですか。この人ですか」と指しながら確認し、正解で「この人です」→「その人はアインシュタインです」と応答させる"
+        },
+        {
+          "step": 6,
+          "ja": "慣れたら学習者が「どの人ですか」と質問する側に回る（ロール交代）"
+        }
+      ],
+      "teacherTip": "「この・その・あの」のあとには必ず名詞がつくことを板書で明示すること（名詞に下線を引く）。「どの人ですか」の導入では、全体を大きく輪を描くジェスチャーが理解を促す（PDF p.033 記載）。有名人は学習者が知っている人物に差し替えることで動機づけが高まる。",
+      "materialNeeds_catalog": {
+        "_note": "famous_person_card は master_image_registry.json（ex_L02_024〜026）から取得するか、教師が用意した teacher_photo を使用する。複数枚（3〜4枚）必要。",
+        "primary": "famous_person_card",
+        "supplementary": [
+          "auto_generated_vocab"
+        ]
+      }
+    },
+    {
+      "id": "act_nani_desu_ka_intro",
+      "name": "意外な実物を使った「何ですか」導入",
+      "nameEn": "Mystery Object Introduction for 'Nan desu ka'",
+      "purpose": "見た目と中身が違う実物（ケーキに見える消しゴム・きれいな石けん等）を使って学習者が自然に「何ですか」と聞きたくなる状況を作る。教師の自問自答・否定先行（じゃありません）→ 正解提示の流れで wh疑問詞「何」を導入する。",
+      "applicablePatternScope": "interrogative_what",
+      "_applicablePatternScope_note": "p2（何ですか・wh疑問文）型の課で使用する。flow[].patternRef: 'p2' に対応。act_qa_pattern_intro（はい/いいえ型）とは別活動。",
+      "duration": "4-7min",
+      "prerequisitePatterns": [
+        "kosoado_demonstrative_pronoun",
+        "noun_predicate_affirmative"
+      ],
+      "reusableInLessons": "all",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "mystery_object_reveal",
+        "_layout_note": "実物写真またはプレースホルダー（？マーク）を中央表示。下部にパターン表示（これは何ですか / 〜じゃありません / これは〜です）。",
+        "primaryMaterialTypes": [
+          "teacher_real_object"
+        ],
+        "supplementaryMaterialTypes": [
+          "auto_generated_vocab"
+        ],
+        "slideTitle": "何ですか？",
+        "slideTitleEn": "What is it?",
+        "instructionText": {
+          "ja": "先生が持っているものを見てください。「何ですか」と聞いてみましょう。",
+          "en": "Look at what the teacher is holding. Try asking 'Nan desu ka?' (What is it?)"
+        },
+        "patternDisplay": {
+          "question": "これは　何ですか。",
+          "negative": "〜　じゃありません。",
+          "answer": "これは　〜　です。"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生が持っているものを見てください。「何ですか」と聞いてみましょう。",
+          "en": "Look at what the teacher is holding. Ask 'Nan desu ka?' (What is it?)"
+        },
+        {
+          "step": 2,
+          "ja": "先生が「〜じゃありません」と言ったら、もう一度「何ですか」と聞きましょう。",
+          "en": "When the teacher says 'It's not ~', ask 'What is it?' again."
+        },
+        {
+          "step": 3,
+          "ja": "正解を聞いたら「これは〜です」と繰り返してみましょう。",
+          "en": "When you hear the answer, repeat 'Kore wa ~ desu'."
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "意外性のある実物（ケーキに見える消しゴム・きれいな石けん等）を用意する。オンライン授業では写真をスライドに用意する（PDF p.029「実物が用意できない場合は写真を利用できる」）"
+        },
+        {
+          "step": 2,
+          "ja": "実物を隠しながら少しだけ見せ、学習者の「何?」という気持ちを引き出す"
+        },
+        {
+          "step": 3,
+          "ja": "教師自身が「何ですか」とつぶやきながら自問自答する（モデル発話）→ 学習者リピート"
+        },
+        {
+          "step": 4,
+          "ja": "「ケーキですか」→ 首を振りながら「いいえ、ケーキじゃありません」で否定先行（PDF p.029 教え方の例 2. 参照）"
+        },
+        {
+          "step": 5,
+          "ja": "「これは消しゴムです」と正解を提示 → 学習者リピート"
+        },
+        {
+          "step": 6,
+          "ja": "別の実物で繰り返し練習。慣れたら学習者が「何ですか」を使って質問する側になる"
+        }
+      ],
+      "teacherTip": "意外性のある実物を使うことで、学習者が自然に「何?」と聞きたくなる状況を作れる（PDF p.029 記載）。実物がない場合はカービングされた野菜・きれいな石けん等の写真でも可。否定先行（じゃありません）で学習者の好奇心を引き出してから正解を言うと定着しやすい。",
+      "materialNeeds_catalog": {
+        "_note": "具体的な実物・写真は教師が自前で用意する（自動生成対象外）。auto_generated_vocab は p1 で導入済みの語彙カードを参照。",
+        "primary": "teacher_real_object",
+        "supplementary": [
+          "auto_generated_vocab"
+        ]
+      },
+      "_source_note": "PDF p.029 教え方の例 2.「「何ですか」の導入」に基づく。「一見、ほかのものに見えて実は違うものや、自然に「何?」と聞きたくなるようなものを用意する」（p.029）"
+    },
+    {
+      "id": "act_which_one_intro",
+      "name": "複数の実物から1つを特定する「どれですか」導入",
+      "nameEn": "Multiple Object Selection Introduction for 'Dore desu ka'",
+      "purpose": "複数の同種の物（ペン・鍵・時計等）を並べて「〜さんのペンはどれですか」と問い、「これです/それです/あれです」で特定させる。指示代名詞（これ/それ/あれ）と組み合わせた選択疑問詞「どれ」を導入する。全体を輪を描く指示ジェスチャーで「どれ」の意味を視覚的に補強することが教育効果のカギ。",
+      "applicablePatternScope": "interrogative_which_thing",
+      "_applicablePatternScope_note": "p4（どれですか）型の課で使用する。flow[].patternRef: 'p4' に対応。act_qa_pattern_intro（はい/いいえ型）とは別活動。将来の「どちら」系課でも代用可。",
+      "duration": "4-7min",
+      "prerequisitePatterns": [
+        "kosoado_demonstrative_pronoun",
+        "noun_no_possession"
+      ],
+      "reusableInLessons": "all_dore_dochira_courses",
+      "slideDisplay": {
+        "_note": "slide_html.js がこのセクションを読み取ってスライドをレンダリングする。",
+        "layout": "multiple_objects_selection",
+        "_layout_note": "同種の物を3〜5個横並びで表示する。下部にパターン表示（〜さんの〜はどれですか / これです / それです / あれです）。",
+        "primaryMaterialTypes": [
+          "auto_generated_vocab"
+        ],
+        "supplementaryMaterialTypes": [],
+        "slideTitle": "どれですか？",
+        "slideTitleEn": "Which one is it?",
+        "instructionText": {
+          "ja": "複数の中から1つを選んで「これです」「それです」「あれです」と答えましょう。",
+          "en": "Choose one from several options and answer 'Kore desu', 'Sore desu', or 'Are desu'."
+        },
+        "patternDisplay": {
+          "question": "〜さんの　〜は　どれですか。",
+          "answer_near": "これです。",
+          "answer_mid": "それです。",
+          "answer_far": "あれです。"
+        }
+      },
+      "playerSteps": [
+        {
+          "step": 1,
+          "ja": "先生が並べた複数の物をよく見てください。",
+          "en": "Look carefully at the several items the teacher has laid out."
+        },
+        {
+          "step": 2,
+          "ja": "「〜さんの〜はどれですか」と聞かれたら、「これです/それです/あれです」で答えましょう。",
+          "en": "When asked '~ san's ~ - which one is it?', answer with 'Kore desu', 'Sore desu', or 'Are desu'."
+        },
+        {
+          "step": 3,
+          "ja": "慣れたら「〜さんの〜はどれですか」と先生に質問してみましょう。",
+          "en": "When you're ready, try asking the teacher '~ san's ~ - which one is it?'"
+        }
+      ],
+      "teacherSteps": [
+        {
+          "step": 1,
+          "ja": "同種の物を4〜5本/個並べる（ペン・鍵・時計等）。マンツーマン・オンラインでは教師の手元に複数並べてカメラで見せる（PDF p.031「4、5人の学習者のペンを集めて」→ マンツーマン版に調整）"
+        },
+        {
+          "step": 2,
+          "ja": "1本ずつ指して「これです。これです。」とモデルを見せた後、全体を大きく輪を描いて指して「どれですか？」と板書・ジェスチャーで対比させる（PDF p.031 ジェスチャー記述参照）"
+        },
+        {
+          "step": 3,
+          "ja": "「〜さんのペンはどれですか」と質問 → 学習者が「これです/それです/あれです」で指して答える"
+        },
+        {
+          "step": 4,
+          "ja": "「どちら」（2択の場合）も紹介できる（PDF p.031 プラスα: 選ぶ対象が2つの場合は「どちら」を使う）"
+        },
+        {
+          "step": 5,
+          "ja": "慣れたら学習者が質問する側になり、役割を交代する"
+        }
+      ],
+      "teacherTip": "「これ」のときは1本ずつ指し、「どれ」のときは全体を大きく輪を描くジェスチャーで意味を視覚的に補強する（PDF p.031 教え方の例 4. 記述）。オンライン授業では複数のペン等を机の上に並べてカメラで見せる。選択肢が2つのときは「どちら」への橋渡しとして活用できる。",
+      "materialNeeds_catalog": {
+        "_note": "実物の複数並べが最も効果的。オンラインでは語彙カードのスライド表示（auto_generated_vocab）で代替。",
+        "primary": "auto_generated_vocab",
+        "supplementary": []
+      },
+      "_source_note": "PDF p.031 教え方の例 4.「「どれ」の導入」に基づく。「4、5人の学習者のペンを集めて机に並べ、「〜さんのペンはどれですか」と質問する」（p.031）"
+    }
+  ]
+}

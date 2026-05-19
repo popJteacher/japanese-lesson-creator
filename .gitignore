@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code ローカル設定
+.claude/
+
+# 一時ファイル・検証用テンポラリ
+.tmp_verify/
+*.tmp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# build-embedded-data.py の生成物（data/*.js）
+data/*.js
+
+# プロジェクトナレッジ専用ファイル（claude.ai 管理・リポジトリ不要）
+SKILL*.md
+lesson_template.json
+master_prompt_design_guide*.py
+ruby_dictionary_v1_3.js
+handoff_v*.md
+audio_pipeline_handoff*.md

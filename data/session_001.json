@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "formatVersion": "2.0",
+    "description": "1回の授業設定。lesson_NN.json を参照して教材を生成する。v2.0: activity/flow フィールド廃止・mainActivities フィールド導入・teach[] に vocabFilter/exampleFilter 予約。",
+    "createdAt": "2026-05-05",
+    "lastModified": "2026-05-15"
+  },
+  "session": {
+    "id": "S001",
+    "no": 1,
+    "studentId": "A",
+    "date": "2026-05-10",
+    "duration": 50,
+    "status": "planned",
+    "note": "status: planned / completed / cancelled"
+  },
+  "teach": [
+    {
+      "lessonNo": 1,
+      "patternId": "p1",
+      "isNew": true,
+      "vocabFilter": null,
+      "exampleFilter": null
+    },
+    {
+      "lessonNo": 1,
+      "patternId": "p2",
+      "isNew": true,
+      "vocabFilter": null,
+      "exampleFilter": null
+    },
+    {
+      "lessonNo": 1,
+      "patternId": "p3",
+      "isNew": true,
+      "vocabFilter": null,
+      "exampleFilter": null
+    }
+  ],
+  "review": [],
+  "skipFlowIds": [],
+  "introActivityOverrides": [],
+  "mainActivities": [],
+  "output": {
+    "titlePrefix": "S001",
+    "studentIdInFilename": "A",
+    "files": [
+      "studentA_S001_スライド.html",
+      "S001_教案.docx",
+      "studentA_S001_アクティビティ.html",
+      "studentA_S001_宿題.html"
+    ],
+    "github": {
+      "upload": true,
+      "subfolder": "sessions"
+    }
+  }
+}

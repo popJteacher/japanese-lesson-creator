@@ -1,0 +1,1272 @@
+{
+  "_meta": {
+    "formatVersion": "2.7",
+    "lessonVersion": "1.0",
+    "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
+    "createdAt": "2026-05-05",
+    "lastModified": "2026-05-15",
+    "changes": [
+      "v2.0: timing・fallbackFlow を廃止し flow に統合。実際の授業フローを反映。",
+      "v2.1: 鈴木さん・キムさん廃止 → 田中世界観に統一(解1)。教科書由来例文には originalSource フィールドで原文を保持。採用語彙(vocabulary セクション)と人物アサイン(characters セクション)を SSOT として明示。p3.examples を 5 例文に拡張し、所属機関破綻 4 件を修正(さくら系ハイブリッド採用)。a3 不在問題を解消(selectedId を a1 に変更、最終決定は Phase 3 T4 にて再選定予定)。target に年齢混在を明示。",
+      "v2.2: アプローチF(ハイブリッドキャラ設計)採用。Layer 1/2/3 構造を導入。山田さん(会社員、Layer 2)を追加し、p3.3-1/3-3/3-5 の sentence をケリー/田中→山田に置換(ロール固定の整合性確保)。佐藤さん(医者、Layer 2)を追加(第1課では語彙カードのみで登場)。textbook → textbook_sources 配列に拡張(複数教科書対応の基盤)。各 example に character_assignment_type フィールドを追加。各 character に layer フィールドを追加。textbook_character_mapping.json は Phase 4 で実装予定として記録。",
+      "v2.3: Phase 1-D-2 で全面再設計。(1) lesson.grammarMemo: object を新設(F6 構造化: general / teacherNotes / references[])。(2) lesson.duration を可変扱いに(_duration_note で session 上書き可を明示)。(3) flow[] を全面再設計: L3-Y(導入アクティビティ独立エントリ化)・L2-D(完全自由並び替え対応)・各エントリに id/optional/skipped 全付与・type 値を再定義(intro_slide / intro_activity / pattern / example / practice / main_activity / wrapUp / review)。(4) flowMeta を top-level に新設(totalMinutes / allocatedMinutes / remainingMinutes / status / _flowValidation)。(5) T1 確定: activity.proposerEnabled=false / activity.selectedId=null / selectedIdHistory に a1→null 記録追加。(6) github.uploadFiles[] から 第1課_アクティビティ.html を除外。(7) introActivities[] を flow に独立エントリ化し T2 確定の 3 アクティビティを仮置き(教師変更可能)。(8) activity_catalog.json v1.2 と整合(textbookId=ABC・stage1 の 3 アクティビティを参照)。(9) 時間設定の自由度: 解釈 D-1(D-優先1: session 値が常に優先・lesson は推奨値)。(10) ご希望: レッスン全体時間も可変・各ステップ時間も可変・教師が UI で全項目編集可。",
+      "v2.4: Phase 2-C で schema 整合更新。(1) flow[] の各エントリに materialNeeds[] を付与(Phase 2-B 主作業[1]確定・12 type 体系準拠)。intro_activity/main_activity は必須・pattern はオプション・example/wrapUp/intro_slide/review は禁止(スキップ中の main_act_1 にも記述)。survey データ(material_needs_survey_L01_L10.json lesson_01)を参照。special_world_map → special_slide に統合(Phase 2-B 確定・world_map は special_slide に吸収済)。(2) patterns[] に grammarConcept / jlptLevel / canDo を追加(handoff_phase2_design_review §6-1 確定・教科書非依存フィールド)。(3) github セクションを新設計に変更: uploadFiles[] 廃止 → lessonAssets:[] へ(Phase 2-B Q1/Q2 確定・session 単位管理への移行)。",
+      "v2.5: Phase 2-C で時間概念の責務分離。(1) lesson.duration → lesson._recommendedDuration に rename(マスターは目安値のみ・session 値が常に優先)。(2) flow[].minutes → flow[]._recommendedMinutes に rename(同上)。_minutes_note も _recommendedMinutes_note に rename。(3) flowMeta(top-level)を削除(合計時間・残時間・status の計算は session 側の責務に移動)。(4) 設計原則: lesson_NN.json は『この文型を教えるには通常これくらいの時間が必要』という規範的な目安のみ保持。実際の時間配分(60分授業/25分体験等)は session_NNN.json で決定する。これにより lesson_NN.json は全パターン網羅(時間オーバーOK)で記述可能。(5) 合成アルゴリズムへの影響: session で minutes が指定されればその値・未指定なら _recommendedMinutes を継承(SKILL.md v1.3 で正式化予定・本 Phase 2-C 完了時の handoff に申し送り)。",
+      "v2.6 (2026-05-11): Phase 1-F F-1 で固定キャラ概念を廃止(lesson_02 v1.4 の遡及適用)。[修正内容] (1) characters セクション(named_characters / generic_characters / deprecated_characters / layer_strategy_note)を全削除。バックアップは _meta._phase1f_completed.previous_characters_backup に保存。(2) 全 examples(9件)から characterId / character_assignment_type フィールド削除。(3) examples の sentence を教科書原典固有名詞 + 教科書記号(Aさん/Bさん)に置換: p1-1 田中→鈴木(教科書原典) / p2-3 田中→キム(教科書原典) / p3-1 山田→Aさん / p3-2 田中→Bさん / p3-3 山田→Aさん / p3-5 山田→Aさん。p2-1/2-2(リンさん)・p3-4(リンさん)は教科書原典のため維持。(4) vocabulary.byPattern.p1_p2.words[].primaryCharacterId フィールド(7箇所)削除。(5) vocabulary.primaryCharacter_note 削除。(6) 各 example の replacementNote / _comment を固定キャラ廃止方針に整合化。[判断根拠] ABC 教科書は物語性のない教材・固有名詞は画像と切り離すべき・教師は授業中に学習者の実名で適宜置換する(教科書の意図)。管理コスト > 教育的価値。課マスターは文法軸で管理する設計に統一(将来のげんき・みんなの日本語等への移行コスト削減)。lesson_02 v1.4(2026-05-11)と完全に同じ原則で統一。[件数] examples 総数 9(p1=1 / p2=3 / p3=5)維持。教科書例文 originalSources を完全準拠。[影響範囲] Phase 1-F F-2(master_prompt_design_guide.py CHARACTER_PROFILES 簡素化)・F-3(SKILL.md v1.3 改訂)で関連修正を実施。Step 2 (image_prompts) 設計は Phase 1-F 完了後に進行可能。",
+      "v2.8 (2026-05-14): T1完了。引き継ぎ資料v4のレベル1問題(#1〜#9)を一括修正。(1) activityセクション削除(#1)。(2) patterns[*].note → cautionNote にrename(#2・全3パターン)。(3) vocabulary全語にvocabType/imageRole/jlptLevel/isFirstAppearanceを追加(#3〜#6・p1_p2群7語+p3群5語=計12語)。(4) patterns[*].examples[*]全9件にimageRoleを追加(#7・p1=vocab_person, p2-1=scene, p2-2=scene, p2-3=vocab_person, p3全5件=scene)。(5) _meta.lessonVersion: \"1.0\"を追加(#8)。(6) flow[main_act_1]にABCactivityRef(activityName/fadingStage/taskType/playerSteps[])を追加(#9・playerSteps 3ステップja/en付き)。formatVersion 2.7維持。",
+      "v2.10 (2026-05-14): handoff_v10 確定内容を一括実装。(1) vocabulary 再設計: 男の人・女の人・外国人を削除、大学生を追加、会社→病院に差し替え、国籍語彙グループ(7語)を新設。totalWords: 12→17。(2) patterns[p1].examples: アンカー(1-1)を維持し4文を新規追加(計5文)。(3) patterns[p2].examples: アンカー2-1/2-2をPDF原典に修正、2-4/2-5を新規追加(計5文)。(4) patterns[p3].examples: 全5文を再設計(東西シリーズ・実名化・会社→病院)。(5) flow[intro_act_p1/p2/p3]にABCactivityRefを追加(T-L3)。(6) flow[intro_act_p1].materialNeedsにnamed_character_cardを追加(T-L4)。(7) patterns[p1].conversationPhrasesに〜から来ましたを追加。formatVersion 2.7維持。",
+      "v2.11 (2026-05-15): SSOT再設計対応(Stage 2)。(1) vocabulary 全17語に imageId(word_* 命名規則統一)+audioId 予約フィールドを追加。(2) examples 全15件に audioId(sentence_ex_L01_*) 予約+isAnchor フラグを追加(1-1/2-1/3-4 のみ true、まとめスライド・宿題アンカー文用)。(3) flow[] を文型ブロック構造に再設計: 単一 example/practice エントリを削除し example_p1/p2/p3 + practice_p1/p2/p3 の 6 エントリに分割(patternRef で 1 文型 1 スライド化)。intro_activity/pattern と同列に並ぶことで FlowSynthesizer 経由で teach[] による 自動フィルタが効く(_step2_filterByTeach)。(4) namedCharacters[] セクションを新設(鈴木/リン/キム/タノム/ケリー 5件)。intro_activity スライドの character_card_grid レイアウト等で参照する課固有の人物データ。formatVersion 2.7 維持(後方互換)。",
+      "v2.11.1 (2026-05-15): Bug④A 修正。p2 アンカーを 2-1(リンさんですか。) から 2-4(先生ですか。→ はい、先生です。/いいえ、先生じゃありません。) に移動。ユーザー仕様(handoff v15)に合わせて、より包括的な疑問+応答セット例文を p2 代表例文として位置付ける。例文番号(2-1/2-4)は PDF 原典順序を維持。formatVersion 2.7 維持。",
+      "v2.11.2 (2026-05-15): canDoEn フィールドを全パターン(p1/p2/p3)に追加(全課共通仕様化)。slide_html.js は既に canDoEn 出力に対応済み(introGoalsSlide / patternIntroSlide / wrapUpSlide / reviewSlide の 4 箇所で .en-text クラス付き)のため修正不要。lesson_02.json 以降は patterns[].canDo の直後に必ず canDoEn を追加すること(CLAUDE.md §lesson_NN.json スキーマ要件 参照)。formatVersion 2.7 維持。",
+      "v2.11.3 (2026-05-15): patterns[] に practiceImageSource フィールドを追加 (p1: \"vocabulary\", p2: \"namedCharacters\", p3: \"namedCharacters+vocab\")。homework_html.js が宿題の練習問題画像を文型ごとに切り替えるための分岐キー。formatVersion 2.7 維持。",
+      "v2.11.4 (2026-05-15): p1/p3 の practice 仕様更新。(1) p1: practiceImageSource を \"vocabulary\" → \"namedCharacters\" に変更。practiceTemplates を「＿＿＿さんは＿＿＿です。」(2 blanks, 名前+職業/国籍) に置換。(2) p3: practiceTemplates を「＿＿＿さんは＿＿＿の＿＿＿です。」(3 blanks, 名前+所属+職業) に置換。宿題HTMLで人物カード+空欄入力による文型練習を実現。formatVersion 2.7 維持。"
+    ],
+    "_phase1f_completed": {
+      "_note": "v2.6 で Phase 1-F F-1 を完了した記録。lesson_02 v1.4 と同じ原則で固定キャラ概念を廃止。previous_characters_backup は将来のロールバック用に保存。",
+      "completedAt": "2026-05-11",
+      "decision": "選択肢X(教科書忠実化)+ 固定キャラ廃止",
+      "rationale": [
+        "lesson_02 v1.4(2026-05-11)で確定した固定キャラ廃止方針を lesson_01 にも遡及適用",
+        "ABC 教科書は物語性のない教材(handoff_phase2_C_step1b_completed §3-2 確認)",
+        "固有名詞は画像と切り離す(画像生成時は generic フラットベクター人物使用)",
+        "教師は授業中に学習者の実名で適宜置換する(ABC 教科書の意図)",
+        "管理コスト > 教育的価値(マンツーマン授業では教師本人がいる)",
+        "将来の教材移行(げんき・みんなの日本語等)で固定キャラが妨げになる"
+      ],
+      "scope": {
+        "examples_sentence_revised": 6,
+        "examples_characterId_removed": "全 examples(9件)",
+        "vocabulary_primaryCharacterId_removed": "vocabulary.byPattern.p1_p2.words[](7箇所)",
+        "characters_section_removed": true
+      },
+      "examples_modification_summary": {
+        "p1-1": "田中さん → 鈴木さん(教科書原典 ABC 1-1 に戻す)",
+        "p2-1": "変更なし(リンさんは教科書原典)",
+        "p2-2": "変更なし(固有名詞登場なし)",
+        "p2-3": "田中さん → キムさん(教科書原典 ABC 2-2 に戻す)",
+        "p3-1": "山田さん → Aさん(教科書記号化・会社員ロール)",
+        "p3-2": "田中さん → Bさん(教科書記号化・先生ロール)",
+        "p3-3": "山田さん → Aさん(p3-1 と同一人物として連続)",
+        "p3-4": "変更なし(リンさんは教科書原典)",
+        "p3-5": "山田さん → Aさん(p3-1/3-3 と同一人物として連続)"
+      },
+      "previous_characters_backup": {
+        "_comment": "第1課に登場する人物。master_prompt_design_guide.py v2.1 の CHARACTER_PROFILES から選んだ ID を参照する。派生物(スライド・宿題・image_prompts・教案docx)はすべてこのアサインに従う。Layer 1 = 主要キャラ、Layer 2 = 職業特化、Layer 3 = generic(役者として流用)。",
+        "named_characters": [
+          {
+            "id": "田中先生",
+            "characterId": "田中先生",
+            "layer": "primary",
+            "role": "先生",
+            "introduction": "p1 から登場、教師の代表。「先生」「学校の先生」の例文に登場。「医者」も語彙として登場するが、医者役は佐藤さんに譲る。",
+            "appearsIn": [
+              "p1",
+              "p2",
+              "p3"
+            ]
+          },
+          {
+            "id": "リンさん",
+            "characterId": "リンさん",
+            "layer": "primary",
+            "role": "学生",
+            "introduction": "p2 から登場、学生の代表。「学生」「大学の学生」の例文に登場。",
+            "appearsIn": [
+              "p2",
+              "p3"
+            ]
+          },
+          {
+            "id": "ケリーさん",
+            "characterId": "ケリーさん",
+            "layer": "primary",
+            "role": "外国人(学習者の代表)",
+            "introduction": "語彙カード「外国人」の代表として登場。例文での主役は田中先生・リンさんに譲るが、学習者との対話例として使用可。",
+            "appearsIn": [
+              "p1"
+            ]
+          },
+          {
+            "id": "山田さん",
+            "characterId": "山田さん",
+            "layer": "role_specific",
+            "role": "会社員",
+            "introduction": "v2.2 追加。p3 の所属例文(会社員ロール)を担当。「会社の会社員」「さくら銀行の会社員」「さくらデパートの会社員」に登場。",
+            "appearsIn": [
+              "p3"
+            ]
+          },
+          {
+            "id": "佐藤さん",
+            "characterId": "佐藤さん",
+            "layer": "role_specific",
+            "role": "医者",
+            "introduction": "v2.2 追加。第1課では語彙カード「医者」の代表として絵カードのみで登場。例文には登場しない。",
+            "appearsIn": [
+              "p1"
+            ]
+          }
+        ],
+        "generic_characters": [
+          {
+            "id": "generic_male_adult",
+            "layer": "generic",
+            "role": "語彙カード「男の人」の代表",
+            "appearsIn": [
+              "p1"
+            ]
+          },
+          {
+            "id": "generic_female_adult",
+            "layer": "generic",
+            "role": "語彙カード「女の人」の代表",
+            "appearsIn": [
+              "p1"
+            ]
+          }
+        ],
+        "deprecated_characters": [
+          {
+            "name": "鈴木さん",
+            "originalSource": "日本語の教え方ABC 第1課 例文",
+            "replacedBy": "田中先生",
+            "reason": "v2.1: 解1(田中世界観に統一)を採用。教科書例文の鈴木さんは田中先生に置換。第N課で同様の置換が必要な場合は Phase 4 で実装される textbook_character_mapping.json を参照。"
+          },
+          {
+            "name": "キムさん",
+            "originalSource": "日本語の教え方ABC 第1課 例文 (2-3)",
+            "replacedBy": "田中先生",
+            "reason": "v2.1: 解1(田中世界観に統一)を採用。教科書例文のキムさんは田中先生に置換。"
+          }
+        ],
+        "layer_strategy_note": "本第1課は ABC ベース(物語性なし)のため、Layer 1 で世界観を補う設計。Layer 1 (田中先生・リン・ケリー) が物語の連続性を提供し、Layer 2 (山田・佐藤) が職業ロールを担当、Layer 3 (generic_*) は単発キャラの役者として流用する。詳細は master_prompt_design_guide.py v2.1 の HOW_TO_USE 「教科書別 Layer 戦略」を参照。"
+      },
+      "post_phase1f_action": "Phase 1-F F-2/F-3/F-4 完了後、Step 4 (session_001 作成) で動作確認可能。lesson_01 v2.6 は文法軸で管理する設計に統一。"
+    }
+  },
+  "lesson": {
+    "no": 1,
+    "title": "名詞",
+    "topic": "名詞(人物・職業・所属)",
+    "level": "初級前半(Lv.1)",
+    "target": "完全初心者(ひらがな学習済み)、年齢混在(子ども・中高生・大学生・社会人)、マンツーマン・オンライン",
+    "_recommendedDuration": 50,
+    "_recommendedDuration_note": "標準授業時間(分)の目安値(reference only)。session_NNN.json の session.duration で実時間を指定する(session 値が常に優先・D-優先1)。例:体験レッスン 25 分・長時間集中レッスン 90 分などに対応。マスターはあくまで目安なので、教師が session で自由に変更可能。v2.5: duration → _recommendedDuration に rename。",
+    "grammarMemo": {
+      "_note": "教師が文法上の注意点を集約するメモ。複数の参考文献から学んだ知見・教師自身の経験・他言語との対比など、いずれも記入可。教科書本文の逐語コピーは行わないが、複数の参考文献を統合した教師の解釈・要約は推奨される(SKILL.md ルール5整合)。teacher_notes(教案docx)生成時に参照される。教科書を切り替えた時は references[] を書き換え、general を編集するだけで対応可能。",
+      "general": "「〜は〜です」は A=B 関係(主題=属性)に限定して導入する。第1課ではこの制約を守り、『父は会社です』のような場所表現や『納豆はきらいだ』のような省略文は持ち込まない。否定の『〜じゃありません』と『〜ではありません』は両方提示してよいが、初学者は『〜じゃありません』を主用形として使う。過去形『〜でした』や普通体『〜だ』もこの段階では触れない。疑問文では文末イントネーションを上げることに注意させる。",
+      "teacherNotes": "",
+      "_teacherNotes_note": "教師個人のメモ(授業を重ねて気づいたこと等)。教師のみが記入する自由記述欄。",
+      "references": [
+        {
+          "label": "日本語の教え方ABC 第1課 文法知識の整理",
+          "type": "textbook"
+        },
+        {
+          "label": "資料12 日本語初級文型習得の難易度カーブ設計",
+          "type": "research"
+        }
+      ]
+    }
+  },
+  "textbook_sources": [
+    {
+      "id": "ABC",
+      "name": "日本語の教え方ABC",
+      "publisher": null,
+      "lesson": 1,
+      "section": "第1課: 自己紹介",
+      "isPrimary": true,
+      "narrativeStyle": "non_narrative",
+      "_comment": "現時点での主参考教科書。物語性なし(課ごとに単発キャラ)のため、例文に登場する固有名詞は教科書原典(鈴木さん・キムさん・リンさん 等)または教科書記号(Aさん・Bさん 等)を使用する。v2.6(Phase 1-F)で固定キャラ概念を廃止し、画像生成は固有名詞と切り離して generic フラットベクター人物 + 役割ヒント(先生/会社員/学生 等)で表現する設計に統一。各 example の originalSources で教科書原文を追跡。"
+    }
+  ],
+  "textbook_compatibility_note": "Phase 4 で textbook_character_mapping.json を新設し、複数教科書(みんなの日本語・げんき等)への対応を実装予定。v2.6(Phase 1-F)で固定キャラ概念を廃止したため、教科書間の人物名差異は 各課の examples[].originalSources で個別に管理する設計に統一。物語性のある教科書(みんなの日本語・げんき)を採用する場合は、examples[].sentence をその教科書の人物名で記述し、画像生成側は generic 人物として描画する。",
+  "vocabulary": {
+    "_comment": "第1課の採用語彙。17語。派生物(スライド・宿題・materials・image_prompts)はこのリストに従う。v2.10: 男の人・女の人・外国人を削除、大学生を追加、会社→病院に差し替え、国籍語彙グループを新設。",
+    "totalWords": 17,
+    "readingNotation": "ひらがな(学習者向け表示と統一、横断論点α 整合)",
+    "byPattern": {
+      "p1_p2": {
+        "patternIds": [
+          "p1",
+          "p2"
+        ],
+        "vocabCount": 5,
+        "description": "文型①②(〜は〜です / 〜ですか)で使用する職業の語彙。p1とp2で同じ語彙を共有(shareVocabWith)。v2.10: 男の人・女の人・外国人を削除し職業語のみに絞る。大学生を追加。",
+        "words": [
+          {
+            "word": "医者",
+            "reading": "いしゃ",
+            "en": "doctor",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "imageId": "word_医者",
+            "audioId": "word_医者"
+          },
+          {
+            "word": "会社員",
+            "reading": "かいしゃいん",
+            "en": "company employee",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "imageId": "word_会社員",
+            "audioId": "word_会社員"
+          },
+          {
+            "word": "学生",
+            "reading": "がくせい",
+            "en": "student",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "imageId": "word_学生",
+            "audioId": "word_学生"
+          },
+          {
+            "word": "大学生",
+            "reading": "だいがくせい",
+            "en": "university student",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_note": "v2.10新規追加。Goi_List No.10351 確認済み(1.初級前半)。学生(普通名詞)との対比で導入。p3アンカー(東西大学の学生)と連動。",
+            "imageId": "word_大学生",
+            "audioId": "word_大学生"
+          },
+          {
+            "word": "先生",
+            "reading": "せんせい",
+            "en": "teacher",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "imageId": "word_先生",
+            "audioId": "word_先生"
+          }
+        ]
+      },
+      "p1_p2_nationality": {
+        "patternIds": [
+          "p1",
+          "p2"
+        ],
+        "vocabCount": 7,
+        "description": "文型①②で使用する国籍語彙。v2.10新規グループ。Goi_ListにN5単独エントリなし(接尾辞「人」派生形のため)。授業実態・PDF根拠でN5相当と判断。",
+        "_jlptLevel_note": "Goi_Listに〜人形は独立収録なし。国名(アメリカ・韓国・日本)はGoi_List N5確認済み。中国・ブラジル・ベトナム・スペインはGoi_List未収録のため参考値扱い。",
+        "words": [
+          {
+            "word": "日本人",
+            "reading": "にほんじん",
+            "en": "Japanese",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.5 教え方の例1 教師モデル発話「鈴木さんは日本人です」",
+            "imageId": "word_日本人",
+            "audioId": "word_日本人"
+          },
+          {
+            "word": "中国人",
+            "reading": "ちゅうごくじん",
+            "en": "Chinese",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.1 会話例「中国人です」(リンさん)",
+            "imageId": "word_中国人",
+            "audioId": "word_中国人"
+          },
+          {
+            "word": "アメリカ人",
+            "reading": "アメリカじん",
+            "en": "American",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.1 会話例「アメリカから来ました」(ケリーさん)",
+            "imageId": "word_アメリカ人",
+            "audioId": "word_アメリカ人"
+          },
+          {
+            "word": "韓国人",
+            "reading": "かんこくじん",
+            "en": "Korean",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.5 世界地図に韓国旗あり",
+            "imageId": "word_韓国人",
+            "audioId": "word_韓国人"
+          },
+          {
+            "word": "ブラジル人",
+            "reading": "ブラジルじん",
+            "en": "Brazilian",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.5 世界地図に国旗あり",
+            "imageId": "word_ブラジル人",
+            "audioId": "word_ブラジル人"
+          },
+          {
+            "word": "ベトナム人",
+            "reading": "ベトナムじん",
+            "en": "Vietnamese",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.5 世界地図に国旗あり",
+            "imageId": "word_ベトナム人",
+            "audioId": "word_ベトナム人"
+          },
+          {
+            "word": "スペイン人",
+            "reading": "スペインじん",
+            "en": "Spanish",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "_pdfSource": "PDF p.5 世界地図に国旗あり",
+            "imageId": "word_スペイン人",
+            "audioId": "word_スペイン人"
+          }
+        ]
+      },
+      "p3": {
+        "patternIds": [
+          "p3"
+        ],
+        "vocabCount": 5,
+        "description": "文型③(〜の〜)で使用する所属機関の語彙。v2.10: 会社→病院に差し替え(「会社の会社員」が不自然なため)。例文では「東西〇〇」の架空固有名詞を付与。",
+        "words": [
+          {
+            "word": "病院",
+            "reading": "びょういん",
+            "en": "hospital",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "_note": "v2.10: 会社から差し替え。「東西病院の医者です」で自然な所属表現が成立。",
+            "imageId": "word_病院",
+            "audioId": "word_病院"
+          },
+          {
+            "word": "学校",
+            "reading": "がっこう",
+            "en": "school",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_学校",
+            "audioId": "word_学校"
+          },
+          {
+            "word": "銀行",
+            "reading": "ぎんこう",
+            "en": "bank",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_銀行",
+            "audioId": "word_銀行"
+          },
+          {
+            "word": "大学",
+            "reading": "だいがく",
+            "en": "university",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_大学",
+            "audioId": "word_大学"
+          },
+          {
+            "word": "デパート",
+            "reading": "デパート",
+            "en": "department store",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "_note": "カタカナ語のため絵カード化は可能だが、「建物の外観」で表現する。",
+            "imageId": "word_デパート",
+            "audioId": "word_デパート"
+          }
+        ]
+      }
+    },
+    "deprecation_note": "vocab_lesson1.json は Goi_List.pdf 由来の draft(104語、文字化け16語含む)。第1課の採用語彙のSSOTは本セクションの17語。v2.10で12語→17語に更新。"
+  },
+  "flow": [
+    {
+      "id": "review",
+      "type": "review",
+      "stage": "復習",
+      "_recommendedMinutes": 0,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "enabled": false,
+      "optional": true,
+      "skipped": true,
+      "sourceLesson": null,
+      "patterns": [],
+      "materials": "スライド",
+      "_note": "第2課以降で enabled: true・skipped: false にして使う。L2-D 採用により、本エントリは削除・移動・複製も可能。materialNeeds は review type の schema 規則により付与しない。"
+    },
+    {
+      "id": "intro_slide",
+      "type": "intro_slide",
+      "stage": "導入(スライド)",
+      "_recommendedMinutes": 3,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "今日のテーマ・学習目標を提示する。",
+      "_materialNeeds_note": "intro_slide type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "intro_act_p1",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p1)",
+      "patternRef": "p1",
+      "activityId": "act_picture_card_vocab_intro",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": true,
+      "skipped": false,
+      "materials": "絵カード",
+      "_assignmentNote": "T2 確定:catalog v1.2 の textbookOrigins[textbookId=ABC, lesson=1, patternHint=p1] と一致。教師が授業準備時に変更・スキップ可。catalog から別 activityId を選択することで他教科書由来のアクティビティに差し替え可能。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "人物・職業を表す絵カード(先生・会社員・学生・医者・男の人・女の人・外国人)。p1 語彙 7 語分。",
+          "keywords": [
+            "先生",
+            "会社員",
+            "学生",
+            "医者",
+            "男の人",
+            "女の人",
+            "外国人"
+          ],
+          "count": 7,
+          "imageRef": "image://lesson1/context/vocabulary_person",
+          "usedAlsoIn": [
+            "pattern_p1",
+            "intro_act_p2",
+            "pattern_p2",
+            "intro_act_p3"
+          ],
+          "_note": "PDF記述: 「人物の絵カード・写真・世界地図を見せながら、名前・職業・国名の語彙を導入」"
+        },
+        {
+          "type": "special_slide",
+          "description": "国旗付き世界地図スライド(日本・中国・韓国・アメリカ等)。学習者の出身国を指しながら国籍・国名を導入するために使用。",
+          "_note": "PDF記述: 「世界地図などを用意し、それを見せながら、名前、職業、国名の語彙を導入」。survey では special_world_map と記録されていたが、Phase 2-B 確定の 12 type 体系では world_map は special_slide に吸収済のため special_slide として記述。"
+        },
+        {
+          "type": "named_character_card",
+          "description": "名前付き人物絵カード(鈴木さん・リンさん・キムさん・タノムさん・ケリーさん)。p1での人物・職業・国籍導入と、p2での「だれですか」Q&A練習の両方で使用する共通素材。NAMED_CHARACTER_PROFILESで定義された視覚的特徴を使って生成する。",
+          "characters": [
+            "鈴木さん",
+            "リンさん",
+            "キムさん",
+            "タノムさん",
+            "ケリーさん"
+          ],
+          "usedAlsoIn": [
+            "intro_act_p2",
+            "pattern_p2"
+          ],
+          "_note": "PDF p.4-5: 教え方の例1で人物を名前付きで導入し、教え方の例2で同じカードを再利用してQ&A練習する構造を反映。v2.10: ケリーさんを追加(会話例登場)。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "絵カードによる語彙・基本文型導入",
+        "fadingStage": "stage1",
+        "taskType": "語彙提示・リピート",
+        "playerSteps": [
+          {
+            "ja": "絵カードを見て、先生の言葉をよく聞きましょう",
+            "en": "Look at the picture cards and listen carefully to the teacher."
+          },
+          {
+            "ja": "先生のあとについて、声に出して言ってみましょう",
+            "en": "Repeat the words and phrases out loud after the teacher."
+          },
+          {
+            "ja": "文字を見ないで言えるか、やってみましょう",
+            "en": "Try saying the words without looking at the text."
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p1",
+      "type": "pattern",
+      "stage": "文型①",
+      "patternId": "p1",
+      "_recommendedMinutes": 8,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド・絵カード",
+      "content": "文型説明 → 語彙提示(発音練習含む)。モデル→リピート。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "intro_act_p1 の絵カードを再利用。",
+          "reusedFrom": "intro_act_p1",
+          "_note": "PDF記述: 絵カードを使って板書「〜は〜です。」と語彙を反復練習。"
+        },
+        {
+          "type": "special_slide",
+          "description": "文字あり版と文字なし(隠し)版の 2 バージョンスライド。国籍・職業を入れたスライドと、文字を隠したスライドを切り替えて発話練習に使う。",
+          "_note": "PDF記述: 「文字を入れたスライドと、入れていない(文字を隠した)スライドを作っておき」"
+        }
+      ]
+    },
+    {
+      "id": "example_p1",
+      "type": "example",
+      "stage": "例文まとめ (p1)",
+      "patternRef": "p1",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p1の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p1",
+      "type": "practice",
+      "stage": "練習しよう (p1)",
+      "patternRef": "p1",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p1の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第1課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p2",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p2)",
+      "patternRef": "p2",
+      "activityId": "act_qa_pattern_intro",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": true,
+      "skipped": false,
+      "materials": "絵カード",
+      "_assignmentNote": "T2 確定:catalog v1.2 の textbookOrigins[textbookId=ABC, lesson=1, patternHint=p2] と一致。教師が授業準備時に変更・スキップ可。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "p1 の人物・職業絵カードを再利用して、質問「〜ですか」と応答を練習する。",
+          "reusedFrom": "intro_act_p1",
+          "_note": "PDF記述: 「鈴木さん・リンさん等の絵カードを使って質問と答えを導入」"
+        },
+        {
+          "type": "teacher_photo",
+          "description": "学習者が知っている有名人(スター・スポーツ選手等)の写真。「だれですか」クイズ形式で疑問詞を導入するために使用。教師が自分で用意する。",
+          "_note": "PDF記述: 「学習者が知っていると思われる人物(スターやスポーツ選手などの有名人)」。著作権配慮のため似顔絵でも可。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "絵カードによる疑問文・応答導入",
+        "fadingStage": "stage1〜2",
+        "taskType": "応答練習(Q&A)",
+        "playerSteps": [
+          {
+            "ja": "先生の質問を聞いて、「はい、〜です」か「いいえ、〜じゃありません」で答えましょう",
+            "en": "Listen to the teacher's question and answer with 'Yes, ~' or 'No, it's not ~'."
+          },
+          {
+            "ja": "「だれですか」という質問にも答えてみましょう",
+            "en": "Also try answering the question 'Who is it?'"
+          },
+          {
+            "ja": "慣れてきたら、自分でも質問してみましょう",
+            "en": "When you're ready, try asking the questions yourself."
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p2",
+      "type": "pattern",
+      "stage": "文型②",
+      "patternId": "p2",
+      "_recommendedMinutes": 8,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド・絵カード",
+      "content": "文型説明 → 語彙提示(発音練習含む)。モデル→リピート。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "p1 の絵カードを再利用。「〜ですか。はい、〜です。いいえ、〜じゃありません。」の反復練習に使用。",
+          "reusedFrom": "intro_act_p1"
+        }
+      ]
+    },
+    {
+      "id": "example_p2",
+      "type": "example",
+      "stage": "例文まとめ (p2)",
+      "patternRef": "p2",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p2の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p2",
+      "type": "practice",
+      "stage": "練習しよう (p2)",
+      "patternRef": "p2",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p2の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第1課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p3",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p3)",
+      "patternRef": "p3",
+      "activityId": "act_attribute_modeling_intro",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": true,
+      "skipped": false,
+      "materials": "絵カード",
+      "_assignmentNote": "T2 確定:catalog v1.2 の textbookOrigins[textbookId=ABC, lesson=1, patternHint=p3] と一致。教師が授業準備時に変更・スキップ可。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "人物絵カード(p1 再利用)と所属機関を表す絵カード(大学・会社・銀行・学校・デパートの建物イラスト)を組み合わせて「〜の〜」を導入する。",
+          "reusedFrom": "intro_act_p1",
+          "_note": "PDF記述: 「リンさんの絵カードと所属(東西大学)を組み合わせて『〜の〜』を導入」。所属機関の建物絵カードは新規追加。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "モデル文拡張による所属・修飾の導入",
+        "fadingStage": "stage1",
+        "taskType": "モデル文リピート・自己産出",
+        "playerSteps": [
+          {
+            "ja": "先生のモデル文を聞いて、同じように言ってみましょう",
+            "en": "Listen to the teacher's model sentence and repeat it the same way."
+          },
+          {
+            "ja": "「〜の〜です」を使って、自分の国や職業・所属を言ってみましょう",
+            "en": "Use the pattern '~ no ~ desu' to talk about your own country, job, or organization."
+          },
+          {
+            "ja": "相手に「〜は〜の〜ですか」と質問してみましょう",
+            "en": "Try asking your partner '~ wa ~ no ~ desu ka?'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p3",
+      "type": "pattern",
+      "stage": "文型③",
+      "patternId": "p3",
+      "_recommendedMinutes": 7,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "文型説明 → 語彙提示(発音練習含む)。モデル→リピート。",
+      "materialNeeds": [
+        {
+          "type": "none",
+          "description": "板書のみで完結。「〜の〜です。」の構造を板書しながら説明する。追加素材不要。",
+          "_note": "survey データ: 「板書のみで完結、追加素材不要」"
+        }
+      ]
+    },
+    {
+      "id": "example_p3",
+      "type": "example",
+      "stage": "例文まとめ (p3)",
+      "patternRef": "p3",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p3の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p3",
+      "type": "practice",
+      "stage": "練習しよう (p3)",
+      "patternRef": "p3",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p3の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第1課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "main_act_1",
+      "type": "main_activity",
+      "stage": "アクティビティ(メイン)",
+      "_recommendedMinutes": 0,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": true,
+      "skipped": true,
+      "activityId": "act_hajimemashite_conversation",
+      "ABCactivityRef": {
+        "activityName": "会話「はじめまして」",
+        "fadingStage": "stage4〜5",
+        "taskType": "自由対話",
+        "playerSteps": [
+          {
+            "ja": "名前と仕事を伝えましょう",
+            "en": "Tell your partner your name and job."
+          },
+          {
+            "ja": "相手に質問しましょう",
+            "en": "Ask your partner a question."
+          },
+          {
+            "ja": "次のパートナーに変わりましょう",
+            "en": "Switch to the next partner."
+          }
+        ]
+      },
+      "materials": "(なし)",
+      "_skip_reason": "T1 確定:第1課は activity_content 不要(catalog v1.2 判定:第1課サジェスト 5 個全て activity_content 不要)。L2-D 採用により、教師は本エントリを (a) 削除する (b) skipped: false に変更し activityId を catalog から選ぶ (c) 複数の main_activity エントリを追加する のいずれかが可能。",
+      "materialNeeds": [
+        {
+          "type": "special_handout",
+          "description": "学習者用の簡単な名刺カード(やや大きめ)。教師が用意するか、授業中に学習者に作らせる。「はじめまして」会話練習で使用。",
+          "_note": "PDF記述: 「少し大きめのカードを用意して、学習者に簡単な名刺を作らせ」。skipped:true のため現在は使用しないが、教師が main_act_1 を有効にした場合に必要。"
+        },
+        {
+          "type": "special_slide",
+          "description": "会話モデルのスライドまたは会話場面の絵カード。教師が一人二役でモデルを示す際に使用。音声・動画がある場合はそちらを優先。",
+          "_note": "PDF記述: 「会話場面の絵カード(一人二役のモデル提示用)」。"
+        }
+      ]
+    },
+    {
+      "id": "wrapUp",
+      "type": "wrapUp",
+      "stage": "まとめ",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。v2.5: minutes → _recommendedMinutes に rename。",
+      "optional": false,
+      "skipped": false,
+      "materials": "",
+      "content": "振り返り:「今日は何が言えるようになりましたか?」宿題の説明。",
+      "_materialNeeds_note": "wrapUp type は materialNeeds 付与対象外(schema 規則: 30課で0件の観測事実)。"
+    }
+  ],
+  "namedCharacters": [
+    {
+      "name": "鈴木さん",
+      "occupation": "先生",
+      "nationality": "日本人",
+      "imageId": "char_鈴木"
+    },
+    {
+      "name": "リンさん",
+      "occupation": "学生",
+      "nationality": "中国人",
+      "imageId": "char_リン"
+    },
+    {
+      "name": "キムさん",
+      "occupation": "会社員",
+      "nationality": "韓国人",
+      "imageId": "char_キム"
+    },
+    {
+      "name": "タノムさん",
+      "occupation": "医者",
+      "nationality": "ベトナム人",
+      "imageId": "char_タノム"
+    },
+    {
+      "name": "ケリーさん",
+      "occupation": "——",
+      "nationality": "アメリカ人",
+      "imageId": "char_ケリー"
+    }
+  ],
+  "patterns": [
+    {
+      "id": "p1",
+      "pattern": "〜は〜です(人物)",
+      "label": "〜は〜です",
+      "grammarConcept": "noun_predicate_affirmative",
+      "_grammarConcept_note": "v2.4 追加(handoff_phase2_design_review §6-1)。教科書非依存の文法概念 ID。NはNです の肯定文。",
+      "jlptLevel": "N5",
+      "canDo": "自分や他の人の名前・職業・国籍を「〜は〜です」で紹介できる。",
+      "canDoEn": "Can introduce names, occupations, and nationalities using '~ wa ~ desu'.",
+      "vocabCount": 7,
+      "shareVocabWith": null,
+      "examples": [
+        {
+          "no": "1-1",
+          "pattern": "〜は〜です",
+          "vocab": "先生",
+          "sentence": "鈴木さんは先生です。",
+          "sentenceEn": "Suzuki-san is a teacher.",
+          "imageId": "ex_L01_001",
+          "imageRole": "vocab_person",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "鈴木さんは先生です。",
+              "replacementNote": "PDF p.5 教え方の例1 教師モデル発話。アンカー例文・変更禁止。"
+            }
+          ],
+          "_comment": "p1アンカー例文。PDF p.5原典。鈴木さん(先生・日本人・男性)。",
+          "audioId": "sentence_ex_L01_001",
+          "isAnchor": true
+        },
+        {
+          "no": "1-2",
+          "pattern": "〜は〜です",
+          "vocab": "大学生",
+          "sentence": "リンさんは大学生です。",
+          "sentenceEn": "Lin-san is a university student.",
+          "imageId": "ex_L01_002",
+          "imageRole": "vocab_person",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10新規追加)",
+              "replacementNote": "リンさんは教科書原典固有名詞。大学生はv2.10新規追加語彙。p3アンカー(東西大学の学生)と連動。"
+            }
+          ],
+          "_comment": "大学生の導入例文。リンさん(学生・中国人・女性・東西大学)。",
+          "audioId": "sentence_ex_L01_002",
+          "isAnchor": false
+        },
+        {
+          "no": "1-3",
+          "pattern": "〜は〜です",
+          "vocab": "会社員",
+          "sentence": "キムさんは会社員です。",
+          "sentenceEn": "Kim-san is a company employee.",
+          "imageId": "ex_L01_003",
+          "imageRole": "vocab_person",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10新規追加)",
+              "replacementNote": "キムさんは教科書原典固有名詞。会社員ロールをキムさんに割り当て(handoff_v10キャラプロファイル確定)。"
+            }
+          ],
+          "_comment": "会社員の導入例文。キムさん(会社員・韓国人・男性)。",
+          "audioId": "sentence_ex_L01_003",
+          "isAnchor": false
+        },
+        {
+          "no": "1-4",
+          "pattern": "〜は〜です",
+          "vocab": "日本人",
+          "sentence": "鈴木さんは日本人です。",
+          "sentenceEn": "Suzuki-san is Japanese.",
+          "imageId": "ex_L01_004",
+          "imageRole": "vocab_person",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "鈴木さんは日本人です。",
+              "replacementNote": "PDF p.5 教え方の例1 教師モデル発話に準拠。国籍語彙の導入例文。"
+            }
+          ],
+          "_comment": "日本人の導入例文。鈴木さん(先生・日本人・男性)。PDF p.5直接引用。",
+          "audioId": "sentence_ex_L01_004",
+          "isAnchor": false
+        },
+        {
+          "no": "1-5",
+          "pattern": "〜は〜です",
+          "vocab": "中国人",
+          "sentence": "リンさんは中国人です。",
+          "sentenceEn": "Lin-san is Chinese.",
+          "imageId": "ex_L01_005",
+          "imageRole": "vocab_person",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "中国人です。",
+              "replacementNote": "PDF p.1 会話例「リンです。中国人です。」に準拠。主語を明示する形に展開。"
+            }
+          ],
+          "_comment": "中国人の導入例文。リンさん(学生・中国人・女性)。PDF p.1会話例由来。",
+          "audioId": "sentence_ex_L01_005",
+          "isAnchor": false
+        }
+      ],
+      "practiceImageSource": "namedCharacters",
+      "practiceTemplates": [
+        {
+          "pattern": "＿＿＿さんは＿＿＿です。",
+          "hint": "(名前・職業/国籍)"
+        }
+      ],
+      "conversationPhrases": [
+        {
+          "phrase": "〜から来ました。",
+          "reading": "〜からきました",
+          "en": "I came from ~. / I'm from ~.",
+          "example": "アメリカから来ました。",
+          "exampleEn": "I'm from America.",
+          "pdfSource": "PDF p.1 会話例「アメリカから来ました。」(ケリーさん)",
+          "note": "第1課の文型(p1〜p3)には含まれないが、会話例(はじめまして)で自然に登場するフレーズ。自己紹介活動で学習者が使いたがることが多い。プラスαとして紹介可。〜には国名が入る(日本・中国・アメリカ等)。"
+        }
+      ],
+      "plusAlpha": [
+        "「〜から来ました」は自己紹介表現としてそのまま教える。",
+        "学習者の中には教師をしている人もいるので、教師自身が自己紹介のモデルを示す際に「先生＝教師」であることを伝え、自己紹介では「先生」を使わないよう注意させる。",
+        "会話例でAも教師の場合は「わたしも教師です」と言うべきなので、そういう場合の「も」の使い方を教える。"
+      ],
+      "cautionNote": [
+        "実際に自由に自己紹介をさせると様々なバリエーションが出るので、あまりこの例にこだわらなくてよい。",
+        "A＝Bとならない「〜は〜です」の文(「父は会社です」など)を混ぜて出さないように注意する。初級前半はA＝Bの関係に限定すること。"
+      ]
+    },
+    {
+      "id": "p2",
+      "pattern": "〜ですか(はい/いいえ)",
+      "label": "〜ですか/はい・いいえ",
+      "grammarConcept": "noun_predicate_question",
+      "_grammarConcept_note": "v2.4 追加。NはNですか の疑問文・肯否応答・疑問詞「だれ/どなた」を含む。",
+      "jlptLevel": "N5",
+      "canDo": "「〜ですか」で相手の職業・国籍を尋ね、はい/いいえで答えられる。「だれですか」で人物を確認できる。",
+      "canDoEn": "Can ask about occupations and nationalities using '~ desu ka' and answer with yes/no. Can confirm identity using 'dare desu ka'.",
+      "vocabCount": 7,
+      "shareVocabWith": "p1",
+      "examples": [
+        {
+          "no": "2-1",
+          "pattern": "〜ですか",
+          "vocab": null,
+          "sentence": "リンさんですか。",
+          "sentenceEn": "Is it Lin-san?",
+          "imageId": "ex_L01_006",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "リンさんですか。",
+              "replacementNote": "PDF p.6 文型セクション 2-1 原典。v2.10修正: 旧「リンさんは先生ですか」→原典通りに修正(述語なし)。アンカー例文・変更禁止。"
+            }
+          ],
+          "_comment": "p2アンカー例文(2-1)。PDF p.6文型原典。述語なしの最小形。",
+          "audioId": "sentence_ex_L01_006",
+          "isAnchor": false
+        },
+        {
+          "no": "2-2",
+          "pattern": "はい〜です／いいえ〜じゃありません",
+          "vocab": null,
+          "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
+          "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
+          "imageId": "ex_L01_007",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
+              "replacementNote": "PDF p.6 文型セクション 2-2 原典。v2.10修正: 旧「はい、先生です」→原典通りに修正。アンカー例文・変更禁止。"
+            }
+          ],
+          "_comment": "p2アンカー例文(2-2)。肯定・否定応答のセット。PDF p.6文型原典。",
+          "audioId": "sentence_ex_L01_007",
+          "isAnchor": false
+        },
+        {
+          "no": "2-3",
+          "pattern": "だれですか",
+          "vocab": null,
+          "sentence": "だれですか。→ キムさんです。",
+          "sentenceEn": "Who is it? → It's Kim-san.",
+          "imageId": "ex_L01_010",
+          "imageRole": "vocab_person",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "だれですか。−キムさんです。",
+              "replacementNote": "PDF p.6 文型セクション 2-3 原典。変更なし。アンカー例文・変更禁止。"
+            }
+          ],
+          "_comment": "p2アンカー例文(2-3)。疑問詞「だれ」。キムさん(会社員・韓国人・男性)が視覚的に識別できるNAMED_CHARACTER_PROFILESと連動。",
+          "audioId": "sentence_ex_L01_010",
+          "isAnchor": false
+        },
+        {
+          "no": "2-4",
+          "pattern": "〜ですか(職業)",
+          "vocab": "先生",
+          "sentence": "先生ですか。→ はい、先生です。／いいえ、先生じゃありません。",
+          "sentenceEn": "Are you a teacher? → Yes, I am. / No, I'm not.",
+          "imageId": "ex_L01_008",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10新規追加)",
+              "replacementNote": "PDF p.4「職業・国籍の練習」に根拠。p2パターンを職業語彙に拡張。"
+            }
+          ],
+          "_comment": "職業疑問文の追加例文。p2アンカー(名前疑問)を職業に拡張。",
+          "audioId": "sentence_ex_L01_008",
+          "isAnchor": true
+        },
+        {
+          "no": "2-5",
+          "pattern": "〜ですか(国籍)",
+          "vocab": "韓国人",
+          "sentence": "韓国人ですか。→ はい、韓国人です。／いいえ、韓国人じゃありません。",
+          "sentenceEn": "Are you Korean? → Yes, I am. / No, I'm not.",
+          "imageId": "ex_L01_009",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10新規追加)",
+              "replacementNote": "PDF p.4「職業・国籍の練習」に根拠。p2パターンを国籍語彙に拡張。キムさん(韓国人)のプロファイルと連動。"
+            }
+          ],
+          "_comment": "国籍疑問文の追加例文。国籍語彙グループ(p1_p2_nationality)とp2パターンの接続。",
+          "audioId": "sentence_ex_L01_009",
+          "isAnchor": false
+        }
+      ],
+      "practiceImageSource": "namedCharacters",
+      "practiceTemplates": [
+        {
+          "pattern": "＿＿＿さんは　＿＿＿　ですか。",
+          "hint": "(質問)"
+        },
+        {
+          "pattern": "はい、＿＿＿です。",
+          "hint": "(肯定の答え)"
+        },
+        {
+          "pattern": "いいえ、＿＿＿じゃありません。",
+          "hint": "(否定の答え)"
+        }
+      ],
+      "plusAlpha": [
+        "絵カードの人物については「だれですか」と聞いてもよいが、クラスメートについては「どなたですか」と聞くようにする。",
+        "否定の言い方として「〜じゃありません」と「〜ではありません」の両方があることを教えておく。"
+      ],
+      "cautionNote": [
+        "導入時は教師が質問と答えのモデルを示すが、質問の文に続けてすぐに答えを言わないようにする。学習者の反応(うなずき・首振り)を待ってから答えを言うのがコツ。",
+        "「〜さんは?」の文では文末が上がるイントネーション(↗)に注意させる。"
+      ]
+    },
+    {
+      "id": "p3",
+      "pattern": "〜の〜(所属)",
+      "label": "〜の〜です(所属)",
+      "grammarConcept": "noun_no_affiliation",
+      "_grammarConcept_note": "v2.4 追加。NのN の所属表現。第2課(p3)の所有(NのN)とは異なる概念 ID を持つ(所属 vs 所有)。",
+      "jlptLevel": "N5",
+      "canDo": "「〜の〜です」で自分や他の人の所属(学校・会社・銀行など)を言える。",
+      "canDoEn": "Can express affiliation (school, company, bank, etc.) using '~ no ~ desu'.",
+      "vocabCount": 5,
+      "shareVocabWith": null,
+      "examples": [
+        {
+          "no": "3-1",
+          "pattern": "〜の〜です(所属)",
+          "vocab": "病院",
+          "sentence": "タノムさんは東西病院の医者です。",
+          "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
+          "imageId": "ex_L01_011",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10再設計)",
+              "replacementNote": "v2.10: 旧「Aさんは会社の会社員」(不自然・A-1違反)を廃止。タノムさん(医者・ベトナム人)+東西病院(東西シリーズ)に変更。会社→病院にvocab差し替えと連動。"
+            }
+          ],
+          "_comment": "p3例文(病院・医者)。タノムさん(医者・ベトナム人・男性)。東西シリーズ統一。",
+          "audioId": "sentence_ex_L01_011",
+          "isAnchor": false
+        },
+        {
+          "no": "3-2",
+          "pattern": "〜の〜です(所属)",
+          "vocab": "学校",
+          "sentence": "鈴木さんは東西学校の先生です。",
+          "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
+          "imageId": "ex_L01_012",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10再設計)",
+              "replacementNote": "v2.10: 旧「Bさんは学校の先生」→鈴木さん(先生・日本人)+東西学校に変更。所属名を東西シリーズに統一。"
+            }
+          ],
+          "_comment": "p3例文(学校・先生)。鈴木さん(先生・日本人・男性)。東西シリーズ統一。",
+          "audioId": "sentence_ex_L01_012",
+          "isAnchor": false
+        },
+        {
+          "no": "3-3",
+          "pattern": "〜の〜です(所属)",
+          "vocab": "銀行",
+          "sentence": "キムさんは東西銀行の会社員です。",
+          "sentenceEn": "Kim-san is an employee at Tozai Bank.",
+          "imageId": "ex_L01_013",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10再設計)",
+              "replacementNote": "v2.10: 旧「Aさんはさくら銀行の会社員」→キムさん(会社員・韓国人)+東西銀行に変更。さくら→東西シリーズに統一。"
+            }
+          ],
+          "_comment": "p3例文(銀行・会社員)。キムさん(会社員・韓国人・男性)。東西シリーズ統一。",
+          "audioId": "sentence_ex_L01_013",
+          "isAnchor": false
+        },
+        {
+          "no": "3-4",
+          "pattern": "〜の〜です(所属)",
+          "vocab": "大学",
+          "sentence": "リンさんは東西大学の学生です。",
+          "sentenceEn": "Lin-san is a student at Tozai University.",
+          "imageId": "ex_L01_014",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "リンさんは東西大学の学生です。",
+              "replacementNote": "PDF p.6 文型セクション p3原典。v2.10修正: 旧「さくら大学」→「東西大学」(A-3違反修正・PDF原典通り)。アンカー例文・変更禁止。"
+            }
+          ],
+          "_comment": "p3アンカー例文。PDF p.6原典。東西大学はPDF唯一の固有名詞。変更禁止。",
+          "audioId": "sentence_ex_L01_014",
+          "isAnchor": true
+        },
+        {
+          "no": "3-5",
+          "pattern": "〜の〜です(所属)",
+          "vocab": "デパート",
+          "sentence": "キムさんは東西デパートの会社員です。",
+          "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
+          "imageId": "ex_L01_015",
+          "imageRole": "scene",
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 1,
+              "originalSentence": "(v2.10再設計)",
+              "replacementNote": "v2.10: 旧「Aさんはさくらデパートの会社員」→キムさん(会社員・韓国人)+東西デパートに変更。さくら→東西シリーズに統一。"
+            }
+          ],
+          "_comment": "p3例文(デパート・会社員)。キムさん(会社員・韓国人・男性)。東西シリーズ統一。",
+          "audioId": "sentence_ex_L01_015",
+          "isAnchor": false
+        }
+      ],
+      "practiceImageSource": "namedCharacters+vocab",
+      "practiceTemplates": [
+        {
+          "pattern": "＿＿＿さんは＿＿＿の＿＿＿です。",
+          "hint": "(名前・所属・職業)"
+        }
+      ],
+      "plusAlpha": [
+        "「〜の〜」は所属だけでなく、様々な修飾に使える表現だが、この段階では所属(学校・会社・国など)に限定して教える。",
+        "自己紹介の予備練習として、自分の国・職業・所属などを言わせる活動につなげるとよい。",
+        "固有名詞「さくら」が出てくる例文(さくら銀行/さくら大学/さくらデパート)では、「さくら」が所属の名前であることを明示。学習者には「日本では『さくら』という名前の会社・学校・銀行などがあります」と紹介してもよい。"
+      ],
+      "cautionNote": [
+        "自己紹介をさせると様々なバリエーションが出るので、あまりこの例にこだわらなくてよい。",
+        "「会社の会社員」「学校の先生」のように所属と職業の関連が直接的な場合は、固有名なしの簡潔な例文で十分。「銀行の会社員」「大学の学生」のように所属の種類を強調したい場合は、固有名(さくら〜)を付けることで実在感を出す。",
+        "v2.6: 会社員ロールは Aさん(教科書記号)・先生ロールは Bさん(教科書記号)に統一。同じ Aさんが p3-1/p3-3/p3-5 で連続して登場することで「同一人物の所属表現」を明示。教師は授業中に学習者の実名で適宜置換する(固定キャラ廃止・選択肢X 確定)。"
+      ]
+    }
+  ],
+  "github": {
+    "repo": "japanese-lesson-html",
+    "owner": "popJteacher",
+    "branch": "main",
+    "lessonAssets": [],
+    "_lessonAssets_note": "課マスターから生成される静的アセット。第1課では課単位の静的アセットは存在しない(空配列)。session 単位の出力ファイル(session_NNN_スライド.html 等)は session_NNN.json の output.files で管理(Phase 2-B Q1/Q2 確定)。",
+    "_uploadFiles_deprecated": "uploadFiles[] は v2.4 で廃止。session 単位管理(session_NNN.output.files)への移行完了(Phase 2-B 確定)。旧ファイル(第1課_スライド.html / 第1課_宿題.html / materials_lesson1.json)はリポジトリに残存するが新体系からは参照しない(履歴保全)。"
+  }
+}

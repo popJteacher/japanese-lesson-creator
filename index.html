@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>教材生成ツール</title>
+  <link rel="stylesheet" href="src/styles/fonts_imports.css">
+  <link rel="stylesheet" href="src/styles/design_tokens.css">
+  <style>
+    body {
+      font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #222;
+      line-height: 1.6;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    p.lead { color: #666; margin-top: 0; }
+
+    /* ── タブ ─────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-top: 16px;
+      border-bottom: 2px solid #e1e4ed;
+    }
+    .tab {
+      background: none;
+      border: none;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #888;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab:hover { color: #4a6cd4; }
+    .tab.active {
+      color: #4a6cd4;
+      border-bottom-color: #4a6cd4;
+      font-weight: 600;
+    }
+    .tab-panel { display: none; padding-top: 16px; }
+    .tab-panel.active { display: block; }
+
+    /* ── ドロップゾーン ───────────────────────────────── */
+    #drop-zone {
+      border: 3px dashed #aac;
+      border-radius: 12px;
+      padding: 60px 20px;
+      text-align: center;
+      background: #f7f8fc;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #drop-zone.drag-over {
+      background: #e8efff;
+      border-color: #5a78d8;
+    }
+    #drop-zone .hint {
+      color: #999;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    /* ── フォーム ─────────────────────────────────────── */
+    .form-section {
+      margin: 20px 0;
+      padding: 16px 18px;
+      background: #fafbff;
+      border: 1px solid #e1e4ed;
+      border-radius: 8px;
+    }
+    .form-section > h2 {
+      font-size: 1.05rem;
+      margin: 0 0 12px;
+      color: #333;
+    }
+    .form-section.details-section {
+      padding: 0;
+      background: #fafbff;
+    }
+    .form-section.details-section > summary {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #333;
+      padding: 14px 18px;
+      cursor: pointer;
+      list-style: none;
+    }
+    .form-section.details-section > summary::-webkit-details-marker { display: none; }
+    .form-section.details-section > summary::before {
+      content: "▶ ";
+      font-size: 0.75rem;
+      color: #888;
+      margin-right: 6px;
+    }
+    .form-section.details-section[open] > summary::before { content: "▼ "; }
+    .form-section.details-section > .details-body { padding: 0 18px 16px; }
+
+    .required { color: #c0392b; margin-left: 4px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .form-row label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.85rem;
+      color: #555;
+      gap: 4px;
+    }
+    .form-row input {
+      padding: 7px 10px;
+      border: 1px solid #cdd2dc;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: #222;
+    }
+    .form-row input:focus { outline: 2px solid #4a6cd4; outline-offset: -1px; }
+
+    /* チェックボックスリスト */
+    .checkbox-list {
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid #e1e4ed;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .checkbox-list label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f2f7;
+      font-size: 0.9rem;
+    }
+    .checkbox-list label:last-child { border-bottom: none; }
+    .checkbox-list label:hover { background: #f7f8fc; }
+    .checkbox-list input[type="checkbox"] { flex-shrink: 0; }
+
+    /* アクティビティ行: 1行に名前・duration・description */
+    .activity-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f2f7;
+      font-size: 0.88rem;
+      min-width: 0;
+    }
+    .activity-row:last-child { border-bottom: none; }
+    .activity-row:hover { background: #f7f8fc; }
+    .activity-row input[type="checkbox"] { flex-shrink: 0; }
+    .activity-row .a-name { font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .activity-row .a-duration {
+      color: #4a6cd4; font-size: 0.78rem; flex-shrink: 0;
+      background: #eaf0ff; padding: 1px 7px; border-radius: 999px;
+    }
+    .activity-row .a-desc {
+      color: #777; flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 0.82rem;
+    }
+
+    /* フィルタボタン */
+    .filters {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .filter-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .filter-label { font-size: 0.8rem; color: #666; margin-right: 4px; }
+    .filter-btn {
+      background: #fff;
+      border: 1px solid #cdd2dc;
+      color: #555;
+      padding: 3px 11px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .filter-btn:hover { border-color: #4a6cd4; color: #4a6cd4; }
+    .filter-btn.active {
+      background: #4a6cd4;
+      color: #fff;
+      border-color: #4a6cd4;
+    }
+
+    /* ステージリスト(詳細設定) */
+    .stages-total {
+      padding: 10px 14px;
+      background: #f0f2f7;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .stages-total.over { background: #fde8e8; color: #9b1c1c; }
+    .stages-total.under { background: #fff4d6; color: #7a5b00; }
+    .stages-total.ok { background: #e7f5ec; color: #1d6f3a; }
+    .stages-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border: 1px solid #e1e4ed;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .stage-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f2f7;
+      cursor: grab;
+      font-size: 0.92rem;
+    }
+    .stage-item:last-child { border-bottom: none; }
+    .stage-item.dragging { opacity: 0.4; }
+    .stage-item.drag-over-target { border-top: 2px solid #4a6cd4; }
+    .stage-item .drag-handle {
+      color: #aaa;
+      font-size: 1.1rem;
+      cursor: grab;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .stage-item .stage-name { flex: 1; }
+    .stage-item input[type="number"] {
+      width: 56px;
+      padding: 4px 8px;
+      border: 1px solid #cdd2dc;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .stage-item.disabled .stage-name { color: #aaa; text-decoration: line-through; }
+    .stage-item.disabled input[type="number"] { visibility: hidden; }
+
+    /* アクション・エラー */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .primary-btn, .secondary-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .primary-btn { background: #4a6cd4; color: #fff; }
+    .primary-btn:hover { background: #3a59c0; }
+    .secondary-btn { background: #fff; color: #4a6cd4; border: 1px solid #4a6cd4; }
+    .secondary-btn:hover { background: #eef2ff; }
+
+    .form-error {
+      margin: 12px 0;
+      padding: 10px 14px;
+      background: #fde8e8;
+      color: #9b1c1c;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .form-error.show { display: block; }
+
+    /* ── ステータス/ダウンロード/デバッグ ────────────── */
+    #status {
+      margin: 16px 0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: #f0f0f0;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      display: none;
+    }
+    #status.show { display: block; }
+    #status.error { background: #fde8e8; color: #9b1c1c; }
+    #status.warn { background: #fff4d6; color: #7a5b00; }
+    #status.ok { background: #e7f5ec; color: #1d6f3a; }
+
+    #downloads {
+      margin-top: 24px;
+      padding: 16px;
+      background: #fafafa;
+      border-radius: 8px;
+      display: none;
+    }
+    #downloads.show { display: block; }
+    #downloads h2 { margin-top: 0; font-size: 1.1rem; }
+    #downloads ul { list-style: none; padding-left: 0; }
+    #downloads li { margin: 8px 0; }
+    #downloads a {
+      display: inline-block;
+      padding: 8px 14px;
+      background: #4a6cd4;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    #downloads a:hover { background: #3a59c0; }
+
+    details.debug { margin-top: 16px; }
+    details.debug summary {
+      cursor: pointer;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      max-height: 320px;
+    }
+  </style>
+</head>
+<body>
+  <h1>教材生成ツール</h1>
+  <p class="lead">フォーム入力または session_NNN.json のアップロードから、教案 docx・スライド HTML・宿題 HTML・アクティビティ HTML をダウンロードできます。</p>
+
+  <!-- ── タブ ──────────────────────────────────── -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="form" role="tab">フォームで作成</button>
+    <button class="tab" data-tab="json" role="tab">JSONアップロード</button>
+  </div>
+
+  <!-- ── フォームタブ ─────────────────────────── -->
+  <div id="tab-form" class="tab-panel active">
+    <section class="form-section">
+      <h2>基本情報</h2>
+      <div class="form-row">
+        <label>学習者ID<span class="required">*</span>
+          <input type="text" id="form-student-id" placeholder="例: A">
+        </label>
+        <label>日付
+          <input type="date" id="form-date">
+        </label>
+        <label>授業時間(分)
+          <input type="number" id="form-duration" value="50" min="1">
+        </label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2>文型選択<span class="required">*</span></h2>
+      <div id="patterns-list" class="checkbox-list"></div>
+    </section>
+
+    <section class="form-section">
+      <h2>アクティビティ選択</h2>
+      <div class="filters">
+        <div class="filter-row" id="filter-level"></div>
+        <div class="filter-row" id="filter-stage"></div>
+      </div>
+      <div id="activities-list" class="checkbox-list"></div>
+    </section>
+
+    <details class="form-section details-section" id="advanced-details">
+      <summary>詳細設定(授業の流れ)</summary>
+      <div class="details-body">
+        <div id="stages-total" class="stages-total">合計: 0分 / 50分</div>
+        <ul id="stages-list" class="stages-list"></ul>
+      </div>
+    </details>
+
+    <div id="form-error" class="form-error"></div>
+
+    <div class="action-buttons">
+      <button type="button" id="generate-btn" class="primary-btn">教材を生成</button>
+      <button type="button" id="download-session-btn" class="secondary-btn">session.json をダウンロード</button>
+    </div>
+  </div>
+
+  <!-- ── JSONアップロードタブ ─────────────────── -->
+  <div id="tab-json" class="tab-panel">
+    <div id="drop-zone">
+      <div>session_NNN.json をここにドロップ</div>
+      <div class="hint">またはクリックしてファイルを選択</div>
+      <input type="file" id="file-input" accept=".json" style="display:none">
+    </div>
+  </div>
+
+  <!-- ── 共通の出力エリア ────────────────────── -->
+  <div id="status"></div>
+
+  <div id="downloads">
+    <h2>ダウンロード</h2>
+    <ul id="download-list"></ul>
+  </div>
+
+  <details class="debug">
+    <summary>デバッグ: resolvedFlow / flowMeta</summary>
+    <pre id="debug-output">(まだ何もありません)</pre>
+  </details>
+
+  <!-- JSZip
+       lesson_plan_docx.js は手書きの OOXML (WordprocessingML) を JSZip で zip 化する。
+       docx-js (8.x / 9.x) は CDR オフセットが壊れた zip を出力する既知バグがあり、
+       JSZip 経由の repack ワークアラウンドも壊れた中身を引き継いでしまうため、
+       docx-js は完全に外し、最小ファイルセット (Content_Types / rels / document /
+       styles / document.rels) を直接組み立てる方式に切替。 -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <!-- 内蔵データ (file:// で fetch が使えないので script タグで読み込む)
+       これらは scripts/build-embedded-data.py で data/*.json から自動生成。
+       data/*.json を編集したら必ず再生成すること。 -->
+  <script src="data/lesson_01.js"></script>
+  <script src="data/lesson_02.js"></script>
+  <script src="data/activity_catalog.js"></script>
+  <script src="data/intro_activity_catalog.js"></script>
+  <script src="data/master_image_registry.js"></script>
+  <script src="data/master_audio_registry.js"></script>
+
+  <!-- 共通モジュール (ブラウザ window グローバルにエクスポート) -->
+  <script src="src/common/flow_synthesizer.js"></script>
+  <script src="src/common/image_resolver.js"></script>
+  <script src="src/common/ruby_dictionary.js"></script>
+  <script src="src/common/ruby_kuromoji.js"></script>
+
+  <!-- ジェネレーター -->
+  <script src="src/generators/lesson_plan_docx.js"></script>
+  <script src="src/generators/slide_html.js"></script>
+  <script src="src/generators/homework_html.js"></script>
+
+  <!-- Activity 専用 UI ブロック (各 required activity の専用 UI 生成モジュール)
+       _shared.js を必ず最初に読む。activity_html.js は最後 (ハブ)。 -->
+  <script src="src/generators/activity_blocks/_shared.js"></script>
+  <script src="src/generators/activity_blocks/roulette.js"></script>
+  <script src="src/generators/activity_blocks/memory_matching.js"></script>
+  <script src="src/generators/activity_blocks/vocab_bingo.js"></script>
+  <script src="src/generators/activity_blocks/whiteboard_categorize.js"></script>
+  <script src="src/generators/activity_blocks/grammar_auction.js"></script>
+  <script src="src/generators/activity_blocks/battleship.js"></script>
+  <script src="src/generators/activity_blocks/person_guessing_quiz.js"></script>
+  <script src="src/generators/activity_blocks/personality_quiz.js"></script>
+  <script src="src/generators/activity_blocks/hajimemashite_conversation.js"></script>
+  <script src="src/generators/activity_html.js"></script>
+
+  <!-- オーケストレーション -->
+  <script src="src/main.js"></script>
+
+  <!-- フォーム UI -->
+  <script src="src/ui/form.js"></script>
+</body>
+</html>

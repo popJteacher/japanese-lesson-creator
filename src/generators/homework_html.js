@@ -1,0 +1,958 @@
+/**
+ * homework_html.js
+ * -----------------------------------------------------------------------------
+ * 学習者が自宅で自習する宿題 HTML を生成する。
+ * 単一の自己完結型 HTML(CSS/JS インライン)を返すので、ローカルでも
+ * GitHub Pages でも開ける。
+ *
+ * 入力 (ctx): main.js の processSessionFile が組み立てるオブジェクト
+ *   - session, lesson, lessonsByNo, activityCatalog, imageRegistry, audioRegistry
+ *   - resolvedFlow, flowMeta, hasRequiredActivity
+ *
+ * 出力: HTML テキストの Blob (text/html;charset=utf-8)
+ *
+ * 設計判断:
+ *   - スライドと違って 1 ページスクロール式(ナビなし)
+ *   - フォーム入力欄(穴埋め・チェック)は学習者が直接記入できる
+ *   - localStorage 保存はしない(自宅で使い切りの想定。Step 2 で検討)
+ *   - ふりがなトグル、共通 design_tokens を埋め込み(Stage 1 既知問題 #9)
+ *   - 画像 URL は Google Drive を lh3.googleusercontent.com に正規化(#1)
+ *
+ * v0.2 (2026-05-15):
+ *   - lesson_NN.json v2.11+ の語彙 imageId="word_X" 体系に対応
+ *     (旧 'vocab_X' プレフィックス参照を全廃)
+ *   - patterns[].practiceImageSource による練習問題画像の分岐
+ *     - "vocabulary"            → word.imageId (1:1語彙画像)
+ *     - "namedCharacters"       → namedCharacters[].imageId
+ *     - "namedCharacters+vocab" → 人物imageId と建物imageIdを横並び
+ *   - 音声ボタン(audioRegistry 経由・audioUrl があれば再生、null ならグレーアウト)
+ *   - 画像フォールバック: imgUrl が null を返したら空枠表示(エラーにしない)
+ */
+'use strict';
+
+(function () {
+  if (typeof window === 'undefined') return;
+
+  // 共通 design tokens — slide_html.js と完全に同一値を保持(#9)
+  const DESIGN_TOKENS_CSS = `
+:root {
+  --color-background-primary: #FAF8F0;
+  --color-background-subtle:  #F5EFE0;
+  --color-background-surface: #FFFFFF;
+  --color-text-main:     #1B2C40;
+  --color-text-subtle:   #6B7C85;
+  --color-text-muted:    #8A95A0;
+  --color-ui-primary:       #7090B0;
+  --color-ui-primary-hover: #5A7A9A;
+  --color-ui-primary-dark:  #1B2C40;
+  --color-ui-accent:        #E0B040;
+  --color-ui-accent-muted:  #FAEEDA;
+  --color-pos-noun-text:   #1B2C40;
+  --color-pos-noun-bg:     #E8E5DC;
+  --color-pos-noun-border: #1B2C40;
+  --font-family-sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  /* 宿題は手元の端末(PC/タブレット/スマホ)で読むので、スライドより一段小さい固定値を採用 */
+  --font-size-title:   2rem;     /* 32px */
+  --font-size-h2:      1.5rem;   /* 24px */
+  --font-size-h3:      1.25rem;  /* 20px */
+  --font-size-body:    1.125rem; /* 18px */
+  --font-size-small:   0.95rem;
+  --font-size-caption: 0.8rem;
+  /* ふりがな (#2): em 単位は ruby 内のブラウザ既定スタイルで意図せず膨らむため、
+     必ず rem 固定値で「本文より明らかに小さい」サイズを保証する */
+  --font-size-ruby:    0.7rem;   /* 11.2px (本文 18px の約 62%) */
+  --line-height-normal: 1.7;
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;
+  --font-weight-bold:    700;
+  --border-radius-small:  8px;
+  --border-radius-medium: 12px;
+  --border-radius-large:  14px;
+  --shadow-default: 0 2px 12px rgba(27, 44, 64, 0.10);
+}
+`;
+
+  const FONT_IMPORT = `@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');`;
+
+  // 宿題固有 CSS
+  const HOMEWORK_CSS = `
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  background: var(--color-background-primary);
+  color: var(--color-text-main);
+  font-family: var(--font-family-sans);
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-body);
+}
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px 120px;
+}
+
+/* ── ふりがな (#2 #3 #4 対策) ──
+   #2: rt は本文に対して常に 50% (em) で表示。
+       絶対値だと本文サイズが異なる箇所 (語彙カード vs 説明文) で
+       ふりがなの相対サイズが揃わないため em に統一。 */
+ruby { ruby-position: over; }
+ruby rt {
+  font-size: 0.5em;
+  color: inherit;             /* #4: 本文と同じ色 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1;
+}
+ruby rp { display: none; }
+body.no-ruby ruby rt,
+body.no-ruby ruby rp { display: none; }   /* #3: 完全に消す */
+
+/* 英語トグル — トグル対象の英語要素は必ず .en-text を付ける。
+   .en / .sentence-en / .name-en は装飾用クラスとしてのみ使い、トグル判定には使わない。
+   単語カードのように常時表示したい英語は .en-text を付けない。
+   デフォルト body は no-en (英語非表示)。 */
+body.no-en .en-text { display: none !important; }
+
+/* ヒントラベルトグル — 練習問題の画像ラベル(.hint-cell-label) を表示/非表示切替。
+   デフォルトは表示(見える状態)。学習者がボタンで隠して自分で答えを書く想定。 */
+body.hide-labels .hint-cell-label { display: none; }
+
+/* ── 表紙 ── */
+.cover {
+  background: var(--color-background-surface);
+  padding: 24px;
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-default);
+  margin-bottom: 32px;
+  border-left: 6px solid var(--color-ui-accent);
+}
+.cover h1 {
+  font-size: var(--font-size-title);
+  margin: 0 0 16px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+}
+.cover .meta {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px 12px;
+  font-size: var(--font-size-small);
+  color: var(--color-text-subtle);
+}
+.cover .meta dt {
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+}
+.cover .meta dd {
+  margin: 0;
+  color: var(--color-text-main);
+}
+.cover .name-input {
+  width: 200px; padding: 4px 8px;
+  border: 1px solid var(--color-text-muted);
+  border-radius: var(--border-radius-small);
+  font-family: inherit; font-size: inherit;
+  background: var(--color-background-subtle);
+}
+
+/* ── セクション ── */
+section.lesson-section { margin-bottom: 40px; }
+section.lesson-section h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 4px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--color-ui-accent);
+}
+/* セクション見出し直下に置く英語サブタイトル(アクティビティ HTML 説明文と同等のサイズ感)。 */
+section.lesson-section .section-h2-en {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+}
+section.lesson-section h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  margin: 24px 0 4px;
+  color: var(--color-ui-primary-dark);
+}
+section.lesson-section .section-h3-en {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin: 0 0 12px;
+}
+section.lesson-section p { margin: 0 0 12px; }
+
+/* ── can-do カード ── */
+.can-do {
+  background: var(--color-ui-accent-muted);
+  border-radius: var(--border-radius-medium);
+  padding: 16px 20px;
+  margin: 0 0 20px;
+}
+.can-do .label {
+  font-size: var(--font-size-caption);
+  color: var(--color-ui-primary-dark);
+  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-bold);
+  display: block;
+  margin-bottom: 6px;
+}
+.can-do .can-do-en {
+  display: block;
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ── 例文ブロック (一覧) ── */
+.example-list { display: grid; gap: 12px; }
+.example-row {
+  background: var(--color-background-surface);
+  border-radius: var(--border-radius-medium);
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: auto 1fr 80px;
+  gap: 16px;
+  align-items: center;
+  box-shadow: var(--shadow-default);
+}
+.example-row .no {
+  font-size: var(--font-size-caption);
+  color: var(--color-ui-primary-dark);
+  background: var(--color-ui-accent-muted);
+  padding: 4px 10px;
+  border-radius: var(--border-radius-small);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+.example-row .text .sentence {
+  font-weight: var(--font-weight-medium);
+}
+.example-row .text .en {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+.example-row img {
+  width: 80px; height: 80px;
+  object-fit: contain;
+  background: var(--color-background-subtle);
+  border-radius: var(--border-radius-small);
+}
+.example-row .img-fallback {
+  width: 80px; height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-background-subtle);
+  border-radius: var(--border-radius-small);
+  font-size: 2rem; color: var(--color-text-muted);
+}
+
+/* ── 練習問題 ── */
+.exercise-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.exercise {
+  background: var(--color-background-surface);
+  padding: 16px 20px;
+  border-radius: var(--border-radius-medium);
+  margin: 0 0 16px;
+  box-shadow: var(--shadow-default);
+}
+.exercise .question {
+  font-size: var(--font-size-body);
+  margin-bottom: 8px;
+}
+.exercise .hint {
+  display: block;
+  font-size: var(--font-size-small);
+  color: var(--color-text-subtle);
+  margin-top: 6px;
+}
+.exercise input[type="text"] {
+  display: inline-block;
+  width: 8em; padding: 2px 6px;
+  border: none; border-bottom: 2px solid var(--color-ui-primary);
+  background: var(--color-background-subtle);
+  font: inherit;
+  border-radius: 4px 4px 0 0;
+}
+.exercise input[type="text"]:focus { outline: 2px solid var(--color-ui-accent); }
+
+/* ── 画像ヒント型練習問題 ── */
+.exercise.hint-exercise {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 12px;
+  margin: 0;
+}
+/* 画像エリア。1枚 or 2枚(横並び) どちらも対応 */
+.exercise.hint-exercise .hint-images {
+  display: flex; flex-direction: row;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+.exercise.hint-exercise .hint-images .hint-cell {
+  flex: 1 1 0;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  min-width: 0;
+}
+.exercise.hint-exercise .hint-images .hint-cell-label {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+.exercise.hint-exercise .hint-images .hint-plus {
+  flex: 0 0 auto;
+  font-size: 1.5rem;
+  color: var(--color-text-muted);
+  padding: 0 4px;
+}
+.exercise.hint-exercise .hint-img,
+.exercise.hint-exercise .img-fallback {
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--color-background-subtle);
+  border-radius: var(--border-radius-small);
+  display: block;
+}
+/* 1枚のみのときの単独画像はやや大きく */
+.exercise.hint-exercise .hint-images.single .hint-img,
+.exercise.hint-exercise .hint-images.single .img-fallback {
+  max-width: 200px;
+}
+.exercise.hint-exercise .img-fallback {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; color: var(--color-text-muted);
+}
+.exercise.hint-exercise .question {
+  text-align: center;
+  margin: 0;
+}
+
+/* ── 音声ボタン ── */
+.audio-btn {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-ui-primary);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background .15s ease, opacity .15s ease;
+  flex-shrink: 0;
+}
+.audio-btn:hover:not(:disabled) { background: var(--color-ui-primary-hover); }
+.audio-btn:disabled,
+.audio-btn.disabled {
+  background: var(--color-background-subtle);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.audio-btn-inline {
+  width: 28px; height: 28px; font-size: .9rem;
+  margin-left: 6px;
+}
+
+/* ── 語彙チェック (画像を大きく) ── */
+.vocab-check {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.vocab-check .vocab-item {
+  background: var(--color-background-surface);
+  border-radius: var(--border-radius-medium);
+  padding: 16px;
+  /* 縦並びにして画像を大きく */
+  display: flex; flex-direction: column; gap: 10px; align-items: center;
+  box-shadow: var(--shadow-default);
+  text-align: center;
+}
+.vocab-check .vocab-item img {
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--color-background-subtle);
+  border-radius: var(--border-radius-small);
+}
+.vocab-check .vocab-item .img-fallback {
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 1;
+  background: var(--color-background-subtle);
+  border-radius: var(--border-radius-small);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; color: var(--color-text-muted);
+}
+.vocab-check .vocab-item .word {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-h3);
+}
+.vocab-check .vocab-item .en {
+  display: block;
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+/* ── 振り返りチェックリスト ── */
+.reflect ul { list-style: none; padding: 0; margin: 0; }
+.reflect li {
+  background: var(--color-background-surface);
+  border-radius: var(--border-radius-medium);
+  padding: 12px 16px;
+  margin: 0 0 10px;
+  display: flex; gap: 12px; align-items: flex-start;
+  box-shadow: var(--shadow-default);
+}
+.reflect li input[type="checkbox"] {
+  margin-top: 4px;
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── 上部固定ツールバー ── */
+.toolbar {
+  position: sticky; top: 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-background-subtle);
+  padding: 8px 12px;
+  display: flex; gap: 12px; align-items: center;
+  z-index: 100;
+  margin: 0 -20px 20px;
+}
+.toolbar button {
+  font-family: var(--font-family-sans);
+  font-size: 0.95rem;
+  padding: 6px 14px;
+  background: var(--color-background-surface);
+  color: var(--color-text-main);
+  border: 2px solid var(--color-ui-primary);
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  min-height: 40px;
+}
+.toolbar button.off {
+  background: var(--color-background-subtle);
+  color: var(--color-text-muted);
+  border-color: var(--color-text-muted);
+}
+.toolbar .en-toggle.off {
+  background: var(--color-background-subtle);
+  color: var(--color-text-muted);
+  border-color: var(--color-text-muted);
+}
+.toolbar .meta {
+  margin-left: auto;
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+@media print {
+  .toolbar { display: none; }
+  body { background: #fff; }
+  main { padding-top: 0; }
+}
+`;
+
+  // インライン JS (ふりがなトグル + プリント + 音声再生)
+  const INLINE_JS = `
+(function(){
+  var btn = document.getElementById('ruby-toggle');
+  if (btn) {
+    btn.addEventListener('click', function(){
+      document.body.classList.toggle('no-ruby');
+      btn.classList.toggle('off');
+      btn.textContent = document.body.classList.contains('no-ruby') ? 'ふりがな OFF' : 'ふりがな ON';
+    });
+  }
+  var ebtn = document.getElementById('en-toggle');
+  if (ebtn) {
+    ebtn.addEventListener('click', function(){
+      document.body.classList.toggle('no-en');
+      ebtn.classList.toggle('off');
+      ebtn.textContent = document.body.classList.contains('no-en') ? '英語 OFF' : '英語 ON';
+    });
+  }
+  /* ヒントラベル(画像下の人物名/語彙名)の表示/非表示トグル。
+     デフォルトは表示(body に .hide-labels なし)。クリックで切り替える。 */
+  var hbtn = document.getElementById('hint-toggle');
+  if (hbtn) {
+    hbtn.addEventListener('click', function(){
+      var hidden = document.body.classList.toggle('hide-labels');
+      hbtn.textContent = hidden ? '💡 ヒントを見る' : '💡 ヒントを隠す';
+    });
+  }
+  var pbtn = document.getElementById('print');
+  if (pbtn) pbtn.addEventListener('click', function(){ window.print(); });
+
+  /* 音声再生: audio-btn[data-src] をクリックしたら HTMLAudioElement で再生。
+     data-src が空(audioUrl=null)のボタンは disabled なのでここに到達しない。 */
+  document.querySelectorAll('.audio-btn[data-src]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var src = b.getAttribute('data-src');
+      if (!src) return;
+      try {
+        var a = new Audio(src);
+        a.play().catch(function(err){
+          console.warn('[homework] audio play failed:', err && err.message);
+        });
+      } catch (e) {
+        console.warn('[homework] audio init failed:', e && e.message);
+      }
+    });
+  });
+})();
+`;
+
+  // ── HTML エスケープ ─────────────────────────────────────────────────
+  function esc(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ふりがな化 — kuromoji 全漢字 ruby を優先、なければ辞書ベースにフォールバック
+  function ruby(text) {
+    if (text == null) return '';
+    if (window.RubyKuromoji && typeof window.RubyKuromoji.rubify === 'function') {
+      return window.RubyKuromoji.rubify(text);
+    }
+    if (window.RubyDict && typeof window.RubyDict.rubifySentence === 'function') {
+      return window.RubyDict.rubifySentence(text);
+    }
+    return esc(text);
+  }
+
+  // grammarConcept (snake_case 英語) と jlptLevel から表示用の英語ラベルを合成する。
+  // patterns データに canDo の英訳は無いので、文型紹介としてこの英語を併記する。
+  function formatGrammarConcept(concept, jlptLevel) {
+    if (!concept && !jlptLevel) return '';
+    const parts = (concept || '').split('_').filter(Boolean);
+    const modifierWords = new Set(['affirmative', 'negative', 'question', 'past', 'present', 'plain', 'polite', 'continuous', 'perfect']);
+    const main = [];
+    const mods = [];
+    for (const p of parts) {
+      if (modifierWords.has(p)) mods.push(p);
+      else main.push(p);
+    }
+    const cap = (w) => w ? w[0].toUpperCase() + w.slice(1) : '';
+    const mainPart = main.length ? main.map((w, i) => i === 0 ? cap(w) : w).join('-') : '';
+    const modsPart = mods.length ? ` (${mods.join(', ')})` : '';
+    const lvl = jlptLevel ? `${mainPart ? ' — ' : ''}${jlptLevel}` : '';
+    return `${mainPart}${modsPart}${lvl}`.trim();
+  }
+
+  // Google Drive URL を <img> から表示できる形に正規化(#1)
+  function normalizeImageUrl(url, sizeHint) {
+    if (typeof url !== 'string') return url;
+    let m = url.match(/^https?:\/\/drive\.google\.com\/uc\?(?:[^#]*&)?id=([\w-]+)/);
+    if (m) return `https://lh3.googleusercontent.com/d/${m[1]}=w${sizeHint || 512}`;
+    m = url.match(/^https?:\/\/drive\.google\.com\/thumbnail\?(?:[^#]*&)?id=([\w-]+)/);
+    if (m) return `https://lh3.googleusercontent.com/d/${m[1]}=w${sizeHint || 512}`;
+    m = url.match(/^https?:\/\/drive\.google\.com\/file\/d\/([\w-]+)/);
+    if (m) return `https://lh3.googleusercontent.com/d/${m[1]}=w${sizeHint || 512}`;
+    return url;
+  }
+
+  function imgUrl(imageId, registry, sizeHint) {
+    if (!imageId) return null;
+    if (window.ImageResolver && typeof window.ImageResolver.resolveImageUrl === 'function') {
+      const u = window.ImageResolver.resolveImageUrl(imageId, { registry });
+      return u ? normalizeImageUrl(u, sizeHint) : null;
+    }
+    return null;
+  }
+
+  /** 音声 URL 解決。
+   *  audioRegistry.entries[audioId].audioUrl を返す。
+   *  audioId が無い・registry が無い・entry が無い・audioUrl が null
+   *  のいずれでも null を返す(呼び出し側でグレーアウトに分岐)。 */
+  function audioUrlOf(audioId, audioRegistry) {
+    if (!audioId || !audioRegistry) return null;
+    const entries = audioRegistry.entries || audioRegistry;
+    const entry = entries && entries[audioId];
+    if (!entry) return null;
+    return entry.audioUrl || null;
+  }
+
+  /** 画像 <img>/フォールバック生成。url が null/空なら .img-fallback で空枠を出す。 */
+  function imgHtml(url, alt, extraClass) {
+    const cls = extraClass || 'hint-img';
+    if (url) {
+      return `<img class="${cls}" src="${esc(url)}" alt="${esc(alt || '')}" loading="eager" decoding="async" onerror="this.outerHTML='&lt;span class=img-fallback&gt;🖼️&lt;/span&gt;'">`;
+    }
+    return `<span class="img-fallback">🖼️</span>`;
+  }
+
+  /** 音声ボタン生成。url が null/空なら disabled でグレーアウト。 */
+  function audioBtnHtml(audioUrl, label, extraClass) {
+    const cls = 'audio-btn' + (extraClass ? ' ' + extraClass : '');
+    if (audioUrl) {
+      return `<button type="button" class="${cls}" data-src="${esc(audioUrl)}" title="${esc(label || '音声を聞く')}" aria-label="${esc(label || '音声を聞く')}">🔊</button>`;
+    }
+    return `<button type="button" class="${cls} disabled" disabled title="${esc(label || '音声未収録')}" aria-label="${esc(label || '音声未収録')}">🔇</button>`;
+  }
+
+  // ── セクション組み立て ──────────────────────────────────────────────
+  function buildCover(session, lesson) {
+    const s = session.session || {};
+    const l = lesson.lesson || {};
+    return `
+      <div class="cover">
+        <h1>${ruby('第' + (l.no || '?') + '課')} 宿題 — ${ruby(l.title || '')}</h1>
+        <dl class="meta">
+          <dt>テーマ</dt><dd>${ruby(l.topic || '')}</dd>
+          <dt>日付</dt><dd>${esc(s.date || '—')}</dd>
+          <dt>学習者</dt><dd>${esc(s.studentId || '')}</dd>
+          <dt>名前</dt><dd><input class="name-input" type="text" placeholder="（自分の名前を書く）"></dd>
+        </dl>
+      </div>
+    `;
+  }
+
+  /** vocabulary.byPattern からこの文型用の語彙を集める。
+   *  shareVocabWith があれば優先して参照先の文型を見る。 */
+  function collectVocabForPattern(lesson, pat) {
+    const refPid = pat.shareVocabWith || pat.id;
+    const groups = Object.values(lesson.vocabulary && lesson.vocabulary.byPattern || {})
+      .filter((g) => (g.patternIds || []).includes(refPid));
+    return groups.flatMap((g) => g.words || []);
+  }
+
+  /** practiceTemplate の '＿＿' を <input> に置換した HTML を作る。
+   *  kuromoji の ruby 化と衝突しないよう、私用領域文字でプレースホルダー → ruby 後に戻す。 */
+  function renderTemplate(tplText) {
+    if (!tplText) return '';
+    const PH_INPUT = '';
+    const withPh = tplText.replace(/[_＿]{2,}/g, PH_INPUT);
+    const rubied = ruby(withPh);
+    return rubied.split(PH_INPUT).join('<input type="text" placeholder="">');
+  }
+
+  /** 1 つの練習エクササイズの HTML を組み立てる。
+   *  images: [{ url, alt, label? }] の配列。1 件 → 単独画像、2 件 → 横並びで「＋」結合。
+   *  audioUrl: 音声 URL or null (null は disabled ボタン)。
+   *  audioLabel: ツールチップ用ラベル。 */
+  function exerciseHtml({ index, images, templateHtml, audioUrl, audioLabel }) {
+    const isPair = images.length >= 2;
+    const wrapperCls = 'hint-images' + (isPair ? '' : ' single');
+    let imagesHtml = '';
+    if (isPair) {
+      imagesHtml = `
+        <div class="${wrapperCls}">
+          <div class="hint-cell">
+            ${imgHtml(images[0].url, images[0].alt)}
+            ${images[0].label ? `<span class="hint-cell-label">${ruby(images[0].label)}</span>` : ''}
+          </div>
+          <span class="hint-plus">＋</span>
+          <div class="hint-cell">
+            ${imgHtml(images[1].url, images[1].alt)}
+            ${images[1].label ? `<span class="hint-cell-label">${ruby(images[1].label)}</span>` : ''}
+          </div>
+        </div>
+      `;
+    } else if (images.length === 1) {
+      imagesHtml = `
+        <div class="${wrapperCls}">
+          <div class="hint-cell">
+            ${imgHtml(images[0].url, images[0].alt)}
+            ${images[0].label ? `<span class="hint-cell-label">${ruby(images[0].label)}</span>` : ''}
+          </div>
+        </div>
+      `;
+    } else {
+      imagesHtml = `<div class="${wrapperCls}"><span class="img-fallback">🖼️</span></div>`;
+    }
+    return `
+      <div class="exercise hint-exercise">
+        ${imagesHtml}
+        <div class="question">
+          <strong>${index}.</strong> ${templateHtml}
+          ${audioBtnHtml(audioUrl, audioLabel, 'audio-btn-inline')}
+        </div>
+      </div>
+    `;
+  }
+
+  /** patterns[].practiceImageSource に応じて練習問題群の HTML を生成する。
+   *   - "vocabulary"            : 語彙 1 件ごと 1 問 (画像: word.imageId)
+   *   - "namedCharacters"       : 名前付きキャラ 1 件ごと 1 問 (画像: char.imageId)
+   *   - "namedCharacters+vocab" : 人物 × 建物 のペア (画像 2 つ横並び)
+   *   - 未指定                  : 後方互換で "vocabulary" として扱う */
+  function buildExercisesFor(pat, lesson, registryEntries, audioRegistry) {
+    const tpl = (pat.practiceTemplates || [])[0];
+    if (!tpl || !tpl.pattern) return '';
+    const templateHtml = renderTemplate(tpl.pattern);
+    const source = pat.practiceImageSource || 'vocabulary';
+
+    if (source === 'namedCharacters' || source === 'namedCharacters+vocab') {
+      const chars = (lesson.namedCharacters || []);
+      if (chars.length === 0) return '';
+
+      if (source === 'namedCharacters') {
+        return chars.map((c, i) => exerciseHtml({
+          index: i + 1,
+          images: [{
+            url: imgUrl(c.imageId, registryEntries, 256),
+            alt: c.name || '',
+            label: c.name || '',
+          }],
+          templateHtml,
+          /* キャラクター名の音声(将来仕様・現状は audio registry に未収録 → グレーアウト) */
+          audioUrl: audioUrlOf('char_' + (c.name || '').replace('さん', ''), audioRegistry),
+          audioLabel: '人物名を聞く',
+        })).join('');
+      }
+
+      /* namedCharacters+vocab: pattern.examples の文字列を直接データソースとする(v2.11.4 修正)。
+         旧実装は namedCharacters[] と vocabulary.byPattern.p3.words[] を配列順 zip していたが、
+         配列順序の意味が無いため誤ったペア(例: 鈴木+病院, ケリー+デパート 等)になっていた。
+         例文「〇〇さんは東西XXのYYです。」から character/building/occupation を正規表現で抽出し、
+         namedCharacters[] と vocabulary[].words[] を逆引きして imageId ペアを生成する。
+
+         期待出力 (lesson_01 p3):
+           タノムさん + 病院    (ex 3-1: タノムさんは東西病院の医者です)
+           鈴木さん   + 学校    (ex 3-2: 鈴木さんは東西学校の先生です)
+           キムさん   + 銀行    (ex 3-3: キムさんは東西銀行の会社員です)
+           リンさん   + 大学    (ex 3-4: リンさんは東西大学の学生です)
+           キムさん   + デパート (ex 3-5: キムさんは東西デパートの会社員です)
+      */
+      const RE_AFFIL = /^(\S+?)さんは(?:東西)?(\S+?)の(\S+?)です。?$/;
+      const buildings = collectVocabForPattern(lesson, pat);
+      const out = [];
+      let n = 0;
+      for (const ex of (pat.examples || [])) {
+        const m = (ex.sentence || '').match(RE_AFFIL);
+        if (!m) continue;
+        const charNameShort = m[1];   /* 例: '鈴木' / 'リン' / 'タノム' (さん の前まで) */
+        const buildingWord  = m[2];   /* 例: '病院' / '学校' (東西 を除いた語彙名) */
+        /* m[3] は職業だが、今回は画像/imageId 解決に使わない(将来の追加情報として保持可) */
+
+        const charObj = chars.find((c) => c && c.name && c.name.startsWith(charNameShort));
+        const buildingObj = buildings.find((w) => w && w.word === buildingWord);
+        if (!charObj || !buildingObj) continue;  /* 名前/語彙が見つからなければスキップ */
+
+        const bImgId = buildingObj.imageId || ('word_' + buildingWord);
+        n++;
+        out.push(exerciseHtml({
+          index: n,
+          images: [
+            { url: imgUrl(charObj.imageId, registryEntries, 256),
+              alt: charObj.name, label: charObj.name },
+            { url: imgUrl(bImgId, registryEntries, 256),
+              alt: buildingObj.word, label: buildingObj.word },
+          ],
+          templateHtml,
+          audioUrl: audioUrlOf(buildingObj.audioId || bImgId, audioRegistry),
+          audioLabel: '語彙の音声を聞く',
+        }));
+      }
+      return out.join('');
+    }
+
+    /* デフォルト = vocabulary: その文型(またはshareVocabWith先)の語彙 1 件ごと 1 問 */
+    const words = collectVocabForPattern(lesson, pat);
+    if (words.length === 0) return '';
+    return words.map((w, i) => {
+      const imgId = w.imageId || ('word_' + (w.word || ''));
+      return exerciseHtml({
+        index: i + 1,
+        images: [{ url: imgUrl(imgId, registryEntries, 256), alt: w.word || '', label: w.word || '' }],
+        templateHtml,
+        audioUrl: audioUrlOf(w.audioId || imgId, audioRegistry),
+        audioLabel: (w.word || '') + ' を聞く',
+      });
+    }).join('');
+  }
+
+  function buildPatternSection(t, lesson, registryEntries, audioRegistry) {
+    const pat = (lesson.patterns || []).find((p) => p.id === t.patternId);
+    if (!pat) return '';
+
+    /* 例文リスト (音声ボタンつき) */
+    const examples = (pat.examples || []).map((ex) => {
+      const url = imgUrl(ex.imageId, registryEntries, 256);
+      const audioUrl = audioUrlOf(ex.audioId || ('sentence_' + (ex.imageId || '')), audioRegistry);
+      return `
+        <div class="example-row">
+          <span class="no">${esc(ex.no || '')}</span>
+          <div class="text">
+            <div class="sentence">
+              ${ruby(ex.sentence || '')}
+              ${audioBtnHtml(audioUrl, '例文を聞く', 'audio-btn-inline')}
+            </div>
+            ${ex.sentenceEn ? `<div class="en en-text">${esc(ex.sentenceEn)}</div>` : ''}
+          </div>
+          ${imgHtml(url, ex.no || '', 'example-img')}
+        </div>
+      `;
+    }).join('');
+
+    /* 練習問題 (practiceImageSource で画像種類を分岐) */
+    const exercises = buildExercisesFor(pat, lesson, registryEntries, audioRegistry);
+
+    const labelEn = formatGrammarConcept(pat.grammarConcept, pat.jlptLevel);
+    return `
+      <section class="lesson-section">
+        <h2>${ruby('文型')} ${esc(pat.id)}: ${ruby(pat.label || pat.pattern || '')}</h2>
+        <div class="section-h2-en en-text">Pattern ${esc(pat.id)}${labelEn ? ' — ' + esc(labelEn) : ''}</div>
+
+        ${pat.canDo ? `
+        <div class="can-do">
+          <span class="label">できるようになること</span>
+          <span class="en-text" style="font-size: var(--font-size-caption); color: var(--color-text-muted); display: block; margin-bottom: 4px;">Can-do</span>
+          ${ruby(pat.canDo)}
+          ${pat.canDoEn ? `<span class="can-do-en en-text">${esc(pat.canDoEn)}</span>` : (labelEn ? `<span class="can-do-en en-text">${esc(labelEn)}</span>` : '')}
+        </div>` : ''}
+
+        ${examples ? `<h3>${ruby('例文')}を ${ruby('読')}んでみよう</h3>
+        <div class="section-h3-en en-text">Read the example sentences</div>
+        <div class="example-list">${examples}</div>` : ''}
+
+        ${exercises ? `<h3>${ruby('練習問題')} (${ruby('絵')}を ${ruby('見')}て ${ruby('文')}を ${ruby('完成')}させよう)</h3>
+        <div class="section-h3-en en-text">Practice exercises — look at the picture and complete the sentence</div>
+        <div class="exercise-list">${exercises}</div>` : ''}
+      </section>
+    `;
+  }
+
+  function buildVocabSection(lesson, session, registryEntries) {
+    const vocab = lesson.vocabulary;
+    if (!vocab || !vocab.byPattern) return '';
+    const teachIds = new Set((session.teach || []).map((t) => t.patternId));
+    const groups = Object.entries(vocab.byPattern).filter(([_, g]) =>
+      (g.patternIds || []).some((id) => teachIds.has(id))
+    );
+    if (groups.length === 0) return '';
+
+    const items = groups.flatMap(([_, group]) => group.words || []).map((w) => {
+      const url = imgUrl(w.imageId || ('word_' + (w.word || '')), registryEntries, 256);
+      const imgHtml = url
+        ? `<img src="${esc(url)}" alt="${esc(w.word)}" loading="eager" decoding="async" onerror="this.outerHTML='&lt;span class=img-fallback&gt;🖼️&lt;/span&gt;'">`
+        : `<span class="img-fallback">🖼️</span>`;
+      // 語彙カードの読み (.reading) は HTML に直書きしない。
+      // 漢字部分はふりがなトグルが管理する <ruby> 経由でのみ表示する。
+      // 単語カードの英語は英語トグルに連動して表示/非表示 (.en-text を付ける)。
+      return `
+        <div class="vocab-item">
+          ${imgHtml}
+          <div>
+            <div class="word">${ruby(w.word || '')}</div>
+            ${w.en ? `<span class="en en-text">${esc(w.en)}</span>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <section class="lesson-section">
+        <h2>${ruby('語彙')}チェック</h2>
+        <div class="section-h2-en en-text">Vocabulary check</div>
+        <p>${ruby('絵')}を ${ruby('見')}て、${ruby('言')}えるか ${ruby('確認')}しよう。</p>
+        <p class="en-text" style="font-size: var(--font-size-small); color: var(--color-text-muted); margin: -8px 0 12px;">Look at each picture and check whether you can say the word.</p>
+        <div class="vocab-check">${items}</div>
+      </section>
+    `;
+  }
+
+  function buildReflectSection(session, lessonsByNo) {
+    const teach = session.teach || [];
+    const items = teach.map((t) => {
+      const lesson = lessonsByNo[t.lessonNo];
+      const pat = lesson && (lesson.patterns || []).find((p) => p.id === t.patternId);
+      if (!pat || !pat.canDo) return '';
+      return `
+        <li>
+          <input type="checkbox" id="cd-${esc(t.patternId)}">
+          <label for="cd-${esc(t.patternId)}">
+            ${ruby(pat.canDo)}
+            ${pat.canDoEn ? `<div class="en-text" style="font-size: var(--font-size-small); color: var(--color-text-muted); margin-top: 4px;">${esc(pat.canDoEn)}</div>` : ''}
+          </label>
+        </li>
+      `;
+    }).filter(Boolean).join('');
+
+    return `
+      <section class="lesson-section reflect">
+        <h2>${ruby('振')}り${ruby('返')}り</h2>
+        <div class="section-h2-en en-text">Reflection</div>
+        <p>${ruby('今日')}できるようになったことに ${ruby('印')}をつけよう。</p>
+        <p class="en-text" style="font-size: var(--font-size-small); color: var(--color-text-muted); margin: -8px 0 12px;">Check the things you can now do.</p>
+        <ul>${items || '<li>(項目なし)</li>'}</ul>
+      </section>
+    `;
+  }
+
+  // ── 全体組み立て ─────────────────────────────────────────────────────
+  function buildHtml(ctx) {
+    const { session, lesson, lessonsByNo, imageRegistry, audioRegistry } = ctx;
+    const registryEntries = imageRegistry && imageRegistry.entries ? imageRegistry.entries : imageRegistry;
+    const s = session.session || {};
+    const l = lesson.lesson || {};
+    const title = `第${l.no || '?'}課 宿題 (${s.id || ''})`;
+
+    const teach = session.teach || [];
+    const patternSections = teach.map((t) => {
+      const sourceLesson = lessonsByNo[t.lessonNo] || lesson;
+      return buildPatternSection(t, sourceLesson, registryEntries, audioRegistry);
+    }).join('');
+
+    return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(title)}</title>
+<style>
+${FONT_IMPORT}
+${DESIGN_TOKENS_CSS}
+${HOMEWORK_CSS}
+</style>
+</head>
+<body class="no-ruby no-en">
+<main>
+  <div class="toolbar">
+    <button id="ruby-toggle" class="off" type="button">ふりがな OFF</button>
+    <button id="en-toggle" class="en-toggle off" type="button">英語 OFF</button>
+    <button id="hint-toggle" type="button">💡 ヒントを隠す</button>
+    <button id="print" type="button">印刷</button>
+    <span class="meta">${esc(title)}</span>
+  </div>
+
+  ${buildCover(session, lesson)}
+  ${buildVocabSection(lesson, session, registryEntries)}
+  ${patternSections}
+  ${buildReflectSection(session, lessonsByNo)}
+</main>
+<script>
+${INLINE_JS}
+</script>
+</body>
+</html>`;
+  }
+
+  // ── 公開 API ─────────────────────────────────────────────────────────
+  async function generate(ctx) {
+    const html = buildHtml(ctx);
+    return new Blob([html], { type: 'text/html;charset=utf-8' });
+  }
+
+  window.HomeworkHtml = {
+    generate,
+    _meta: { version: '0.2-practiceImageSource-audio', createdAt: '2026-05-15' },
+  };
+})();

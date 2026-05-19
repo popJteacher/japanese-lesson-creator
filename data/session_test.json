@@ -1,0 +1,78 @@
+{
+  "_meta": {
+    "formatVersion": "1.0",
+    "description": "Step 3 動作確認用の汎用テスト session。lesson_01 で使用可能な required activity 8 件を mainActivities に並べ、1 回の生成で全活動の専用 UI を出力させる。session_001.json はリグレッション用に温存する。",
+    "createdAt": "2026-05-15",
+    "lastModified": "2026-05-15"
+  },
+  "session": {
+    "id": "STEST",
+    "no": 999,
+    "studentId": "T",
+    "date": "2026-05-15",
+    "duration": 90,
+    "status": "planned",
+    "note": "Step 3 専用 UI 検証用"
+  },
+  "teach": [
+    { "lessonNo": 1, "patternId": "p1", "isNew": true },
+    { "lessonNo": 1, "patternId": "p2", "isNew": true },
+    { "lessonNo": 1, "patternId": "p3", "isNew": true }
+  ],
+  "review": [],
+  "flow": [
+    {
+      "type": "intro",
+      "stage": "導入",
+      "minutes": 3,
+      "materials": "スライド",
+      "content": "テスト用 session。Step 3 で実装した 8 件の専用 UI を確認する。"
+    },
+    {
+      "type": "pattern",
+      "stage": "文型①",
+      "lessonNo": 1,
+      "patternId": "p1",
+      "minutes": 5,
+      "materials": "スライド・絵カード",
+      "content": "p1 文型説明 (テスト)"
+    },
+    {
+      "type": "wrapUp",
+      "stage": "まとめ",
+      "minutes": 5,
+      "materials": "",
+      "content": "テスト用"
+    }
+  ],
+  "activity": {
+    "proposerEnabled": false,
+    "proposalCount": 0,
+    "selectedId": null,
+    "engine": "gemini"
+  },
+  "mainActivities": [
+    { "lessonNo": 1, "flowId": "main_act_1", "activityId": "act_memory_matching" },
+    { "lessonNo": 1, "flowId": "main_act_2", "activityId": "act_vocab_bingo" },
+    { "lessonNo": 1, "flowId": "main_act_3", "activityId": "act_whiteboard_categorize" },
+    { "lessonNo": 1, "flowId": "main_act_4", "activityId": "act_grammar_auction" },
+    { "lessonNo": 1, "flowId": "main_act_5", "activityId": "act_battleship" },
+    { "lessonNo": 1, "flowId": "main_act_6", "activityId": "act_person_guessing_quiz" },
+    { "lessonNo": 1, "flowId": "main_act_7", "activityId": "act_personality_quiz" },
+    { "lessonNo": 1, "flowId": "main_act_8", "activityId": "act_hajimemashite_conversation" }
+  ],
+  "output": {
+    "titlePrefix": "STEST",
+    "studentIdInFilename": "T",
+    "files": [
+      "studentT_STEST_スライド.html",
+      "studentT_STEST_教案.docx",
+      "studentT_STEST_アクティビティ.html",
+      "studentT_STEST_宿題.html"
+    ],
+    "github": {
+      "upload": false,
+      "subfolder": "sessions"
+    }
+  }
+}

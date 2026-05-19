@@ -1,0 +1,63 @@
+/* ============================================================================
+ * fonts_imports.css
+ * ----------------------------------------------------------------------------
+ * 全課共通のフォント読み込み定義。
+ * Google Fonts 経由で Zen Kaku Gothic New をインポートする。
+ *
+ * 生成元: /design_tokens.json v1.1 typography.fontImport.googleFontsUrl
+ * 生成日: 2026-05-12 (Stage 1 タスク 7)
+ *
+ * 確定方針(design_tokens.json v1.1 _meta.confirmedDecisions.fontPolicy):
+ * - F1: サンセリフ統一(Serif 廃止、Zen Kaku Gothic New に統一)
+ *
+ * ウェイト構成(design_tokens.json typography.fontWeight より):
+ * - 400 (regular): 本文
+ * - 500 (medium):  強調
+ * - 700 (bold):    タイトル
+ *
+ * 重要:
+ * 1. このファイルは shared/slide/template.html や shared/homework/template.html の
+ *    <head> 内で <link> または <style> から @import する。
+ * 2. @import は CSS パース時に直列ロードされるため、可能なら HTML 側の
+ *    <link rel="preconnect"> + <link rel="stylesheet"> を併用するのが望ましい
+ *    (HTMLテンプレ側で実装、Stage 1 タスク 9/10)。
+ * 3. font-display: swap は Google Fonts URL のクエリパラメータ(&display=swap)で
+ *    指定済み。資料10 推奨: フォント読み込み中も FOUT(Flash of Unstyled Text)を
+ *    許容して可読性を優先する(FOIT より UX 良)。
+ *
+ * フォールバック順序(design_tokens.css --font-family-sans):
+ * Zen Kaku Gothic New → Hiragino Sans (macOS) → Yu Gothic (Windows) → sans-serif
+ *
+ * 参照資料:
+ * - 資料1: スライドデザインResearch.docx (サンセリフ統一・可読性)
+ * - 資料10: HTML教材実装ベストプラクティス調査.docx (font-display: swap)
+ *
+ * 関連ファイル:
+ * - shared/common/design_tokens.css (--font-family-sans 変数定義)
+ * ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
+
+/* ----------------------------------------------------------------------------
+ * 全体フォント適用
+ * ----------------------------------------------------------------------------
+ * :root に font-family を設定することで、すべての要素が継承する。
+ * 個別要素で上書きしたい場合は、各 styles.css で var(--font-family-sans) を
+ * 明示的に指定する(design_tokens.css で定義済み)。
+ * ---------------------------------------------------------------------------- */
+:root {
+  font-family: var(--font-family-sans);
+}
+
+body {
+  font-family: var(--font-family-sans);
+}
+
+/* ============================================================================
+ * END OF fonts_imports.css
+ * ----------------------------------------------------------------------------
+ * このファイルを編集する前に:
+ * 1. design_tokens.json v1.1 typography.fontFamily / fontImport を SSOT として更新
+ * 2. 本ファイルと design_tokens.css を再生成
+ * 3. SKILL.md v1.4 §伝播チェーンルール 起点 D に従い下流確認
+ * ============================================================================ */

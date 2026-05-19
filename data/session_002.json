@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "formatVersion": "1.0",
+    "description": "Step 1 検証用: hasRequiredActivity を true にして 4 ファイル生成 (教案 docx + スライド HTML + 宿題 HTML + アクティビティ HTML) を確認するためのテスト session。session_001 と同じく第1課 p1 を教える設定 + act_online_roulette を main activity に追加。",
+    "createdAt": "2026-05-13"
+  },
+
+  "session": {
+    "id":        "S002",
+    "no":        2,
+    "studentId": "B",
+    "date":      "2026-05-13",
+    "duration":  50,
+    "status":    "planned",
+    "note":      "act_online_roulette + lesson1Example で hasRequiredActivity を true にする"
+  },
+
+  "teach": [
+    {
+      "lessonNo":  1,
+      "patternId": "p1",
+      "isNew":     true
+    },
+  { "lessonNo": 1, "patternId": "p2", "isNew": true },
+  { "lessonNo": 1, "patternId": "p3", "isNew": true }
+  ],
+
+  "review": [],
+
+  "mainActivities": [
+    {
+      "activityId":  "act_online_roulette",
+      "useExample":  "lesson1Example",
+      "minutes":     12,
+      "materialNeeds": []
+    }
+  ],
+
+  "activity": {
+    "proposerEnabled": false,
+    "selectedId":      null,
+    "engine":          "gemini"
+  },
+
+  "output": {
+    "titlePrefix":         "S002",
+    "studentIdInFilename": "B"
+  }
+}
