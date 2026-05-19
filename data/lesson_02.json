@@ -1,13 +1,13 @@
 {
   "_meta": {
     "formatVersion": "2.7",
-    "lessonVersion": "2.11.9",
+    "lessonVersion": "2.11.11",
     "_formatVersion_note": "lesson_01 v2.7 と統一済み（T3: 2026-05-14）。formatVersion は lesson_NN.json の schema 版数を示し、各課個別のバージョンではない。",
     "lessonStatus": "ready_for_step_2",
     "_lessonStatus_note": "ready_for_step_2: Phase 1-F 完了済み。Step 2(image_prompts_lesson2.json 設計)に進行可能。旧値 ready_for_phase1f_then_step_2 は Phase 1-F 着手前のステータスであり、Phase 1-F 完了(2026-05-11)に伴い更新。",
     "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
     "createdAt": "2026-05-11",
-    "lastModified": "2026-05-17",
+    "lastModified": "2026-05-18",
     "changes": [
       "v1.0 (2026-05-11): Step 1a 骨格作成。全6文型(p1〜p6)網羅・materialNeeds[] 付与・grammarConcept/jlptLevel/canDo を最初から記述(教科書非依存)。架空有名人キャラ(やまだまさし・すずきはなこ)を Layer 2 に追加(handoff_phase2_design_review §6-1 整合)。vocabulary は Step 1b で確定予定(現時点プレースホルダ)。examples は Step 1c で確定予定(現時点プレースホルダ)。formatVersion は lesson_01 v2.5 と同期。",
       "v1.1 (2026-05-11): Step 1b 完了。vocab_lesson2.json (draft) を生成し、vocabulary.byPattern を 4 カテゴリ・16 語で確定。patterns[].vocabCount を Step 1b 確定値に更新(p1=14, p2=10, p3=11, p4=10, p5=1, p6=1)。第1課語彙12語は既習として _inheritedFromLesson1 セクションに記録。Step 1c(examples 確定)に進行可能。",
@@ -25,127 +25,25 @@
       "v2.11.6 (2026-05-17): 例文設計原則①の厳密適用による追加修正。(1) p2: 2-2/2-3/2-4 を削除（「これは/それは/あれは」はp1要素のため）。例文1件（2-1「何ですか。」★のみ）に整理。「これは何ですか」型はpracticeTemplatesで対応。(2) p6-1: 第3文「その人はアインシュタインです」を削除（p5の完全文のため）。「どの人ですか。— この人です。★」に簡略化。総例文数: 31→28件。formatVersion 2.7 維持。",
       "v2.11.7 (2026-05-17): handoff_v2_4.md §2 の12点修正一括適用。(1) p3-4: じゃありません削除（原則④違反）→「いいえ、リンさんのかばんです。」に修正。sentenceEn更新。(2) p5.vocabCount: 1→3・_vocabCount_note更新（人・犬・写真）。(3) p6.vocabCount: 1→3・_vocabCount_note更新。(4) _step1c_check.results.all_patterns_have_examples: 実績を6/1/6/5/6/4に更新。(5) _step1c_check.results.image_marking: 計12件確定版に更新。(6) _step1c_check.results.material_usage_examples: 2-2/2-3/2-4参照を削除・現行例文番号に更新。(7) _step1a_completionChecklist.vocabulary: 全18語確定に更新。(8) _step1a_completionChecklist.flow: 全28エントリに更新。(9) _step1c_check.results.character_layer_consistency: Layer体系廃止方針に更新。(10) _step1c_check.results.pattern_core_coverage: 現行例文件数・修正内容に更新。formatVersion 2.7 維持。",
       "v2.11.8 (2026-05-17): 低〜中優先残課題適用。(1) intro_act_p5 activityId: act_picture_card_vocab_intro → act_famous_person_intro。(2) intro_act_p6 activityId: act_qa_pattern_intro → act_famous_person_intro。(3) p5 practiceTemplates: 犬・写真のパターンを追加（vocabCount=3 に整合）。formatVersion 2.7 維持。",
-      "v2.11.9 (2026-05-17): 導入アクティビティ全件照合による修正。(1) intro_act_p2 activityId: act_qa_pattern_intro → act_nani_desu_ka_intro（何ですか専用に変更）。(2) intro_act_p4 activityId: act_qa_pattern_intro → act_which_one_intro（どれですか専用に変更）。(3) main_act_1 activityId: null → act_belongings_qa・skipped: true → false（メインアクティビティ正式接続）。formatVersion 2.7 維持。"
-    ],
-    "_phase1f_handover": {
-      "_note": "v1.4 で固定キャラ概念を廃止した結果、Phase 1-F で対応すべきタスク一覧。lesson_03 作成(Phase 2-D)に進む前に必ず完了させること。",
-      "tasks": [
-        {
-          "id": "F-1",
-          "title": "lesson_01.json v2.5 → v2.6(固定キャラ廃止の遡及適用)",
-          "description": "lesson_02 v1.4 と同じ原則を lesson_01 にも適用: (1) examples 9 件の sentence の固有名詞(田中・リン・山田)を教科書原典に戻す (田中 → 鈴木/キム 等・原典確認要)、(2) 全 examples から characterId 削除、(3) characters セクション削除。"
-        },
-        {
-          "id": "F-2",
-          "title": "master_prompt_design_guide.py の CHARACTER_PROFILES 簡素化",
-          "description": "Layer 1(田中・リン・ケリー)/ Layer 2(山田・佐藤)の固定外見定義を削除。代わりに『role_based_generic_profiles』を新設し、『先生役の generic 人物』『学生役の generic 人物』『医者役の generic 人物』等の 役割ベースの簡素なプロファイルに置換する。character_lock_phrase は廃止(画像の人物一貫性は求めない)。"
-        },
-        {
-          "id": "F-3",
-          "title": "SKILL.md v1.3 改訂",
-          "description": "(1) 固定キャラ廃止の方針明記(Layer 1/2/3 概念削除)、(2) 時間概念の責務分離明文化(handoff_phase2_C_step1b_completed §4 申し送り対応)、(3) 正規フロー Step 1a の characters[] 設計手順削除、(4) 改訂履歴に v1.3 エントリ追加。"
-        },
-        {
-          "id": "F-4",
-          "title": "handoff_phase1_F_completed.md 作成",
-          "description": "Phase 1-F 完了報告書。Phase 2-D(lesson_03 以降)への申し送り情報を記録。"
-        }
-      ],
-      "previous_characters_backup": {
-        "previous_characters": {
-          "_comment": "第2課に登場する人物。master_prompt_design_guide.py の CHARACTER_PROFILES から ID を参照する。第1課キャラを継承し、第2課で初登場の架空有名人(やまだまさし・すずきはなこ)を Layer 2 に追加。これらは Phase 1-F で CHARACTER_PROFILES に正式追加予定(申し送り)。Layer 1 = 主要キャラ(田中・リン・ケリー)、Layer 2 = 職業特化(山田・佐藤・やまだまさし・すずきはなこ)、Layer 3 = generic(役者として流用)。",
-          "named_characters": [
-            {
-              "id": "田中先生",
-              "characterId": "田中先生",
-              "layer": "primary",
-              "role": "先生",
-              "introduction": "第1課から継続登場。第2課では p3(所有)・p5/p6(指示連体詞)で会話の主役として登場可。",
-              "appearsIn": [
-                "p3",
-                "p5",
-                "p6"
-              ]
-            },
-            {
-              "id": "リンさん",
-              "characterId": "リンさん",
-              "layer": "primary",
-              "role": "学生",
-              "introduction": "第1課から継続登場。教科書例文『リンさんのペンはどれですか』(2-4)に登場。p4 の主役。",
-              "appearsIn": [
-                "p3",
-                "p4"
-              ]
-            },
-            {
-              "id": "ケリーさん",
-              "characterId": "ケリーさん",
-              "layer": "primary",
-              "role": "外国人(学習者の代表)",
-              "introduction": "第1課から継続登場。第2課では学習者役として p3/p4 の Q&A 練習に登場可。",
-              "appearsIn": [
-                "p3",
-                "p4"
-              ]
-            },
-            {
-              "id": "やまだまさし",
-              "characterId": "やまだまさし",
-              "layer": "role_specific",
-              "role": "架空の有名スポーツ選手(サッカー選手)",
-              "introduction": "第2課で初登場・PDF教科書記述『アインシュタインなど世界的な有名人・政治家・スター』に該当する架空キャラ。著作権配慮のため実在人物を避け架空キャラを採用(Q2 確定)。p5/p6 の主役。",
-              "appearsIn": [
-                "p5",
-                "p6"
-              ],
-              "_phase1f_note": "master_prompt_design_guide.py の CHARACTER_PROFILES への正式追加は Phase 1-F 申し送り。"
-            },
-            {
-              "id": "すずきはなこ",
-              "characterId": "すずきはなこ",
-              "layer": "role_specific",
-              "role": "架空の有名歌手・タレント",
-              "introduction": "第2課で初登場・やまだまさしと並ぶ架空有名人。p5/p6 で複数の有名人写真を見せる場面に登場。",
-              "appearsIn": [
-                "p5",
-                "p6"
-              ],
-              "_phase1f_note": "master_prompt_design_guide.py の CHARACTER_PROFILES への正式追加は Phase 1-F 申し送り。"
-            }
-          ],
-          "generic_characters": [
-            {
-              "id": "generic_male_adult",
-              "layer": "generic",
-              "role": "図1〜4 の領域対立図に登場する話し手・聞き手の役",
-              "appearsIn": [
-                "p1"
-              ]
-            },
-            {
-              "id": "generic_female_adult",
-              "layer": "generic",
-              "role": "図1〜4 の領域対立図に登場する話し手・聞き手の役",
-              "appearsIn": [
-                "p1"
-              ]
-            }
-          ],
-          "deprecated_characters": [
-            {
-              "name": "アインシュタイン",
-              "originalSource": "日本語の教え方ABC 第2課 2-5「この・その・あの」導入例",
-              "replacedBy": "やまだまさし(架空のスポーツ選手)",
-              "reason": "Q2 確定: 実在の有名人(アインシュタイン)は著作権・肖像権の問題があるため、架空の有名人キャラに置換。教科書本文では『アインシュタインなど世界的な有名人・政治家・スターの写真または似顔絵』とされており、教育的本質は『学習者に知名度のある有名人』を使う点にあるため、架空キャラでも同等の教育効果が得られる。"
-            }
-          ],
-          "layer_strategy_note": "本第2課も ABC ベース(物語性なし)のため、Layer 1 で世界観を補う設計。第1課で導入した田中・リン・ケリーを引き続き使用し、第2課で初登場のキャラ(やまだまさし・すずきはなこ)は Layer 2 として職業ロール(架空有名人)を担当。Layer 3 (generic_*) は領域対立図(図1〜4)の役者として流用。"
-        },
-        "removalReason": "v1.4: 固定キャラ概念廃止(選択肢X 確定)。ABC 教科書は物語性のない教材であり、課マスターは文法軸で管理する設計に統一。lesson_NN.json の characters セクションは 全課で廃止される。Phase 1-F で lesson_01 v2.6 にも同じ修正を適用予定。"
+      "v2.11.9 (2026-05-17): 導入アクティビティ全件照合による修正。(1) intro_act_p2 activityId: act_qa_pattern_intro → act_nani_desu_ka_intro（何ですか専用に変更）。(2) intro_act_p4 activityId: act_qa_pattern_intro → act_which_one_intro（どれですか専用に変更）。(3) main_act_1 activityId: null → act_belongings_qa・skipped: true → false（メインアクティビティ正式接続）。formatVersion 2.7 維持。",
+      {
+        "version": "2.11.10",
+        "date": "2026-05-18",
+        "changes": [
+          "A-1: materialNeeds type 統一 (special_diagram/special_comparison_table → special_slide)",
+          "A-2: A-4ルール reusedFrom 対称化 (intro_act_p3/p4 に追加)",
+          "A-3: _meta._phase1f_handover を除去 (lesson_01固有の引き継ぎ記録)"
+        ]
       },
-      "post_phase1f_action": "Phase 1-F 完了後、Phase 2-C Step 2 (image_prompts_lesson2.json 設計) に進行可能。Step 2 では Phase 1-F で確定した role_based_generic_profiles を使用して画像生成。"
-    }
+      {
+        "version": "2.11.11",
+        "date": "2026-05-18",
+        "changes": [
+          "C-4: _step1c_check.results.missing_examples_review 文言修正（p4 4-3「どちら」はplusAlphaではなくexamples[]に収録済みである旨を実態に合わせて訂正）",
+          "画像化対象マーク補完: ex_L02_022/025/026/028 の _comment に【画像化対象】マークを追加（image_prompts_lesson2_v2_0 との整合）"
+        ]
+      }
+    ]
   },
   "lesson": {
     "no": 2,
@@ -551,7 +449,7 @@
           "_note": "PDF記述: 『窓から見えるものを指して、「あれはABCビルです」などと言って、「あれ」の使い方を理解させる。初めは室内にあるものより、窓から見えるもので、皆が共通に知っているもの、市役所・病院などの公共の建物、山などを利用して練習するとよい』(p.029)。オンライン授業では実物が見えないため、スライド代用が必須。"
         },
         {
-          "type": "special_diagram",
+          "type": "special_slide",
           "description": "話し手と聞き手の領域対立図(図1: これ/それ、図2: これ/これ、図3: それ/それ、図4: あれ/あれ)。話者・聞き手の関係性を視覚化する概念図。",
           "_note": "PDF p.027 に図示。DL第2課参照あり。導入は図1(対立)を基本とし、図2・図3(共有)はプラスαとして余裕があれば紹介。図4は『あれ』導入時に使用。"
         }
@@ -589,12 +487,12 @@
       "content": "『これ/それ/あれ + は + N + です』の構造を板書。領域図を再確認しながらモデル→リピート。",
       "materialNeeds": [
         {
-          "type": "special_diagram",
+          "type": "special_slide",
           "description": "領域図(intro_act_p1 で使用したものを再利用)。",
           "reusedFrom": "intro_act_p1"
         },
         {
-          "type": "special_comparison_table",
+          "type": "special_slide",
           "description": "こそあど一覧表(もの・名詞修飾・場所・方向・様態・方法 の 6 列 × 4 行)。本課で導入するのは『もの』と『名詞修飾』のみだが、全体像を見せるための一覧表。",
           "_note": "PDF p.026 に表として明記。第2課で本格的に扱うのは2列のみだが、教師ノートで全体像を見せる。"
         }
@@ -731,7 +629,8 @@
         {
           "type": "teacher_real_object",
           "description": "教師のかばん・学習者の持ち物(かばん・本など)。マンツーマンの場合は教師の物と学習者(オンライン上)の物を活用。",
-          "_note": "PDF記述: 『自分のかばんを指して』『学習者Bの本を手に取ってBに聞く』(p.030)。オンライン授業では、教師の持ち物 + 学習者にカメラで自分の物を見せてもらう形式。"
+          "_note": "PDF記述: 『自分のかばんを指して』『学習者Bの本を手に取ってBに聞く』(p.030)。オンライン授業では、教師の持ち物 + 学習者にカメラで自分の物を見せてもらう形式。",
+          "reusedFrom": "intro_act_p1"
         }
       ],
       "ABCactivityRef": {
@@ -815,7 +714,8 @@
         {
           "type": "teacher_real_object",
           "description": "4〜5本のペン(学習者から集める想定だが、マンツーマンでは教師が4-5本用意)。『どれ』導入時に並べて使用。",
-          "_note": "PDF記述: 『4、5人の学習者のペンを集めて』(p.031)。マンツーマンでは教師の手元に複数のペンを並べる形に調整。"
+          "_note": "PDF記述: 『4、5人の学習者のペンを集めて』(p.031)。マンツーマンでは教師の手元に複数のペンを並べる形に調整。",
+          "reusedFrom": "intro_act_p1"
         },
         {
           "type": "special_handout",
@@ -947,7 +847,7 @@
       "content": "『この/その/あの + N + は + N + です』の構造を板書。指示連体詞のあとには必ず名詞がつくことを明示。『これ/それ/あれ』と並べて整理板書する。",
       "materialNeeds": [
         {
-          "type": "special_comparison_table",
+          "type": "special_slide",
           "description": "『これ/それ/あれ』と『この/その/あの+N』の対比表。指示代名詞と指示連体詞の違いを視覚化。",
           "_note": "PDF記述: 『「この・その・あの」を「これ・それ・あれ」と並べて、整理して板書する。「この・その・あの」のあとには必ず名詞がつくことを板書で示す』(p.032)"
         }
@@ -1600,7 +1500,7 @@
               "replacementNote": "v2.11.5: Aさん → キムさん（namedCharacters）に置換。"
             }
           ],
-          "_comment": "教科書例文のキャラ・物バリエーション。キムさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。"
+          "_comment": "教科書例文のキャラ・物バリエーション。キムさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。【画像化対象】"
         },
         {
           "no": "4-3",
@@ -1740,7 +1640,7 @@
               "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により『すずきはなこ』→ アインシュタインに戻す。PDF p.031 では T-促し型(*の人は〜)で L 発話として教科書に提示されている。"
             }
           ],
-          "_comment": "p5 代表例文(その+N)。聞き手のそばにある写真を指す想定。PDF p.031 では T が手を学習者のほうに差し出して発話を促した結果の L 発話。画像は 5-1 と同じアインシュタイン画像を使い回す(同一人物を異なる方向から指す場面)。"
+          "_comment": "p5 代表例文(その+N)。聞き手のそばにある写真を指す想定。PDF p.031 では T が手を学習者のほうに差し出して発話を促した結果の L 発話。画像は 5-1 と同じアインシュタイン画像を使い回す(同一人物を異なる方向から指す場面)。【画像化対象】"
         },
         {
           "no": "5-3",
@@ -1762,7 +1662,7 @@
               "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により『田中先生』→ アインシュタインに戻す。PDF 直接記載はないが、p.031『*の人は〜』テンプレート(*=こ/そ/あ)を p.032『あの〜は〜です』導入文脈と統合した拡張形として正当化。"
             }
           ],
-          "_comment": "p5 代表例文(あの+N)。話し手と聞き手の双方から離れた位置の人物を指す。PDF 直接記載なしの統合解釈拡張。画像は 5-1/5-2 と同じアインシュタイン画像を使い回す (距離・指示方向の違いを領域対立図 p.027 のように演出)。"
+          "_comment": "p5 代表例文(あの+N)。話し手と聞き手の双方から離れた位置の人物を指す。PDF 直接記載なしの統合解釈拡張。画像は 5-1/5-2 と同じアインシュタイン画像を使い回す (距離・指示方向の違いを領域対立図 p.027 のように演出)。【画像化対象】"
         },
         {
           "no": "5-4",
@@ -1908,7 +1808,7 @@
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_028",
           "isAnchor": false,
-          "_comment": "物への適用例。p3（所有）＋p6（どのN）の統合。ケリーさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。p4「どれ」との違いを教師が解説（どれ=単独/どの＋N=名詞明示）。"
+          "_comment": "p6-2: 物への適用例。p3（所有）＋p6（どのN）の統合。ケリーさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。p4「どれ」との違いを教師が解説（どれ=単独/どの＋N=名詞明示）。【画像化対象】"
         },
         {
           "no": "6-3",
@@ -2013,7 +1913,7 @@
       "image_marking": "✅ 各 example の _comment に『画像化対象』マークを明記(計12件確定: p1: 1-1/1-4/1-7 / p3: 3-1 / p4: 4-1/4-4 / p5: 5-1/5-4/5-6 / p6: 6-1/6-3/6-4)",
       "original_sources": "✅ 教科書由来例文 9 件に originalSources[] を付与: 1-1/1-4/1-7(p1)/2-1(p2)/3-1/3-2/3-5(p3)/4-1(p4)/5-1/5-2/5-3(p5)/6-1(p6)。各 textbookRef・replacementNote 記入済み。",
       "character_layer_consistency": "✅ v2.11.5以降の固定キャラ廃止方針に準拠。Layer 1/2/3 体系は廃止済み。新規作成例文はnamedCharacters（鈴木/リン/キム/タノム/ケリー）を使用。教科書原典例文はoriginalSourcesで追跡。",
-      "missing_examples_review": "✅ 不足する例文の追加検討完了: p4 に plusAlpha『どちら』を 1 例追加(4-3)、p3 に省略形『わたしのです』を追加(3-5)、p6 に物適用例を追加(6-2)。SKILL.md チェックリスト全項目クリア。"
+      "missing_examples_review": "✅ 不足する例文の追加検討完了: p4 に『どちら』例文(4-3)を examples[] に収録（教科書原典例文のため plusAlpha ではなく examples[] に配置・SKILL 原則② 構造上の必然に該当）、p3 に省略形『わたしのです』を追加(3-5)、p6 に物適用例を追加(6-2)。SKILL.md チェックリスト全項目クリア。"
     },
     "_post_step_action": "[v2.11.5] Step 2(image_prompts_lesson2.json 設計)で画像化対象の例文を登録する。削除例文(ex_L02_002/005/006/014)はmaster_image_registry.jsonでstatus:outdatedに変更すること。新規追加例文(ex_L02_029〜035)はimage_prompts_lesson2.jsonに追加すること。",
     "_v1_3_pdf_verification": {

@@ -125,16 +125,18 @@
 
 **v1.2（2026-05-17 更新）**。文型導入前の語彙・文型導入アクティビティのカタログ。`activity_catalog.json`（メインアクティビティ）とは**別ファイル**で管理する。
 
-### 登録済みエントリ（6件）
+### 登録済みエントリ（8件）
 
-| activityId | 活動名 | layout |
-|---|---|---|
-| `act_picture_card_vocab_intro` | 絵カードによる語彙・基本文型導入 | `character_card_grid` |
-| `act_qa_pattern_intro` | 絵カードによる疑問文・応答導入（はい/いいえ型のみ） | `qa_card_pair` |
-| `act_possession_intro` | モデル文拡張による所属・修飾の導入 | `attribute_expansion` |
-| `act_famous_person_intro` | 有名人カードによるこそあど導入 | `famous_person_card` |
-| `act_nani_desu_ka_intro` | 意外な実物を使った「何ですか」導入（wh疑問） | `mystery_object_reveal` |
-| `act_which_one_intro` | 複数の実物から1つを特定する「どれですか」導入 | `multiple_objects_selection` |
+| activityId | 活動名 |
+|---|---|
+| `act_picture_card_vocab_intro` | 絵カードによる語彙・基本文型導入 |
+| `act_qa_pattern_intro` | 絵カードによる疑問文・応答導入 |
+| `act_attribute_modeling_intro` | モデル文拡張による所属・修飾の導入 |
+| `act_kosoado_object_intro` | 実物・絵カードによるこそあど語彙導入 |
+| `act_possession_intro` | 持ち物・所有表現の導入（〜の〜） |
+| `act_famous_person_intro` | 有名人写真による指示連体詞・疑問詞の導入（この/その/あの＋どの） |
+| `act_nani_desu_ka_intro` | 意外な実物を使った「何ですか」導入（wh疑問） |
+| `act_which_one_intro` | 複数の実物から1つを特定する「どれですか」導入 |
 
 > **注意**：`act_qa_pattern_intro` は「〜ですか / はい・いいえ」クローズド疑問文専用。wh疑問（何ですか）には `act_nani_desu_ka_intro`、選択疑問（どれですか）には `act_which_one_intro` を使う。
 
@@ -225,6 +227,10 @@
 
 文型ブロック構造（v2.11 以降）：`intro_act_pN → pattern_pN → example_pN → practice_pN` を各文型分繰り返す。
 `example_pN` / `practice_pN` は `patternRef` で対象文型を指定する。
+
+> **`_meta` バージョン管理フィールド名（実態から確定）：**
+> - 課マスター（lesson_NN.json）のバージョンフィールドは `lessonVersion`（`lessonVer` ではない）
+> - カタログ系 JSON の更新日フィールドは `lastModified`（`lastUpdated` ではない）
 
 ---
 

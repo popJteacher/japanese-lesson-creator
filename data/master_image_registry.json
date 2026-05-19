@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "1.9",
+    "version": "2.0",
     "createdAt": "2026-05-10",
-    "lastUpdated": "2026-05-17",
+    "lastUpdated": "2026-05-18",
     "purpose": "全課横断の画像登録簿。同一素材の重複生成を防ぐ SSOT。lesson_NN.json の materialNeeds[].imageRef が参照する。",
     "primaryKeyRules": {
       "auto_generated_vocab": "vocab_{word}  例: vocab_医者",
@@ -1867,6 +1867,146 @@
       "slot": "p6 例文(どの+写真)・画像化対象",
       "status": "pending",
       "images": []
+    },
+    "ex_L02_015": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "これはわたしのかばんです。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 アンカー例文。所有表現「わたしの〜」。v2.11.10で新規追加。"
+    },
+    "ex_L02_016": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "それはリンさんのかばんです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有表現「Nさんの〜」。v2.11.10で新規追加。"
+    },
+    "ex_L02_017": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有確認Q&A。v2.11.10で新規追加。"
+    },
+    "ex_L02_018": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有確認 否定応答。v2.11.10で新規追加。"
+    },
+    "ex_L02_019": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "わたしのです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有省略形。v2.11.10で新規追加。"
+    },
+    "ex_L02_020": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。会話形式・定型表現含む。v2.11.10で新規追加。"
+    },
+    "ex_L02_021": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p4",
+      "sentence": "リンさんのペンはどれですか。— それです。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p4 アンカー例文。どれ疑問文。v2.11.10で新規追加。"
+    },
+    "ex_L02_022": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p4",
+      "sentence": "キムさんのかばんはどれですか。— これです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p4 例文。どれ疑問文（かばん）。v2.11.10で新規追加。"
+    },
+    "ex_L02_023": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p4",
+      "sentence": "タノムさんの本はどちらですか。— こちらです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p4 例文。どちら（教科書原典）。v2.11.10で新規追加。"
+    },
+    "ex_L02_024": {
+      "type": "vocab_person_card",
+      "lesson": 2,
+      "patternRef": "p5",
+      "sentence": "この人はアインシュタインです。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p5 アンカー例文。この人。アインシュタイン風フィクションキャラ。v2.11.10で新規追加。"
+    },
+    "ex_L02_025": {
+      "type": "vocab_person_card",
+      "lesson": 2,
+      "patternRef": "p5",
+      "sentence": "その人はアインシュタインです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p5 例文。その人。ex_L02_024 と同一画像を流用予定。v2.11.10で新規追加。"
+    },
+    "ex_L02_026": {
+      "type": "vocab_person_card",
+      "lesson": 2,
+      "patternRef": "p5",
+      "sentence": "あの人はアインシュタインです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p5 例文。あの人。ex_L02_024 と同一画像を流用予定。v2.11.10で新規追加。"
+    },
+    "ex_L02_027": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p6",
+      "sentence": "どの人ですか。— この人です。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p6 アンカー例文。どの+N（人）。v2.11.10で新規追加。"
+    },
+    "ex_L02_028": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p6",
+      "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p6 例文。どの+N（かばん）。v2.11.10で新規追加。"
     }
   }
 }

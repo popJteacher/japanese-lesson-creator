@@ -1,7 +1,7 @@
 {
   "_meta": {
     "formatVersion": "2.7",
-    "lessonVersion": "1.0",
+    "lessonVersion": "1.1",
     "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
     "createdAt": "2026-05-05",
     "lastModified": "2026-05-15",
