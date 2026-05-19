@@ -1,0 +1,762 @@
+{
+  "_TEMPLATE_GUIDE": {
+    "version": "1.2",
+    "basedOn": "lesson_01.json v2.11.4 (formatVersion 2.7)",
+    "usage": [
+      "1. このファイルをコピーして lesson_NN.json にリネームする",
+      "2. 【要入力】マークのフィールドを全て埋める",
+      "3. 【任意】マークのフィールドは不要なら削除または空配列[]にする",
+      "4. _GUIDE / _TEMPLATE_GUIDE フィールドは作業後に削除してよい",
+      "5. パターン数に合わせて patterns[] と flow[] の文型ブロックを増減する",
+      "6. 完成後、本ファイル内の postCompletionChecklist を実施する"
+    ],
+    "fieldMarkers": {
+      "【要入力】": "必ず値を入れる。空のままにしない。",
+      "【任意】": "不要なら削除または空配列[]にしてよい。",
+      "null": "初期値null。GASパイプラインが自動入力するか、意図的にnull。",
+      "[]": "空配列。内容は課ごとに追加。"
+    },
+    "patternCountGuidance": {
+      "2パターンの課": "p3ブロックをflow[]とpatterns[]の両方から削除する。vocabulary.byPatternのp3グループも削除する。",
+      "4パターン以上の課": "p4ブロック(flow4エントリ + patterns1エントリ)をp3と同じ構造でコピーして追加する。"
+    },
+    "postCompletionChecklist": [
+      "□ 全【要入力】が埋まっている",
+      "□ patterns[]の全エントリにcanDoEn・practiceImageSource・isAnchorが設定されている",
+      "□ patterns[]の全examples[]にaudioId・isAnchorが設定されている",
+      "□ isAnchor:trueは各パターン1件のみ",
+      "□ 全vocabulary.words[]のimageIdが word_* 命名規則に従っている",
+      "□ 全examples[]のimageIdが ex_LNN_NNN 形式になっている",
+      "□ 全audioIdがmaster_audio_registry.jsonに予約エントリとして追加されている",
+      "□ 全imageIdがmaster_image_registry.jsonに追加されている",
+      "□ 新出語彙がruby_dictionary.jsに追加されている",
+      "□ namedCharacters[]のchar_*がmaster_image_registry.jsonに存在する"
+    ]
+  },
+
+  "_meta": {
+    "formatVersion": "2.7",
+    "lessonVersion": "1.0",
+    "description": "各課の設定ファイル(教育設計系 SSOT)。このファイルを編集するだけで全教材(スライド・宿題・アクティビティ・教案)の内容が変わる。",
+    "createdAt": "【要入力: YYYY-MM-DD】",
+    "lastModified": "【要入力: YYYY-MM-DD】",
+    "changes": []
+  },
+
+  "lesson": {
+    "no": "【要入力: 課番号(整数) 例) 3】",
+    "title": "【要入力: 例) 名詞 / 形容詞 / 動詞】",
+    "topic": "【要入力: 例) 名詞(人物・職業・所属)】",
+    "level": "【要入力: 例) 初級前半(Lv.1) / 初級後半(Lv.2)】",
+    "target": "【要入力: 例) 完全初心者(ひらがな学習済み)、年齢混在(子ども・中高生・大学生・社会人)、マンツーマン・オンライン】",
+    "_recommendedDuration": 50,
+    "_recommendedDuration_note": "標準授業時間(分)の目安値(reference only)。session_NNN.json の session.duration で実時間を指定する(session 値が常に優先)。",
+    "grammarMemo": {
+      "_note": "教師が文法上の注意点を集約するメモ。teacher_notes(教案docx)生成時に参照される。教科書本文の逐語コピーは行わないが、複数の参考文献を統合した教師の解釈・要約は推奨される。",
+      "general": "【要入力: この課の文法上の制約・導入範囲・指導ポイントを記述する】",
+      "teacherNotes": "",
+      "_teacherNotes_note": "教師個人のメモ欄。授業を重ねて気づいたこと等を自由記述。空文字列のまま渡してよい。",
+      "_references_note": "参考文献は複数記述可。typeは textbook(教科書) または research(研究資料・論文)。不要な行は削除する。",
+      "references": [
+        {
+          "label": "【要入力: 例) 日本語の教え方ABC 第N課 文法知識の整理】",
+          "type": "textbook"
+        },
+        {
+          "label": "【任意: 研究資料がある場合 例) 資料12 日本語初級文型習得の難易度カーブ設計】",
+          "type": "research"
+        }
+      ]
+    }
+  },
+
+  "textbook_sources": [
+    {
+      "id": "【要入力: 教科書略称 例) ABC / MINNA / GENKI】",
+      "name": "【要入力: 教科書正式名称】",
+      "publisher": null,
+      "lesson": "【要入力: 課番号(整数)】",
+      "section": "【要入力: 例) 第1課: 自己紹介】",
+      "isPrimary": true,
+      "narrativeStyle": "【要入力: non_narrative または narrative】",
+      "_narrativeStyle_note": "non_narrative: 課ごとに単発キャラ登場(ABCなど) / narrative: 物語連続性あり(みんなの日本語・げんき等)。narrativeの場合はexamples[].sentenceの固有名詞を教科書原典に従わせる。",
+      "_comment": "画像生成は固有名詞と切り離しgenericフラットベクター人物で表現する。教科書を切り替える場合はこのエントリを書き換えるだけでよい。"
+    }
+  ],
+  "textbook_compatibility_note": "複数教科書対応はtextbook_sources[]に追加エントリを入れることで管理する。固有名詞の差異は各examples[].originalSourcesで個別に追跡する。",
+
+  "vocabulary": {
+    "_comment": "【要入力: この課の採用語彙の概要 例) 第N課の採用語彙。XX語。】",
+    "totalWords": "【要入力: 語彙総数(整数)】",
+    "readingNotation": "ひらがな(学習者向け表示と統一)",
+    "byPattern": {
+      "_GUIDE_byPattern": [
+        "グループキー名はpatternIdの組み合わせで命名する。例: p1_p2 / p1_p2_nationality / p3",
+        "グループ数は2つに限らない。語彙の性質ごとに自由に追加できる(lesson_01は p1_p2 / p1_p2_nationality / p3 の3グループ)。",
+        "同じ語彙を複数のパターンで使う場合(shareVocabWith)は、同じグループにpatternIdsを複数列挙する。",
+        "imageId命名規則: word_語彙名 (例: word_医者)。master_image_registry.jsonへの追加必須。",
+        "audioId命名規則: word_語彙名 (例: word_医者)。master_audio_registry.jsonへの追加必須。",
+        "_jlptLevel_note はグループ単位の任意フィールド。JLPTレベルの判定根拠を補足する場合に使う。不要なら削除する。"
+      ],
+      "p1_p2": {
+        "patternIds": ["p1", "p2"],
+        "vocabCount": "【要入力: このグループの語彙数(整数)】",
+        "description": "【要入力: このグループの説明 例) 文型①②で使用する職業語彙】",
+        "_jlptLevel_note": "【任意: JLPTレベルの判定根拠を補足する場合に記述。不要なら削除する。】",
+        "words": [
+          {
+            "word": "【要入力: 語彙(漢字/カナ)】",
+            "reading": "【要入力: ひらがな読み】",
+            "en": "【要入力: 英訳】",
+            "jlptLevel": "【要入力: N5 / N4 / N3 / N2 / N1】",
+            "isFirstAppearance": true,
+            "_isFirstAppearance_note": "この課で初めて登場する語彙はtrue。前課までに既習の語彙はfalse。",
+            "vocabType": "vocabulary_card",
+            "imageRole": "【要入力: vocab_person / vocab_object / vocab_place のいずれか】",
+            "_imageRole_note": "人物→vocab_person / 建物・物体→vocab_object / 場所・空間→vocab_place",
+            "imageId": "【要入力: word_語彙名 例) word_医者】",
+            "audioId": "【要入力: word_語彙名 例) word_医者】",
+            "_pdfSource": "【任意: PDF記述の根拠 例) PDF p.5 教え方の例1 教師モデル発話「鈴木さんは日本人です」】",
+            "_note": "【任意: 採用理由・注意点等のメモ 例) v2.10新規追加。学生との対比で導入。】"
+          }
+        ]
+      },
+      "p3": {
+        "patternIds": ["p3"],
+        "vocabCount": "【要入力】",
+        "description": "【要入力: 例) 文型③で使用する所属機関の語彙】",
+        "words": [
+          {
+            "word": "【要入力】",
+            "reading": "【要入力】",
+            "en": "【要入力】",
+            "jlptLevel": "【要入力】",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "【要入力: vocab_person / vocab_object / vocab_place】",
+            "imageId": "【要入力: word_語彙名】",
+            "audioId": "【要入力: word_語彙名】",
+            "_pdfSource": "【任意】",
+            "_note": "【任意】"
+          }
+        ]
+      }
+    },
+    "deprecation_note": "【任意: 元になったdraft語彙ファイルがある場合にその由来と採用語彙のSSOTを記録する。draftが無い場合はこのフィールドごと削除する。例) vocab_lessonN.json は Goi_List.pdf 由来のdraft。採用語彙のSSOTは本セクションのXX語。】"
+  },
+
+  "flow": [
+    {
+      "id": "review",
+      "type": "review",
+      "stage": "復習",
+      "_recommendedMinutes": 0,
+      "_recommendedMinutes_note": "目安値(reference only)。session_NNN.json で実時間を指定する。",
+      "enabled": false,
+      "optional": true,
+      "skipped": true,
+      "sourceLesson": null,
+      "_sourceLesson_note": "第2課以降はskipped:falseにして、復習対象の課番号(整数)を入れる。",
+      "patterns": [],
+      "materials": "スライド",
+      "_note": "第1課はskipped:true。第2課以降はenabled:true・skipped:false・sourceLesson:課番号に変更する。materialNeedsはreview typeのschema規則により付与しない。"
+    },
+    {
+      "id": "intro_slide",
+      "type": "intro_slide",
+      "stage": "導入(スライド)",
+      "_recommendedMinutes": 3,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "今日のテーマ・学習目標を提示する。",
+      "_materialNeeds_note": "intro_slide typeはmaterialNeeds付与対象外(schema規則)。"
+    },
+
+    {
+      "_GUIDE": "── 文型ブロック p1 ── intro_activity → pattern → example → practice の4エントリが1セット。",
+      "id": "intro_act_p1",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p1)",
+      "patternRef": "p1",
+      "activityId": "【要入力: intro_activity_catalog.jsonのactivityId】",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": true,
+      "skipped": false,
+      "materials": "【要入力: 例) 絵カード / スライド】",
+      "_assignmentNote": "教師が授業準備時に変更・スキップ可。intro_activity_catalog.jsonから別activityIdを選択して差し替え可能。",
+      "materialNeeds": [
+        {
+          "_GUIDE_materialNeeds": [
+            "type選択肢: auto_generated_vocab / named_character_card / special_slide / special_handout / teacher_photo / none",
+            "  auto_generated_vocab : AI生成の語彙・場面イラスト。keywords[]/count/imageRef/usedAlsoIn[]を付与できる。",
+            "  named_character_card : 名前付き人物カード。characters[]でキャラクター名を列挙する。",
+            "  special_slide       : 地図・比較表・モデル会話など特殊スライド。",
+            "  special_handout     : 学習者配布物。",
+            "  teacher_photo       : 教師が自分で用意する写真・印刷物。",
+            "  none                : 板書のみ・素材不要の場合。",
+            "reusedFrom  : 別のflow entryで作成した素材をここでも使う場合にそのflow.idを指定する。",
+            "usedAlsoIn[]: この素材を他のflow entryでも使う場合にそのflow.idを列挙する。",
+            "_note       : PDF記述やsurveyデータの根拠を記録する。"
+          ],
+          "type": "auto_generated_vocab",
+          "description": "【要入力: この素材の説明】",
+          "keywords": ["【要入力: 語彙1】", "【要入力: 語彙2】"],
+          "count": "【要入力: 枚数(整数) 例) 7】",
+          "imageRef": "【任意: image://lessonN/context/カテゴリ名 例) image://lesson1/context/vocabulary_person】",
+          "usedAlsoIn": ["【任意: 他のflow.idを列挙 例) pattern_p1】", "【任意: 例) intro_act_p2】"],
+          "_note": "【任意: PDF記述の根拠 例) PDF記述: 「人物の絵カードを見せながら語彙を導入」】"
+        },
+        {
+          "_GUIDE": "named_character_cardが必要な場合のエントリ例。不要なら削除する。",
+          "type": "named_character_card",
+          "description": "【要入力: 例) 名前付き人物絵カード。p1での人物・職業・国籍導入に使用。】",
+          "characters": ["【キャラクター名1(さんあり)】", "【キャラクター名2(さんあり)】"],
+          "usedAlsoIn": ["【任意: 他のflow.id】"],
+          "_note": "【任意: PDF根拠】"
+        },
+        {
+          "_GUIDE": "special_slideが必要な場合のエントリ例。不要なら削除する。",
+          "type": "special_slide",
+          "description": "【要入力: 例) 国旗付き世界地図スライド。学習者の出身国を指しながら国籍・国名を導入するために使用。】",
+          "_note": "【任意: PDF根拠】"
+        }
+      ],
+      "ABCactivityRef": {
+        "_GUIDE": "ABC教科書のアクティビティ参照。他教科書を使う場合はフィールド名ごと変更してよい。",
+        "activityName": "【要入力】",
+        "fadingStage": "【要入力: 例) stage1 / stage1〜2 / stage2〜3】",
+        "taskType": "【要入力: 例) 語彙提示・リピート / 応答練習(Q&A) / 自由対話】",
+        "playerSteps": [
+          { "ja": "【要入力: 学習者向け手順1(日本語)】", "en": "【要入力: English instruction 1】" },
+          { "ja": "【要入力: 学習者向け手順2(日本語)】", "en": "【要入力: English instruction 2】" },
+          { "ja": "【要入力: 学習者向け手順3(日本語)】", "en": "【要入力: English instruction 3】" }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p1",
+      "type": "pattern",
+      "stage": "文型①",
+      "patternId": "p1",
+      "_recommendedMinutes": 8,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド・絵カード",
+      "content": "【要入力: 例) 文型説明 → 語彙提示(発音練習含む)。モデル→リピート。】",
+      "materialNeeds": [
+        {
+          "type": "【要入力 or none】",
+          "description": "【要入力。板書のみで完結する場合はtype:none・description:「板書のみで完結」と記述する】",
+          "reusedFrom": "【任意: 別のflow entryの素材を再利用する場合にそのflow.idを指定 例) intro_act_p1】",
+          "_note": "【任意: PDF根拠】"
+        }
+      ]
+    },
+    {
+      "id": "example_p1",
+      "type": "example",
+      "stage": "例文まとめ (p1)",
+      "patternRef": "p1",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p1の例文を確認する。",
+      "_materialNeeds_note": "example typeはmaterialNeeds付与対象外(schema規則)。"
+    },
+    {
+      "id": "practice_p1",
+      "type": "practice",
+      "stage": "練習しよう (p1)",
+      "patternRef": "p1",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p1の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice typeのmaterialNeedsは極めて稀。口頭練習のみで完結する場合は省略可。"
+    },
+
+    {
+      "_GUIDE": "── 文型ブロック p2 ── p1と同じ4エントリ構造。",
+      "id": "intro_act_p2",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p2)",
+      "patternRef": "p2",
+      "activityId": "【要入力】",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": true,
+      "skipped": false,
+      "materials": "【要入力】",
+      "_assignmentNote": "教師が授業準備時に変更・スキップ可。",
+      "materialNeeds": [
+        {
+          "type": "【要入力】",
+          "description": "【要入力】",
+          "reusedFrom": "【任意: 例) intro_act_p1(p1の素材を再利用する場合)】",
+          "usedAlsoIn": ["【任意】"],
+          "_note": "【任意: PDF根拠】"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "【要入力】",
+        "fadingStage": "【要入力】",
+        "taskType": "【要入力】",
+        "playerSteps": [
+          { "ja": "【要入力】", "en": "【要入力】" },
+          { "ja": "【要入力】", "en": "【要入力】" },
+          { "ja": "【要入力】", "en": "【要入力】" }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p2",
+      "type": "pattern",
+      "stage": "文型②",
+      "patternId": "p2",
+      "_recommendedMinutes": 8,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド・絵カード",
+      "content": "【要入力】",
+      "materialNeeds": [
+        {
+          "type": "【要入力 or none】",
+          "description": "【要入力】",
+          "reusedFrom": "【任意】",
+          "_note": "【任意】"
+        }
+      ]
+    },
+    {
+      "id": "example_p2",
+      "type": "example",
+      "stage": "例文まとめ (p2)",
+      "patternRef": "p2",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p2の例文を確認する。",
+      "_materialNeeds_note": "example typeはmaterialNeeds付与対象外(schema規則)。"
+    },
+    {
+      "id": "practice_p2",
+      "type": "practice",
+      "stage": "練習しよう (p2)",
+      "patternRef": "p2",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p2の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice typeのmaterialNeedsは極めて稀。"
+    },
+
+    {
+      "_GUIDE": "── 文型ブロック p3 ── パターン数が2つの課はこのブロック(4エントリ)を丸ごと削除する。",
+      "id": "intro_act_p3",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p3)",
+      "patternRef": "p3",
+      "activityId": "【要入力】",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": true,
+      "skipped": false,
+      "materials": "【要入力】",
+      "_assignmentNote": "教師が授業準備時に変更・スキップ可。",
+      "materialNeeds": [
+        {
+          "type": "【要入力】",
+          "description": "【要入力】",
+          "reusedFrom": "【任意】",
+          "usedAlsoIn": ["【任意】"],
+          "_note": "【任意: PDF根拠】"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "【要入力】",
+        "fadingStage": "【要入力】",
+        "taskType": "【要入力】",
+        "playerSteps": [
+          { "ja": "【要入力】", "en": "【要入力】" },
+          { "ja": "【要入力】", "en": "【要入力】" },
+          { "ja": "【要入力】", "en": "【要入力】" }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p3",
+      "type": "pattern",
+      "stage": "文型③",
+      "patternId": "p3",
+      "_recommendedMinutes": 7,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "【要入力】",
+      "materialNeeds": [
+        {
+          "type": "【要入力 or none】",
+          "description": "【要入力】",
+          "_note": "【任意】"
+        }
+      ]
+    },
+    {
+      "id": "example_p3",
+      "type": "example",
+      "stage": "例文まとめ (p3)",
+      "patternRef": "p3",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p3の例文を確認する。",
+      "_materialNeeds_note": "example typeはmaterialNeeds付与対象外(schema規則)。"
+    },
+    {
+      "id": "practice_p3",
+      "type": "practice",
+      "stage": "練習しよう (p3)",
+      "patternRef": "p3",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p3の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice typeのmaterialNeedsは極めて稀。"
+    },
+
+    {
+      "_GUIDE": "メインアクティビティ。第1課はskipped:true。第2課以降はactivityIdを選んでskipped:falseにする。materialNeeds必須(skipped:trueでも記述する)。",
+      "id": "main_act_1",
+      "type": "main_activity",
+      "stage": "アクティビティ(メイン)",
+      "_recommendedMinutes": 0,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": true,
+      "skipped": true,
+      "activityId": "【要入力: activity_catalog.jsonのactivityId。暫定で入れておく】",
+      "materials": "(なし)",
+      "_skip_reason": "【要入力: スキップ理由 例) 第N課はアクティビティ選定を教師に委ねる】",
+      "materialNeeds": [
+        {
+          "type": "【要入力: skipped:trueでも想定素材を記述しておく】",
+          "description": "【要入力】",
+          "_note": "【任意】"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "【要入力】",
+        "fadingStage": "【要入力: 例) stage4〜5】",
+        "taskType": "【要入力: 例) 自由対話】",
+        "playerSteps": [
+          { "ja": "【要入力】", "en": "【要入力】" },
+          { "ja": "【要入力】", "en": "【要入力】" },
+          { "ja": "【要入力】", "en": "【要入力】" }
+        ]
+      }
+    },
+
+    {
+      "id": "wrapUp",
+      "type": "wrapUp",
+      "stage": "まとめ",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値(reference only)。",
+      "optional": false,
+      "skipped": false,
+      "materials": "",
+      "content": "振り返り:「今日は何が言えるようになりましたか?」宿題の説明。",
+      "_materialNeeds_note": "wrapUp typeはmaterialNeeds付与対象外(schema規則: 30課で0件の観測事実)。"
+    }
+  ],
+
+  "namedCharacters": [
+    {
+      "_GUIDE": [
+        "この課の例文に登場する名前付き人物を定義する。",
+        "lesson_01のキャラクター(鈴木/リン/キム/タノム/ケリー)は全課共通で再利用可能。再利用する場合はそのまま同じエントリを記述する。",
+        "imageId命名規則: char_氏名(さんなし) 例) char_鈴木。master_image_registry.jsonへの追加必須。",
+        "新キャラを追加する場合はmaster_prompt_design_guide_v2_5.pyのNAMED_CHARACTER_PROFILESにも追加する。"
+      ],
+      "name": "【要入力: 例) 鈴木さん (さんあり)】",
+      "occupation": "【要入力: 例) 先生】",
+      "nationality": "【要入力: 例) 日本人】",
+      "imageId": "【要入力: char_氏名(さんなし) 例) char_鈴木】"
+    }
+  ],
+
+  "patterns": [
+    {
+      "_GUIDE_pattern": [
+        "全フィールドが必須(CLAUDE.md §lesson_NN.json スキーマ要件 参照)。",
+        "canDo    : 「〜できる」形式の日本語学習目標。intro_slide・pattern・wrapUpスライドに表示される。",
+        "canDoEn  : 「Can〜」形式の英語学習目標。英語トグルON時に表示される。",
+        "grammarConcept: 教科書非依存の文法概念ID。snake_case英語。例) noun_predicate_affirmative",
+        "shareVocabWith: 別文型の語彙を流用する場合にそのpatternIdを指定。例) p2がp1語彙を使う→ 'p1'。",
+        "practiceImageSource: vocabulary / namedCharacters / namedCharacters+vocab の3択。",
+        "isAnchor : 1文型につきtrue は1件のみ。まとめスライドと宿題のアンカーに使用。",
+        "conversationPhrases[]: 文型外だが授業で自然に出るフレーズ。任意フィールド。不要なら削除する。"
+      ],
+      "id": "p1",
+      "pattern": "【要入力: 例) 〜は〜です(人物)】",
+      "label": "【要入力: スライド表示用の短い表記 例) 〜は〜です】",
+      "grammarConcept": "【要入力: snake_case英語 例) noun_predicate_affirmative】",
+      "_grammarConcept_note": "【要入力: この文法概念の説明。教科書非依存で記述する。例) NはNです の肯定文。A=B関係の名詞述語文。】",
+      "jlptLevel": "【要入力: N5 / N4 / N3 / N2 / N1】",
+      "canDo": "【要入力: 「〜できる」形式の日本語学習目標 例) 自分や他の人の名前・職業を「〜は〜です」で紹介できる。】",
+      "canDoEn": "【要入力: Can〜 形式の英語学習目標 例) Can introduce names and occupations using '~ wa ~ desu'.】",
+      "vocabCount": "【要入力: この文型で扱う語彙総数(整数)。shareVocabWithがある場合は共有元の語彙数を参照する】",
+      "shareVocabWith": null,
+      "_shareVocabWith_note": "共有しない場合はnull。p2がp1の語彙を使う場合はp2側に 'p1' と記述する。",
+      "examples": [
+        {
+          "_GUIDE": "アンカー例文(isAnchor:true)。1文型につき必ず1件・1件のみ。まとめスライド・宿題アンカーに使用。",
+          "no": "1-1",
+          "pattern": "【要入力: この例文が示す文型バリエーション 例) 〜は〜です】",
+          "vocab": "【要入力: この例文で使用する主な語彙(1語)。語彙に直接関係しない例文はnull】",
+          "sentence": "【要入力: 例文本文(日本語)】",
+          "sentenceEn": "【要入力: 例文英訳】",
+          "imageId": "【要入力: ex_LNN_NNN 形式 例) ex_L03_001】",
+          "imageRole": "【要入力: scene(16:9シーン画像) または vocab_person(1:1人物カード)】",
+          "originalSources": [
+            {
+              "textbookId": "【要入力: textbook_sourcesのid 例) ABC】",
+              "textbookName": "【要入力: 教科書名】",
+              "lesson": "【要入力: 課番号(整数)】",
+              "originalSentence": "【要入力: 教科書の原文。新規作成の場合は (新規作成) と記述する】",
+              "replacementNote": "【任意: 原文から変更した場合の理由。変更なしなら省略可】"
+            }
+          ],
+          "_comment": "【任意: 人間向けメモ。生成ロジックでは使用しない。例) p1アンカー例文。PDF p.5原典。】",
+          "audioId": "【要入力: sentence_ex_LNN_NNN 形式 例) sentence_ex_L03_001】",
+          "isAnchor": true
+        },
+        {
+          "_GUIDE": "非アンカー例文(isAnchor:false)。このエントリを複製して例文数分追加する。",
+          "no": "1-2",
+          "pattern": "【要入力】",
+          "vocab": "【要入力 or null】",
+          "sentence": "【要入力】",
+          "sentenceEn": "【要入力】",
+          "imageId": "【要入力: ex_LNN_NNN】",
+          "imageRole": "【要入力: scene / vocab_person】",
+          "originalSources": [
+            {
+              "textbookId": "【要入力】",
+              "textbookName": "【要入力】",
+              "lesson": "【要入力】",
+              "originalSentence": "【要入力】",
+              "replacementNote": "【任意】"
+            }
+          ],
+          "_comment": "【任意】",
+          "audioId": "【要入力: sentence_ex_LNN_NNN】",
+          "isAnchor": false
+        }
+      ],
+      "practiceImageSource": "【要入力: vocabulary / namedCharacters / namedCharacters+vocab のいずれか】",
+      "_practiceImageSource_guide": {
+        "vocabulary": "語彙1:1画像(word_*)を使う。語彙が視覚的に明確な場合(物・建物など)。",
+        "namedCharacters": "キャラクターカード(char_*)を使う。人物の肯定・疑問文練習の場合。",
+        "namedCharacters+vocab": "キャラクター＋語彙ペアを使う。所属(〜の〜)パターンの場合。practiceTemplatesに3空欄テンプレートを設定すること。"
+      },
+      "practiceTemplates": [
+        {
+          "_GUIDE_practiceTemplates": [
+            "practiceTemplatesは配列。1パターンに複数テンプレートを設定できる。",
+            "肯定文パターン: 通常1件。例) ＿＿＿さんは＿＿＿です。",
+            "疑問文パターン: 質問＋はい応答＋いいえ応答 の3件セットにする(下記p2例を参照)。",
+            "所属(〜の〜)パターン: 3空欄テンプレート1件。例) ＿＿＿さんは＿＿＿の＿＿＿です。",
+            "_GUIDE_practiceTemplatesフィールドは作業後に削除する。"
+          ],
+          "pattern": "【要入力: 空欄は＿＿＿で表現。例) ＿＿＿さんは＿＿＿です。】",
+          "hint": "【要入力: 空欄に入るもののヒント。例) (名前・職業/国籍)】"
+        }
+      ],
+      "conversationPhrases": [
+        {
+          "_GUIDE": "【任意フィールド】文型には含まれないが授業で自然に出るフレーズ。不要な場合はconversationPhrases[]ごと削除する。",
+          "phrase": "【要入力: フレーズ 例) 〜から来ました。】",
+          "reading": "【要入力: ひらがな読み 例) 〜からきました】",
+          "en": "【要入力: 英訳 例) I came from ~. / I'm from ~.】",
+          "example": "【要入力: 使用例 例) アメリカから来ました。】",
+          "exampleEn": "【要入力: 使用例の英訳 例) I'm from America.】",
+          "pdfSource": "【任意: PDF記述の根拠】",
+          "note": "【要入力: このフレーズの指導上の位置づけ・注意点】"
+        }
+      ],
+      "plusAlpha": [
+        "【任意: 発展的な指導ヒント・プラスα。不要なら空配列[]にする】"
+      ],
+      "cautionNote": [
+        "【任意: 指導上の注意点。不要なら空配列[]にする】"
+      ]
+    },
+    {
+      "_GUIDE_pattern": "p2エントリ。p1と全く同じフィールド構成で記述する。全フィールドを省略せずに記述すること。",
+      "id": "p2",
+      "pattern": "【要入力】",
+      "label": "【要入力】",
+      "grammarConcept": "【要入力: snake_case英語】",
+      "_grammarConcept_note": "【要入力: この文法概念の説明。教科書非依存で記述する。】",
+      "jlptLevel": "【要入力】",
+      "canDo": "【要入力】",
+      "canDoEn": "【要入力】",
+      "vocabCount": "【要入力】",
+      "shareVocabWith": "【要入力: p1語彙を共有する場合は 'p1'。共有しない場合はnull】",
+      "examples": [
+        {
+          "no": "2-1",
+          "pattern": "【要入力】",
+          "vocab": "【要入力 or null】",
+          "sentence": "【要入力】",
+          "sentenceEn": "【要入力】",
+          "imageId": "【要入力: ex_LNN_NNN】",
+          "imageRole": "【要入力: scene / vocab_person】",
+          "originalSources": [
+            {
+              "textbookId": "【要入力】",
+              "textbookName": "【要入力】",
+              "lesson": "【要入力】",
+              "originalSentence": "【要入力】",
+              "replacementNote": "【任意】"
+            }
+          ],
+          "_comment": "【任意】",
+          "audioId": "【要入力: sentence_ex_LNN_NNN】",
+          "isAnchor": true
+        },
+        {
+          "no": "2-2",
+          "pattern": "【要入力】",
+          "vocab": "【要入力 or null】",
+          "sentence": "【要入力】",
+          "sentenceEn": "【要入力】",
+          "imageId": "【要入力: ex_LNN_NNN】",
+          "imageRole": "【要入力: scene / vocab_person】",
+          "originalSources": [
+            {
+              "textbookId": "【要入力】",
+              "textbookName": "【要入力】",
+              "lesson": "【要入力】",
+              "originalSentence": "【要入力】",
+              "replacementNote": "【任意】"
+            }
+          ],
+          "_comment": "【任意】",
+          "audioId": "【要入力: sentence_ex_LNN_NNN】",
+          "isAnchor": false
+        }
+      ],
+      "practiceImageSource": "【要入力: vocabulary / namedCharacters / namedCharacters+vocab】",
+      "_practiceTemplates_note": "p2を疑問文パターンと想定した3テンプレート例。肯定文パターンなら1件に減らす。",
+      "practiceTemplates": [
+        {
+          "pattern": "【要入力: 質問テンプレート 例) ＿＿＿さんは　＿＿＿　ですか。】",
+          "hint": "【要入力: 例) (質問)】"
+        },
+        {
+          "pattern": "【要入力: 肯定応答テンプレート 例) はい、＿＿＿です。】",
+          "hint": "【要入力: 例) (肯定の答え)】"
+        },
+        {
+          "pattern": "【要入力: 否定応答テンプレート 例) いいえ、＿＿＿じゃありません。】",
+          "hint": "【要入力: 例) (否定の答え)】"
+        }
+      ],
+      "plusAlpha": [],
+      "cautionNote": []
+    },
+    {
+      "_GUIDE_pattern": "p3エントリ。パターン数が2つの課はこのエントリ全体を削除する。全フィールドをp1と同等に記述する。",
+      "id": "p3",
+      "pattern": "【要入力】",
+      "label": "【要入力】",
+      "grammarConcept": "【要入力: snake_case英語】",
+      "_grammarConcept_note": "【要入力: この文法概念の説明。教科書非依存で記述する。】",
+      "jlptLevel": "【要入力】",
+      "canDo": "【要入力】",
+      "canDoEn": "【要入力】",
+      "vocabCount": "【要入力】",
+      "shareVocabWith": null,
+      "examples": [
+        {
+          "no": "3-1",
+          "pattern": "【要入力】",
+          "vocab": "【要入力 or null】",
+          "sentence": "【要入力】",
+          "sentenceEn": "【要入力】",
+          "imageId": "【要入力: ex_LNN_NNN】",
+          "imageRole": "【要入力: scene / vocab_person】",
+          "originalSources": [
+            {
+              "textbookId": "【要入力】",
+              "textbookName": "【要入力】",
+              "lesson": "【要入力】",
+              "originalSentence": "【要入力】",
+              "replacementNote": "【任意】"
+            }
+          ],
+          "_comment": "【任意】",
+          "audioId": "【要入力: sentence_ex_LNN_NNN】",
+          "isAnchor": true
+        },
+        {
+          "no": "3-2",
+          "pattern": "【要入力】",
+          "vocab": "【要入力 or null】",
+          "sentence": "【要入力】",
+          "sentenceEn": "【要入力】",
+          "imageId": "【要入力: ex_LNN_NNN】",
+          "imageRole": "【要入力: scene / vocab_person】",
+          "originalSources": [
+            {
+              "textbookId": "【要入力】",
+              "textbookName": "【要入力】",
+              "lesson": "【要入力】",
+              "originalSentence": "【要入力】",
+              "replacementNote": "【任意】"
+            }
+          ],
+          "_comment": "【任意】",
+          "audioId": "【要入力: sentence_ex_LNN_NNN】",
+          "isAnchor": false
+        }
+      ],
+      "practiceImageSource": "【要入力: vocabulary / namedCharacters / namedCharacters+vocab】",
+      "practiceTemplates": [
+        {
+          "pattern": "【要入力】",
+          "hint": "【要入力】"
+        }
+      ],
+      "plusAlpha": [],
+      "cautionNote": []
+    }
+  ],
+
+  "github": {
+    "repo": "japanese-lesson-creator",
+    "owner": "popJteacher",
+    "branch": "main",
+    "lessonAssets": [],
+    "_lessonAssets_note": "課マスターから生成される静的アセット。課単位の静的アセットは空配列。session単位の出力ファイルはsession_NNN.jsonのoutput.filesで管理する。"
+  }
+}

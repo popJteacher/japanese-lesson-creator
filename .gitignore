@@ -23,8 +23,12 @@ data/*.js
 
 # プロジェクトナレッジ専用ファイル（claude.ai 管理・リポジトリ不要）
 SKILL*.md
-lesson_template.json
-master_prompt_design_guide*.py
-ruby_dictionary_v1_3.js
-handoff_v*.md
-audio_pipeline_handoff*.md
+
+# Python キャッシュ
+__pycache__/
+*.pyc
+
+# 旧 .gitignore は master_prompt_design_guide*.py / handoff_v*.md / 各種 *_handoff_*.md /
+# lesson_template.json / ruby_dictionary_v1_3.js を除外していたが、新プロトコル
+# （CLAUDE.md 2026-05-19）でリポジトリ管理下に移したため解除。
+# 旧版・引き継ぎは archive/ 配下に集約済（archive/ は tracked）。
