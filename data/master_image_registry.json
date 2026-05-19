@@ -2,7 +2,7 @@
   "_meta": {
     "version": "2.0",
     "createdAt": "2026-05-10",
-    "lastUpdated": "2026-05-18",
+    "lastUpdated": "2026-05-19",
     "purpose": "全課横断の画像登録簿。同一素材の重複生成を防ぐ SSOT。lesson_NN.json の materialNeeds[].imageRef が参照する。",
     "primaryKeyRules": {
       "auto_generated_vocab": "vocab_{word}  例: vocab_医者",
@@ -54,7 +54,7 @@
         {
           "imageId": "vocab_医者_001",
           "filename": "vocab_医者.png",
-          "imageUrl": "https://drive.google.com/uc?id=1cPNqVCE9yN86MoSmHl8c93lZJ_m2Hg-L",
+          "imageUrl": "https://drive.google.com/uc?id=1npKmP84F3KAWLt5NbjVhcczcLccevyzE",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_医者",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -142,7 +142,7 @@
         {
           "imageId": "vocab_会社員_001",
           "filename": "vocab_会社員.png",
-          "imageUrl": "https://drive.google.com/uc?id=1ir_ehC66_O8wyThw6HnkyBM2952uw1db",
+          "imageUrl": "https://drive.google.com/uc?id=1OmF47cb2wT44vORQwtf6-m1Ch-W-XV9g",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_会社員",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -164,7 +164,7 @@
         {
           "imageId": "vocab_学生_001",
           "filename": "vocab_学生.png",
-          "imageUrl": "https://drive.google.com/uc?id=1Yj33uWtHGy3cspUc7CDp8rkr-HiiWQub",
+          "imageUrl": "https://drive.google.com/uc?id=1TZK2T7Y2L_2XQCLGxI6hi8Fkpm1TmanO",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_学生",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -186,7 +186,7 @@
         {
           "imageId": "vocab_先生_001",
           "filename": "vocab_先生.png",
-          "imageUrl": "https://drive.google.com/uc?id=1kaO3cq5VVapkRALMpjlTY59DPdKMJ6fP",
+          "imageUrl": "https://drive.google.com/uc?id=1U2b4MS0N1Vc4U5bXiOguLxbcUVRUN5M5",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_先生",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -230,7 +230,7 @@
         {
           "imageId": "vocab_学校_001",
           "filename": "vocab_学校.png",
-          "imageUrl": "https://drive.google.com/uc?id=1LXAQnSjEi51XszDgn-Q3T3jyLtD3z0AV",
+          "imageUrl": "https://drive.google.com/uc?id=1tErTQHSVhEv376Zx4TxLrOZ8I4b_rwoe",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_学校",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -252,7 +252,7 @@
         {
           "imageId": "vocab_銀行_001",
           "filename": "vocab_銀行.png",
-          "imageUrl": "https://drive.google.com/uc?id=1nb__rAgExUL8hika2kO6Qi0vEKUbmyGF",
+          "imageUrl": "https://drive.google.com/uc?id=1UOSOptVLPr19HyMbqmLTt99_Y463-CKA",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_銀行",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -274,7 +274,7 @@
         {
           "imageId": "vocab_大学_001",
           "filename": "vocab_大学.png",
-          "imageUrl": "https://drive.google.com/uc?id=1O0-ekEsDTXUUc2MGjhL7ftpfmjS2SM_h",
+          "imageUrl": "https://drive.google.com/uc?id=1no7zDP2RK4FWOBoMgloxMDhAzC0-m9WC",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_大学",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -296,7 +296,7 @@
         {
           "imageId": "vocab_デパート_001",
           "filename": "vocab_デパート.png",
-          "imageUrl": "https://drive.google.com/uc?id=1gUyeTYx80SiUMAFArJf4tV3MLCWWhnIj",
+          "imageUrl": "https://drive.google.com/uc?id=1epODDd3cDUG9HXlIiakyFBov4oqWQ3CJ",
           "promptRef": "image_prompts_lesson1_v7.json#vocab_デパート",
           "generatedAt": "2026-05-12",
           "regenerate": false
@@ -846,7 +846,7 @@
         {
           "imageId": "vocab_病院_001",
           "filename": "vocab_病院.png",
-          "imageUrl": "https://drive.google.com/uc?id=1SdCTleMfV3fqVmQIlSpcYJ4AlbQ7aCh_",
+          "imageUrl": "https://drive.google.com/uc?id=14Rh6jYvAreesi8eSRZdkAtoT6fF954EX",
           "promptRef": "image_prompts_lesson2.json#vocab_病院",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1251,7 +1251,7 @@
         {
           "imageId": "vocab_大学生_001",
           "filename": "vocab_大学生.png",
-          "imageUrl": "https://drive.google.com/uc?id=1DWG4V_QeuX58BWnM8qYyWlG1taFWdC_Q",
+          "imageUrl": "https://drive.google.com/uc?id=1b_h-9LVUbvqvVK6iHxmLVxa0vEwQEqzb",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_大学生",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1273,7 +1273,7 @@
         {
           "imageId": "vocab_日本人_001",
           "filename": "vocab_日本人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1QQZj_nDoeXdZPfy1G7gDva-gJJbhjquG",
+          "imageUrl": "https://drive.google.com/uc?id=1tGH05xMGl06oX5sFPL5gS33Loa7OH5ov",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_日本人",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1295,7 +1295,7 @@
         {
           "imageId": "vocab_中国人_001",
           "filename": "vocab_中国人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1VZFrMDr_wSSUewJnPylo8UM5rmpxqSHt",
+          "imageUrl": "https://drive.google.com/uc?id=1V3aJCC5wNKBT3D4lxsxtSC49EfB_Yamf",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_中国人",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1317,7 +1317,7 @@
         {
           "imageId": "vocab_アメリカ人_001",
           "filename": "vocab_アメリカ人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1u-JUoc7ffiDyVck3o4P6SwG7_JkMyhBq",
+          "imageUrl": "https://drive.google.com/uc?id=1f1-Nis7guQk43XiCgqm72sUeUdrSJ5Q5",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_アメリカ人",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1339,7 +1339,7 @@
         {
           "imageId": "vocab_韓国人_001",
           "filename": "vocab_韓国人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1oUzmVFeIREynCDztSFz96FhnUpGwZK8T",
+          "imageUrl": "https://drive.google.com/uc?id=1KvVtWpIekeub-bilPOQhoqcKRWR1Yv8K",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_韓国人",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1361,7 +1361,7 @@
         {
           "imageId": "vocab_ブラジル人_001",
           "filename": "vocab_ブラジル人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1V5YP0K73WBePSyyKHDdvvLkxiykhDmfi",
+          "imageUrl": "https://drive.google.com/uc?id=1es0i0GVzFZ2Gg_cNW9rjWdEYdxRKCq2c",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_ブラジル人",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1383,7 +1383,7 @@
         {
           "imageId": "vocab_ベトナム人_001",
           "filename": "vocab_ベトナム人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1I_4BEbZTYssKsX-sjnsouUfAoXGh82pj",
+          "imageUrl": "https://drive.google.com/uc?id=1YM-KJVmdDz5cvQi7jnHTvxpyuiF5ckO2",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_ベトナム人",
           "generatedAt": "2026-05-14",
           "regenerate": false
@@ -1405,7 +1405,7 @@
         {
           "imageId": "vocab_スペイン人_001",
           "filename": "vocab_スペイン人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1f4_k1ByrtaJcgqDIEEPWUwWPKDTH0aeg",
+          "imageUrl": "https://drive.google.com/uc?id=1SMwUxwd9Y9cd79dHkK1HJNWZF2CnYjnM",
           "promptRef": "image_prompts_lesson1_v8.json#vocab_スペイン人",
           "generatedAt": "2026-05-14",
           "regenerate": false

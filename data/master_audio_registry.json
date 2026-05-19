@@ -3,7 +3,7 @@
     "version": "1.2",
     "description": "音声資産レジストリ。word_* は語彙音声、sentence_* は例文音声。audioUrl は音声生成後に設定する。",
     "createdAt": "2026-05-15",
-    "lastModified": "2026-05-17",
+    "lastModified": "2026-05-19",
     "changes": [
       "v1.0 (2026-05-15): 初版。L01 語彙17件 + 例文15件 = 32件登録。",
       "v1.1 (2026-05-17): L02 語彙15件 (word_病院はL01既存のため上書き更新のみ) + 例文28件 = 実質43件新規追加。totalEntries: 32 -> 75。",
@@ -13,55 +13,55 @@
   },
   "entries": {
     "word_医者": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=16eLr9cUIzEs_EwoUEedPYZb2ZmB2aRGk"
     },
     "word_会社員": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=19F4KDPvnALXd7YZzrdlfv6jHsIdU4rzr"
     },
     "word_学生": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1-MItNXBUCSHlECg_hboSFpz4RIocZGhk"
     },
     "word_大学生": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1kae9BO7Oefe_30JR8ki8KuRRV_rv91uf"
     },
     "word_先生": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1msYxih9-V5IqHRWbm849AwmllbBPbPkJ"
     },
     "word_日本人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1CKOPoMu6bObWGEcp8xuTcPCJUs7jp_ny"
     },
     "word_中国人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1qwtnRAn86_8mUG3mY69KzSAKMZEkKfUO"
     },
     "word_アメリカ人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1lrU5I6kSnzEQewrl9RtBmhY1AKWxuBVa"
     },
     "word_韓国人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1JUuKKoQ0Q6pzAqPkLIPDFgNN_OZ-z68p"
     },
     "word_ブラジル人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=12c040WCcn0PIAI8-aPXW7z924Dh0khJy"
     },
     "word_ベトナム人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=11jSJOp9jzFV0qjoFTJJLzep5KDVkm0Op"
     },
     "word_スペイン人": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1R9liiXB0tNO_e9ks9TOX0eOmu9TvDnv1"
     },
     "word_病院": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1VuBwhptKBc0K1wk5icvaQov0nnzO19De"
     },
     "word_学校": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1OPX93G0OFxYIjBM2DwaGCRRCUi-SmWwx"
     },
     "word_銀行": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1fv93DRJhehCFLuqOMKASsOW9jlPRYeWl"
     },
     "word_大学": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1YedD3F0vmhJyfBo-U5k4-meB9LhF1w_w"
     },
     "word_デパート": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1ierHVQLM_6FvGDC8UC4NWvMu5QEjvE8n"
     },
     "sentence_ex_L01_001": {
       "audioUrl": null
@@ -133,7 +133,7 @@
       "audioUrl": null
     },
     "word_かばん": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1_xJv5MoCbFk9UCebO2bVeuCt8D7sTy75"
     },
     "word_消しゴム": {
       "audioUrl": null
@@ -273,7 +273,7 @@
       "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。"
     },
     "word_犬": {
-      "audioUrl": null,
+      "audioUrl": "https://drive.google.com/uc?id=1Qg4WamSifnv273EzmJvtnUQa50KHC8El",
       "sentence": "犬"
     },
     "word_写真": {
