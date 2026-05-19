@@ -3,7 +3,7 @@
 > 1 ページ以内。毎回まるごと書き直す。解決済みは削除。**追記のみ禁止。**
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 
-**最終更新：** 2026-05-19（`_STEP3_ARCHIVE.md` 完了直後・`docs/REFERENCE.md` を実 GAS から整備済）
+**最終更新：** 2026-05-19（`_STEP3_ARCHIVE.md` 完了直後・`docs/REFERENCE.md` を実 GAS から整備済／`prompts/master_prompt_design_guide_v3_2.py` は `apply_v3_2.py` 再実行で正規の監査済み成果物と決定論的に確定済（改行正規化後 SHA `566b8ad687532f255a09176a5f1b3d115ef6b37994348bbd7a33f2113a653581`・handoff §6 の `d22730eb47e4` は誤記録））
 
 ---
 
