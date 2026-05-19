@@ -3062,8 +3062,10 @@ function writeAudioLog_(ss, audioId, status, url, errorMsg) {
 
 const SYNC_SETTINGS = {
   SPREADSHEET_ID:    "1l-gH5MPfRyqNyuzj9x3c2xQoQeji60yF7mKc7_50Nlk",
-  IMAGE_REGISTRY_ID: "14NL_LqudXIQzY68klspH3SBlR21hiqbW",
-  AUDIO_REGISTRY_ID: "1ANG89c6z8qpSyNdTQ5zB3y73yD7z9vL0",
+  // 2026-05-19: 新 Drive ID へ移行。旧 IMAGE_REGISTRY_ID="14NL_LqudXIQzY68klspH3SBlR21hiqbW" /
+  // 旧 AUDIO_REGISTRY_ID="1ANG89c6z8qpSyNdTQ5zB3y73yD7z9vL0" は破損したため superseded。
+  IMAGE_REGISTRY_ID: "17WnltHEvymkua4hgfak2951f5BgphV9O",
+  AUDIO_REGISTRY_ID: "1y0-mzxQGfZVHyj6tT1ttXzt0knlueb3M",
 };
 
 const PROTECTED_PREFIXES = ["char_", "ex_L"];

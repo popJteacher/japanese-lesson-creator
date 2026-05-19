@@ -3,7 +3,15 @@
 > 1 ページ以内。毎回まるごと書き直す。解決済みは削除。**追記のみ禁止。**
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 
-**最終更新：** 2026-05-19（`_STEP3_ARCHIVE.md` 完了直後・`docs/REFERENCE.md` を実 GAS から整備済／`prompts/master_prompt_design_guide_v3_2.py` は `apply_v3_2.py` 再実行で正規の監査済み成果物と決定論的に確定済（改行正規化後 SHA `566b8ad687532f255a09176a5f1b3d115ef6b37994348bbd7a33f2113a653581`・handoff §6 の `d22730eb47e4` は誤記録））
+**最終更新：** 2026-05-19（SYNC_SETTINGS 新 ID 反映・invariants B を LF 正規化に修正）
+
+---
+
+## 確定（解決済み・短期メモ）
+
+- **v3.2 ガイド検証＝完了。** `prompts/master_prompt_design_guide_v3_2.py` は `apply_v3_2.py` を v3.1 入力に再実行した出力と LF 正規化後 SHA `566b8ad68753…` で完全一致。**正規の監査済み成果物**と決定論的に確定。`progress_handoff_v14_0.md` §6 の `d22730eb47e4` は誤記録。
+- **音声 0 件の主因＝解消。** 旧 IMAGE_REGISTRY_ID `14NL…` / 旧 AUDIO_REGISTRY_ID `1ANG…` は破損した Drive ファイル。2026-05-19 に新 ID（IMAGE=`17WnltHEvymkua4hgfak2951f5BgphV9O` / AUDIO=`1y0-mzxQGfZVHyj6tT1ttXzt0knlueb3M`）へ移行し `syncAll` が復活した。round-trip 確認は Drive→repo 取り込み待ち。
+- **未文書化ギャップを発見。** **Drive 上のレジストリ JSON → repo `data/master_*_registry.json` への取り込み手順が未文書化・現状手動**。`syncAll` は Drive 側を更新するだけで repo は触らない。将来スクリプト化する。
 
 ---
 
@@ -11,65 +19,55 @@
 
 | ライン | 状態 | 根拠 |
 |---|---|---|
-| Web ツール（A） | コード一式・正典 `data/lesson_NN.json` は ERROR=0 / WARN=0 で合格 | `npm run validate` |
-| 画像生成（B） | プロンプトガイド v3.2 確定（hash `5d7e52f00e3f`）。**画像レジストリ active 103 件中 62 件 missing**。v3.2 S列再生成・SMOKE 3 語は未実施 | `npm run missing-assets --type=image` ＋ invariants[B] OK |
-| 音声生成（C） | Phase 1 修正（`buildCloudTtsWavBlob_()`）は GAS 正典に取り込み済。**だが audioUrl は 77/77 件全て null**（生成→Drive→syncAll パイプラインのどこかで止まっている。原因未特定） | `npm run missing-assets --type=audio` |
-| GAS 正典 | `gas/pipeline.gs`（hash `a33271d4368e`）。ヘッダー v7.1 / generateImages v5.3 / generateAudio コメント v2.0（実装は Cloud TTS Neural2）。**ドリフトは仕様**で実害なし | invariants[A] |
-| ルート整理 | 旧 handoff・旧 monolith・旧プロンプトガイド・root 重複 → `archive/`（4 サブディレクトリ計 ~130 件）に集約。索引は `handoff_archive.md` | `ls archive/` |
+| Web ツール（A） | ERROR=0 / WARN=0 | `npm run validate` |
+| 画像生成（B） | プロンプトガイド v3.2 hash OK（LF 正規化後）。v3.2 SMOKE 3 語は未実施 | `npm run validate` invariants[B] |
+| 音声生成（C） | GAS 側 syncAll は新 ID で動作中。repo の `data/master_audio_registry.json` は 77/77 件 null のまま（Drive→repo 取り込み未実行） | `npm run missing-assets --type=audio` |
+| GAS 正典 | `gas/pipeline.gs`。SYNC_SETTINGS は新 ID へ更新済 | line 3067-3068 |
 
 ---
 
 ## 今やること（順番通り・1〜3 件）
 
-1. **【音声未解決 ②】audioUrl が 1 件も埋まっていない原因を特定する（人間側＝Claude Code は live シートを見られない）。**
-   - **`GCP_TTS_API_KEY` 名ズレ仮説は棄却済**（live プロジェクトで property 名が `GCP_TTS_API_KEY` であることを確認済）。原因は別。
-   - チェックリスト（人間が GAS / Sheets で確認）：
-     - **a)** `generateAudioBatch` を手動実行し、Logger 出力を読む（`===== generateAudio.gs v2.0 開始 =====` 以降のエラー行）。
-     - **b)** Sheets の `Log` シートで audio 行の `error` 列を見る（バッチ実行後にレコードが書かれているか）。
-     - **c)** Sheets の `Vocabulary` / `Examples` シートで `audioStatus` 列（W 列周辺）を見る。`pending` / `success` / `failed_*` のどれが立っているか。
-     - **d)** `syncAll` を手動実行し、`AUDIO_REGISTRY_ID = 1ANG89c6z8qpSyNdTQ5zB3y73yD7z9vL0` の Drive ファイルに反映されるか確認。
-     - **e)** `AUDIO_FOLDER_ID` ScriptProperty に Drive の音声フォルダ ID が設定されているか確認（未設定だと書き出しが落ちる）。
-   - 上記の出力を次セッションに貼り付け → Claude Code が原因切り分けを進める。**false-close 禁止**（直っていないのに「直った」と書かない）。
+1. **【Drive→repo 取り込み】新 ID の Drive 上 registry JSON を repo に取り込む（手動・1 回）。**
+   - 取得元：Drive ファイル ID `17WnltHEvymkua4hgfak2951f5BgphV9O`（image）/ `1y0-mzxQGfZVHyj6tT1ttXzt0knlueb3M`（audio）。
+   - 取得後、`data/master_image_registry.json` / `data/master_audio_registry.json` を上書き。
+   - 検証：`npm run missing-assets` で audio missing が 0 に近づくこと（音声バッチ進捗を反映）／image missing が減ること。
 
-2. **【画像 SMOKE】v3.2 で SMOKE 3 語の S列を再生成（人間 + Claude Code 協働）。**
-   - 順序は `archive/handoffs/progress_handoff_v14_0.md` §4 ステップ ①〜④。
-   - 生成した S列 JSON は `data/image_prompts_lessonNN_v3_N.json` に置く（`invariants[C]` が自動検査する命名規則）。
-   - SMOKE 3 語の合格基準：人物=全身／銀行=スカイブルー／物体=レンズ崩れなし。
+2. **【自動化】Drive→repo 取り込みのスクリプト化。**
+   - `scripts/pull-registries.mjs` を新設。Drive ファイルを `https://drive.google.com/uc?export=download&id={ID}` で取得し `data/master_*_registry.json` に書き込む。
+   - 認証無しで読める設定（リンク公開）か、`gcloud` / `service-account` が必要かは試行で決める。
+   - `npm run pull-registries` として `package.json` に登録。
 
-3. **【整備】`scripts/build-inventory.mjs` を作成し `PIPELINE_INVENTORY.md` を自動再生成可能にする。**
-   - `ls archive/` カウント・SHA256・レジストリ件数を機械収集。
-   - `npm run inventory` で再現できるようにする（`PIPELINE_INVENTORY.md` の手書き本文を機械生成版に置き換え）。
+3. **【画像 SMOKE】v3.2 で SMOKE 3 語の S列を再生成（人間 + Claude Code）。**
+   - 順序は `archive/handoffs/progress_handoff_v14_0.md` §4。
+   - 生成 S列は `data/image_prompts_lessonNN_v3_N.json` に置く（`invariants[C]` が自動検査）。
 
 ---
 
 ## ブロッカー
 
-- 音声未解決 ② — Claude Code は live GAS / Sheets を見られないため、原因特定は人間側のログ確認待ち。
+- 無し。手動取り込みは Drive リンクが公開・ダウンロード可能であれば即可。スクリプト化は Drive 認証方式の決定後に着手。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate           # lesson_NN.json スキーマ + invariants A/B/C を一括実行
-npm run missing-assets     # imageUrl/audioUrl null エントリの列挙
-node scripts/invariants.mjs                       # invariants 単独実行（同じ結果）
+npm run validate           # スキーマ + invariants A/B/C（B は LF 正規化後 SHA で照合）
+npm run missing-assets     # imageUrl/audioUrl null 列挙
+node scripts/invariants.mjs               # 単独実行（同じ結果）
 node scripts/missing-assets.mjs --type=image
 node scripts/missing-assets.mjs --type=audio
-node scripts/missing-assets.mjs --json
 ```
 
 人間側（Claude Code 実行不可）：
 
 ```
-# GAS 手動実行（音声未解決②の切り分け）
-generateAudioBatch()      # 手動・Logger 出力を読む
-syncAll()                 # AUDIO_REGISTRY 反映
-
-# GAS 自動トリガー（既稼働）
+# GAS 自動トリガー（既稼働・新 ID へ反映中）
 generateAudioBatch        # 毎日 10:00
-syncAll                   # 毎日 23:00
+syncAll                   # 毎日 23:00 ／ 新 ID で復活
 
-# 画像 SMOKE（v3.2 S列再生成後）
-testSingleImage()
+# Drive→repo 取り込み（現状手動・①で実行）
+# 新 ID Drive リンクから master_*_registry.json をダウンロード →
+# data/ に上書き → git diff で変化確認 → 必要なら commit
 ```

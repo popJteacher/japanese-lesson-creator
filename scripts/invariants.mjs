@@ -21,10 +21,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 
 // 正典パスと期待 hash（実ファイル由来・docs/REFERENCE.md §9）
+// hash は LF 正規化（CRLF→LF・末尾改行 strip）後に計算する。
+// apply_v3_2.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
   promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_2.py'),
-  promptGuideExpectedHashPrefix: '5d7e52f00e3f',
+  promptGuideExpectedHashPrefix: '566b8ad68753', // LF 正規化後 SHA256 先頭 12 桁
   // S列プロンプト JSON の置き場（v3.2 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
   sColumnPattern: /^image_prompts_lesson\d{2}_v3_\d+\.json$/,
@@ -44,6 +46,17 @@ const FLAG_STRONG_TOKEN = /\b(must|never)\b/i;
 async function sha256Prefix(path, n = 12) {
   const buf = await readFile(path);
   return createHash('sha256').update(buf).digest('hex').slice(0, n);
+}
+
+// 改行を LF に統一し末尾改行を除去してから SHA256（CRLF/LF 差を吸収）
+async function sha256PrefixNormalized(path, n = 12) {
+  const buf = await readFile(path);
+  // Buffer 上で CRLF→LF・CR(単独)→LF 置換し、末尾の \n を strip
+  const lf = Buffer.from(
+    buf.toString('binary').replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n+$/, ''),
+    'binary'
+  );
+  return createHash('sha256').update(lf).digest('hex').slice(0, n);
 }
 
 async function exists(path) {
@@ -81,7 +94,7 @@ async function checkGasVersionDrift() {
   return { errors, warns: [], infos };
 }
 
-// B. canonical プロンプトガイド hash アサート
+// B. canonical プロンプトガイド hash アサート（LF 正規化後に比較）
 async function checkPromptGuideHash() {
   const errors = [];
   const infos = [];
@@ -89,16 +102,16 @@ async function checkPromptGuideHash() {
     errors.push(`invariants[B]: canonical プロンプトガイドが不在: ${CANONICAL.promptGuide}`);
     return { errors, warns: [], infos };
   }
-  const actual = await sha256Prefix(CANONICAL.promptGuide);
+  const actual = await sha256PrefixNormalized(CANONICAL.promptGuide);
   const expected = CANONICAL.promptGuideExpectedHashPrefix;
   if (actual !== expected) {
     errors.push(
-      `invariants[B]: canonical プロンプトガイド hash 不一致。`
+      `invariants[B]: canonical プロンプトガイド hash 不一致（LF 正規化後）。`
       + ` expected=${expected} / actual=${actual}`
       + ` (${CANONICAL.promptGuide})`
     );
   } else {
-    infos.push(`invariants[B] プロンプトガイド hash OK: ${actual}`);
+    infos.push(`invariants[B] プロンプトガイド hash OK（LF 正規化後）: ${actual}`);
   }
   return { errors, warns: [], infos };
 }
