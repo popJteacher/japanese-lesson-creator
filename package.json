@@ -1,0 +1,14 @@
+{
+  "name": "japanese-lesson-creator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "教師向け Web ツール（静的）。session_NNN.json → スライド/宿題/アクティビティ HTML + 教案 docx。",
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "missing-assets": "node scripts/missing-assets.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

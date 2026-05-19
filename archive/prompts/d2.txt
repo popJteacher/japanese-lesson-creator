@@ -1,0 +1,135 @@
+3c3,10
+< # Version 3.1 | 2026-05-19 (= v3.0 + 問題F完遂 + 背景クリーム化リグレッション是正)
+---
+> # Version 3.2 | 2026-05-19 (= v3.1 + 監査7項目の決定論一括是正。全変更=apply_v3_2.py のみ)
+> #   1 サイズ×形状: 面積→高さ基準（Template A SCENE/occupancy/vocabulary_card_style/NATIONALITY×2）
+> #   2 レンズ: focal_length先頭の85mm portrait除去＋人物~50mm明記＋Template A重複是正
+> #   3 レンズ×角度: adjective J / spatial_drift remedy の85mm portraitを~50mmへ
+> #   4 背景色: SCENE と STYLE RECIPE を off-white で一致統一（抑制でなく除去。色名/note同期。
+> #     E14=color_drift remedy の活き残留も是正 / E15=NOT/not 大小を統一し一字一句一致）
+> #   5 Template A CONSTRAINTS: 弱表現→強表現＋NATIONALITY例外を明示再適用
+> #   7 abstract_concept: gradient-free tones を flat-solid-only に整合
+349c356
+<     "background":  "Soft cream white",
+---
+>     "background":  "Soft cream off-white (warm off-white, NOT pure stark white)",
+355c362
+<     "note": "v3.0方針→v3.1で完遂: 色名のみ運用。#HEX や 'hex value' をプロンプトに一切書かない（v3.0は37箇所削除と記載も実際は本文/ARROW_SEMIOTICS/reset_promptに残存。v3.1で実削除し完了）。色名表記の一字一句を変えないことでスタイルドリフトを防止する（資料6）。"
+---
+>     "note": "v3.2: 背景色名を SCENE と STYLE RECIPE で一致させ統一（旧『soft cream white』→『soft cream off-white (warm off-white, NOT pure stark white)』）。v3.1 までは SCENE のみ off-white でRECIPEは white のままだったため白飛びを「抑制」していたが、v3.2 で両者を同一表記にし矛盾を「除去」した。#HEや hex value は引き続き一切書かない。今後この背景色名は SCENE と STYLE RECIPE で常に一字一句一致させること（新・反ドリフト原則）。"
+368c375
+<       "85mm portrait lens equivalent. "
+---
+>       "Lens depends on subject type (NEVER a tight 85mm portrait/tele lens for full-body person cards). "
+379a387,391
+>       "Frame the person with a standard ~50mm-equivalent lens at full standing "
+>       "distance: the WHOLE figure from the top of the head to the soles of BOTH "
+>       "feet is inside the frame, spanning about 80% of the image HEIGHT (measured "
+>       "by height, NOT by area), centered with empty side margins; do NOT crop at "
+>       "the waist, hips, thighs, or knees and do NOT zoom in to fill the frame. "
+387c399
+<       "vocabulary_card":   "Subject occupies 70-80% of the frame",
+---
+>       "vocabulary_card":   "OBJECTS/compact subjects: occupy 70-80% of the frame by AREA. PERSONS: the full standing figure (head to soles of both feet) spans about 80% of the image HEIGHT measured by height NOT area, centered with empty side margins; never crop the figure to fill area",
+430c442
+<     "Solid soft cream off-white background (warm off-white, not pure stark white). Single centered subject only. "
+---
+>     "Solid soft cream off-white background (warm off-white, NOT pure stark white). Single centered subject only. "
+433c445
+<     "No background elements, no secondary objects. The subject must fill 70-80% of the frame.",
+---
+>     "No background elements, no secondary objects. Objects fill 70-80% of the frame by area; a full-body person is shown head to soles of both feet, spanning about 80% of the image HEIGHT (not area), centered with empty side margins — do NOT crop the figure to fill the frame.",
+501c513,515
+<     "non-stereotyped appearance fills 70-80% of the frame. Nationality is "
+---
+>     "non-stereotyped appearance is shown full-body from the top of the head to "
+>     "the soles of both feet, spanning about 80% of the image HEIGHT (by height, "
+>     "NOT area), centered with empty side margins. Nationality is "
+527c541,543
+<     "clear main subject and fills 70-80% of the frame.",
+---
+>     "clear main subject, shown full-body from the top of the head to the soles "
+>     "of both feet, spanning about 80% of the image HEIGHT (NOT area), centered "
+>     "with empty side margins (do NOT crop the figure to fill the frame).",
+1032c1048,1055
+< Full-body shot. The character is centered and fills 70-80% of the image area.
+---
+> FULL-BODY SHOT — the entire figure from the very top of the head to the soles
+> of BOTH feet is fully inside the frame, with a clear empty margin above the head
+> and a visible strip of empty ground below both feet. This is NOT a portrait,
+> headshot, or waist-up crop.
+> The standing figure spans roughly 80% of the image HEIGHT (measured by height,
+> NOT by area), centered horizontally. Empty background on the left and right is
+> expected and correct — do NOT zoom or crop in to fill the sides; that side
+> margin is intentional.
+1037,1039c1060,1062
+< DO NOT use an overhead or bird's-eye angle for full-body person cards — overhead angles
+< distort body proportions (head appears large, feet small) and make the figure look
+< unstable. Keep both feet visible on a flat ground plane.
+---
+> DO NOT use an overhead or bird's-eye angle. DO NOT crop the body at the head, neck,
+> waist, hips, thighs, or knees. Both feet and a small patch of the flat ground
+> directly beneath them must be clearly visible.
+1041c1064
+< 85mm portrait lens equivalent.
+---
+> Framed as with a standard ~50mm-equivalent lens at full standing distance (NOT an 85mm tight portrait lens).
+1045c1068
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1051c1074,1080
+< No text, no letters, no numbers, no symbols inside the image.
+---
+> No text, no letters, no numbers, no decorative symbols anywhere — including
+> titles, labels, captions, watermarks, or any text overlay at any position in
+> the rendered output.
+> EXCEPTION (v3.1 NATIONALITY_NOUN_POLICY — applies ONLY to nationality-noun
+> persons): a small national-flag pin/patch is permitted as a subtle nationality
+> cue, at most about 4% of the image area. Absolutely no text, letters, or
+> numbers on the flag itself.
+1212c1241
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1257c1286
+< Color palette: soft cream white background,
+---
+> Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1326c1355
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1385c1414
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1477c1506
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1520,1521c1549
+< Background: minimal — a suggestion of environment (soft gradient-free tones acceptable
+< as large flat color fields, not as lighting effects).
+---
+> Background: minimal — large flat SOLID color fields only. NO gradients, NO 'gradient-free tone' shading, NO lighting effects (must remain completely flat solid fills, consistent with the STYLE RECIPE).
+1525c1553
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+1606c1634
+< 85mm portrait lens equivalent. (Eye-level for human-scale items; canonical 3/4 for smaller objects.)
+---
+> Standard ~50mm-equivalent lens, no telephoto compression (Eye-level for human-scale items; canonical 3/4 for smaller objects).
+1611c1639
+< Completely flat solid color fills only. Color palette: soft cream white background,
+---
+> Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+2569c2597
+< - Background: soft cream white
+---
+> - Background: soft cream off-white (warm off-white, NOT pure stark white)
+2585c2613
+< 85mm portrait lens equivalent.
+---
+> Standard ~50mm-equivalent lens, no telephoto compression.

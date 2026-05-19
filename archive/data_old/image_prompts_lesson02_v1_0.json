@@ -1,0 +1,197 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "lesson": 2,
+    "prompt_guide_version": "v2.9",
+    "description": "lesson_02 の語彙カード画像生成プロンプト（S列投入用）。master_prompt_design_guide_v2_9.py 準拠。A1: 肌色フレーズなし（diverse_unspecified）。A3: アスペクト比プレフィックスなし（GAS経由=ASPECT_RATIO:1:1 付与）。",
+    "createdAt": "2026-05-19",
+    "lastModified": "2026-05-19",
+    "total_prompts": 18,
+    "notes": {
+      "vocab_type_mapping": {
+        "p1_p4_thing（具体物10語）": "concrete_object → Template D",
+        "p1_distant_building（建物3語+山1語）": "building → Template B / 山 → Template D",
+        "p5_p6_person（人1語）": "person → Template A",
+        "p3_pronoun（わたし1語）": "person → Template A（自己指示ジェスチャー）",
+        "p5_p6_object（犬・写真）": "concrete_object → Template D"
+      },
+      "skin_policy": "diverse_unspecified: 肌色フレーズを追記しない（v2.7〜確定方針）",
+      "aspect_ratio": "GAS経由生成のため本文にアスペクト比指定なし（generateImages.gs が ASPECT_RATIO:1:1 を自動付与）",
+      "object_signatures_applied": ["雑誌", "本", "新聞", "ケータイ"],
+      "special_notes": {
+        "山": "建物グループに属するが vocab_type=concrete_object。遠景ランドマークとして Template D 変形で設計。",
+        "わたし": "代名詞。handoff v2.9 §8 の判定: わたし/あなた → person として可。自己指示ジェスチャー（手を胸に当てる）で視覚化。",
+        "病院": "lesson_01 でも登場するが、lesson_02 では「遠くの建物」文脈（あれは病院です）。再生成推奨（L1と同じ画像で代用も可）。"
+      }
+    }
+  },
+  "vocabulary": [
+
+    {
+      "imageId": "word_時計",
+      "word": "時計",
+      "reading": "とけい",
+      "en": "clock",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"時計\" (clock) at a glance.\nA learner must distinguish this object from a wristwatch without any text clues.\n\n[SUBJECT]\nThe subject is: a round wall clock or standing desk clock with a clean circular face.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A large circular clock face that fills the subject area\n- Two clock hands (hour and minute) in contrasting sizes, positioned at approximately 10:10\n- Hour markers: 4 simple flat dots or short dashes at 12, 3, 6, 9 positions only (NO numerals)\n- NO wristwatch strap or band — this is a standalone clock body\n- Thick circular outer frame/bezel distinguishing it from a wristwatch face\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe clock is centered and fills 70-80% of the image.\nCamera angle: slight 3/4 view from eye level — shows the clock face AND the narrow depth of the frame edge.\nSolid white background. No additional objects or context.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_腕時計",
+      "word": "腕時計",
+      "reading": "うでどけい",
+      "en": "wristwatch",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"腕時計\" (wristwatch) at a glance.\nA learner must distinguish this from a wall clock without any text clues.\n\n[SUBJECT]\nThe subject is: a wristwatch lying flat or at a slight angle.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A leather or metal band/strap visible on BOTH sides of the watch case — this is the #1 identifier\n- A small rectangular or oval watch case in the center\n- Clock face with 2 hands and minimal hour markers (no numerals)\n- A buckle or clasp visible on one end of the strap\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe wristwatch is centered and fills 70-80% of the image.\nCamera angle: canonical 3/4 view from slightly above — shows the watch face AND the strap wrapping around.\nSolid white background. No additional objects or context.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_ペン",
+      "word": "ペン",
+      "reading": "ペン",
+      "en": "pen",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"ペン\" (pen) at a glance.\nA learner must distinguish this from a pencil without any text clues.\n\n[SUBJECT]\nThe subject is: a ballpoint or felt-tip pen.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- Smooth cylindrical body (NOT hexagonal — that is a pencil)\n- A fine pointed tip or ball nib at one end — smooth metal or plastic tip\n- A clip on the side of the barrel\n- A cap or button at the opposite end from the tip\n- NO visible wood core, NO sharpened cone — pen tips are narrow and uniform\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe pen is placed diagonally, centered and fills 70-80% of the image.\nCamera angle: slight 3/4 view from above — shows the cylindrical body AND the fine tip.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_鉛筆",
+      "word": "鉛筆",
+      "reading": "えんぴつ",
+      "en": "pencil",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"鉛筆\" (pencil) at a glance.\nA learner must distinguish this from a pen without any text clues.\n\n[SUBJECT]\nThe subject is: a standard wooden pencil.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- HEXAGONAL cross-section body — show the six flat facets clearly on the barrel\n- A sharply sharpened pointed tip at one end: the classic cone shape with a short exposed graphite core (dark gray triangle)\n- A small flat eraser cap (pink or warm beige) crimped to the opposite end with a silver ferrule ring\n- Flat body color stripes along the facets (classic yellow or muted warm amber)\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe pencil is placed diagonally, centered and fills 70-80% of the image.\nCamera angle: 3/4 view from above — shows the hexagonal cross-section AND both the tip and eraser end.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_ケータイ",
+      "word": "ケータイ",
+      "reading": "ケータイ",
+      "en": "cell phone",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"ケータイ\" (cell phone / smartphone) at a glance.\n\n[SUBJECT]\nThe subject is: a modern smartphone.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- App icon grid visible on the screen — small colored rounded squares in a 3×4 grid pattern\n- Rear camera module: a cluster of 2-3 circular lens openings in the top-left corner of the back\n- Status bar at the top of the screen showing simplified signal/battery icons\n- A thin diagonal white highlight line across the top-right of the screen (glass surface)\n- Thin metallic frame line along the edges\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe smartphone is centered and fills 70-80% of the image.\nCamera angle: slight 3/4 from above showing screen face AND one side edge.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_本",
+      "word": "本",
+      "reading": "ほん",
+      "en": "book",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"本\" (book) at a glance.\nA learner must distinguish this from a magazine or notebook without any text clues.\n\n[SUBJECT]\nThe subject is: a hardcover or softcover book.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A clearly visible thick spine with many page edge lines on the opposite side (stacked thin horizontal lines)\n- Hard or soft cover with a distinct solid-color rectangular cover\n- Significantly thicker body than a magazine — the depth/spine width is prominent\n- A bookmark ribbon or fabric tail hanging from the top of the spine (optional but recommended)\nDo NOT add a masthead banner (that is a magazine).\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe book is centered and fills 70-80% of the image.\nCamera angle: 3/4 view from slightly above — shows the cover face AND spine AND visible page edge stack simultaneously.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_雑誌",
+      "word": "雑誌",
+      "reading": "ざっし",
+      "en": "magazine",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"雑誌\" (magazine) at a glance.\nA learner must distinguish this from a book without any text clues.\n\n[SUBJECT]\nThe subject is: a magazine.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A bold masthead/title banner printed as a flat color block across the very top of the cover — this is the #1 identifier (render it as a colored rectangle strip, NO actual letters)\n- Multiple cover layout zones suggesting different articles: 2-3 colored rectangular blocks or photo areas stacked on the cover\n- Visibly thin body compared to a book — the spine depth is narrow\n- A faint saddle-stitch line along the spine center\n- Subtle curved lines at the bottom edge of pages suggesting glossy paper\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe magazine is centered and fills 70-80% of the image.\nCamera angle: 3/4 view from slightly above — shows the front cover AND the narrow spine thickness.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image. The masthead must be a solid color rectangle only — no characters.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_新聞",
+      "word": "新聞",
+      "reading": "しんぶん",
+      "en": "newspaper",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly and UNAMBIGUOUSLY communicate the meaning of \"新聞\" (newspaper) at a glance.\nA learner must distinguish this from a magazine or book without any text clues.\n\n[SUBJECT]\nThe subject is: a newspaper, folded in half horizontally.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- Large broadsheet format — significantly wider than a magazine\n- Folded in half horizontally with a visible horizontal fold crease across the center\n- Multi-column layout suggested by 3-4 parallel thin vertical lines across the face (simplified columns, no text)\n- Uncoated matte paper texture: no glossy highlights — slightly irregular edges suggesting newsprint\n- Slightly wrinkled appearance at the fold and edges\nDo NOT make it small or glossy (that is a magazine).\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe newspaper is centered and fills 70-80% of the image, slightly tilted for visual interest.\nCamera angle: slight 3/4 from above — shows the fold crease and the column layout.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image. The column lines are abstract parallel lines only — no characters.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_かばん",
+      "word": "かばん",
+      "reading": "かばん",
+      "en": "bag",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"かばん\" (bag / carry bag) at a glance.\n\n[SUBJECT]\nThe subject is: a medium-sized carry bag (shoulder bag or tote style).\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- Two sturdy handles or a shoulder strap attached at the top\n- A main rectangular body with a visible zipper or clasp closure running across the top\n- Dashed stitching lines along the edges suggesting fabric or leather material\n- A small front pocket (optional) suggesting storage capacity\n- The bag appears to have some volume/depth (it is not flat)\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe bag is centered and fills 70-80% of the image, standing upright.\nCamera angle: canonical 3/4 view from slightly above — shows the front face AND one side edge AND the handles.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_消しゴム",
+      "word": "消しゴム",
+      "reading": "けしゴム",
+      "en": "eraser",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"消しゴム\" (eraser) at a glance.\n\n[SUBJECT]\nThe subject is: a standard rectangular rubber eraser.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A small rectangular block shape — distinctively small and squat compared to other stationery\n- One corner or one end is slightly worn/rounded showing actual eraser use (this is the key identifier)\n- A partial paper sleeve wrapper around the body — the wrapper is partially peeled back, showing the bare rubber beneath\n- The worn end shows a slight scuff or smudge mark (flat dark gray area) indicating it has been used\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe eraser is centered and fills 70-80% of the image.\nCamera angle: canonical 3/4 view from slightly above — shows the top face AND the worn end AND the paper wrapper.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_ビル",
+      "word": "ビル",
+      "reading": "ビル",
+      "en": "building (office building)",
+      "vocab_type": "building",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a [オフィスビル / office building] at a glance.\n\n[SUBJECT]\nThe main subject is [a modern multi-story glass-and-concrete office building, 8-10 floors tall, rectangular tower shape].\nA single short Japanese signage word [ビル] is mounted clearly near the entrance.\n\n[SCENE & ACTION]\nViewed from a slight three-quarter front angle at eye level, 35mm wide-angle lens equivalent.\nStraight vertical lines, natural perspective with no fisheye distortion.\nPale blue sky background.\n\nFunctional cues — 3 anchors required:\n- Entrance cue: [Wide glass automatic door entrance at ground level, with a small awning above]\n- User action cue: [A tiny flat-vector business person silhouette entering or exiting the front door]\n- Surrounding anchor: [A row of uniform windows — at least 3 columns × 5 rows of identical rectangular windows on the facade]\n\nThe building fills 70% of the frame. Negative space in the top one-third for sky.\nEntrance and functional cues are clearly visible.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white or pale sky-blue background,\ndeep slate navy outlines, muted warm colors for the building facade,\nwarm amber gold for accent details.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\n\n[CONSTRAINTS]\nEXCEPTION: A single short Japanese building name signage [ビル] is permitted — limited to ONE word only, small, mounted on the building entrance.\nNo other text, letters, numbers, or symbols anywhere in the image.\nNo gradients, no shadows, no 3D effects.\nApply zero ambient lighting, zero drop shadows, zero global illumination."
+    },
+
+    {
+      "imageId": "word_病院",
+      "word": "病院",
+      "reading": "びょういん",
+      "en": "hospital",
+      "vocab_type": "building",
+      "_note": "lesson_01 にも登場。lesson_02 では「遠くの建物」文脈（あれは病院です）。lesson_01 の word_病院 画像を再利用しても可。",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a [病院 / hospital] at a glance.\n\n[SUBJECT]\nThe main subject is [a clean white multi-story hospital building with a prominent red cross symbol on the facade].\nA single short Japanese signage word [病院] is mounted clearly near the entrance.\n\n[SCENE & ACTION]\nViewed from a slight three-quarter front angle at eye level, 35mm wide-angle lens equivalent.\nStraight vertical lines, natural perspective with no fisheye distortion.\nPale blue sky background.\n\nFunctional cues — 3 anchors required:\n- Entrance cue: [Wide automatic sliding door entrance with a small covered canopy, ambulance bay or accessible ramp visible]\n- User action cue: [A tiny flat-vector patient figure with a crutch or a doctor silhouette entering the entrance]\n- Surrounding anchor: [A large red cross flat icon mounted prominently on the upper facade — the single strongest hospital identifier]\n\nThe building fills 70% of the frame.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white or pale sky-blue background,\ndeep slate navy outlines, muted warm colors for the building facade,\nwarm amber gold for accent details.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\n\n[CONSTRAINTS]\nEXCEPTION: A single short Japanese building name signage [病院] is permitted — limited to ONE word only, small, mounted on the building entrance.\nNo other text, letters, numbers, or symbols anywhere in the image.\nNo gradients, no shadows, no 3D effects.\nApply zero ambient lighting, zero drop shadows, zero global illumination."
+    },
+
+    {
+      "imageId": "word_市役所",
+      "word": "市役所",
+      "reading": "しやくしょ",
+      "en": "city hall",
+      "vocab_type": "building",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a [市役所 / city hall] at a glance.\n\n[SUBJECT]\nThe main subject is [a formal civic government building — wider and more imposing than a regular office building, with a flat facade and a prominent entrance with steps].\nA single short Japanese signage word [市役所] is mounted clearly near the entrance.\n\n[SCENE & ACTION]\nViewed from a slight three-quarter front angle at eye level, 35mm wide-angle lens equivalent.\nStraight vertical lines, natural perspective with no fisheye distortion.\nPale blue sky background.\n\nFunctional cues — 3 anchors required:\n- Entrance cue: [Wide formal entrance with 3-4 stone steps leading up to large double doors — civic authority cue]\n- User action cue: [A tiny flat-vector citizen figure walking up the entrance steps, carrying a document or folder]\n- Surrounding anchor: [A Japanese national flag or municipal flag flat icon on a flagpole in front of the building]\n\nThe building fills 70% of the frame.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white or pale sky-blue background,\ndeep slate navy outlines, muted warm colors for the building facade,\nwarm amber gold for accent details.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\n\n[CONSTRAINTS]\nEXCEPTION: A single short Japanese building name signage [市役所] is permitted — limited to ONE word only, small, mounted on the building entrance.\nNo other text, letters, numbers, or symbols anywhere in the image.\nNo gradients, no shadows, no 3D effects.\nApply zero ambient lighting, zero drop shadows, zero global illumination."
+    },
+
+    {
+      "imageId": "word_山",
+      "word": "山",
+      "reading": "やま",
+      "en": "mountain",
+      "vocab_type": "concrete_object",
+      "_note": "lesson_02 の p1_distant_building グループに属するが、建物ではなく自然地形。vocab_type=concrete_object。Template D変形（遠景ランドマーク）で設計。",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"山\" (mountain) at a glance.\n\n[SUBJECT]\nThe subject is: a mountain — a natural landmark, NOT a building.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A large, clear triangular silhouette with a pointed or slightly rounded peak at the top\n- A small white snow cap (flat white triangle) at the very tip of the peak\n- Gentle curved ridgeline on both slopes — organic curves, not perfect straight lines\n- The mountain base fills the lower portion of the frame; the peak reaches into the upper portion\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE (landscape variant).\nThe mountain silhouette is centered and fills 70-80% of the image area.\nCamera angle: straight front view at slight 3/4 — shows the full mountain profile.\nPale soft blue or cream sky background (simple flat color only). No trees, no people, no roads.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThe mountain body: flat muted blue-gray fill. The snow cap: flat white.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_人",
+      "word": "人",
+      "reading": "ひと",
+      "en": "person",
+      "vocab_type": "person",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"人\" (person / human) at a glance.\n\n[SUBJECT]\nA generic adult person in their 30s with a neutral, friendly, approachable expression.\nWearing simple casual everyday clothes — a plain top and trousers. No role-specific items (no uniforms, no tools).\nPose and expression: standing in a natural, relaxed upright posture, arms loosely at sides, slight warm smile.\nThe character's \"ordinariness\" must be immediately obvious — no job, no role, just a human being.\n\n[SCENE & ACTION]\nFull-body shot. The character is centered and fills 70-80% of the image area.\nCamera angle: HORIZONTAL 3/4 view at EYE LEVEL — camera at subject's eye height, rotated approximately 30-45 degrees to one side.\nSolid white background. No other characters or objects in the frame.\n85mm portrait lens equivalent.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_わたし",
+      "word": "わたし",
+      "reading": "わたし",
+      "en": "I / me",
+      "vocab_type": "person",
+      "_note": "代名詞。handoff v2.9 §8: わたし/あなた → person として可。自己指示ジェスチャー（手を胸に当てる）で視覚化。CHARACTER_RENDERING_POLICY: diverse_unspecified。",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"わたし\" (I / me / myself) at a glance.\nThis is a self-referential pronoun — the image must convey the concept of 'the speaker pointing to themselves'.\n\n[SUBJECT]\nA generic adult person in their 30s with a neutral, friendly expression.\nWearing simple casual everyday clothes — a plain top and trousers.\nPose and expression: the person is pointing to their OWN CHEST with one hand, with a confident and clear self-referential gesture.\nThe pointing hand is flat-vector simplified, palm side toward chest, index finger touching the sternum area.\nFacial expression: clear, direct eye contact with the viewer, slight smile of self-identification.\n\n[SCENE & ACTION]\nFull-body shot. The character is centered and fills 70-80% of the image area.\nCamera angle: HORIZONTAL 3/4 view at EYE LEVEL — camera at subject's eye height, rotated approximately 30-45 degrees to one side.\nSolid white background. No other characters or objects in the frame.\n85mm portrait lens equivalent.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_犬",
+      "word": "犬",
+      "reading": "いぬ",
+      "en": "dog",
+      "vocab_type": "concrete_object",
+      "_note": "生物（いる系）。尾や足の角度をわずかに非対称にして「生命活性」をエンコードする（Deep Research 資料: 存在弁別の生物vs非生物）。",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"犬\" (dog) at a glance.\n\n[SUBJECT]\nThe subject is: a generic friendly dog (medium-sized, similar to a Shiba Inu or Labrador silhouette).\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- Four legs clearly visible (grounded stance)\n- A tail — curved upward or wagging to one side (asymmetric, NOT perfectly centered)\n- Floppy or upright ears on the sides of the head\n- A visible snout/muzzle area, distinctly longer than a cat's\n- The pose is SLIGHTLY ASYMMETRIC — one front paw slightly raised or the tail at an angle — to encode biological aliveness (生命活性)\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe dog is centered and fills 70-80% of the image.\nCamera angle: slight 3/4 view from eye level — shows the full body profile AND the face.\nSolid white background. No owner, no leash, no background scene.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    },
+
+    {
+      "imageId": "word_写真",
+      "word": "写真",
+      "reading": "しゃしん",
+      "en": "photograph / photo",
+      "vocab_type": "concrete_object",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"写真\" (photograph / photo) at a glance.\n\n[SUBJECT]\nThe subject is: a physical photograph print.\nVisual signature (distinctive identifying details — DO NOT OMIT):\n- A rectangular photo with a classic white border around all four edges (characteristic photo print border)\n- Inside the photo area: a simple landscape scene (mountain silhouette or a sunny landscape) rendered in flat muted colors — to clearly signal 'this is a captured image of something'\n- One corner of the photo is slightly curled or lifted — the classic indicator of a physical photo print\n- The photo is placed at a slight tilt (5-10 degrees) to emphasize it is an object, not a framed artwork\n\n[SCENE & ACTION]\nDisplay strategy: OBJECT_ALONE.\nThe photograph print is centered and fills 70-80% of the image.\nCamera angle: straight-on or slight 3/4 from above — shows the white border AND the interior image content AND the curled corner.\nSolid white background.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: soft cream white background,\ndeep slate navy outlines, muted warm blue and warm amber gold as accents.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols inside the image.\nGenerate as if this is part of a unified educational brand style guide."
+    }
+
+  ]
+}

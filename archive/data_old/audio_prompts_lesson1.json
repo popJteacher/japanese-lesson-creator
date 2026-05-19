@@ -1,0 +1,378 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "lesson": 1,
+    "description": "lesson_01 の音声生成タスクリスト。generateAudio.gs が読み込む入力データ。lesson_01.json の vocabulary と patterns[].examples から生成。",
+    "createdAt": "2026-05-15",
+    "lastModified": "2026-05-15",
+    "totalEntries": 32,
+    "notes": [
+      "textToSpeak: TTS に送る実際のテキスト。語彙はひらがな/カタカナ読みで発音精度を確保。",
+      "例文の「／」「→」はTTS向けに句点「。」区切りに変換済み。",
+      "filename: Google Drive に保存されるファイル名（.wav）。",
+      "skip: true にすると generateAudio.gs が永久にスキップする（手動録音済み音声の保護用）。"
+    ]
+  },
+
+  "vocabulary": [
+    {
+      "id": "word_医者",
+      "type": "vocabulary",
+      "word": "医者",
+      "reading": "いしゃ",
+      "en": "doctor",
+      "textToSpeak": "いしゃ",
+      "filename": "word_医者.wav",
+      "skip": false
+    },
+    {
+      "id": "word_会社員",
+      "type": "vocabulary",
+      "word": "会社員",
+      "reading": "かいしゃいん",
+      "en": "company employee",
+      "textToSpeak": "かいしゃいん",
+      "filename": "word_会社員.wav",
+      "skip": false
+    },
+    {
+      "id": "word_学生",
+      "type": "vocabulary",
+      "word": "学生",
+      "reading": "がくせい",
+      "en": "student",
+      "textToSpeak": "がくせい",
+      "filename": "word_学生.wav",
+      "skip": false
+    },
+    {
+      "id": "word_大学生",
+      "type": "vocabulary",
+      "word": "大学生",
+      "reading": "だいがくせい",
+      "en": "university student",
+      "textToSpeak": "だいがくせい",
+      "filename": "word_大学生.wav",
+      "skip": false
+    },
+    {
+      "id": "word_先生",
+      "type": "vocabulary",
+      "word": "先生",
+      "reading": "せんせい",
+      "en": "teacher",
+      "textToSpeak": "せんせい",
+      "filename": "word_先生.wav",
+      "skip": false
+    },
+    {
+      "id": "word_日本人",
+      "type": "vocabulary",
+      "word": "日本人",
+      "reading": "にほんじん",
+      "en": "Japanese",
+      "textToSpeak": "にほんじん",
+      "filename": "word_日本人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_中国人",
+      "type": "vocabulary",
+      "word": "中国人",
+      "reading": "ちゅうごくじん",
+      "en": "Chinese",
+      "textToSpeak": "ちゅうごくじん",
+      "filename": "word_中国人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_アメリカ人",
+      "type": "vocabulary",
+      "word": "アメリカ人",
+      "reading": "アメリカじん",
+      "en": "American",
+      "textToSpeak": "アメリカじん",
+      "filename": "word_アメリカ人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_韓国人",
+      "type": "vocabulary",
+      "word": "韓国人",
+      "reading": "かんこくじん",
+      "en": "Korean",
+      "textToSpeak": "かんこくじん",
+      "filename": "word_韓国人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_ブラジル人",
+      "type": "vocabulary",
+      "word": "ブラジル人",
+      "reading": "ブラジルじん",
+      "en": "Brazilian",
+      "textToSpeak": "ブラジルじん",
+      "filename": "word_ブラジル人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_ベトナム人",
+      "type": "vocabulary",
+      "word": "ベトナム人",
+      "reading": "ベトナムじん",
+      "en": "Vietnamese",
+      "textToSpeak": "ベトナムじん",
+      "filename": "word_ベトナム人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_スペイン人",
+      "type": "vocabulary",
+      "word": "スペイン人",
+      "reading": "スペインじん",
+      "en": "Spanish",
+      "textToSpeak": "スペインじん",
+      "filename": "word_スペイン人.wav",
+      "skip": false
+    },
+    {
+      "id": "word_病院",
+      "type": "vocabulary",
+      "word": "病院",
+      "reading": "びょういん",
+      "en": "hospital",
+      "textToSpeak": "びょういん",
+      "filename": "word_病院.wav",
+      "skip": false
+    },
+    {
+      "id": "word_学校",
+      "type": "vocabulary",
+      "word": "学校",
+      "reading": "がっこう",
+      "en": "school",
+      "textToSpeak": "がっこう",
+      "filename": "word_学校.wav",
+      "skip": false
+    },
+    {
+      "id": "word_銀行",
+      "type": "vocabulary",
+      "word": "銀行",
+      "reading": "ぎんこう",
+      "en": "bank",
+      "textToSpeak": "ぎんこう",
+      "filename": "word_銀行.wav",
+      "skip": false
+    },
+    {
+      "id": "word_大学",
+      "type": "vocabulary",
+      "word": "大学",
+      "reading": "だいがく",
+      "en": "university",
+      "textToSpeak": "だいがく",
+      "filename": "word_大学.wav",
+      "skip": false
+    },
+    {
+      "id": "word_デパート",
+      "type": "vocabulary",
+      "word": "デパート",
+      "reading": "デパート",
+      "en": "department store",
+      "textToSpeak": "デパート",
+      "filename": "word_デパート.wav",
+      "skip": false
+    }
+  ],
+
+  "examples": [
+    {
+      "id": "sentence_ex_L01_001",
+      "type": "example",
+      "patternId": "p1",
+      "exampleNo": "1-1",
+      "sentence": "鈴木さんは先生です。",
+      "sentenceEn": "Suzuki-san is a teacher.",
+      "textToSpeak": "鈴木さんは先生です。",
+      "filename": "sentence_ex_L01_001.wav",
+      "isAnchor": true,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_002",
+      "type": "example",
+      "patternId": "p1",
+      "exampleNo": "1-2",
+      "sentence": "リンさんは大学生です。",
+      "sentenceEn": "Lin-san is a university student.",
+      "textToSpeak": "リンさんは大学生です。",
+      "filename": "sentence_ex_L01_002.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_003",
+      "type": "example",
+      "patternId": "p1",
+      "exampleNo": "1-3",
+      "sentence": "キムさんは会社員です。",
+      "sentenceEn": "Kim-san is a company employee.",
+      "textToSpeak": "キムさんは会社員です。",
+      "filename": "sentence_ex_L01_003.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_004",
+      "type": "example",
+      "patternId": "p1",
+      "exampleNo": "1-4",
+      "sentence": "鈴木さんは日本人です。",
+      "sentenceEn": "Suzuki-san is Japanese.",
+      "textToSpeak": "鈴木さんは日本人です。",
+      "filename": "sentence_ex_L01_004.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_005",
+      "type": "example",
+      "patternId": "p1",
+      "exampleNo": "1-5",
+      "sentence": "リンさんは中国人です。",
+      "sentenceEn": "Lin-san is Chinese.",
+      "textToSpeak": "リンさんは中国人です。",
+      "filename": "sentence_ex_L01_005.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_006",
+      "type": "example",
+      "patternId": "p2",
+      "exampleNo": "2-1",
+      "sentence": "リンさんですか。",
+      "sentenceEn": "Is it Lin-san?",
+      "textToSpeak": "リンさんですか。",
+      "filename": "sentence_ex_L01_006.wav",
+      "isAnchor": true,
+      "_note": "p2アンカー例文。述語なしの最小形（PDF原典）。",
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_007",
+      "type": "example",
+      "patternId": "p2",
+      "exampleNo": "2-2",
+      "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
+      "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
+      "textToSpeak": "はい、リンさんです。いいえ、リンさんじゃありません。",
+      "filename": "sentence_ex_L01_007.wav",
+      "isAnchor": true,
+      "_note": "肯定・否定応答セット。TTS用に「／」を句点に変換。",
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_008",
+      "type": "example",
+      "patternId": "p2",
+      "exampleNo": "2-4",
+      "sentence": "先生ですか。→ はい、先生です。／いいえ、先生じゃありません。",
+      "sentenceEn": "Are you a teacher? → Yes, I am. / No, I'm not.",
+      "textToSpeak": "先生ですか。はい、先生です。いいえ、先生じゃありません。",
+      "filename": "sentence_ex_L01_008.wav",
+      "isAnchor": false,
+      "_note": "職業疑問文。TTS用に「→」「／」を句点に変換。",
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_009",
+      "type": "example",
+      "patternId": "p2",
+      "exampleNo": "2-5",
+      "sentence": "韓国人ですか。→ はい、韓国人です。／いいえ、韓国人じゃありません。",
+      "sentenceEn": "Are you Korean? → Yes, I am. / No, I'm not.",
+      "textToSpeak": "韓国人ですか。はい、韓国人です。いいえ、韓国人じゃありません。",
+      "filename": "sentence_ex_L01_009.wav",
+      "isAnchor": false,
+      "_note": "国籍疑問文。TTS用に変換済み。",
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_010",
+      "type": "example",
+      "patternId": "p2",
+      "exampleNo": "2-3",
+      "sentence": "だれですか。→ キムさんです。",
+      "sentenceEn": "Who is it? → It's Kim-san.",
+      "textToSpeak": "だれですか。キムさんです。",
+      "filename": "sentence_ex_L01_010.wav",
+      "isAnchor": true,
+      "_note": "疑問詞「だれ」。TTS用に「→」を除去。",
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_011",
+      "type": "example",
+      "patternId": "p3",
+      "exampleNo": "3-1",
+      "sentence": "タノムさんは東西病院の医者です。",
+      "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
+      "textToSpeak": "タノムさんは東西病院の医者です。",
+      "filename": "sentence_ex_L01_011.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_012",
+      "type": "example",
+      "patternId": "p3",
+      "exampleNo": "3-2",
+      "sentence": "鈴木さんは東西学校の先生です。",
+      "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
+      "textToSpeak": "鈴木さんは東西学校の先生です。",
+      "filename": "sentence_ex_L01_012.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_013",
+      "type": "example",
+      "patternId": "p3",
+      "exampleNo": "3-3",
+      "sentence": "キムさんは東西銀行の会社員です。",
+      "sentenceEn": "Kim-san is an employee at Tozai Bank.",
+      "textToSpeak": "キムさんは東西銀行の会社員です。",
+      "filename": "sentence_ex_L01_013.wav",
+      "isAnchor": false,
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_014",
+      "type": "example",
+      "patternId": "p3",
+      "exampleNo": "3-4",
+      "sentence": "リンさんは東西大学の学生です。",
+      "sentenceEn": "Lin-san is a student at Tozai University.",
+      "textToSpeak": "リンさんは東西大学の学生です。",
+      "filename": "sentence_ex_L01_014.wav",
+      "isAnchor": true,
+      "_note": "p3アンカー例文。PDF p.6原典。変更禁止。",
+      "skip": false
+    },
+    {
+      "id": "sentence_ex_L01_015",
+      "type": "example",
+      "patternId": "p3",
+      "exampleNo": "3-5",
+      "sentence": "キムさんは東西デパートの会社員です。",
+      "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
+      "textToSpeak": "キムさんは東西デパートの会社員です。",
+      "filename": "sentence_ex_L01_015.wav",
+      "isAnchor": false,
+      "skip": false
+    }
+  ]
+}

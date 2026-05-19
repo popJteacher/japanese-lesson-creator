@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "version": "smoke_v3_1",
+    "lesson": "smoke_test",
+    "prompt_guide_version": "master_prompt_design_guide_v3_1",
+    "description": "v3.1 リグレッション検証用 SMOKE テスト（2語）。合格後にフルバッチへ進む。",
+    "createdAt": "2026-05-19",
+    "lastModified": "2026-05-19",
+    "total_prompts": 2,
+    "notes": [
+      "アメリカ人: v3.1 白飛びリグレッション是正の検証。",
+      "  SCENE 背景が 'Solid soft cream off-white background (warm off-white, NOT pure stark white).' に変更済み。",
+      "  合格基準: 温かいオフホワイト（クリーム系）で出力されること。純白(#FFFFFF)はNG。",
+      "銀行: テンプレートB は v3.1 で変更なし。リグレッション非発生を確認する。",
+      "  合格基準: 淡いスカイブルー全面で出力されること。",
+      "両者共通: テキスト混入なし・フラットベクタースタイル維持。"
+    ]
+  },
+  "vocabulary": [
+    {
+      "imageId": "word_アメリカ人",
+      "word": "アメリカ人",
+      "reading": "あめりかじん",
+      "en": "American person",
+      "vocab_type": "person",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of \"アメリカ人\" (American person) at a glance.\n\n[SUBJECT]\nA generic adult person in plain, simple casual clothes — a simple top (muted warm blue or neutral tone) with jeans or slacks. Neutral and welcoming expression, standing relaxed. A small national-flag pin — red and white horizontal stripes with a blue rectangular canton containing small white star shapes in the upper-left corner — is worn as a small circular badge (about 3-4% of the frame) on the chest or bag strap as a subtle nationality cue. The PERSON is the clear main subject and fills 70-80% of the frame. The flag pin is a secondary detail, not the focus.\nPose and expression: Standing relaxed and natural, open and friendly expression.\nThe character's nationality must be readable from the small flag pin alone — not from stereotyped features, clothing, or props.\n\n[SCENE & ACTION]\nFull-body shot. The character is centered and fills 70-80% of the image area.\nCamera angle: HORIZONTAL 3/4 view at EYE LEVEL — the camera is positioned at the subject's eye height (not above, not below) and rotated approximately 30-45 degrees to one side. Diagonal front view showing both the front face and a partial side view of the body simultaneously while preserving natural body proportions.\nDO NOT use an overhead or bird's-eye angle — overhead angles distort body proportions.\nKeep both feet visible on a flat ground plane.\nSolid soft cream off-white background (warm off-white, NOT pure stark white). No other characters or objects in the frame.\n85mm portrait lens equivalent.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight. Completely flat solid color fills only. Color palette: soft cream white background, deep slate navy outlines, muted warm blue and warm amber gold as accents. This should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no symbols anywhere — including titles, labels, captions, or any text overlay at any position in the rendered output.\nEXCEPTION (v3.1 NATIONALITY_NOUN_POLICY): The small national-flag pin described above is permitted as a subtle nationality cue. The flag pin must remain a small detail (at most 4% of the frame). Absolutely no text, letters, or numbers on the flag itself.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination."
+    },
+    {
+      "imageId": "word_銀行",
+      "word": "銀行",
+      "reading": "ぎんこう",
+      "en": "bank",
+      "vocab_type": "building",
+      "prompt": "[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a bank (bank) at a glance.\n\n[SUBJECT]\nThe main subject is a small to medium neighborhood bank branch — NOT a corporate skyscraper.\nExactly ONE short ENGLISH building-name label, the single word \"BANK\", is printed cleanly and legibly on the building's fascia or a small sign above the main entrance. This English word is the ONLY text anywhere in the image.\nDo NOT render any Japanese characters, kanji, kana, or any non-Latin script.\nDo NOT render any second word, slogan, address, phone number, or brand name.\n\n[SCENE & ACTION]\nViewed from a slight three-quarter front angle at eye level, 35mm wide-angle lens equivalent.\nStraight vertical lines, natural perspective with no fisheye distortion.\nA flat pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette.\nThe building occupies about 70% of the frame and is centered.\n\nSingle identifying scene cue (use ONLY this one cue — do not add others):\na single ATM unit beside the entrance door with one customer using it\n\nKeep the composition calm and uncluttered. Render ONLY the building, the single English label, and the one scene cue above. Do NOT invent or add any extra signs, signboards, banners, posters, billboards, blank framed boards, screens, display panels, window lettering, secondary buildings, vehicles, or background clutter that is not explicitly described here.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight.\nCompletely flat solid color fills only. Color palette: pale sky-blue background, deep slate navy outlines, muted warm colors for the building facade, warm amber gold for accent details.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\n\n[CONSTRAINTS]\nEXCEPTION (per 資料8, v3.1): EXACTLY ONE short ENGLISH building-name label \"BANK\" is permitted — one English word only, small, on the entrance fascia. This is the SOLE permitted text. Absolutely NO other text of any kind: no Japanese (kanji/kana), no second English word, no \"RECEPTION\"/\"ATM\"/\"OPEN\" or any other label, no numbers, no titles, no captions, no decorative symbols anywhere else.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\nApply zero ambient lighting, zero drop shadows, zero global illumination."
+    }
+  ]
+}

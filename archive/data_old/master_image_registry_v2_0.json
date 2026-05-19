@@ -1,0 +1,2012 @@
+{
+  "_meta": {
+    "version": "2.0",
+    "createdAt": "2026-05-10",
+    "lastUpdated": "2026-05-18",
+    "purpose": "全課横断の画像登録簿。同一素材の重複生成を防ぐ SSOT。lesson_NN.json の materialNeeds[].imageRef が参照する。",
+    "primaryKeyRules": {
+      "auto_generated_vocab": "vocab_{word}  例: vocab_医者",
+      "auto_generated_action": "action_L{NN}_{serial3}  例: action_L11_001",
+      "auto_generated_situation": "sit_L{NN}_{serial3}  例: sit_L21_001",
+      "auto_generated_scene": "scene_L{NN}_{serial3}  例: scene_L12_001",
+      "example_images": "ex_L{NN}_{serial3}  例: ex_L01_001"
+    },
+    "statusValues": {
+      "pending": "未生成。GAS の生成対象。",
+      "generated": "生成済み。人間レビュー待ち。",
+      "approved": "レビュー済み。GAS はスキップ。",
+      "rejected": "品質 NG。再生成が必要（GAS が pending 扱いにする）。",
+      "outdated": "古い設計のエントリ。新エントリ(_outdated_replacedBy で参照)に差し替え済み。registry には残存(後方互換のため)・GAS は処理対象外(新 JSON に含まれないため)。"
+    },
+    "imageRefResolution": {
+      "image://lesson{N}/vocab/{word}": "vocab_{word} を直接参照",
+      "image://lesson{N}/context/{context_value}": "context フィールドで絞り込み（グループ参照）",
+      "image://lesson{N}/action/{serial}": "action_L{N}_{serial} を参照",
+      "image://lesson{N}/example/{id}": "ex_L{N}_{serial} を参照"
+    },
+    "totalEntries": 95,
+    "lastModifiedBy": "handoff_v2_4.md §5 適用（v1.9）",
+    "_addingNewEntry": "新エントリ追加手順: (1) primaryKeyRules に従いキー決定 (2) entries に追加 (3) status: pending で開始 (4) GAS 実行後 generated に更新 (5) レビュー後 approved に更新",
+    "changes": [
+      "v1.0 (2026-05-10): 初版。第1課エントリ 18 件登録。",
+      "v1.1 (2026-05-11): 第2課エントリ 30 件追加(vocab 15件 + character_asset 1件 + special_grid 1件 + example 13件)。totalEntries: 18 -> 48。",
+      "v1.2 (2026-05-12): lesson_01 v2.6 固定キャラ廃止(伝播チェーン起点A・2026-05-11)対応。ex_L01_001〜006 を outdated に変更(_outdated_reason / _outdated_replacedBy を付与)。ex_L01_007〜015(新9件)を pending 追加。totalEntries: 48 -> 57。statusValues に outdated を追加。",
+      "v1.3 (2026-05-12): ex_L01_007〜015 の画像生成完了。status: pending -> generated。imageUrl / generatedAt を記入。",
+      "v1.4 (2026-05-12): タスク 15 追補。GAS Q-IP1 FULL で vocab 12 件が再生成されたため、v7 JSON との整合性を取るために registry の vocab_医者 等 12 エントリの imageUrl / generatedAt / promptRef を更新。status: approved は維持(画像内容は同一意図のため再レビュー不要)。",
+      "v1.7 (2026-05-14): lesson_01 v2.10 同期 + 画像生成27件 URL 反映。(1) 新規追加: vocab_大学生 + 国籍7語(日本人/中国人/アメリカ人/韓国人/ブラジル人/ベトナム人/スペイン人)。(2) 新規追加: char_鈴木/リン/ケリー/キム/タノム (type: named_character_card・prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES 参照)。(3) vocab_病院: firstLesson 2->1, usedInLessons [2]->[1,2], status pending->generated。(4) ex_L01_001〜015 の sentence/patternId/slot を lesson_01.json v2.10 に整合化。ex_L01_001〜005 は outdated→generated に復活(_outdated_* メタ削除)、URL は char_鈴木/リン/キム imageRef からコピー。(5) 27エントリ全て status: generated, imageUrl 入力済み。promptRef は既存値維持。(6) ex_L01_010, ex_L01_014 は変更なし(指示通り)。totalEntries: 57 -> 70。",
+      "v1.8 (2026-05-17): lesson_02.json v2.11.3 同期。L02 語彙 15件追加 (word_病院は L01 既存のためスキップ)。totalEntries: 71 -> 86 (world_map の static_asset を含む実態カウントに修正)。",
+      "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。"
+    ]
+  },
+  "entries": {
+    "word_医者": {
+      "type": "auto_generated_vocab",
+      "word": "医者",
+      "reading": "イシャ",
+      "en": "doctor",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_医者_001",
+          "filename": "vocab_医者.png",
+          "imageUrl": "https://drive.google.com/uc?id=1cPNqVCE9yN86MoSmHl8c93lZJ_m2Hg-L",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_医者",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_男の人": {
+      "type": "auto_generated_vocab",
+      "word": "男の人",
+      "reading": "オトコノヒト",
+      "en": "man",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_男の人_001",
+          "filename": "vocab_男の人.png",
+          "imageUrl": "https://drive.google.com/uc?id=199QBibC-xVpB9dAkdPMnbJeZQjzslibY",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_男の人",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_女の人": {
+      "type": "auto_generated_vocab",
+      "word": "女の人",
+      "reading": "オンナノヒト",
+      "en": "woman",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_女の人_001",
+          "filename": "vocab_女の人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1HXB9idYXA_kpxCkrsRyMgSRgw19kjsd5",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_女の人",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_外国人": {
+      "type": "auto_generated_vocab",
+      "word": "外国人",
+      "reading": "ガイコクジン",
+      "en": "foreigner",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_外国人_001",
+          "filename": "vocab_外国人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1eAznq5nrWPcJ_OAtpQa4yUr522irip3z",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_外国人",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_会社員": {
+      "type": "auto_generated_vocab",
+      "word": "会社員",
+      "reading": "カイシャイン",
+      "en": "company employee",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_会社員_001",
+          "filename": "vocab_会社員.png",
+          "imageUrl": "https://drive.google.com/uc?id=1ir_ehC66_O8wyThw6HnkyBM2952uw1db",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_会社員",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_学生": {
+      "type": "auto_generated_vocab",
+      "word": "学生",
+      "reading": "ガクセイ",
+      "en": "student",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_学生_001",
+          "filename": "vocab_学生.png",
+          "imageUrl": "https://drive.google.com/uc?id=1Yj33uWtHGy3cspUc7CDp8rkr-HiiWQub",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_学生",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_先生": {
+      "type": "auto_generated_vocab",
+      "word": "先生",
+      "reading": "センセイ",
+      "en": "teacher",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_先生_001",
+          "filename": "vocab_先生.png",
+          "imageUrl": "https://drive.google.com/uc?id=1kaO3cq5VVapkRALMpjlTY59DPdKMJ6fP",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_先生",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_会社": {
+      "type": "auto_generated_vocab",
+      "word": "会社",
+      "reading": "カイシャ",
+      "en": "company",
+      "context": "vocabulary_building",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_会社_001",
+          "filename": "vocab_会社.png",
+          "imageUrl": "https://drive.google.com/uc?id=1ILWJWlZLp0mBZnloJDPnrkOIRzozGFh3",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_会社",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_学校": {
+      "type": "auto_generated_vocab",
+      "word": "学校",
+      "reading": "ガッコウ",
+      "en": "school",
+      "context": "vocabulary_building",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_学校_001",
+          "filename": "vocab_学校.png",
+          "imageUrl": "https://drive.google.com/uc?id=1LXAQnSjEi51XszDgn-Q3T3jyLtD3z0AV",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_学校",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_銀行": {
+      "type": "auto_generated_vocab",
+      "word": "銀行",
+      "reading": "ギンコウ",
+      "en": "bank",
+      "context": "vocabulary_building",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_銀行_001",
+          "filename": "vocab_銀行.png",
+          "imageUrl": "https://drive.google.com/uc?id=1nb__rAgExUL8hika2kO6Qi0vEKUbmyGF",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_銀行",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_大学": {
+      "type": "auto_generated_vocab",
+      "word": "大学",
+      "reading": "ダイガク",
+      "en": "university",
+      "context": "vocabulary_building",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_大学_001",
+          "filename": "vocab_大学.png",
+          "imageUrl": "https://drive.google.com/uc?id=1O0-ekEsDTXUUc2MGjhL7ftpfmjS2SM_h",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_大学",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_デパート": {
+      "type": "auto_generated_vocab",
+      "word": "デパート",
+      "reading": "デパート",
+      "en": "department store",
+      "context": "vocabulary_building",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "approved",
+      "images": [
+        {
+          "imageId": "vocab_デパート_001",
+          "filename": "vocab_デパート.png",
+          "imageUrl": "https://drive.google.com/uc?id=1gUyeTYx80SiUMAFArJf4tV3MLCWWhnIj",
+          "promptRef": "image_prompts_lesson1_v7.json#vocab_デパート",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_001": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p1",
+      "sentence": "鈴木さんは先生です。",
+      "sentenceEn": "Suzuki-san is a teacher.",
+      "slot": "文型①の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_001_img",
+          "filename": "ex_01.png",
+          "imageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "promptRef": "image_prompts_lesson1_v6.json#ex_01",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_002": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p1",
+      "sentence": "リンさんは大学生です。",
+      "sentenceEn": "Lin-san is a university student.",
+      "slot": "文型①の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_002_img",
+          "filename": "ex_02.png",
+          "imageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "promptRef": "image_prompts_lesson1_v6.json#ex_02",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_003": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p1",
+      "sentence": "キムさんは会社員です。",
+      "sentenceEn": "Kim-san is a company employee.",
+      "slot": "文型①の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_003_img",
+          "filename": "ex_03.png",
+          "imageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
+          "promptRef": "image_prompts_lesson1_v6.json#ex_03",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_004": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p1",
+      "sentence": "鈴木さんは日本人です。",
+      "sentenceEn": "Suzuki-san is Japanese.",
+      "slot": "文型①の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_004_img",
+          "filename": "ex_04.png",
+          "imageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "promptRef": "image_prompts_lesson1_v6.json#ex_04",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_005": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p1",
+      "sentence": "リンさんは中国人です。",
+      "sentenceEn": "Lin-san is Chinese.",
+      "slot": "文型①の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_005_img",
+          "filename": "ex_05.png",
+          "imageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "promptRef": "image_prompts_lesson1_v6.json#ex_05",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_006": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "リンさんですか。",
+      "sentenceEn": "Is it Lin-san?",
+      "slot": "文型②の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_006_img",
+          "filename": "ex_06.png",
+          "imageUrl": "https://drive.google.com/uc?id=1CGtmOEGYE50VdSL3B2KALF4EOxiTcU2D",
+          "promptRef": "image_prompts_lesson1_v6.json#ex_06",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_007": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
+      "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
+      "slot": "文型②の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_007_img",
+          "filename": "ex_L01_007.png",
+          "imageUrl": "https://drive.google.com/uc?id=1jzopxeGVBDKY-G_fA3NbQq0uVtHyI7E0",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_007",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_008": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "先生ですか。→ はい、先生です。／いいえ、先生じゃありません。",
+      "sentenceEn": "Are you a teacher? → Yes, I am. / No, I'm not.",
+      "slot": "文型②の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_008_img",
+          "filename": "ex_L01_008.png",
+          "imageUrl": "https://drive.google.com/uc?id=1yiFbtrDBEUYTtmILEMKxs455DHaMNzk-",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_008",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_009": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "韓国人ですか。→ はい、韓国人です。／いいえ、韓国人じゃありません。",
+      "sentenceEn": "Are you Korean? → Yes, I am. / No, I'm not.",
+      "slot": "文型②の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_009_img",
+          "filename": "ex_L01_009.png",
+          "imageUrl": "https://drive.google.com/uc?id=1Je4Xs2x8Mj4ykvpDsKwWbByREo7Q-htC",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_009",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_010": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "だれですか。→ キムさんです。",
+      "sentenceEn": "Who is it? → It's Kim-san.",
+      "slot": "文型②の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_010_img",
+          "filename": "ex_L01_010.png",
+          "imageUrl": "https://drive.google.com/uc?id=1U4J36JFAC4wiDFvWW5D6cjYCy8PZzBKu",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_010",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_011": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "タノムさんは東西病院の医者です。",
+      "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
+      "slot": "文型③の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_011_img",
+          "filename": "ex_L01_011.png",
+          "imageUrl": "https://drive.google.com/uc?id=1UcdPe7IDRNVXlMGLcGBkIA3hluMfruR6",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_011",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_012": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "鈴木さんは東西学校の先生です。",
+      "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
+      "slot": "文型③の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_012_img",
+          "filename": "ex_L01_012.png",
+          "imageUrl": "https://drive.google.com/uc?id=1YYylkJntE8yd-Msw2jwIhyBzaaQPEzSM",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_012",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_013": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "キムさんは東西銀行の会社員です。",
+      "sentenceEn": "Kim-san is an employee at Tozai Bank.",
+      "slot": "文型③の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_013_img",
+          "filename": "ex_L01_013.png",
+          "imageUrl": "https://drive.google.com/uc?id=1YtimJ7AR-r1dTN7ncm9Lo4W7L9Ekp9Ke",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_013",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_014": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "リンさんは東西大学の学生です。",
+      "sentenceEn": "Lin-san is a student at Tozai University.",
+      "slot": "文型③の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_014_img",
+          "filename": "ex_L01_014.png",
+          "imageUrl": "https://drive.google.com/uc?id=1dkHWEVvU6jICcdZCfUn77e71Dak70tBl",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_014",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_015": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "キムさんは東西デパートの会社員です。",
+      "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
+      "slot": "文型③の例文",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_015_img",
+          "filename": "ex_L01_015.png",
+          "imageUrl": "https://drive.google.com/uc?id=1cEREo2m4obffIo30UO5YQZuY6cVsHrg-",
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_015",
+          "generatedAt": "2026-05-12",
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_時計": {
+      "type": "auto_generated_vocab",
+      "word": "時計",
+      "reading": "とけい",
+      "en": "clock",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_時計_001",
+          "filename": "vocab_時計.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_時計",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_腕時計": {
+      "type": "auto_generated_vocab",
+      "word": "腕時計",
+      "reading": "うでどけい",
+      "en": "wristwatch",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_腕時計_001",
+          "filename": "vocab_腕時計.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_腕時計",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_ペン": {
+      "type": "auto_generated_vocab",
+      "word": "ペン",
+      "reading": "ペン",
+      "en": "pen",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_ペン_001",
+          "filename": "vocab_ペン.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_ペン",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_鉛筆": {
+      "type": "auto_generated_vocab",
+      "word": "鉛筆",
+      "reading": "えんぴつ",
+      "en": "pencil",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_鉛筆_001",
+          "filename": "vocab_鉛筆.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_鉛筆",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_ケータイ": {
+      "type": "auto_generated_vocab",
+      "word": "ケータイ",
+      "reading": "ケータイ",
+      "en": "cell phone",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_ケータイ_001",
+          "filename": "vocab_ケータイ.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_ケータイ",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_本": {
+      "type": "auto_generated_vocab",
+      "word": "本",
+      "reading": "ほん",
+      "en": "book",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_本_001",
+          "filename": "vocab_本.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_本",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_雑誌": {
+      "type": "auto_generated_vocab",
+      "word": "雑誌",
+      "reading": "ざっし",
+      "en": "magazine",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_雑誌_001",
+          "filename": "vocab_雑誌.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_雑誌",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_新聞": {
+      "type": "auto_generated_vocab",
+      "word": "新聞",
+      "reading": "しんぶん",
+      "en": "newspaper",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_新聞_001",
+          "filename": "vocab_新聞.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_新聞",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_かばん": {
+      "type": "auto_generated_vocab",
+      "word": "かばん",
+      "reading": "かばん",
+      "en": "bag",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_かばん_001",
+          "filename": "vocab_かばん.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_かばん",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_消しゴム": {
+      "type": "auto_generated_vocab",
+      "word": "消しゴム",
+      "reading": "けしゴム",
+      "en": "eraser",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_消しゴム_001",
+          "filename": "vocab_消しゴム.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_消しゴム",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_ビル": {
+      "type": "auto_generated_vocab",
+      "word": "ビル",
+      "reading": "ビル",
+      "en": "building",
+      "context": "vocabulary_building",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_ビル_001",
+          "filename": "vocab_ビル.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_ビル",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_病院": {
+      "type": "auto_generated_vocab",
+      "word": "病院",
+      "reading": "びょういん",
+      "en": "hospital",
+      "context": "vocabulary_building",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1,
+        2
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_病院_001",
+          "filename": "vocab_病院.png",
+          "imageUrl": "https://drive.google.com/uc?id=1SdCTleMfV3fqVmQIlSpcYJ4AlbQ7aCh_",
+          "promptRef": "image_prompts_lesson2.json#vocab_病院",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_市役所": {
+      "type": "auto_generated_vocab",
+      "word": "市役所",
+      "reading": "しやくしょ",
+      "en": "city hall",
+      "context": "vocabulary_building",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_市役所_001",
+          "filename": "vocab_市役所.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_市役所",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_山": {
+      "type": "auto_generated_vocab",
+      "word": "山",
+      "reading": "やま",
+      "en": "mountain",
+      "context": "vocabulary_nature",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_山_001",
+          "filename": "vocab_山.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_山",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "vocab_人": {
+      "type": "auto_generated_vocab",
+      "word": "人",
+      "reading": "ひと",
+      "en": "person",
+      "context": "vocabulary_person",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "vocab_人_001",
+          "filename": "vocab_人.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#vocab_人",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "char_einstein_style": {
+      "type": "character_asset",
+      "description": "白髪もじゃもじゃ・口ひげ・老齢男性 generic フラットベクターポートレート(アインシュタイン風)",
+      "context": "character_asset_portrait",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "usedInExamples": [
+        "ex_L02_011",
+        "famous_persons_grid"
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "char_einstein_style_001",
+          "filename": "char_einstein_style.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#char_einstein_style",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "famous_persons_grid": {
+      "type": "special_grid_image",
+      "description": "著名人4名 2x2 グリッド(アインシュタイン風・チャップリン風・モンロー風・ベートーヴェン風)",
+      "context": "special_grid",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "usedInExamples": [
+        "ex_L02_012"
+      ],
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "famous_persons_grid_001",
+          "filename": "famous_persons_grid.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#famous_persons_grid",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_001": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-1",
+      "sentence": "これは時計です。",
+      "sentenceEn": "This is a clock.",
+      "slot": "p1 代表例文(これ)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_001_img",
+          "filename": "ex_L02_001.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_001",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_002": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-4",
+      "sentence": "それはペンです。",
+      "sentenceEn": "That is a pen (near you).",
+      "slot": "p1 代表例文(それ)",
+      "status": "outdated",
+      "images": [
+        {
+          "imageId": "ex_L02_002_img",
+          "filename": "ex_L02_002.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_002",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ],
+      "_outdated_reason": "旧1-2(それはペンです)。v2.11.5で削除された例文1-2に相当。lesson_02.json imageId採番と不一致のため廃止。"
+    },
+    "ex_L02_003": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-3",
+      "sentence": "これはケータイです。",
+      "sentenceEn": "This is a cell phone.",
+      "slot": "p1 例文(これ×ケータイ)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_003_img",
+          "filename": "ex_L02_003.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_003",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_004": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-4",
+      "sentence": "それはペンです。",
+      "sentenceEn": "That is a pen.",
+      "slot": "p1 代表例文(それ×ペン)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_004_img",
+          "filename": "ex_L02_004.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_004",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_005": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p2",
+      "exampleNo": "2-3",
+      "sentence": "それは何ですか。— それは雑誌です。",
+      "sentenceEn": "What is that (near you)? — That is a magazine.",
+      "slot": "p2 Q&A(それ×雑誌)",
+      "status": "outdated",
+      "images": [
+        {
+          "imageId": "ex_L02_005_img",
+          "filename": "ex_L02_005.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_005",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ],
+      "_outdated_reason": "旧p2 2-3(それは何ですか。— それは雑誌です。)。v2.11.6で削除。"
+    },
+    "ex_L02_006": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p2",
+      "exampleNo": "2-4",
+      "sentence": "あれは何ですか。— あれは市役所です。",
+      "sentenceEn": "What is that over there? — That is city hall.",
+      "slot": "p2 Q&A(あれ×市役所・遠景)",
+      "status": "outdated",
+      "images": [
+        {
+          "imageId": "ex_L02_006_img",
+          "filename": "ex_L02_006.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_006",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ],
+      "_outdated_reason": "旧p2 2-4(あれは何ですか。— あれは市役所です。)。v2.11.6で削除。"
+    },
+    "ex_L02_007": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-7",
+      "sentence": "あれはABCビルです。",
+      "sentenceEn": "That over there is the ABC Building.",
+      "slot": "p1 代表例文(あれ×ABCビル)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_007_img",
+          "filename": "ex_L02_007.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_007",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_008": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-8",
+      "sentence": "あれは病院です。",
+      "sentenceEn": "That over there is a hospital.",
+      "slot": "p1 例文(あれ×病院)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_008_img",
+          "filename": "ex_L02_008.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_008",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_009": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p1",
+      "exampleNo": "1-9",
+      "sentence": "あれは山です。",
+      "sentenceEn": "That over there is a mountain.",
+      "slot": "p1 例文(あれ×山)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_009_img",
+          "filename": "ex_L02_009.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_009",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_010": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p2",
+      "exampleNo": "2-1",
+      "sentence": "何ですか。",
+      "sentenceEn": "What is it?",
+      "slot": "p2 代表例文(純粋 何ですか)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_010_img",
+          "filename": "ex_L02_010.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_010",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_011": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p5",
+      "exampleNo": "5-1/5-2/5-3",
+      "sentence": "この/その/あの人はアインシュタインです。",
+      "sentenceEn": "This/That/That person over there is Einstein.",
+      "slot": "p5 代表例文(imageRef: char_einstein_style)",
+      "imageRef": "char_einstein_style",
+      "_imageRef_note": "p5-1/5-2/5-3 で char_einstein_style の画像を使い回す。GAS は imageRef を見てスキップし URL をコピーする。",
+      "status": "outdated",
+      "images": [
+        {
+          "imageId": "ex_L02_011_img",
+          "filename": "ex_L02_011.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_011(imageRef:char_einstein_style)",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ],
+      "_outdated_reason": "旧p5 5-1/2/3 combined entry。lesson_02.json imageId採番（ex_L02_024/025/026）と不一致のため廃止。"
+    },
+    "ex_L02_012": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p6",
+      "exampleNo": "6-1",
+      "sentence": "どの人ですか。— この人です。— その人はアインシュタインです。",
+      "sentenceEn": "Which person? — This person. — That person is Einstein.",
+      "slot": "p6 代表例文(imageRef: famous_persons_grid)",
+      "imageRef": "famous_persons_grid",
+      "_imageRef_note": "p6-1 用 著名人 grid 画像。GAS は imageRef を見てスキップし URL をコピーする。",
+      "status": "outdated",
+      "images": [
+        {
+          "imageId": "ex_L02_012_img",
+          "filename": "ex_L02_012.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_012(imageRef:famous_persons_grid)",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ],
+      "_outdated_reason": "旧p6 6-1(旧3文版)。lesson_02.json imageId採番（ex_L02_027）と不一致のため廃止。"
+    },
+    "ex_L02_013": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p6",
+      "exampleNo": "6-2",
+      "sentence": "Aさんのかばんはどのかばんですか。— そのかばんです。",
+      "sentenceEn": "Which bag is A-san's bag? — That bag.",
+      "slot": "p6 例文(どの+N×かばん)",
+      "status": "outdated",
+      "images": [
+        {
+          "imageId": "ex_L02_013_img",
+          "filename": "ex_L02_013.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_013",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ],
+      "_outdated_reason": "旧p6 6-2(Aさん版)。lesson_02.json imageId採番（ex_L02_028）と不一致のため廃止。"
+    },
+    "word_大学生": {
+      "type": "auto_generated_vocab",
+      "word": "大学生",
+      "reading": "だいがくせい",
+      "en": "university student",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_大学生_001",
+          "filename": "vocab_大学生.png",
+          "imageUrl": "https://drive.google.com/uc?id=1DWG4V_QeuX58BWnM8qYyWlG1taFWdC_Q",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_大学生",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_日本人": {
+      "type": "auto_generated_vocab",
+      "word": "日本人",
+      "reading": "にほんじん",
+      "en": "Japanese",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_日本人_001",
+          "filename": "vocab_日本人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1QQZj_nDoeXdZPfy1G7gDva-gJJbhjquG",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_日本人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_中国人": {
+      "type": "auto_generated_vocab",
+      "word": "中国人",
+      "reading": "ちゅうごくじん",
+      "en": "Chinese",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_中国人_001",
+          "filename": "vocab_中国人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1VZFrMDr_wSSUewJnPylo8UM5rmpxqSHt",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_中国人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_アメリカ人": {
+      "type": "auto_generated_vocab",
+      "word": "アメリカ人",
+      "reading": "アメリカじん",
+      "en": "American",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_アメリカ人_001",
+          "filename": "vocab_アメリカ人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1u-JUoc7ffiDyVck3o4P6SwG7_JkMyhBq",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_アメリカ人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_韓国人": {
+      "type": "auto_generated_vocab",
+      "word": "韓国人",
+      "reading": "かんこくじん",
+      "en": "Korean",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_韓国人_001",
+          "filename": "vocab_韓国人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1oUzmVFeIREynCDztSFz96FhnUpGwZK8T",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_韓国人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ブラジル人": {
+      "type": "auto_generated_vocab",
+      "word": "ブラジル人",
+      "reading": "ブラジルじん",
+      "en": "Brazilian",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_ブラジル人_001",
+          "filename": "vocab_ブラジル人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1V5YP0K73WBePSyyKHDdvvLkxiykhDmfi",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_ブラジル人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ベトナム人": {
+      "type": "auto_generated_vocab",
+      "word": "ベトナム人",
+      "reading": "ベトナムじん",
+      "en": "Vietnamese",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_ベトナム人_001",
+          "filename": "vocab_ベトナム人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1I_4BEbZTYssKsX-sjnsouUfAoXGh82pj",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_ベトナム人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_スペイン人": {
+      "type": "auto_generated_vocab",
+      "word": "スペイン人",
+      "reading": "スペインじん",
+      "en": "Spanish",
+      "context": "vocabulary_person",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "vocab_スペイン人_001",
+          "filename": "vocab_スペイン人.png",
+          "imageUrl": "https://drive.google.com/uc?id=1f4_k1ByrtaJcgqDIEEPWUwWPKDTH0aeg",
+          "promptRef": "image_prompts_lesson1_v8.json#vocab_スペイン人",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "char_鈴木": {
+      "type": "named_character_card",
+      "characterName": "鈴木さん",
+      "role": "先生",
+      "nationality": "日本人",
+      "gender": "male",
+      "description": "鈴木さん(先生・日本人・男性・40〜50代)。短いきれいな白髪、フォーマルなスーツとネクタイ、信頼感のある穏やかな表情。",
+      "distinctiveFeature": "gray hair + formal suit",
+      "context": "named_character_portrait",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "usedInExamples": [
+        "ex_L01_001",
+        "ex_L01_004",
+        "ex_L01_012"
+      ],
+      "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "char_鈴木_001",
+          "filename": "char_鈴木.png",
+          "imageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "promptRef": "image_prompts_lesson1_v8.json#char_鈴木",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "char_リン": {
+      "type": "named_character_card",
+      "characterName": "リンさん",
+      "role": "学生",
+      "nationality": "中国人",
+      "gender": "female",
+      "description": "リンさん(学生・中国人・女性・20代・東西大学)。長いストレートの黒髪、カジュアルな学生スタイル、明るく親しみやすい笑顔。",
+      "distinctiveFeature": "long straight hair + casual student style",
+      "context": "named_character_portrait",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "usedInExamples": [
+        "ex_L01_002",
+        "ex_L01_005",
+        "ex_L01_006",
+        "ex_L01_007",
+        "ex_L01_014"
+      ],
+      "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "char_リン_001",
+          "filename": "char_リン.png",
+          "imageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "promptRef": "image_prompts_lesson1_v8.json#char_リン",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "char_ケリー": {
+      "type": "named_character_card",
+      "characterName": "ケリーさん",
+      "role": "先生(教師)",
+      "nationality": "アメリカ人",
+      "gender": "female",
+      "description": "ケリーさん(先生・アメリカ人・女性・30〜40代)。明るい色の髪、西洋的な顔立ち、スマートカジュアルな教師服(ブラウス+ブレザー)。",
+      "distinctiveFeature": "Western appearance + teaching attire + light hair",
+      "context": "named_character_portrait",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "usedInExamples": [],
+      "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "char_ケリー_001",
+          "filename": "char_ケリー.png",
+          "imageUrl": "https://drive.google.com/uc?id=1kxKhZES02SgWDjG7eHdXU9DwJWXzDIer",
+          "promptRef": "image_prompts_lesson1_v8.json#char_ケリー",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "char_キム": {
+      "type": "named_character_card",
+      "characterName": "キムさん",
+      "role": "会社員",
+      "nationality": "韓国人",
+      "gender": "male",
+      "description": "キムさん(会社員・韓国人・男性・20代)。短く整えた黒髪、薄い長方形メガネ、ビジネスカジュアル(青いシャツ+ダークパンツ)。",
+      "distinctiveFeature": "thin rectangular glasses + short neat hair + business casual",
+      "context": "named_character_portrait",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "usedInExamples": [
+        "ex_L01_003",
+        "ex_L01_010",
+        "ex_L01_013",
+        "ex_L01_015"
+      ],
+      "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "char_キム_001",
+          "filename": "char_キム.png",
+          "imageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
+          "promptRef": "image_prompts_lesson1_v8.json#char_キム",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "char_タノム": {
+      "type": "named_character_card",
+      "characterName": "タノムさん",
+      "role": "医者",
+      "nationality": "ベトナム人",
+      "gender": "male",
+      "description": "タノムさん(医者・ベトナム人・男性・20代)。短い黒髪、東南アジア系の肌色、白衣またはスポーティカジュアル。",
+      "distinctiveFeature": "darker skin tone + sporty casual style or white medical coat",
+      "context": "named_character_portrait",
+      "firstLesson": 1,
+      "usedInLessons": [
+        1
+      ],
+      "usedInExamples": [
+        "ex_L01_011"
+      ],
+      "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "char_タノム_001",
+          "filename": "char_タノム.png",
+          "imageUrl": "https://drive.google.com/uc?id=19QQBmsB6vpvm_1lLrDSVi31FxdFdXX_x",
+          "promptRef": "image_prompts_lesson1_v8.json#char_タノム",
+          "generatedAt": "2026-05-14",
+          "regenerate": false
+        }
+      ]
+    },
+    "world_map": {
+      "type": "static_asset",
+      "description": "国旗付き世界地図。国籍語彙の導入で使用。",
+      "imageUrl": null,
+      "_note": "静的アセット。画像生成パイプライン対象外。手動で用意してURLを設定する。"
+    },
+    "word_時計": {
+      "type": "auto_generated_vocab",
+      "word": "時計",
+      "reading": "トケイ",
+      "en": "clock",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_腕時計": {
+      "type": "auto_generated_vocab",
+      "word": "腕時計",
+      "reading": "ウデドケイ",
+      "en": "wristwatch",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_ペン": {
+      "type": "auto_generated_vocab",
+      "word": "ペン",
+      "reading": "ペン",
+      "en": "pen",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_鉛筆": {
+      "type": "auto_generated_vocab",
+      "word": "鉛筆",
+      "reading": "エンピツ",
+      "en": "pencil",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_ケータイ": {
+      "type": "auto_generated_vocab",
+      "word": "ケータイ",
+      "reading": "ケータイ",
+      "en": "cell phone",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_本": {
+      "type": "auto_generated_vocab",
+      "word": "本",
+      "reading": "ホン",
+      "en": "book",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_雑誌": {
+      "type": "auto_generated_vocab",
+      "word": "雑誌",
+      "reading": "ザッシ",
+      "en": "magazine",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_新聞": {
+      "type": "auto_generated_vocab",
+      "word": "新聞",
+      "reading": "シンブン",
+      "en": "newspaper",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_かばん": {
+      "type": "auto_generated_vocab",
+      "word": "かばん",
+      "reading": "カバン",
+      "en": "bag",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_消しゴム": {
+      "type": "auto_generated_vocab",
+      "word": "消しゴム",
+      "reading": "ケシゴム",
+      "en": "eraser",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_ビル": {
+      "type": "auto_generated_vocab",
+      "word": "ビル",
+      "reading": "ビル",
+      "en": "building",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_市役所": {
+      "type": "auto_generated_vocab",
+      "word": "市役所",
+      "reading": "シヤクショ",
+      "en": "city hall",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_山": {
+      "type": "auto_generated_vocab",
+      "word": "山",
+      "reading": "ヤマ",
+      "en": "mountain",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_人": {
+      "type": "auto_generated_vocab",
+      "word": "人",
+      "reading": "ヒト",
+      "en": "person",
+      "context": "vocabulary_person",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_わたし": {
+      "type": "auto_generated_vocab",
+      "word": "わたし",
+      "reading": "ワタシ",
+      "en": "I/me",
+      "context": "vocabulary_person",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_犬": {
+      "type": "auto_generated_vocab",
+      "word": "犬",
+      "reading": "いぬ",
+      "en": "dog",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "word_写真": {
+      "type": "auto_generated_vocab",
+      "word": "写真",
+      "reading": "しゃしん",
+      "en": "photo",
+      "context": "vocabulary_object",
+      "firstLesson": 2,
+      "usedInLessons": [
+        2
+      ],
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_029": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p4",
+      "exampleNo": "4-4",
+      "sentence": "タノムさんの時計はどれですか。— あれです。",
+      "sentenceEn": "Which one is Tanomu-san's clock? — That one over there.",
+      "slot": "p4 例文(どれ×時計・あれ答え)・画像化対象",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_030": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p4",
+      "exampleNo": "4-5",
+      "sentence": "ケリーさんの消しゴムはどれですか。— これです。",
+      "sentenceEn": "Which one is Kelly-san's eraser? — This one.",
+      "slot": "p4 例文(どれ×消しゴム)",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_031": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p5",
+      "exampleNo": "5-4",
+      "sentence": "あの建物は市役所です。",
+      "sentenceEn": "That building over there is city hall.",
+      "slot": "p5 例文(あの+建物)・画像化対象",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_032": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p5",
+      "exampleNo": "5-5",
+      "sentence": "その建物はABCビルですか。— はい、そうです。",
+      "sentenceEn": "Is that building the ABC Building? — Yes, it is.",
+      "slot": "p5 例文(その+建物・疑問形)",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_033": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p5",
+      "exampleNo": "5-6",
+      "sentence": "あの山は富士山です。",
+      "sentenceEn": "That mountain over there is Mt. Fuji.",
+      "slot": "p5 例文(あの+山)・画像化対象",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_034": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p6",
+      "exampleNo": "6-3",
+      "sentence": "どの犬ですか。— この犬です。",
+      "sentenceEn": "Which dog is it? — This dog.",
+      "slot": "p6 例文(どの+犬)・画像化対象",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_035": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p6",
+      "exampleNo": "6-4",
+      "sentence": "どの写真ですか。— その写真です。",
+      "sentenceEn": "Which photo is it? — That photo.",
+      "slot": "p6 例文(どの+写真)・画像化対象",
+      "status": "pending",
+      "images": []
+    },
+    "ex_L02_015": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "これはわたしのかばんです。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 アンカー例文。所有表現「わたしの〜」。v2.11.10で新規追加。"
+    },
+    "ex_L02_016": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "それはリンさんのかばんです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有表現「Nさんの〜」。v2.11.10で新規追加。"
+    },
+    "ex_L02_017": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有確認Q&A。v2.11.10で新規追加。"
+    },
+    "ex_L02_018": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有確認 否定応答。v2.11.10で新規追加。"
+    },
+    "ex_L02_019": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "わたしのです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。所有省略形。v2.11.10で新規追加。"
+    },
+    "ex_L02_020": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p3",
+      "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p3 例文。会話形式・定型表現含む。v2.11.10で新規追加。"
+    },
+    "ex_L02_021": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p4",
+      "sentence": "リンさんのペンはどれですか。— それです。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p4 アンカー例文。どれ疑問文。v2.11.10で新規追加。"
+    },
+    "ex_L02_022": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p4",
+      "sentence": "キムさんのかばんはどれですか。— これです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p4 例文。どれ疑問文（かばん）。v2.11.10で新規追加。"
+    },
+    "ex_L02_023": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p4",
+      "sentence": "タノムさんの本はどちらですか。— こちらです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p4 例文。どちら（教科書原典）。v2.11.10で新規追加。"
+    },
+    "ex_L02_024": {
+      "type": "vocab_person_card",
+      "lesson": 2,
+      "patternRef": "p5",
+      "sentence": "この人はアインシュタインです。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p5 アンカー例文。この人。アインシュタイン風フィクションキャラ。v2.11.10で新規追加。"
+    },
+    "ex_L02_025": {
+      "type": "vocab_person_card",
+      "lesson": 2,
+      "patternRef": "p5",
+      "sentence": "その人はアインシュタインです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p5 例文。その人。ex_L02_024 と同一画像を流用予定。v2.11.10で新規追加。"
+    },
+    "ex_L02_026": {
+      "type": "vocab_person_card",
+      "lesson": 2,
+      "patternRef": "p5",
+      "sentence": "あの人はアインシュタインです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p5 例文。あの人。ex_L02_024 と同一画像を流用予定。v2.11.10で新規追加。"
+    },
+    "ex_L02_027": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p6",
+      "sentence": "どの人ですか。— この人です。",
+      "isAnchor": true,
+      "status": "pending",
+      "url": null,
+      "_note": "p6 アンカー例文。どの+N（人）。v2.11.10で新規追加。"
+    },
+    "ex_L02_028": {
+      "type": "scene_illustration",
+      "lesson": 2,
+      "patternRef": "p6",
+      "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
+      "isAnchor": false,
+      "status": "pending",
+      "url": null,
+      "_note": "p6 例文。どの+N（かばん）。v2.11.10で新規追加。"
+    }
+  }
+}

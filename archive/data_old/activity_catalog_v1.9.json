@@ -1,0 +1,4570 @@
+{
+  "_meta": {
+    "version": "1.9",
+    "createdAt": "2026-05-07",
+    "lastModified": "2026-05-17",
+    "purpose": "全課共通のアクティビティ規範カタログ(教育設計系 SSOT)。資料4 の15具体アクティビティと、資料12 の5段階フェイディング・つまずき対応・宿題タイミングを統合する。lesson_NN.json の activity.selectedId が参照する母集団を提供する。",
+    "references": [
+      "資料4: 実践的アクティビティと語学学習効果に関するResearch.docx",
+      "資料12: 日本語初級文型習得の難易度カーブ設計.docx",
+      "資料2: 効果的なスライド設計と第二言語習得のResearch.docx (教師チェックリスト)",
+      "資料3: 効果的なシラバスとカリキュラム作成Research.docx (50分黄金比)",
+      "step3_alignment.md (横断論点・教育設計系の判定根拠)",
+      "初級日本語アクティビティ調査報告.docx（Deep Research 1: N5文法パターン別アクティビティ）",
+      "オンライン日本語マンツーマン授業アクティビティ.docx（Deep Research 2: オンライン1対1授業）",
+      "初級言語教育アプローチ調査.docx（Deep Research 3: TPR・ゲーム・TBLT）",
+      "語学教育アクティビティ推薦システム設計調査.docx（Deep Research 4: 推薦システム設計）"
+    ],
+    "confirmedDecisions": {
+      "structure": "案A: 純粋カタログ型(関心の分離・第N課で再利用しやすい)",
+      "topLevelSchema": "案1: 引き継ぎ雛形どおり 7セクションフラット",
+      "activitiesScope": "案iii: 15個全部 + usedInLesson1 フラグで第1課サジェスト候補を識別",
+      "descriptionDepth": "資料4 本文を2-3文に要約(保守的)",
+      "fadingStagesDepth": "5段階すべて + 第1課での適用例(lesson1Application)を併記",
+      "lesson1Activities": "a1/a2 は catalog 外(materials_lesson1.json で管理)。catalog の usedInLesson1=true は N5 適合5個のみ",
+      "materialTypes": "1-D-1 で確定: オンライン1対1向け6タイプ体制(slide_content / activity_content / handout / teacher_notes / homework / lesson_summary)。partial_schemas.json の確定 schema を materialTypes セクションに忠実コピー(Q1: 案a)。",
+      "materialTypeAxes": {
+        "outputTo": "各タイプ固有の出力先(html / docx / pdf 等)",
+        "persistence": "session_only / permanent",
+        "purposeTags": "presentation / practice / production / evaluation / 等",
+        "applicableStages": "lesson_NN.json flow.stage と対応",
+        "DRY": "lesson_NN.json は wordRef/patternRef で参照(直接コピーしない)",
+        "imageRef": "imageId で master_prompt_design_guide.py 参照",
+        "designTokens": "design_tokens.json は生成時に implicit に参照",
+        "subtype": "観測されたパターンのみ catalog に書く(YAGNI 原則・Phase 1-E 教訓と一貫)"
+      }
+    },
+    "textbookCatalog": {
+      "_note": "このカタログに登録された教科書のメタ情報。activities[].textbookOrigins[].textbookId はこの一覧から選ぶ。lesson_NN.json の textbook_sources[].id とも整合する(同じ ID 体系を共有)。新教科書を catalog の activity に紐付ける際は、まずこの一覧に登録すること。",
+      "textbooks": [
+        {
+          "id": "ABC",
+          "name": "日本語の教え方ABC",
+          "publisher": null,
+          "narrativeStyle": "non_narrative",
+          "addedAt": "2026-05-08",
+          "addedInPhase": "Phase 1-D-2",
+          "_comment": "Phase 1-D-2 で第1課の精読を行い 3 アクティビティに紐付けた。Phase 2 以降で全30課を catalog 化予定(完了報告 §6 申し送り参照)。"
+        }
+      ],
+      "_addingNewTextbook": "新教科書を追加する手順: (1) この textbooks[] に新エントリを追加 (2) 該当する activities[] の textbookOrigins[] にエントリを追加(または新 activity 作成) (3) lesson_NN.json の textbook_sources[] でも同じ id を使用"
+    },
+    "knownLimitations": [
+      "lesson_summary は placeholder のみ(Phase 2 のシラバス設計・複数課運用の中で詳細化予定)",
+      "各 materialType の subtype は意図的に未確定(YAGNI 原則・Phase 2 以降に観測された活動から命名)",
+      "lesson.grammarMemo の追加(教師ノート設計で確定した P 案)は本 catalog のスコープ外。Phase 1-D-2 で lesson_NN.json 更新時に実施予定",
+      "活動 materials フィールドは資料4 記述に基づくタグのみ。具体的な素材設計は materialType と activity の紐付け作業で詳細化予定",
+      "資料4 のセクション C(レベル別おすすめ)に登場する「写真間違い探しタスク」は、E章の番号付き詳細セクションには存在しない。本 catalog では情報格差描写タスク(act_info_gap_picture)に統合した",
+      "html→pdf 変換の標準パイプライン(handout/homework/lesson_summary で共有予定)は Phase 1-F で詳細化",
+      "再生成時の handwritten 領域マージ戦略(teacher_notes.customNotes / handout.handwritten / homework.modes[].questions.handwritten)は Phase 1-F で詳細化",
+      "日本語の教え方ABC は第1課のみ catalog 化済み(Phase 1-D-2)。第2課以降の全30課を catalog 化する作業は Phase 2 以降の独立タスク(完了報告 §6 申し送り)。他教科書(みんなの日本語・げんき等)も Phase 2 以降で順次追加予定。"
+    ],
+    "changes": [
+      "v1.0 (2026-05-07): 初版。Phase 1-E 完了時点の確定内容を反映。",
+      "v1.1 (2026-05-08): Phase 1-D-1 完了反映。materialTypes セクションを 6 タイプ体制で完全置換(slide_content / activity_content / handout / teacher_notes / homework / lesson_summary)。activities[] 15 個に contentRequirement フィールドを追加(activity_content 要否判定)。",
+      "v1.2 (2026-05-08): Phase 1-D-2 で第1課用導入アクティビティ 3 個を stage1 に追加(handoff v1.3.1 §9-1 / §9-4 対応)。act_picture_card_vocab_intro / act_qa_pattern_intro / act_attribute_modeling_intro。日本語の教え方ABC 第1課 教え方の例1〜3 を一般化(教科書固有名詞・固有人物は除外)。教科書由来情報を構造化するため、各 activity に textbookOrigins[] を新設(後方互換のため source も併記)。_meta に textbookCatalog セクションを新設し textbookId のマスターを定義。fadingStages.stage1.exampleActivities にも追記。",
+      "v1.3 (2026-05-10): Phase 2-B 主作業[3]完了。全18アクティビティに playerExplanation(ja/en) / teacherTip / defaultMaterialTypes[] を追加。playerExplanation は漢字交じり自然文で記述しHTML側でルビ付与する設計。defaultMaterialTypes は materialNeeds[] type 体系(12 type)のサブセット。",
+      "v1.4 (2026-05-13): Stage 1 タスク 18 着手準備。act_online_roulette を試金石として柔軟化(handoff_stage1_task18_kickoff.md §3-3.A)。[変更内容] (1) act_online_roulette に mechanics / applicability / configurableFields / lesson1Example の 4 フィールドを新設(将来の全15個展開はStage 2 の 30 課分析プロジェクトで実施)。(2) description を抽象化(「適用範囲は採用 lesson の文型・語彙レベルに応じて teacher が指定する」を明記)し、特定文型(過去形3文等)の具体例を削除。(3) usedInLesson1: false → true に変更(configurableFields による柔軟化で N5 にも適用可になったため)。(4) lesson1Note を「configurableFields の lesson1Example.config(slotsTheme=人物当て / expectedUtterance=〜は〜です)で第1課対応」の旨に書き換え。[判断根拠] handoff_stage1_task18_kickoff.md §2-2 / §3-3.A: ユーザー要望「カタログ内のアクティビティの役割を完全固定せず、柔軟性を持たせて Claude が提案する設計」。act_online_roulette を試金石として configurableFields パターンを導入し、Stage 2 で全 activity に展開する。[伝播チェーン] 起点 C(activity_catalog 変更)。下流影響: (a) lesson_01.json は act_online_roulette を flow[].activityId で直接参照していない(intro_act_pX 3 件のみ参照) → 影響なし。(b) flow_synthesizer.js の hasRequiredActivity 判定は judgment フィールドのみ参照 → 影響なし。(c) session_001.json v1.1 → v1.2 で mainActivities[] に act_online_roulette + useExample: \"lesson1Example\" を追加(本変更と同 commit で反映)。(d) data.js 合成(タスク 18)で useExample / configOverride 解決ロジックを実装。",
+      "v1.5 (2026-05-14): Deep Research 統合・スキーマ拡張。[変更1] 既存18件に validatedForLessons:[] / prerequisitePatterns:[] を追加（スキーマ統一・値は今後順次入力）。[変更2] 残課題A 2件追加: act_hajimemashite_conversation（prerequisitePatterns:[p1,p2,p3]）/ act_person_guessing_quiz（prerequisitePatterns:[p1,p2]）。[変更3] Deep Research由来 8件追加: act_celebrity_party / act_mystery_guest / act_identity_guessing / act_passport_control（以上 Research1）/ act_google_maps_tour / act_virtual_treasure / act_reaction_quiz（以上 Research2）/ act_hot_seat（Research3）。[設計方針] 全新規エントリは prerequisitePatterns に p1/p2/p3 を明示し lesson_01 の推薦フィルター対象とした。validatedForLessons:[1] を付与。[件数] 18→28件。",
+      "v1.6 (2026-05-14): スキーマ統一・新規29件追加。[変更1] purpose フィールドを skillFocus[] + activityType[] の2フィールドに分離（全57件）。skillFocus: speaking/listening/reading/writing。activityType: tpr/game/roleplay/task/drill/quiz/discussion/presentation/feedback_technique。[変更2] interactionPattern フィールドを全57件に追加（全件 'pair'）。[変更3] prerequisitePatterns をgrammarConceptIDベースに統一（p1→noun_predicate_affirmative / p2→noun_predicate_question / p3→noun_no_affiliation）。[変更4] act_google_maps_tour をlesson_02+に移管（usedInLesson1:false / prerequisitePatterns:[existence_location]）。[変更5] act_passport_control lesson1Note に年齢欄なし仕様を明記。[変更6] 新規29件追加（R3-TPR:7 / R3-ゲーム:8 / R3-TBLT:6 / R2-オンライン:6 / R1-p1p2:2）。[件数] 28→57件。",
+      "v1.7 (2026-05-15): 残課題F・G・H 一括実装。[変更1(F)] prerequisitePatterns 値入れ: act_picture_card_vocab_intro/act_qa_pattern_intro/act_attribute_modeling_intro/act_three_hint_quiz/act_quick_qa/act_info_gap_picture/act_virtual_bg_tour/act_two_min_presentation/act_business_roleplay の9件に grammarConceptID を設定。grammar-agnostic 7件（act_shiritori_themed等）は [] 確定。TBLT 6件（act_draw_this等）は各lesson確定後に入力予定。[変更2(G)] usedInLesson1 フィールド廃止。全57件から削除。usedInLesson1:true だった24件を validatedForLessons:[1] に移行。lesson1Note フィールドは継続保持。[変更3(H)] _meta.taxonomyDefinition.optionalFields を新設（A案: 任意フィールド公式化）。caution / variations / plusAlpha の定義・記入ルール・例を明記。[件数] 57件（変化なし）。",
+      "v1.8 (2026-05-17): ABC第2課対応追加。(1) act_info_gap_picture に validatedForLessons: [2] 追加・textbookOrigins[] 新設（p3〜p4対応）。(2) act_belongings_qa を新規追加（マンツーマン版・教師の持ち物Q&A）。handoff_v2_2.md §2 優先③に基づく。",
+      "v1.9 (2026-05-17): act_belongings_qa の activityType から未定義値 'communicative' を削除。taxonomy 準拠対応。"
+    ],
+    "taxonomyDefinition": {
+      "skillFocus": {
+        "values": [
+          "speaking",
+          "listening",
+          "reading",
+          "writing"
+        ],
+        "note": "学習者が主に使うスキル軸"
+      },
+      "activityType": {
+        "values": [
+          "tpr",
+          "game",
+          "roleplay",
+          "task",
+          "drill",
+          "quiz",
+          "discussion",
+          "presentation",
+          "feedback_technique"
+        ],
+        "note": "活動の形式・構造軸。Research4のinteractivity_type軸とは別（詳細はdeep_research_integration_summary_v1.0.md §6.3参照）"
+      },
+      "interactionPattern": {
+        "values": [
+          "individual",
+          "pair",
+          "group"
+        ],
+        "note": "group は原則カタログに登録しない（1対1システムのため）"
+      },
+      "scaffoldingVsStage": {
+        "note": "Research1の高支援=stage1-2 / 中=stage3 / 自律=stage4-5 に対応"
+      },
+      "optionalFields": {
+        "_note": "任意フィールド（全件への記入は不要）。新規アクティビティ追加時は該当する場合のみ記入する。",
+        "caution": {
+          "type": "string",
+          "description": "実施上の注意点・落とし穴（例：年齢欄なし、数字未習など）",
+          "example": "lesson_01では数字が未習のため年齢欄を省略する"
+        },
+        "variations": {
+          "type": "array of string",
+          "description": "同アクティビティのバリエーション・難易度別実施方法",
+          "example": [
+            "ヒントを3→2→1と減らす難化バリエーション"
+          ]
+        },
+        "plusAlpha": {
+          "type": "string",
+          "description": "上位レベル学習者や時間余裕がある場合の発展活動",
+          "example": "N4以上の学習者には否定形も使わせる"
+        }
+      }
+    }
+  },
+  "fadingStages": {
+    "_note": "資料12: 5段階のプロンプト・フェイディング。PPP の3段階では Practice → Production の跳躍が大きすぎるため、間を細かく刻んだ5段階モデル。各段階で教師の補助(プロンプト)を少しずつ減らしていく。",
+    "stage1": {
+      "name": "気づきと受容",
+      "nameEn": "Receptive / Noticing",
+      "teacherInvolvement": "100%(モデル提示)",
+      "description": "学習者は聞く・見る・指差すなどの受容活動のみ。発話を求めない。沈黙期(Silent Period)にある学習者のプレッシャーを取り除く。",
+      "lesson1Application": "スライド④⑦ 語彙イラスト+音声提示。宿題モード3(聞く)。教師が「田中さんは先生です」と発話するのを学習者は聞いて意味を取る。",
+      "exampleActivities": [
+        "act_animal_yoga_tpr",
+        "act_gesture_tpr",
+        "act_picture_card_vocab_intro",
+        "act_qa_pattern_intro",
+        "act_attribute_modeling_intro"
+      ]
+    },
+    "stage2": {
+      "name": "機械的処理",
+      "nameEn": "Mechanical Drill",
+      "teacherInvolvement": "80%(完全な型を提示)",
+      "description": "教師が完全な文を提示し、学習者はリピート・代入のみ行う。意味より形態の正確さを担保する。",
+      "lesson1Application": "スライドのモデル文「田中さんは先生です」を10回リピート。宿題モード1(絵→単語選択)で語彙ラベルを当てる。",
+      "exampleActivities": [
+        "act_shiritori_themed",
+        "act_jlpt_time_attack"
+      ]
+    },
+    "stage3": {
+      "name": "有意味ドリル",
+      "nameEn": "Meaningful Drill",
+      "teacherInvolvement": "60%(選択肢を提示)",
+      "description": "文脈の中で正しい形を選ぶ。意味処理が加わるが、選択肢があるため認知負荷は限定的。",
+      "lesson1Application": "宿題モード2(文を並べる)で語順を組み立てる。教師が写真を見せ「医者ですか、先生ですか?」と二択で問う。",
+      "exampleActivities": [
+        "act_three_hint_quiz",
+        "act_culture_quiz",
+        "act_quick_qa"
+      ]
+    },
+    "stage4": {
+      "name": "半統制産出",
+      "nameEn": "Semi-controlled Production",
+      "teacherInvolvement": "30%(枠だけ提示)",
+      "description": "穴埋め・部分産出。教師は文の枠を提示し、学習者は要素を埋める。形式と意味の両方の負荷がかかる。",
+      "lesson1Application": "スライド⑨ 練習穴埋め「___さんは___です」で自分の情報を入れる。a1 職業カード当てゲームの後半。",
+      "exampleActivities": [
+        "act_info_gap_picture",
+        "act_online_roulette",
+        "act_word_association"
+      ]
+    },
+    "stage5": {
+      "name": "自由産出",
+      "nameEn": "Free Production",
+      "teacherInvolvement": "10%(トピックのみ)",
+      "description": "学習者がトピックに沿って自由に発話する。フリートーク・自己紹介・プレゼンテーション。第1課で最も実装が薄い段階。",
+      "lesson1Application": "a2 ペア自己紹介(現状実装)を相当段階として運用。教師は相槌のみで介入を最小化。",
+      "exampleActivities": [
+        "act_two_min_presentation",
+        "act_business_roleplay",
+        "act_virtual_bg_tour",
+        "act_news_discussion",
+        "act_retelling"
+      ]
+    }
+  },
+  "activities": [
+    {
+      "id": "act_shiritori_themed",
+      "name": "条件付きしりとり",
+      "nameEn": "Themed Shiritori (Words Catch)",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3",
+        "N2",
+        "N1"
+      ],
+      "duration": "3-5min",
+      "preparation": "なし",
+      "tools": [
+        "Zoom Chat",
+        "Google Meet Chat"
+      ],
+      "description": "前の人が言った単語の最後の文字から始まる単語を交互に言う伝統的な遊び。テーマ(食べ物/動物等)や品詞縛りで負荷を調整する。語彙の検索スピードと音韻認識能力を強化する。",
+      "procedure": [
+        "テーマや縛りを設定する(例: 食べ物のみ、3文字以上の名詞のみ)",
+        "教師がペースメーカーとして開始する",
+        "生徒が詰まった場合、チャットに次の単語の最初の文字を打って視覚的にサポートする",
+        "タイマーで厳密に時間を区切る"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%(交互発話)",
+      "applicableLessons": "all",
+      "lesson1Note": "第1課N5は文字練習段階のため、テーマ縛り(職業のみ等)で適用可能",
+      "source": "資料4 セクション E-1",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "口頭+Zoom チャットで完結"
+      },
+      "playerExplanation": {
+        "ja": "前の言葉の最後の文字から始まる言葉を交互に言います。テーマ（例：食べ物）や条件を決めて楽しみましょう。",
+        "en": "Take turns saying a word that starts with the last sound of the previous word. A theme or rule (e.g. food only) will be set first."
+      },
+      "teacherTip": "生徒が詰まったときはチャットに次の文字のヒントを打って視覚的にサポートする。タイマーで時間を厳密に区切り、テンポを崩さないことが肝心。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_quick_qa",
+      "name": "クイックQ&A",
+      "nameEn": "Quick Q&A",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N4",
+        "N3"
+      ],
+      "duration": "5min",
+      "preparation": "なし",
+      "tools": [
+        "画面共有(ストップウォッチ)"
+      ],
+      "description": "教師が即答可能な質問をテンポよく投げ、生徒が1〜2秒以内に回答する。流暢さを最優先し文法的誤りは訂正しない。宣言的知識を手続き的知識へ変換する自動化(Proceduralization)を促す。",
+      "procedure": [
+        "リズムとテンポを最優先するファシリテーターに徹する",
+        "「好きな食べ物は?」など即答できるレベルの質問を矢継ぎ早に投げる",
+        "誤りがあっても訂正せず、流暢さの維持を優先する",
+        "立場を逆転させ生徒から教師へ質問させると疑問文構築の練習になる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%(交互発話)",
+      "applicableLessons": "all",
+      "lesson1Note": "N5 では既習語彙が少なすぎてテンポを保つのが難しい",
+      "source": "資料4 セクション E-2",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "口頭のみ"
+      },
+      "playerExplanation": {
+        "ja": "先生の質問にできるだけ速く答えてください。文法が少し間違っていても大丈夫です。スピードを大切にしましょう。",
+        "en": "Answer the teacher's questions as quickly as possible. Don't worry about perfect grammar — speed is the priority."
+      },
+      "teacherTip": "文法誤りは訂正せずリズムを最優先。生徒が慣れてきたら役割を逆転させ、生徒から教師へ質問させると疑問文の産出練習になる。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_word_association",
+      "name": "連想ゲーム",
+      "nameEn": "Word Association",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N4",
+        "N3",
+        "N2"
+      ],
+      "duration": "5min",
+      "preparation": "なし",
+      "tools": [
+        "Google Docs(リアルタイム単語記録)"
+      ],
+      "description": "教師が一語提示(例:「夏」)、生徒が連想語(例:「海」)を即答、教師がさらに連想を返す。意味的な結びつき(Semantic Mapping)で語彙を記憶する力を鍛え、長期記憶への定着率を上げる。",
+      "procedure": [
+        "教師が一語(例:「夏」)を提示する",
+        "生徒が連想する語を即答する",
+        "教師が次の連想語で返す",
+        "考え込まないよう、いつでも『パス』を宣言できるルールにする",
+        "出た単語をGoogle Docsに記録し、後で文章作成タスクへ発展させる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%(交互発話)",
+      "applicableLessons": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "lesson1Note": "N5 では連想できる語彙が少なく、第1課には早すぎる",
+      "source": "資料4 セクション E-3",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "口頭+チャット"
+      },
+      "playerExplanation": {
+        "ja": "先生が言った言葉から連想する言葉を即座に答えてください。思い浮かばなければ「パス」と言って大丈夫です。",
+        "en": "Quickly say a word you associate with the teacher's word. If nothing comes to mind, just say 'pass'."
+      },
+      "teacherTip": "出た単語をGoogle Docsにリアルタイムで記録しておくと、授業後半の文章作成タスクや次回の復習素材として活用できる。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_gesture_tpr",
+      "name": "ジェスチャーゲーム(TPR応用)",
+      "nameEn": "Gesture Game (TPR)",
+      "stage": [
+        "stage1",
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "5-10min",
+      "preparation": "お題リスト(教師用)",
+      "tools": [
+        "Zoom/Google Meet ビデオ機能(ピン留め推奨)"
+      ],
+      "description": "言葉を発さず身振りだけで動作や状態を表現し、それが何の言葉かを当てる。TPR(全身反応教授法)に基づき、身体運動と言語を結びつけて記憶定着を促す。学習不安(Affective Filter)を下げる効果が高い。",
+      "procedure": [
+        "教師がオンラインのカメラフレームを意識して、少し大げさに演じる",
+        "生徒が日本語で答える",
+        "最初は教師が演じ、心理的安全性が確保されたら生徒も出題側に回す",
+        "副詞+動詞の組み合わせ(『こっそり食べる』等)で中級にも応用可"
+      ],
+      "materials": [
+        "picture_card"
+      ],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "all",
+      "lesson1Note": "「医者」「先生」など職業の業務動作をジェスチャーで当てる第1課TPRに最適",
+      "source": "資料4 セクション E-4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "身体動作のみ"
+      },
+      "playerExplanation": {
+        "ja": "先生のジェスチャーを見て、何の言葉か当ててください。話さなくても大丈夫です。",
+        "en": "Watch the teacher's gesture and guess the Japanese word. You don't need to speak at first."
+      },
+      "teacherTip": "カメラフレームに上半身が収まるよう事前に確認する。最初の2〜3回は必ず教師が演じ手になり、生徒が心理的に慣れてから役割を交代すること。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_three_hint_quiz",
+      "name": "3ヒントクイズ",
+      "nameEn": "Three Hint Quiz",
+      "stage": [
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "duration": "10min",
+      "preparation": "ヒントスクリプト(またはスライド)",
+      "tools": [
+        "Canva(ヒントスライド)",
+        "画面共有"
+      ],
+      "description": "教師が3つのヒントを順に出し(例:1.赤い 2.果物 3.甘酸っぱい → イチゴ)、生徒が答えを推測する。聞こえた断片から全体を推測するトップダウン処理のリスニング力を鍛える。",
+      "procedure": [
+        "ターゲット語を決め、3つのヒントを論理的に構成する(易→難の順)",
+        "ヒントを1つずつ提示し、生徒に推測させる",
+        "中級以上では連体修飾節(『私が昨日買った』等)を組み込む",
+        "発展形として生徒に3ヒントを作らせて出題させる"
+      ],
+      "materials": [
+        "script"
+      ],
+      "stt_ttt_ratio": "STT 40%",
+      "applicableLessons": "all",
+      "lesson1Note": "「日本人です/医者です/男の人です → 田中さん」のように人物紹介の3ヒントとして適用可",
+      "source": "資料4 セクション E-5",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "ヒント文+正解絵をスライドに"
+      },
+      "playerExplanation": {
+        "ja": "先生が3つのヒントを順番に言います。ヒントを聞いて、何のことか当ててください。分かったら日本語で答えましょう。",
+        "en": "The teacher will give three hints one by one. Listen carefully and guess the answer in Japanese."
+      },
+      "teacherTip": "ヒントは「易→難」の順に構成し、1つ目で正解されないよう難易度を調整する。生徒が慣れてきたら出題側を逆転させ、生徒が3ヒントを作る産出練習に発展させると効果が高い。",
+      "defaultMaterialTypes": [
+        "special_slide"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "quiz"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_online_roulette",
+      "name": "オンライン・ルーレット",
+      "nameEn": "Online Roulette",
+      "stage": [
+        "stage4"
+      ],
+      "level": [
+        "N4",
+        "N3"
+      ],
+      "duration": "10-15min",
+      "preparation": "デジタルルーレットのセットアップ",
+      "tools": [
+        "Wheel of Names",
+        "Wordwall",
+        "Twinkl Randomiser Wheel"
+      ],
+      "description": "画面共有でデジタルルーレットを回し、止まったマスの条件に従って生徒が発話する。ランダム性とゲーミフィケーションで意味交渉(Negotiation of Meaning)の準備段階として機能する。適用範囲(対象文型・語彙・期待発話)は採用 lesson の難易度に応じて teacher が configurableFields で指定する(v1.4 で柔軟化)。",
+      "procedure": [
+        "ルーレットのマスに condition / 語彙 / 画像など発話タスクを設定する(configurableFields.slotsSource を参照)",
+        "生徒の前でルーレットを回す",
+        "止まったマスの条件に従って生徒が発話する(configurableFields.expectedUtterance に従う)",
+        "難しすぎるお題が連続しないよう低負荷マス(『教師に質問』等)を混ぜる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 70%",
+      "mechanics": "ルーレット + ランダム選出 + 発話",
+      "_mechanics_note": "v1.4 で新設。activity の本質的なゲーム機構を1文で記述。configurableFields で具体内容を差し替えても本フィールドは不変(activity の同一性を担保)。Stage 2 の 30 課分析プロジェクトで全 activity に展開予定。",
+      "applicability": {
+        "patterns": "any",
+        "_patterns_note": "ルーレットは任意の文型に適用可能(N5 の『〜は〜です』から N1 の複雑な構文まで)。lesson 側で expectedUtterance を指定して使う。",
+        "jlptLevels": [
+          "N5",
+          "N4",
+          "N3",
+          "N2",
+          "N1"
+        ],
+        "fadingStages": [
+          "controlled",
+          "guided",
+          "free"
+        ],
+        "duration": {
+          "min": 8,
+          "max": 15
+        },
+        "supportedLessons": [
+          1
+        ],
+        "_supportedLessons_note": "Stage 2 の 30 課分析プロジェクト(handoff_stage1_task18_kickoff.md §1-4 / S2-1)で全課への対応可否を精査後、本配列を拡張する。Stage 1 では第1課対応のみ確定。",
+        "studentLevel": [
+          "beginner",
+          "intermediate",
+          "advanced"
+        ]
+      },
+      "_applicability_note": "v1.4 で新設。activity が適用可能な文型・JLPT レベル・フェイディング段階・授業時間・対象生徒の範囲を記述。Stage 3 の activity_recommender.js が本フィールドを参照して候補を絞り込む(handoff_stage1_task18_kickoff.md §2-2 Stage 3 戦略)。",
+      "configurableFields": {
+        "slotsTheme": "ルーレットのお題のテーマ(例: 人物当て / 職業当て / 時制変換 / 数字読み上げ)",
+        "slotsCount": "スロット数(4〜12 推奨)",
+        "slotsSource": "スロットの内容を取得する参照先(例: image_prompts_lesson1_v7.json#vocabulary_images)",
+        "expectedUtterance": "止まったマスで期待される発話パターン(例: 『〜は〜です』)",
+        "patternRef": "統合する文型 ID(任意・lesson の patterns[].id を指定)"
+      },
+      "_configurableFields_note": "v1.4 で新設。session 側で活動の具体内容をカスタマイズするためのフィールド定義。session.mainActivities[].config に同名フィールドを書くと採用される。useExample 指定時は catalog の lesson1Example.config を基盤とし、configOverride で差分上書き(Q-D8 案 A・タスク 18 で確定予定)。",
+      "lesson1Example": {
+        "config": {
+          "slotsTheme": "人物当て",
+          "slotsCount": 8,
+          "slotsSource": "image_prompts_lesson1_v7.json#vocabulary_images",
+          "expectedUtterance": "〜は〜です",
+          "patternRef": "p1"
+        },
+        "description": "p1 導入後、人物写真をランダム表示し『〜は〜です』を産出。8 スロットは vocab_lesson1 の人物・職業 7 枚 + 低負荷マス『教師に質問』1 枚で構成。"
+      },
+      "_lesson1Example_note": "v1.4 で新設。第1課での具体的な適用例(slotsTheme=人物当て / expectedUtterance=〜は〜です)。session_001.json で useExample: 'lesson1Example' と書くと本 config がデフォルト採用される(Q-D8 案 A)。",
+      "applicableLessons": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "_applicableLessons_note": "v1.4 時点では Stage 2 の 30 課分析未実施のため、本配列は手動メモのまま残存。applicability.supportedLessons との重複は Stage 2 で整理予定(applicableLessons は deprecated 化候補)。",
+      "_usedInLesson1_note": "v1.3 では false(N5 では早い判定) / v1.4 で true に変更。configurableFields による柔軟化で N5 文型(〜は〜です)にも対応可になったため。具体的な第1課での運用は lesson1Example.config を参照。",
+      "lesson1Note": "v1.4 で柔軟化: configurableFields の lesson1Example.config(slotsTheme=人物当て・expectedUtterance=〜は〜です)を採用すれば第1課でも有効。session_001.json で useExample: 'lesson1Example' を指定する。",
+      "source": "資料4 セクション E-6",
+      "contentRequirement": {
+        "judgment": "required",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "アニメーション+ランダム選出",
+        "axes": {
+          "interaction": "animate_view",
+          "timing": "timer",
+          "state": "ephemeral"
+        },
+        "_axesNote": "activity_content の3軸モデル(interaction / timing / state)による判定。詳細は materialTypes.activity_content.axes 参照。"
+      },
+      "playerExplanation": {
+        "ja": "ルーレットを回して、止まったマスのお題に従って日本語で話してください。ゲーム感覚で楽しみましょう。",
+        "en": "Spin the roulette and speak in Japanese according to the topic on the square it lands on. Have fun with it!"
+      },
+      "teacherTip": "難しいお題が連続しないよう、「教師に質問する」「好きな言葉を1つ言う」など低負荷マスを全体の30%ほど混ぜておくとテンポが安定する。ルーレットは授業前に動作確認済みにしておくこと。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_virtual_bg_tour",
+      "name": "バーチャル背景ツアー",
+      "nameEn": "Virtual Background Tour",
+      "stage": [
+        "stage5"
+      ],
+      "level": [
+        "N4",
+        "N3",
+        "N2",
+        "N1"
+      ],
+      "duration": "10-15min",
+      "preparation": "生徒自身の写真(事前にバーチャル背景に設定)",
+      "tools": [
+        "Zoom/Google Meet バーチャル背景機能"
+      ],
+      "description": "生徒が故郷・旅行先・趣味の写真をバーチャル背景に設定し、教師が背景についてインタビューする。真正性(Authenticity)の高い自己開示型タスクで、状況説明という談話レベルの言語運用能力を養う。",
+      "procedure": [
+        "事前に生徒へ写真の準備を依頼する",
+        "教師は熟練のインタビュアーとして相槌を打ちながら質問を重ねる",
+        "プライバシーに配慮し、過度な質問は避ける",
+        "教師側もパーソナルな写真を背景に設定して双方向の情報交換を行う"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 80%",
+      "applicableLessons": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "lesson1Note": "N5 では発話量が不足し、活動が成立しない",
+      "source": "資料4 セクション E-7",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "Zoom 仮想背景機能のみ"
+      },
+      "playerExplanation": {
+        "ja": "好きな写真をバーチャル背景に設定してください。先生がその写真についてインタビューします。自由に話してみましょう。",
+        "en": "Set a personal photo as your virtual background. The teacher will interview you about it. Feel free to talk as much as you like."
+      },
+      "teacherTip": "事前に「故郷・旅行先・趣味の写真を1枚用意してください」と生徒に伝えておく。プライバシーに配慮し、深く立ち入りすぎない。教師側も同じくパーソナルな写真を背景に設定すると双方向の場になり心理的安全性が高まる。",
+      "defaultMaterialTypes": [
+        "teacher_photo"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_news_discussion",
+      "name": "ニュース記事ディスカッション",
+      "nameEn": "News Article Discussion",
+      "stage": [
+        "stage5"
+      ],
+      "level": [
+        "N2",
+        "N1"
+      ],
+      "duration": "20-30min",
+      "preparation": "ニュース記事、スキャフォールディング用質問リスト",
+      "tools": [
+        "NHK News Web Easy",
+        "Google Docs(共同ハイライト)"
+      ],
+      "description": "現実のニュース記事を題材に、内容読解と意見交換を行う高度なタスク。多くは反転授業形式で事前に記事を読ませる。記事体(Kijitai)のフォーマルな表現の獲得と批判的思考力を鍛える。",
+      "procedure": [
+        "事前に記事を読ませる(反転授業)",
+        "授業ではトピック関連のウォームアップ質問でスキーマを活性化する",
+        "段階的なスキャフォールディング(語彙リスト・背景知識補足)を提供する",
+        "初期段階はNHK News Web Easyのルビ付き記事から開始する"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": [],
+      "lesson1Note": "N5 のスコープ外。中上級以降のみ",
+      "source": "資料4 セクション E-8",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "記事はhandoutで・口頭議論"
+      },
+      "playerExplanation": {
+        "ja": "授業前に送った記事を読んできてください。授業では記事の内容について一緒に話し合います。自分の意見も準備しておきましょう。",
+        "en": "Please read the article sent before class. In the lesson we will discuss the content together. Try to prepare your own opinion."
+      },
+      "teacherTip": "NHK News Web Easy のルビ付き記事から始めるとN3〜N4レベルにも対応できる。語彙リストや背景知識の補足を事前に送付しておくと討論の質が上がる。授業中は教師が意見を言いすぎず、生徒の発話時間（STT）を最大化すること。",
+      "defaultMaterialTypes": [
+        "special_handout"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "reading",
+        "speaking"
+      ],
+      "activityType": [
+        "discussion"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_info_gap_picture",
+      "name": "情報格差描写タスク",
+      "nameEn": "Information Gap Picture Task",
+      "stage": [
+        "stage4"
+      ],
+      "level": [
+        "N4",
+        "N3"
+      ],
+      "duration": "10-15min",
+      "preparation": "わずかに異なる2枚のイラストまたは写真(AとB)",
+      "tools": [
+        "Zoomホワイトボード",
+        "プライベートチャット"
+      ],
+      "description": "教師と生徒がそれぞれ異なる画像を持ち、画面共有せずに言葉だけで描写し合い、違いを特定する。情報格差(Information Gap)を埋める本質的なコミュニケーションが生まれ、言い換え戦略とコミュニケーション修復能力を鍛える。資料4 C表「写真間違い探しタスク」もこの活動に含まれる。",
+      "procedure": [
+        "教師と生徒で異なる画像(AとB)を準備する",
+        "画面共有せず、お互いに言葉だけで描写する",
+        "教師は具体的な位置情報を引き出す質問者となる",
+        "間違いの箇所が明確な画像を選び、フラストレーションを避ける",
+        "発展形として教師がデジタルホワイトボードに描いていく(Draw what I say)形式へ"
+      ],
+      "materials": [
+        "picture_card"
+      ],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "lesson1Note": "「人物特定タスク」として『〜は〜です』の運用に転用可能だが、第1課ではa1で十分",
+      "source": "資料4 セクション E-9",
+      "contentRequirement": {
+        "judgment": "required",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "権限分離(dual_view)が必要",
+        "axes": {
+          "interaction": "dual_view",
+          "timing": "none",
+          "state": "ephemeral"
+        },
+        "_axesNote": "activity_content の3軸モデル(interaction / timing / state)による判定。詳細は materialTypes.activity_content.axes 参照。"
+      },
+      "playerExplanation": {
+        "ja": "先生と違う絵を持っています。お互いの絵を言葉で説明して、どこが違うか見つけましょう。絵を見せないでください。",
+        "en": "You and the teacher have different pictures. Describe your picture in words and find the differences. Don't show your picture!"
+      },
+      "teacherTip": "画像は「ほぼ同じだが細部が数か所違う」ものを選ぶ。違いが多すぎると会話が収拾できなくなる。1対1オンラインでは教師が画像Bを画面外に持ち、学習者にはチャットまたはメールで画像Aを事前送付しておくとスムーズ。",
+      "defaultMaterialTypes": [
+        "teacher_photo"
+      ],
+      "validatedForLessons": [
+        2
+      ],
+      "prerequisitePatterns": [
+        "existence_location"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "textbookOrigins": [
+        {
+          "textbookId": "ABC",
+          "lesson": 2,
+          "patterns": [
+            "p3",
+            "p4"
+          ],
+          "activity_name": "（情報格差版）どれですか・〜の〜 練習",
+          "description": "学習者と教師がそれぞれ異なるカード配置の画像を持ち、「これはAさんのペンですか」「Bさんのかばんはどれですか」のような所有確認 Q&A で情報格差を埋める。p3（〜の〜所有）と p4（どれ）の統合運用練習。",
+          "materialNote": "カードA・カードB: 複数の持ち物（ペン・かばん・本等）が配置されているが、各物の持ち主の割り当てが異なる2枚の画像を使用する。事前に学習者にメールまたはチャットで送付する。"
+        }
+      ],
+      "_L02_note": "v1.8: lesson_02 p3(〜の〜)/p4(どれ)の運用練習としてvalidatedForLessons に追加。applicableLessons の範囲外だが、マンツーマン・初級前半での簡易版(持ち物Q&A形式)として対応可能と判断。"
+    },
+    {
+      "id": "act_two_min_presentation",
+      "name": "2分間プレゼンテーション",
+      "nameEn": "Two-Minute Presentation",
+      "stage": [
+        "stage5"
+      ],
+      "level": [
+        "N3",
+        "N2",
+        "N1"
+      ],
+      "duration": "15min",
+      "preparation": "プレゼンテーマのリスト",
+      "tools": [
+        "画面上のタイマー",
+        "Google Docs(メモ用)"
+      ],
+      "description": "特定トピックについて、数分の準備後に2分間ノンストップでプレゼンを行う。終了後に質疑応答を設ける。独話(Monologue)の訓練でパラグラフレベルの言語運用能力と接続詞の使用を高める。",
+      "procedure": [
+        "トピック(例:『私の国の習慣』)を提示する",
+        "準備時間を与える(キーワード箇条書きのみ許可、原稿執筆は禁止)",
+        "教師はプレゼン中は一切口を挟まず傾聴者・タイムキーパーに徹する",
+        "終了後、内容コメントと言語的誤り指摘を分けてフィードバックする"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 90%",
+      "applicableLessons": [],
+      "lesson1Note": "N5 のスコープ外。中級以降のみ",
+      "source": "資料4 セクション E-10",
+      "contentRequirement": {
+        "judgment": "borderline",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "タイマーのみ・simple_timer 候補(YAGNI で保留)"
+      },
+      "playerExplanation": {
+        "ja": "テーマを見て、2〜3分で考えてください。その後、2分間日本語でプレゼンしてください。メモはキーワードだけOKです。原稿はNGです。",
+        "en": "Look at the topic and take 2-3 minutes to prepare. Then present in Japanese for 2 minutes. Keywords only for notes - no full scripts."
+      },
+      "teacherTip": "準備時間中は教師も沈黙を守り、生徒が自分で考える時間を確保する。プレゼン中は一切口を挟まずタイムキーパーに徹する。終了後のフィードバックは「内容」と「言語的な誤り」を分けて伝えると混乱しない。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "presentation"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_business_roleplay",
+      "name": "ビジネス日本語ロールプレイ",
+      "nameEn": "Business Japanese Roleplay",
+      "stage": [
+        "stage5"
+      ],
+      "level": [
+        "N2",
+        "N1"
+      ],
+      "duration": "15-20min",
+      "preparation": "ロールプレイ用シナリオカード",
+      "tools": [
+        "Zoom録画機能(事後フィードバック)"
+      ],
+      "description": "ビジネスシーンの具体的状況(取引先への電話・上司への謝罪等)を設定し、教師が相手役を演じる。待遇表現の使い分けと社会言語学的な適切さを鍛え、語用論的能力(Pragmatic Competence)を獲得させる。",
+      "procedure": [
+        "シナリオカード(電話・謝罪等)を準備する",
+        "教師がクライアントや上司の役を徹底して演じる",
+        "予期せぬトラブル(『日程が全て埋まっている』等)を仕掛けて問題解決型の言語使用を引き出す",
+        "ロールプレイ終了後にクッション言葉などの社会言語学的フィードバックを行う"
+      ],
+      "materials": [
+        "rolecard"
+      ],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": [],
+      "lesson1Note": "N5 のスコープ外。ビジネス目的の中上級以降のみ",
+      "source": "資料4 セクション E-11",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "ロールカードをスライドに"
+      },
+      "playerExplanation": {
+        "ja": "ビジネスの場面を設定します。先生が相手役を演じます。その場面に合った丁寧な日本語で話してみましょう。",
+        "en": "A business scenario will be set up. The teacher will play the other role. Try to use polite Japanese appropriate for the situation."
+      },
+      "teacherTip": "シナリオカードは授業前に作成・確認済みにしておく。途中で予期せぬトラブル（「その日程は全て埋まっています」等）を仕掛けると問題解決型の発話が引き出せる。ロールプレイ終了後はクッション言葉や敬語の使い分けに絞ってフィードバックする。",
+      "defaultMaterialTypes": [
+        "special_card_set"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question",
+        "noun_no_affiliation"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "roleplay"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_culture_quiz",
+      "name": "文化知識クイズ・グランプリ",
+      "nameEn": "Culture Knowledge Quiz Grand Prix",
+      "stage": [
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "duration": "10min",
+      "preparation": "4択クイズスライド(食べ物・学校・地理など)",
+      "tools": [
+        "Kahoot!",
+        "Quizlet",
+        "PowerPoint画面共有"
+      ],
+      "description": "日本文化や社会に関する4択クイズを画面共有で提示する。クイズ形式の内在的モチベーションで情報保持を促進し、文化知識(Cultural Literacy)を蓄積する。",
+      "procedure": [
+        "4択クイズのスライドを準備する",
+        "教師はクイズ番組の司会者のように演出する",
+        "正解発表後、背景にある文化のディテールを話し合う",
+        "問題文や選択肢を生徒に音読させ、発話と文字認識の機会を組み込む",
+        "発展形として生徒に母国の文化クイズを作らせる"
+      ],
+      "materials": [
+        "quiz"
+      ],
+      "stt_ttt_ratio": "STT 40%",
+      "applicableLessons": "all",
+      "lesson1Note": "「これは何?」式に名詞のみで成立するため、第1課N5でも適用可能",
+      "source": "資料4 セクション E-12",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "Kahoot風にしたいなら required"
+      },
+      "playerExplanation": {
+        "ja": "日本の文化や社会についての4択クイズです。答えを選んで、なぜそう思ったか話してみましょう。",
+        "en": "A 4-choice quiz about Japanese culture and society. Choose your answer and try to explain why you think so."
+      },
+      "teacherTip": "正解発表後が最も大切な時間。正解・不正解にかかわらず「なぜ？」の文化的背景を一緒に話し合うことで記憶定着が深まる。クイズ番組の司会者のように演出するとモチベーションが上がる。",
+      "defaultMaterialTypes": [
+        "special_slide"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "quiz"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_animal_yoga_tpr",
+      "name": "動物ヨガ(TPR)",
+      "nameEn": "Animal Yoga (TPR)",
+      "stage": [
+        "stage1"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "5-10min",
+      "preparation": "ヨガポーズや動物のイラストスライド",
+      "tools": [
+        "画面共有"
+      ],
+      "description": "教師の口頭指示(『猫のポーズをしましょう』『右手を高く上げます』)に合わせて、生徒と教師が一緒にカメラ前で身体を動かす。TPR(全身反応教授法)の理論に基づき、聴覚インプットと身体運動を同期させて記憶定着を加速する。Brain Break(集中力回復)の効果も高い。",
+      "procedure": [
+        "ヨガポーズや動物のイラストスライドを準備する",
+        "教師がインストラクターとして明確で簡潔な指示語を連続発話する",
+        "生徒は発話せず聴解と動作のみに集中する(沈黙期に最適)",
+        "事前にカメラの画角と立ち位置をアナウンスする"
+      ],
+      "materials": [
+        "picture_card"
+      ],
+      "stt_ttt_ratio": "STT 10%(受容主体)",
+      "applicableLessons": "all",
+      "lesson1Note": "第1課ではBrain Breakとして使用可能。語彙としては第3-4課以降の身体部位・動作動詞で本領発揮",
+      "source": "資料4 セクション E-13",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "ポーズイラストをスライドに"
+      },
+      "playerExplanation": {
+        "ja": "先生の言葉を聞いて、同じ動きをしてみましょう。話さなくても大丈夫です。",
+        "en": "Listen to the teacher and move your body the same way. No need to speak."
+      },
+      "teacherTip": "画面共有するイラストスライドはあらかじめ開いておく。カメラに上半身が映るよう立ち位置をアナウンスしてから始めること。",
+      "defaultMaterialTypes": [
+        "special_slide"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_retelling",
+      "name": "読解リテリング",
+      "nameEn": "Reading Retelling",
+      "stage": [
+        "stage5"
+      ],
+      "level": [
+        "N3",
+        "N2",
+        "N1"
+      ],
+      "duration": "15-20min",
+      "preparation": "短い物語、エッセイ、またはニューステキスト",
+      "tools": [
+        "Google Docs(テキストの提示と非表示)"
+      ],
+      "description": "生徒が日本語テキストを黙読・音読した後、テキストを画面から隠して、自分の言葉で内容を再構築して教師に説明する。受容的知識を産出的知識へ強制的に移行させる効果が絶大。",
+      "procedure": [
+        "短いテキスト(物語・エッセイ・ニュース)を準備する",
+        "生徒に黙読または音読させる",
+        "テキストを画面上から完全に隠す",
+        "生徒に自分の言葉でリテリングさせる",
+        "詳細を忘れた場合は教師がガイド質問でサポートする(『その時主人公はどうしましたか?』)"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 80%",
+      "applicableLessons": [],
+      "lesson1Note": "N5 のスコープ外。中級以降のみ",
+      "source": "資料4 セクション E-14",
+      "contentRequirement": {
+        "judgment": "borderline",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "Google Docsの手動操作で完結"
+      },
+      "playerExplanation": {
+        "ja": "テキストを読んで内容を覚えてください。その後、テキストを隠します。自分の言葉で内容を先生に説明してください。",
+        "en": "Read the text and try to remember the content. Then the text will be hidden. Explain what you read to the teacher in your own words."
+      },
+      "teacherTip": "テキストを隠した後、生徒が詰まった場合は「その時、主人公はどうしましたか？」のようなガイド質問でサポートする。正確な再現より「自分の言葉での再構築」を優先し、言い換えを積極的に褒める。",
+      "defaultMaterialTypes": [
+        "special_handout"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_jlpt_time_attack",
+      "name": "JLPT文法・語彙タイムアタック",
+      "nameEn": "JLPT Grammar/Vocabulary Time Attack",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3",
+        "N2",
+        "N1"
+      ],
+      "duration": "10min",
+      "preparation": "選択式問題セット(オンラインプラットフォーム上)",
+      "tools": [
+        "Kahoot!",
+        "Quizizz",
+        "Wordwall"
+      ],
+      "description": "JLPT形式の選択式問題を画面共有で連続提示し、制限時間内(1問10〜15秒)に生徒が回答する。タイムプレッシャー下での情報処理速度を上げ、ゲーミフィケーションで反復学習の苦痛を軽減する。",
+      "procedure": [
+        "JLPT形式の選択式問題セットをオンラインプラットフォームに準備する",
+        "1問あたり10〜15秒の制限時間で連続提示する",
+        "生徒の回答直後に、なぜその選択肢が正解で他が不適切かを端的に解説する",
+        "間違えた問題ではテンポを止めて形式への焦点化(Focus on Form)を図る",
+        "応用として生徒に『なぜその答えを選んだか』の根拠を説明させる"
+      ],
+      "materials": [
+        "quiz"
+      ],
+      "stt_ttt_ratio": "STT 40%",
+      "applicableLessons": "all",
+      "lesson1Note": "JLPT N5受験者には適用可能だが、第1課時点では出題範囲が狭すぎる",
+      "source": "資料4 セクション E-15",
+      "contentRequirement": {
+        "judgment": "required",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "タイマー+自動判定+スコア",
+        "axes": {
+          "interaction": "tap",
+          "timing": "timer + autoflow",
+          "state": "score"
+        },
+        "_axesNote": "activity_content の3軸モデル(interaction / timing / state)による判定。詳細は materialTypes.activity_content.axes 参照。"
+      },
+      "playerExplanation": {
+        "ja": "画面に問題が出ます。1問10〜15秒で答えてください。ゲーム感覚で挑戦しましょう。",
+        "en": "Answer each question shown on screen within 10–15 seconds. Treat it like a game and challenge yourself!"
+      },
+      "teacherTip": "Kahoot! / Quizizz 等のプラットフォームは授業前に問題セットを作成・テスト済みにしておくこと。間違えた問題だけテンポを落として「なぜその答えか」を生徒に説明させると定着が深まる。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "validatedForLessons": [],
+      "prerequisitePatterns": [],
+      "skillFocus": [
+        "speaking",
+        "reading"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_picture_card_vocab_intro",
+      "name": "絵カードによる語彙・基本文型導入",
+      "nameEn": "Picture Card Vocabulary & Basic Sentence Introduction",
+      "stage": [
+        "stage1"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "5-10min",
+      "preparation": "対象語彙の絵カード(image_prompts_lessonN.json の画像URL)・必要に応じて世界地図・板書スペース",
+      "tools": [
+        "Zoom 画面共有",
+        "Google Meet 画面共有",
+        "スライド表示"
+      ],
+      "description": "教師が絵カードを画面提示しながら、語彙(名前・職業・所属など)を導入し、続けて基本文型(肯定文)を構築する。教師の発話モデル(T)に対し学習者がリピート(L)する往復構造。新語彙・新文は3回はっきり発音し、クラス全員→個別の順でリピートさせる。",
+      "procedure": [
+        "対象語彙の絵カードを画面に1枚ずつ提示",
+        "教師が語彙単独形を3回発音 → 学習者リピート(全員 → 個別)",
+        "全語彙を提示し終えたら、絵カードと共に短い文を提示(例:『田中さんです』)",
+        "場面を指す・地図を指すなど視覚的補助を加えながら、文を拡張(例:『田中さんは先生です』)",
+        "板書:基本文型(例:『〜は 〜です。』)を黒板/画面に書き、構造を可視化",
+        "文字あり提示で慣れたら、文字を隠して(または見せずに)言えるか確認"
+      ],
+      "materials": [
+        "picture_cards",
+        "audio_model",
+        "blackboard_or_text_overlay"
+      ],
+      "stt_ttt_ratio": "TTT 70%(教師が発音モデル中心)",
+      "applicableLessons": "all",
+      "lesson1Note": "第1課 p1(〜は〜です)の導入として想定。ABC 第1課 教え方の例1 を一般化したもの。第1課固有の語彙(医者・先生・会社員等)・人物(田中・リン・ケリー等)は lesson_01.json と image_prompts_lesson1.json から参照される。教師が最終的にこの活動を選ぶかは授業準備時に決定する。",
+      "source": "資料4 セクション C(レベル別おすすめ)+ 日本語の教え方ABC 第1課 教え方の例1(一般化・教科書固有名詞は除外)",
+      "textbookOrigins": [
+        {
+          "textbookId": "ABC",
+          "textbookName": "日本語の教え方ABC",
+          "lesson": 1,
+          "section": "教え方の例1",
+          "patternHint": "p1",
+          "originalLabel": "「〜は〜です」(人物)の導入",
+          "abstractionNote": "教科書固有の人物(鈴木さん・マイクさん等)は除外し、教師の発話モデル → 学習者リピートの構造のみを抽象化"
+        }
+      ],
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "教師が画像を画面共有・発話モデルを示し、学習者は受容(見る・聞く)とリピートのみ。独立 HTML 不要。素材(絵カード)は handout または image_prompts として別途生成済み。"
+      },
+      "playerExplanation": {
+        "ja": "絵カードを見ながら、先生のあとについて言葉を言ってください。",
+        "en": "Look at the picture cards and repeat the words after the teacher."
+      },
+      "teacherTip": "文字を見せて慣れさせたあと、文字を隠して言えるか確認するステップが定着に直結する。絵カードは1枚ずつ、ゆっくり間を取って提示すること。",
+      "defaultMaterialTypes": [
+        "auto_generated_vocab"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_qa_pattern_intro",
+      "name": "絵カードによる疑問文・応答導入",
+      "nameEn": "Picture Card Q&A Pattern Introduction",
+      "stage": [
+        "stage1",
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "5-10min",
+      "preparation": "対象語彙の絵カード(導入1で使った素材を再利用可)・板書スペース",
+      "tools": [
+        "Zoom 画面共有",
+        "Google Meet 画面共有",
+        "スライド表示"
+      ],
+      "description": "教師の自問自答 → 学習者への振り → 否定形の対比 → 疑問詞、という段階的な手順で疑問文と応答パターンを導入する。教師の動作(首振り・促し)で意味を視覚的に支える。慣れてきたら学習者同士のペア練習へ展開。",
+      "procedure": [
+        "教師が絵カードを示し『〜さんですか』と自問 →『はい、〜さんです』と自答",
+        "別の絵カードで学習者に振り(『〜さんですか』→ 学習者『はい、〜さんです』)",
+        "違う人のカードを示し首を振りながら『〜さんですか』→『いいえ、〜さんじゃありません』を導入",
+        "答えるように促し、学習者に否定で答えさせる",
+        "疑問詞『だれですか』を導入(クラスメートには『どなたですか』と区別)",
+        "板書:『〜ですか』『はい、〜です』『いいえ、〜じゃありません』",
+        "拡張:名前・職業・国籍について質問・答え練習。慣れたら学習者同士のペア練習"
+      ],
+      "materials": [
+        "picture_cards",
+        "audio_model",
+        "blackboard_or_text_overlay"
+      ],
+      "stt_ttt_ratio": "TTT 50%(自問自答 → 学習者発話で徐々に減る)",
+      "applicableLessons": "all",
+      "lesson1Note": "第1課 p2(〜ですか・はい/いいえ・だれ・どなた)の導入として想定。ABC 第1課 教え方の例2 を一般化。教師の質問の後に学習者の反応(うなずき・首振り)を待ってから答えを言うのがコツ。1対1オンラインでは『学習者同士のペア練習』は『教師-学習者の交代制』に置き換わる。",
+      "source": "資料4 セクション C+ 日本語の教え方ABC 第1課 教え方の例2(一般化)",
+      "textbookOrigins": [
+        {
+          "textbookId": "ABC",
+          "textbookName": "日本語の教え方ABC",
+          "lesson": 1,
+          "section": "教え方の例2",
+          "patternHint": "p2",
+          "originalLabel": "「〜ですか」と「だれ/どなた」の導入",
+          "abstractionNote": "教科書固有の人物(鈴木さん・マイクさん・タノムさん・キムさん等)は除外。自問自答 → 学習者振り → 否定対比 → 疑問詞という4段階構造を抽象化"
+        }
+      ],
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "教師の発話・絵カード提示・板書・学習者の口頭応答で完結。独立 HTML 不要。"
+      },
+      "playerExplanation": {
+        "ja": "先生の質問を聞いて、「はい」か「いいえ」で答えてください。",
+        "en": "Listen to the teacher's question and answer 'yes' or 'no' in Japanese."
+      },
+      "teacherTip": "質問後は2〜3秒間を取り、学習者の反応（うなずき・首振り）を確認してから答えを言う。急いで正解を言うと学習者が考える機会を失う。",
+      "defaultMaterialTypes": [
+        "auto_generated_vocab"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_attribute_modeling_intro",
+      "name": "モデル文拡張による所属・修飾の導入",
+      "nameEn": "Attribute Modeling via Sentence Expansion",
+      "stage": [
+        "stage1",
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "5-10min",
+      "preparation": "既出の絵カード・地図(導入1の素材を再利用)・所属を表す追加カード(大学・会社など)・板書スペース",
+      "tools": [
+        "Zoom 画面共有",
+        "Google Meet 画面共有",
+        "スライド表示"
+      ],
+      "description": "既出のモデル文を起点に『〜の〜』(所属・修飾)を段階的に拡張する。短い文 → 修飾を加えた長い文の順で示し、学習者にリピートさせる。慣れてきたら自分の国・職業・所属を言わせ、自己紹介の予備練習につなげる。",
+      "procedure": [
+        "既出の絵カードを再提示し、短い文をリピート(例:『〜さんは学生です』)",
+        "修飾を加えた長い文を提示(例:『〜さんは○○大学の学生です』)→ 学習者リピート",
+        "板書:『〜の 〜です。』",
+        "他の人物・所属の組み合わせで反復(慣れてきたら学習者にどんどん言わせる)",
+        "学習者自身の国・職業・所属を言わせる(自己紹介の予備練習)"
+      ],
+      "materials": [
+        "picture_cards",
+        "audio_model",
+        "blackboard_or_text_overlay",
+        "world_map_or_country_cards"
+      ],
+      "stt_ttt_ratio": "TTT 50%(後半は学習者発話比率が増える)",
+      "applicableLessons": "all",
+      "lesson1Note": "第1課 p3(〜の〜)の導入として想定。ABC 第1課 教え方の例3 を一般化。所属概念だけでなく、自己紹介の予備練習という側面が強い。学習者の母語圏・職業・所属の情報があると効果的。",
+      "source": "資料4 セクション C+ 日本語の教え方ABC 第1課 教え方の例3(一般化)",
+      "textbookOrigins": [
+        {
+          "textbookId": "ABC",
+          "textbookName": "日本語の教え方ABC",
+          "lesson": 1,
+          "section": "教え方の例3",
+          "patternHint": "p3",
+          "originalLabel": "「〜の〜」(所属)の導入",
+          "abstractionNote": "教科書固有の人物(リンさん・東西大学等)は除外。既出素材の再利用 → 短文モデル → 修飾拡張 → 自己紹介への接続という構造を抽象化。本 catalog では『所属』だけでなく一般的な『修飾』としても再利用可能"
+        }
+      ],
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "教師のモデル提示と学習者の発話練習で完結。独立 HTML 不要。"
+      },
+      "playerExplanation": {
+        "ja": "先生の言葉を聞いて、同じように言ってみましょう。自分のことも言ってみてください。",
+        "en": "Repeat after the teacher, then try saying the same pattern about yourself."
+      },
+      "teacherTip": "学習者自身の所属・職業・国籍を事前に把握しておくと、自己紹介予備練習がスムーズになる。初回授業前に情報収集しておくこと。",
+      "defaultMaterialTypes": [
+        "auto_generated_vocab"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question",
+        "noun_no_affiliation"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_hajimemashite_conversation",
+      "name": "会話「はじめまして」",
+      "nameEn": "Self-Introduction Conversation: Hajimemashite",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5"
+      ],
+      "duration": "15-20min",
+      "preparation": "会話モデルスライドまたは絵カード（あれば動画・音声）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "slide_content",
+        "named_character_card"
+      ],
+      "description": "教師が一人二役で「はじめまして」の会話モデルを示した後、教師↔学習者でペアワーク形式の自己紹介会話を行う。名前・国籍・職業・所属を盛り込んだ3往復構成。ビジネス系には名刺交換バリエーションを用いる。",
+      "procedure": [
+        "教師が会話モデル（A/B両役）を一人二役でデモンストレーション",
+        "学習者に会話モデルスライドまたはプリントを提示",
+        "教師(A役)↔学習者(B役)で会話練習",
+        "役割を交代して再度練習",
+        "バリエーション（名刺・複数回転）を状況に応じて追加"
+      ],
+      "conversationModel": {
+        "A_line1": "はじめまして。___です。___（国籍）です。どうぞよろしく。",
+        "B_line1": "はじめまして。___です。___から来ました。どうぞよろしく。",
+        "A_line2": "___さんは___（職業）ですか。",
+        "B_line2": "はい、___です。___さんは？",
+        "A_line3": "わたしは___です。___（所属）の___です。"
+      },
+      "variations": [
+        "名刺を使ったやりとり（ビジネス系クラス向け）",
+        "簡単な名刺を作らせてから練習",
+        "相手を次々と変えて繰り返し練習"
+      ],
+      "plusAlpha": [
+        "「〜から来ました」は自己紹介表現としてそのまま教える",
+        "教師も学習者の場合「先生＝教師」を伝え自己紹介では「先生」を使わないよう注意",
+        "AもBも教師の場合は「わたしも教師です」＋「も」の使い方を教える"
+      ],
+      "caution": [
+        "自由な自己紹介をさせるといろいろなバリエーションが出るのでこの例にこだわらない",
+        "「〜さんは？」の文末は上がるイントネーションに注意させる"
+      ],
+      "materials": [
+        "named_character_card",
+        "special_slide"
+      ],
+      "stt_ttt_ratio": "STT 70%（学習者が自己情報を産出）",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "第1課 main_act_1 として flow に組み込み済み。p1/p2/p3 三文型を統合する場面会話タスク。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question",
+        "noun_no_affiliation"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "handoff_v12 act_hajimemashite_conversation 設計確定・ABC教科書第1課 教え方の例照合済み",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "会話モデルスライドが必須。named_character_card でモデル提示を行う。"
+      },
+      "playerExplanation": {
+        "ja": "「はじめまして」の会話練習をします。名前・国籍・職業・所属を使って、先生と会話しましょう。",
+        "en": "Practice a 'Nice to meet you' conversation. Use your name, nationality, job, and organization to chat with your teacher."
+      },
+      "teacherTip": "一人二役でモデルを見せる際、声色や向きを変えて2人いるように演じるとわかりやすい。「〜さんは？」の文末イントネーション上昇を必ず示す。ビジネス系学習者には名刺画像を事前に共有しておくとスムーズ。",
+      "defaultMaterialTypes": [
+        "slide_content",
+        "activity_content"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "roleplay"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_person_guessing_quiz",
+      "name": "人物当てクイズ",
+      "nameEn": "Person Guessing Quiz",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5"
+      ],
+      "duration": "10-15min",
+      "preparation": "人物写真または絵カード（有名人・学校スタッフ・キャラクター）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有",
+        "named_character_card"
+      ],
+      "description": "人物写真・絵カードの一部を隠して提示し、「〜ですか」の質問で正体を当てるゲーム。教師主導で始め、学習者が質問する側に移行する。「〜じゃありません」の否定形も自然に練習できる構造。",
+      "procedure": [
+        "絵カードの一部を隠して提示（または画面共有でぼかして表示）",
+        "教師が「日本人ですか」「先生ですか」などヒントを出す",
+        "学習者が「〜ですか」で質問→当てる",
+        "慣れてきたら学習者が問題を出す側に交代"
+      ],
+      "variations": [
+        "スターやスポーツ選手など学習者が知っている有名人を使う",
+        "学校のスタッフや先生の写真を使う",
+        "学習者自身の家族・友達の写真を見せ合い「これはどなたですか」と質問"
+      ],
+      "plusAlpha": [
+        "クラスメートについては「だれですか」でなく「どなたですか」を使う",
+        "「〜じゃありません」と「〜ではありません」両方教えておく"
+      ],
+      "caution": [
+        "質問文に続けてすぐ答えを言わない—学習者の反応（うなずき・首振り）を待ってから答える",
+        "学習者の反応をよく見るようにする"
+      ],
+      "materials": [
+        "named_character_card",
+        "auto_generated_vocab（人物・職業）"
+      ],
+      "stt_ttt_ratio": "STT 60%（質問と応答を交互に）",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "p1（〜は〜です）・p2（〜ですか）の統合練習。否定形「〜じゃありません」の自然な使用機会になる。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "handoff_v12 act_person_guessing_quiz 設計確定・ABC教科書第1課 教え方の例照合済み",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "named_character_card または職業絵カードが必須。画面共有で一部を隠す操作が必要。"
+      },
+      "playerExplanation": {
+        "ja": "絵の人物が誰かを「〜ですか」で質問して当ててください。答えは「はい、〜です」か「いいえ、〜じゃありません」で言います。",
+        "en": "Guess the person in the picture by asking '〜ですか?' questions. Answer with 'はい、〜です' or 'いいえ、〜じゃありません'."
+      },
+      "teacherTip": "最初は教師が問題を出す側に徹し、学習者が「〜ですか」の疑問文を発話する練習量を確保する。慣れてきたら役割逆転させる。有名人は学習者の出身国・年代に合わせて選ぶと動機付けが上がる。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_celebrity_party",
+      "name": "セレブリティ・パーティ",
+      "nameEn": "Celebrity Party (Who Am I?)",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "15-20min",
+      "preparation": "有名人・キャラクターの写真カード（または画面共有で提示）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有"
+      ],
+      "description": "有名人・架空のキャラクターのカードを背中に（またはカメラ外に）貼り付け、他者への「〜ですか」質問を通じて自分が誰かを当てるゲーム。ゲームの文脈により「私は日本人ですか」という本来なら不自然な質問も自然に行える。なりきりという心理的フィルター低下効果が高い。",
+      "procedure": [
+        "教師が画面共有またはチャットで「あなたは〇〇です」と知らせる（学習者には見せない）",
+        "学習者が「私は〜ですか」形式でYes/Noの質問を行う",
+        "教師が「はい」「いいえ、〜じゃありません」で答える",
+        "正解したら役割交代（教師が学習者に質問する側になる）"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 70%（学習者が質問を生成し続ける）",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "p1（〜は〜です）・p2（〜ですか）のゲーム型統合練習。職業・国籍語彙を高頻度で使用する。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "初級日本語アクティビティ調査報告.docx Section 1（名詞文アクティビティ）",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "reason": "有名人写真を slide_content で事前準備すると効果的だが、チャットで文字情報だけでも実施可能"
+      },
+      "playerExplanation": {
+        "ja": "あなたは有名人です！先生に「私は〜ですか？」と質問して、自分が誰かを当ててください。",
+        "en": "You are a celebrity! Ask your teacher '私は〜ですか?' questions to figure out who you are."
+      },
+      "teacherTip": "学習者の出身国の有名人を選ぶと動機付けが大幅に上がる。最初は「先生/学生/医者ですか」のような職業カテゴリから始め、国籍へと広げると質問戦略を自然に学べる。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_mystery_guest",
+      "name": "ミステリー・ゲスト",
+      "nameEn": "Mystery Guest",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "10-12min",
+      "preparation": "役割カード（教師が提示、学習者は見ない）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "教師が「ミステリー・ゲスト」として特定の人物（職業・国籍）を演じ、学習者が「〜ですか」質問で正体を見破るゲーム。教師が一方的に答える受け身の構成なので学習者の認知負荷が低く、stage3 でも実施しやすい。",
+      "procedure": [
+        "教師が役割カード（例：「あなたは医者です」）を確認（学習者には見せない）",
+        "学習者が「〜さんは医者ですか」などYes/No質問を行う",
+        "教師が「はい、そうです」「いいえ、違います」で答える",
+        "正解したら教師が役割を交代するか語彙テーマを変える"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 55%（質問生成が主タスク）",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "p2（〜ですか）の集中練習。語彙リスト（職業・国籍）を手元に置いた高支援状態で実施推奨。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "初級日本語アクティビティ調査報告.docx Section 1（名詞文アクティビティ）",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭のみで完結。役割の提示はチャットで十分。"
+      },
+      "playerExplanation": {
+        "ja": "先生はミステリー・ゲストです。「〜ですか？」と質問して、先生が誰かを当ててください。",
+        "en": "Your teacher is a mystery guest. Ask '〜ですか?' questions to find out who they are!"
+      },
+      "teacherTip": "答えを引き出しやすいように最初は職業（2〜3択）に絞り、慣れたら国籍・所属へ広げる。学習者が詰まったらチャットに「先生/学生/医者/会社員」とヒントリストを送る。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_identity_guessing",
+      "name": "私は誰でしょう？（アイデンティティ・ゲーム）",
+      "nameEn": "Identity Guessing Game",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "10-15min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "教師が頭の中に特定の人物・職業・国籍を思い浮かべ、学習者がYes/No質問のみ（最大10〜20回）で正解を導く「20の質問」スタイルのゲーム。質問生成の自律度が高く stage4-5 に適合。act_mystery_guest の発展版として位置づけられる。",
+      "procedure": [
+        "教師が人物（職業または国籍）を決める",
+        "学習者が「〜ですか」でYes/No質問を行う（最大10〜20回）",
+        "教師が「はい」か「いいえ、〜じゃありません」で答える",
+        "正解または制限回数終了で次のラウンドへ"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 75%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "p1/p2 の自律的統合練習。質問カテゴリのヒント（職業・国籍・年齢）を事前に提示しておくとスムーズ。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "初級日本語アクティビティ調査報告.docx Section 2（疑問文アクティビティ）",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭のみで完結。語彙ヒントが必要な場合はチャットに入力。"
+      },
+      "playerExplanation": {
+        "ja": "先生が人物を思い浮かべます。「〜ですか？」とYes/Noで答えられる質問をして当ててください。",
+        "en": "Your teacher is thinking of a person. Ask Yes/No questions using '〜ですか?' to figure out who it is."
+      },
+      "teacherTip": "最初は「日本人ですか→先生ですか→医者ですか」のように職業ツリーで絞れる問題設定にすると質問戦略の学習になる。回答数ではなくヒント数を教師側でコントロールするとレベル調整しやすい。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_passport_control",
+      "name": "パスポート・コントロール",
+      "nameEn": "Passport Control Role-Play",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "15min",
+      "preparation": "模擬パスポート情報（スライドまたはチャットで共有）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有",
+        "チャット"
+      ],
+      "description": "審査官（教師）と旅行者（学習者）に分かれ、架空のパスポート情報に基づき本人確認の会話を行うタスク型ロールプレイ。名前・国籍・職業・所属のすべての情報要素を実用的な文脈で使用できる。情報ギャップが自然に発生する構造。",
+      "procedure": [
+        "チャットまたはスライドで学習者に架空の「パスポート情報」を提示",
+        "教師が審査官役でパスポート情報を確認する質問を行う（「〜さんですか」「〜ですか」）",
+        "学習者がパスポート情報に基づいて「はい/いいえ」と答え、必要に応じて訂正する",
+        "役割を交代して、学習者が審査官役を担う"
+      ],
+      "materials": [
+        "special_slide"
+      ],
+      "stt_ttt_ratio": "STT 65%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "年齢（数字）は未習のためパスポートテンプレートから除外。名前・国籍・職業・所属の4項目のみで実施。数字導入後（lesson_05相当以降）は年齢欄を追加したフルバージョンで実施可。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question",
+        "noun_no_affiliation"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "初級日本語アクティビティ調査報告.docx Section 1（名詞文アクティビティ）",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "reason": "パスポート情報をスライドで視覚化すると没入感が増すが、チャットのテキストでも代替可能"
+      },
+      "playerExplanation": {
+        "ja": "あなたはパスポートに書いてある人物です。先生（審査官）の質問に「はい/いいえ」で答えてください。",
+        "en": "You are the person on the passport. Answer the officer's (teacher's) questions with はい or いいえ."
+      },
+      "teacherTip": "パスポート情報は実際の学習者情報に近いが意図的に一部違う内容（名前は同じ・国籍が違う等）にすると、「いいえ」の使用が自然に生まれる。ビジネス系学習者には所属（会社名）を追加するとリアリティが増す。",
+      "defaultMaterialTypes": [
+        "slide_content"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "roleplay"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_google_maps_tour",
+      "name": "Google Maps 出身地ツアー",
+      "nameEn": "Google Maps Hometown Tour",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "duration": "15min",
+      "preparation": "なし（学習者がGoogle Mapsを操作。事前に出身地を決めておくと◎）",
+      "tools": [
+        "Zoom 画面共有",
+        "Google Maps",
+        "Google Maps ストリートビュー"
+      ],
+      "description": "学習者が自身の出身地または思い入れのある場所をGoogle Mapsで画面共有し、ストリートビューを操作しながら教師の質問（「ここはどこですか」「何がありますか」）に答えるタスク。実物の地図・街並みを使うため語彙の想起がスムーズで動機付けが極めて高い。対面授業では再現できないオンライン特有の活動。",
+      "procedure": [
+        "学習者がGoogle Mapsを開き、出身地または思い出の場所を検索して画面共有",
+        "教師が「ここはどこですか」「〇〇さんの〜ですか」などで問いかける",
+        "学習者がストリートビューで移動しながら「ここは〜です」「〜の〜です」と答える",
+        "教師が気になる場所を指定し（「あの建物は何ですか」）、会話を続ける"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 80%（学習者が主体的に説明）",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "中核文型の〜があります・方向表現が未習のためlesson_01では使わない。existence_location（〜にあります）導入後（lesson_02以降）に実施。",
+      "prerequisitePatterns": [
+        "existence_location"
+      ],
+      "validatedForLessons": [],
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx Google Maps活用セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "学習者がGoogle Mapsをリアルタイム共有するため特別な教材不要。"
+      },
+      "playerExplanation": {
+        "ja": "あなたの出身地や好きな場所をGoogle Mapsで見せてください。先生の質問に「ここは〜です」「〜の〜です」で答えましょう。",
+        "en": "Share your hometown or a favorite place on Google Maps. Answer the teacher's questions using '〜です' and '〜の〜です'."
+      },
+      "teacherTip": "学習者がストリートビューに不慣れな場合は最初に操作方法を教える（クリックして移動）。「あそこの建物は何ですか」のように指示代名詞（あそこ・あれ）を自然に使うと次課への橋渡しにもなる。Lesson 2以降の存在表現（〜があります）とも接続しやすい。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_virtual_treasure",
+      "name": "バーチャル「私の宝物」",
+      "nameEn": "My Treasure Show & Tell",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "10min",
+      "preparation": "なし（no-prep。学習者が手元の物を使用）",
+      "tools": [
+        "Zoom カメラ",
+        "Google Meet カメラ"
+      ],
+      "description": "学習者が家の中から大切な物・お気に入りの物を1つ選びカメラに見せ、それが何か・なぜ大切かを話すShow & Tell。教室に持ち込めない大きな物や思い出の品もオンラインなら即座に紹介できるオンライン特有の活動。準備ゼロで実施でき、学習者の個人的な語彙と感情が引き出される。",
+      "procedure": [
+        "「家の中から一番大切なものを持ってきてください」と伝える",
+        "学習者がカメラに物を見せて「これは〜です」と紹介",
+        "教師が「〜ですか」「〜さんの〜ですか」で確認質問",
+        "学習者がさらに「これは〜の〜です（出所・所属）」と説明を広げる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 80%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "「これは〜です」(p1) + 「〜さんの〜ですか」(p3) の自然な発話機会。指示語「これ」の実用的な使用文脈にもなる（Lesson 2指示語への橋渡し）。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx バーチャル「私の宝物」セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "実物を使うため教材不要。完全no-prep。"
+      },
+      "playerExplanation": {
+        "ja": "家の中で一番大切な物をカメラに見せてください。「これは〜です」「〜の〜です」と先生に紹介しましょう。",
+        "en": "Show your most treasured item on camera. Introduce it using 'これは〜です' and '〜の〜です'."
+      },
+      "teacherTip": "「なぜ大切ですか」の問いかけはN5段階では難しいことがある。そのときは「〜さんのですか」「〜のですか（出所）」に絞ると p3 の所属表現を練習できる。学習者が自分の持ち物について話す文脈なので情意フィルターが低く、自然な発話量が増える傾向がある。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_reaction_quiz",
+      "name": "リアクション・クイズ（オンラインTPR）",
+      "nameEn": "Reaction Quiz (Online TPR)",
+      "stage": [
+        "stage1",
+        "stage2"
+      ],
+      "level": [
+        "N5"
+      ],
+      "duration": "5-8min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom リアクション機能",
+        "Google Meet リアクション"
+      ],
+      "description": "教師が「〜は〜です」の文を読み上げ、正しければ「いいね👍」、間違っていれば「拍手👏」などのリアクション機能で応答させるオンライン版TPR。発話が一切不要なためリスニングに集中でき、沈黙期（Silent Period）の学習者にとって心理的障壁が極めて低い。",
+      "procedure": [
+        "教師がリアクションボタン（「👍=はい」「👏=いいえ」）の使い方を示す",
+        "「田中さんは先生です」などの文を読み上げる（正文・誤文を混在）",
+        "学習者がリアクションボタンで応答",
+        "不正解の場合は「いいえ、〜じゃありません。〜です」と正解を提示"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 15%（発話なし・反応のみ）",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "語彙導入直後のquick checkとして使用。p1（〜は〜です）の理解確認に最適。Brain Breakとしても機能する。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx リアクション・スタンプ機能セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "リアクション機能のみで完結。スライドは任意。"
+      },
+      "playerExplanation": {
+        "ja": "先生の文が正しければ👍、間違っていれば👏を押してください。発話しなくてOKです。",
+        "en": "If the teacher's sentence is correct, press 👍. If it's wrong, press 👏. No speaking needed!"
+      },
+      "teacherTip": "最初に「テスト：私は先生です👍か👏か？」と実際にデモしてリアクションの使い方を確認する。語彙カード提示直後の理解チェックとして1〜2分で実施するとペースを乱さず効果的。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_hot_seat",
+      "name": "ホット・シート（語彙当てゲーム）",
+      "nameEn": "Hot Seat",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "duration": "10-15min",
+      "preparation": "語彙リスト（その課の語彙から出題）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "チャット（語彙のヒント用）"
+      ],
+      "description": "回答者（学習者）がカメラから目を外し、教師がチャットで語彙を提示。教師がその語彙を「使わず」にヒントを口頭で出し、学習者が正解を当てる。定義・関連語・使用例などのヒントを通じて語彙の意味ネットワークが強化される。",
+      "procedure": [
+        "「目を閉じてください（またはカメラから目を外してください）」と指示",
+        "教師がチャットに出題語彙を入力（学習者には見せない）",
+        "教師が「これは人です」「医者じゃありません」などのヒントを出す",
+        "学習者が「〜ですか」と確認しながら正解を目指す"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "第1課の職業・国籍語彙の定着確認に使用。「〜じゃありません」の否定形ヒントが自然に産出される。",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "source": "初級言語教育アプローチ調査.docx 言語ゲームセクション（ホット・シート）",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "reason": "語彙リストをチャットで送れば教材不要だが、スライドで語彙一覧を共有しておくと進行がスムーズ"
+      },
+      "playerExplanation": {
+        "ja": "先生のヒントを聞いて、語彙を当ててください。「〜ですか？」と質問してもOKです。",
+        "en": "Listen to the teacher's hints and guess the vocabulary word. You can ask '〜ですか?' to confirm."
+      },
+      "teacherTip": "ヒントは「カテゴリ（人/もの/場所）→否定（〜じゃありません）→関連語→使用例」の順に出すと難易度を段階的に下げられる。第1課は職業（医者・先生・会社員）と国籍（日本人・アメリカ人）が主な出題候補。",
+      "defaultMaterialTypes": [
+        "none"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair"
+    },
+    {
+      "id": "act_simon_says",
+      "name": "サイモン・セズ",
+      "nameEn": "Simon Says",
+      "stage": [
+        "stage1",
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5-8min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "「サイモンが言います」という前置きがある命令のみ動作し、ない命令では静止するTPR定番ゲーム。聴解への集中力を高める。オンラインではカメラ前でのジェスチャーで代用。",
+      "procedure": [
+        "ルール説明：「先生が『サイモンが言います、〜てください』と言ったら動いてください。先生だけが言ったら動かないでください」",
+        "ゆっくりした命令から始め、慣れたら速度を上げる",
+        "「違う動作をした／動いてしまった」場合のアウトを演出してゲーム性を高める"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 10%（反応のみ）",
+      "applicableLessons": "all",
+      "lesson1Note": "〜てください（p8相当）が未習のため英語や日本語の動詞原形で指示して問題ない。語彙のウォームアップとして有効。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭・カメラのみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生が『サイモンが言います、〜』と言ったら動いてください。先生だけが言ったら動かないでください。",
+        "en": "Only move when the teacher says 'Simon says'. Stay still otherwise."
+      },
+      "teacherTip": "初回はゆっくり・明確に。慣れたら速度を上げる。オンラインでは身体全体が映るようカメラを引いてもらう。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_simon_lies",
+      "name": "サイモン・ライズ",
+      "nameEn": "Simon Lies",
+      "stage": [
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5-8min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "教師の言葉と動作が一致している場合のみ模倣し、不一致の場合は静止する。言語と行動の対応に高い注意力を要求するサイモン・セズの発展版。",
+      "procedure": [
+        "ルール説明：「先生の言葉と動作が同じときだけ動いてください。違うときは動かないでください」",
+        "最初は一致させて慣れさせる",
+        "突然不一致（「ジャンプ」と言いながら座る）を混ぜる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 5%",
+      "applicableLessons": "all",
+      "lesson1Note": "act_simon_saysの後に行う発展版として使用。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭・カメラのみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生の言葉と動作が同じときだけ動いてください。違うときは静止してください。",
+        "en": "Only copy the teacher when their words and actions match. Stay still if they don't."
+      },
+      "teacherTip": "「引っかかること」を楽しむ雰囲気作りが重要。act_simon_saysより難度が高いため必ず後に行う。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_finger_tpr",
+      "name": "フィンガーTPR",
+      "nameEn": "Finger TPR",
+      "stage": [
+        "stage1"
+      ],
+      "level": [
+        "N5"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "カメラ"
+      ],
+      "description": "指を「人」に見立て、机の上・箱の中などに対して前置詞（上・下・右・左・中）や動作（走る・ジャンプ）を表現する。狭いスペースで実施できるオンライン向きのTPR変形版。",
+      "procedure": [
+        "教師が指を「歩かせる」動作を見せてルールを示す",
+        "命令を出す（例：「右に行ってください」）",
+        "学習者がカメラ前で指を使って動作を再現する"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 5%",
+      "applicableLessons": "all",
+      "lesson1Note": "位置語彙（上・下・右・左）の導入直後の確認として最適。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "指とカメラのみで完結"
+      },
+      "playerExplanation": {
+        "ja": "指を人に見立てて、先生の指示通りに動かしてください。",
+        "en": "Use your fingers as a person and move them following the teacher's instructions."
+      },
+      "teacherTip": "カメラに対して手の動きが見えやすいアングルを最初に確認する。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_action_song",
+      "name": "アクション・ソング",
+      "nameEn": "Action Song",
+      "stage": [
+        "stage1"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5-7min",
+      "preparation": "歌の音源（任意）またはア・カペラで可",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "歌詞に合わせて身体を動かす。「あたま・かた・ひざ・あし」などの身体部位の歌を日本語版で行う。リズムが記憶定着を加速する。Brain Breakとしても機能する。",
+      "procedure": [
+        "教師がお手本を見せる（歌いながら動作）",
+        "学習者と一緒に動作を合わせながら歌う",
+        "速度を上げてチャレンジモードにする"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 40%（歌いながら動く）",
+      "applicableLessons": "all",
+      "lesson1Note": "集中力が切れたタイミングのBrain Breakとして活用。語彙導入→アクション・ソングで定着という流れが定番。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "歌と動作のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "歌に合わせて身体を動かしましょう。先生と一緒にやってみてください。",
+        "en": "Move your body along with the song. Follow along with the teacher."
+      },
+      "teacherTip": "Brain Breakとして機能するため集中力が切れたタイミングに挟むのが効果的。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_recipe_mime",
+      "name": "料理レシピ・マイム",
+      "nameEn": "Recipe Mime",
+      "stage": [
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "8-10min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "架空の料理を作る一連の動作（卵を割る・かき混ぜる・味見する）を教師の指示に従って演じるTPR。料理に関する動詞を身体で覚える。",
+      "procedure": [
+        "「今から料理を作ります」と宣言",
+        "一連の動作を命令する（「卵を割ってください」「混ぜてください」「火をつけてください」）",
+        "学習者が動作を演じる",
+        "慣れたら学習者が命令側に交代"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 30%",
+      "applicableLessons": "lesson_08以降（〜てください導入後）",
+      "lesson1Note": "動詞表現が必要なため lesson_08以降推奨。ウォームアップとして語彙なしで動作のみ行う場合はlesson_01でも可。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "動作のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生の指示に従って、料理を作るマイムをしてください。",
+        "en": "Follow the teacher's instructions and mime making a dish."
+      },
+      "teacherTip": "オンラインでは実物の食材がなくても問題ない。〜てください（将来のte_form_request）との橋渡しになる。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_multistep_seq",
+      "name": "多段階シーケンス",
+      "nameEn": "Multi-step Sequences",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "8-10min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "「本を開いて、鉛筆を持って、丸を描いてください」のように複数の命令を連続して出し、学習者が順番通りに全て実行する。作業記憶を鍛えながら複合的な指示理解を練習する。",
+      "procedure": [
+        "2ステップから始める（「〜して、〜してください」）",
+        "慣れたら3〜4ステップに増やす",
+        "実行後に「何をしましたか」と振り返りで産出を促す"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 15%（振り返り時のみ）",
+      "applicableLessons": "all",
+      "lesson1Note": "ステップ数を増やすことで難度を調整できる。lesson_01では日本語の基本動詞を使って実施。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭・動作のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生の指示を全部聞いてから、順番通りに動いてください。",
+        "en": "Listen to all of the teacher's instructions, then follow them in order."
+      },
+      "teacherTip": "ステップ数が難度スライダーになる。記憶への負荷を意識的に管理する。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_treasure_hunt_tpr",
+      "name": "TPRトレジャーハント",
+      "nameEn": "Treasure Hunt (TPR)",
+      "stage": [
+        "stage2"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "tpr"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "8-10min",
+      "preparation": "なし（学習者の自宅環境を使用）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "カメラ"
+      ],
+      "description": "「黄色いものを持ってきてください」などの指示に従い、学習者が自室内で物を探して持ってくる。形容詞・色・数のTPR練習。オンラインならではの「実生活空間の活用」。",
+      "procedure": [
+        "「部屋の中から〜を探して、カメラに見せてください」と指示",
+        "学習者が探してカメラに見せる",
+        "「それは何ですか」と確認して語彙産出を促す"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 30%",
+      "applicableLessons": "all",
+      "lesson1Note": "act_virtual_treasureと組み合わせると効果的。見つけたものについて話す段階（stage3）へ橋渡しできる。",
+      "source": "初級言語教育アプローチ調査.docx §1.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "実物とカメラのみで完結"
+      },
+      "playerExplanation": {
+        "ja": "部屋の中から先生の言う条件に合うものを探して、カメラに見せてください。",
+        "en": "Find something in your room that matches the teacher's description and show it on camera."
+      },
+      "teacherTip": "形容詞・色・大きさの語彙を使う。act_virtual_treasureに発展させると産出が増える。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_two_truths",
+      "name": "二つの真実、一つの嘘",
+      "nameEn": "Two Truths and a Lie",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10-15min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "自分について2つの真実と1つの嘘を述べ、相手が「どれが嘘か」を〜ですか質問を通じて見抜くゲーム。N5では職業・国籍・所属の単純な文で実施。",
+      "procedure": [
+        "教師がモデルを示す（「私はXXXです。私はYYYです。私はZZZです。どれが嘘ですか？」）",
+        "学習者が自分の3文を考える（チャットで文字確認も可）",
+        "教師が〜ですかで質問して嘘を見抜く",
+        "役割を交代する"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 65%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "嘘の選択肢を「職業・国籍・所属」に絞るとlesson_01語彙を最大限活用できる。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "自分について2つの本当のことと1つの嘘を言います。先生に嘘を当てさせましょう。",
+        "en": "Say two true things and one lie about yourself. Let the teacher guess which is the lie."
+      },
+      "teacherTip": "学習者が考える時間（30秒程度）をきちんと確保する。職業・国籍・所属に絞ると語彙の復習になる。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_memory_matching",
+      "name": "記憶マッチング",
+      "nameEn": "Memory Matching",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10-15min",
+      "preparation": "オンラインホワイトボード（Miro・Padlet・Zoomホワイトボード）に裏返しカードを事前配置",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "オンラインホワイトボード（Miro/Padlet）"
+      ],
+      "description": "裏向きに並べた「絵カード」と「単語カード」のペアをめくって一致を探す。一致したら「〜は〜です」で文を作るルールを加えると産出練習になる。",
+      "procedure": [
+        "ホワイトボード上に絵カード・単語カードをランダム配置（裏向き）",
+        "学習者が2枚を選んでめくる",
+        "一致したら「〜は〜です」で文を作成",
+        "不一致なら元に戻して次の番"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%",
+      "applicableLessons": "all",
+      "lesson1Note": "語彙カードの定着確認として使用。絵カードと単語カードはlesson_01語彙（職業・国籍）で作成。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "ホワイトボード上のカード配置が必要"
+      },
+      "playerExplanation": {
+        "ja": "裏向きのカードを2枚めくって、絵と単語が一致したらペア成立です。一致したら「〜は〜です」で文を作ってください。",
+        "en": "Flip two cards face up. If the picture and word match, it's a pair! Make a sentence when you get a match."
+      },
+      "teacherTip": "Jamboard終了後はMiro（無料プランあり）またはZoomのホワイトボード機能で代替可能。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_vocab_bingo",
+      "name": "語彙ビンゴ",
+      "nameEn": "Vocabulary Bingo",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10-15min",
+      "preparation": "語彙ビンゴカード（学習者用）を事前に共有または授業中に作成",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有"
+      ],
+      "description": "語彙が書かれたマスに、教師が読み上げる定義・特徴・絵カードと一致するものをマークする。単語と意味の結びつきを強化する。",
+      "procedure": [
+        "学習者にビンゴカードを渡す（事前PDF共有またはホワイトボードで作成）",
+        "教師が定義・絵等のヒントを出す（単語は言わない）",
+        "学習者が合致する単語をマークする",
+        "ビンゴになったらチャットに「ビンゴ！」と送信"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 30%",
+      "applicableLessons": "all",
+      "lesson1Note": "lesson_01の職業・国籍・所属語彙でビンゴカードを作成して使用。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "ビンゴカードが必要"
+      },
+      "playerExplanation": {
+        "ja": "先生のヒントを聞いて、ビンゴカードの中から合う単語を探してマークしてください。",
+        "en": "Listen to the teacher's hints and mark the matching word on your bingo card."
+      },
+      "teacherTip": "読み上げるヒントを「定義→例文→絵」の3段階出すとどんな学習者でも参加できる。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_twenty_questions",
+      "name": "20の質問",
+      "nameEn": "Twenty Questions",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10-15min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "教師が何かを思い浮かべ、学習者が最大20回のYes/No質問で正解を導くゲーム。疑問文の集中練習として機能する。act_identity_guessing（人物版）のより広い概念版。",
+      "procedure": [
+        "教師が何かを決める",
+        "学習者が〜ですかでYes/No質問（最大20回）",
+        "教師が「はい、そうです」「いいえ、違います」で答える",
+        "正解または20回終了で次のラウンド"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 70%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "最初は職業カテゴリ（医者・先生・学生）から始める。慣れたら動物・食べ物へ広げる。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生が何かを思い浮かべます。「〜ですか？」でYes/Noで答えられる質問をして、20回以内に当ててください。",
+        "en": "The teacher is thinking of something. Ask Yes/No questions using '〜ですか?' and guess within 20 tries."
+      },
+      "teacherTip": "チャットに「残り〇回」と書いて緊張感を演出する。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_pictionary",
+      "name": "ピクショナリー",
+      "nameEn": "Pictionary",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10-15min",
+      "preparation": "オンラインホワイトボードまたはZoomホワイトボード",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "オンラインホワイトボード"
+      ],
+      "description": "出題者が語彙をホワイトボードに絵だけで描き、回答者が〜ですかで確認しながら言語化する。非言語情報を日本語に変換するトレーニング。",
+      "procedure": [
+        "出題語彙をチャット（相手に見えないよう）で管理",
+        "描く側がホワイトボードに絵を描く",
+        "回答者が〜ですかと確認しながら当てる",
+        "役割を交代"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "all",
+      "lesson1Note": "lesson_01の語彙（職業・国籍・物）を題材に使用。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "ホワイトボードはツール機能で完結"
+      },
+      "playerExplanation": {
+        "ja": "お題の単語を絵だけで表現してください。絵を見て何の単語か当ててください。",
+        "en": "Draw the vocabulary word using only pictures. Guess what word it is from the drawing."
+      },
+      "teacherTip": "絵が苦手な学習者には「上手に描かなくていい」と伝えてハードルを下げる。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_grammar_auction",
+      "name": "文法オークション",
+      "nameEn": "Grammar Auction",
+      "stage": [
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "reading",
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "15-20min",
+      "preparation": "正文・誤文混在リスト（スライドまたは画面共有）・架空の予算設定",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有"
+      ],
+      "description": "複数の文（正文と誤文が混在）を提示し、「正しいと思う文」を架空の予算内で競り落とす。文法の正確性を意識させる。競り落とした文が誤文だったときの「損失」が学習を深める。",
+      "procedure": [
+        "学習者に架空の予算を伝える（例：1000コイン）",
+        "各文を提示し「これに何コイン賭けますか」と聞く",
+        "全文終了後に正解を発表し、正文に賭けた分は回収、誤文に賭けた分は没収",
+        "誤文について「なぜ間違いか」を一緒に確認する"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "lesson_01の正文・誤文（〜は〜ですの語順・助詞ミス等）で構成する。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "正誤文リストのスライドが必要"
+      },
+      "playerExplanation": {
+        "ja": "正しい文を選んで予算を賭けてください。正しい文を買えた分だけ勝ちです。",
+        "en": "Bet your budget on sentences you think are correct. The more correct sentences you buy, the better!"
+      },
+      "teacherTip": "誤文は学習者がよく犯すエラーから作ると精度が高まる。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_odd_one_out",
+      "name": "仲間外れ",
+      "nameEn": "Odd One Out",
+      "stage": [
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "8-12min",
+      "preparation": "なし（no-prep）または語彙カード",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "チャット"
+      ],
+      "description": "4つの語彙を提示し「仲間外れ」を選んでその理由を説明する。語彙の意味的ネットワークの構築に効果的。複数の正解が出ることが良い議論を生む。",
+      "procedure": [
+        "チャットに4単語を送る（またはスライドで提示）",
+        "学習者が「〜は仲間外れです」と答える",
+        "「なぜですか」と理由を問う",
+        "別のセットに移る"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "all",
+      "lesson1Note": "lesson_01語彙（医者・先生・会社員・リンゴ）のような人/物混在セットで始める。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "チャットで単語提示可"
+      },
+      "playerExplanation": {
+        "ja": "4つの単語から仲間外れを選んで、理由を教えてください。",
+        "en": "Choose the odd one out from four words and explain your reason."
+      },
+      "teacherTip": "1つの「正解」より複数の解釈が出る問題が良い授業になる。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_battleship",
+      "name": "バトルシップ",
+      "nameEn": "Battleship",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "15-20min",
+      "preparation": "バトルシップ用グリッドシート（縦軸・横軸に語彙配置）を事前作成・共有",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有",
+        "チャット"
+      ],
+      "description": "座標軸に語彙・文法項目を配置した格子を使い、「〜は〜ですか」の質問を繰り返して相手の「船」の位置を当てる。疑問文を大量かつ自然に繰り返す構造。",
+      "procedure": [
+        "各自のグリッドシートに「船」（2〜3マス）をランダム配置（相手に見せない）",
+        "交互に「（縦軸語彙）は（横軸語彙）ですか」と質問",
+        "命中なら「はい、そうです（Hit）」、外れなら「いいえ（Miss）」",
+        "先に全船を沈めた方が勝ち"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 70%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "縦軸に人名、横軸に職業を配置すると「田中さんは先生ですか」の形になりlesson_01語彙を活用できる。",
+      "source": "初級言語教育アプローチ調査.docx §2.4",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "グリッドシートが必要"
+      },
+      "playerExplanation": {
+        "ja": "グリッドを使って相手の船を見つけてください。「〜は〜ですか」で質問してください。",
+        "en": "Find your opponent's ships on the grid by asking '〜は〜ですか?' questions."
+      },
+      "teacherTip": "グリッドの事前作成がやや手間だが一度作ると繰り返し使える。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_draw_this",
+      "name": "私を描いて",
+      "nameEn": "Draw This (Information Gap Drawing)",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "15-20min",
+      "preparation": "描写対象の絵（教師側のみ）・学習者用白紙またはホワイトボード",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "オンラインホワイトボード"
+      ],
+      "description": "片方が絵を見て言葉で説明し、もう片方がそれを見ずに描く情報ギャップ活動。形容詞・色・形・位置の語彙を実用的に使う。完成した絵と原本の比較がフィードバックになる。",
+      "procedure": [
+        "教師が絵を持ち、学習者には見せない",
+        "教師が絵を言葉で説明する（「右側に〜があります」「〜は赤いです」等）",
+        "学習者がホワイトボードまたは紙に描く",
+        "完成後に原本と比較・フィードバック",
+        "役割交代"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 65%",
+      "applicableLessons": "lesson_03以降（形容詞・色語彙導入後）",
+      "lesson1Note": "色・形・位置語彙が前提。lesson_03以降推奨。lesson_01でも「大きい・小さい、右・左」等の基本語彙を教師が提示しながら行えば実施可能。",
+      "source": "初級言語教育アプローチ調査.docx §3.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "ホワイトボード機能で完結"
+      },
+      "playerExplanation": {
+        "ja": "先生が絵の説明をします。説明を聞いて同じ絵を描いてください。",
+        "en": "Listen to the teacher's description and draw the same picture without looking at the original."
+      },
+      "teacherTip": "初回は「形と色のみ」の単純な絵から始め、徐々に人物・場所を含む絵へ発展させる万能タスク。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_map_navigation",
+      "name": "地図案内",
+      "nameEn": "Map Navigation",
+      "stage": [
+        "stage4"
+      ],
+      "level": [
+        "N4",
+        "N3"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "15-20min",
+      "preparation": "地図（白地図・Google Maps・手書き地図）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有",
+        "Google Maps（任意）"
+      ],
+      "description": "地図上で目的地への道順を日本語で指示し、パートナーがそのルートをたどる。「〜へ曲がってください」「〜があります」等の方向・存在表現を実用的な文脈で練習する。",
+      "procedure": [
+        "地図を共有し、出発点と目的地を設定",
+        "案内役が「まっすぐ行って、右に曲がってください」等と指示",
+        "聴く役がルートを指でたどる",
+        "役割交代"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "lesson_05以降（方向表現・〜てください導入後）",
+      "lesson1Note": "方向表現（〜てください）・存在表現（〜があります）が必要。lesson_05以降推奨。",
+      "source": "初級言語教育アプローチ調査.docx §3.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "地図は画面共有で代用可"
+      },
+      "playerExplanation": {
+        "ja": "地図を見て、目的地までの道を説明してください。",
+        "en": "Look at the map and give directions to the destination."
+      },
+      "teacherTip": "Google Mapsのストリートビューを使うとact_google_maps_tourと組み合わせて実施できる。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_family_tree",
+      "name": "家系図作成",
+      "nameEn": "Family Tree Chart",
+      "stage": [
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "15-20min",
+      "preparation": "一部情報が欠けた家系図シート（教師・学習者でそれぞれ異なる情報が欠落）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有",
+        "ホワイトボード"
+      ],
+      "description": "AさんとBさんの家系図にそれぞれ異なる名前・関係が抜けており、互いに質問して全て埋める情報ギャップタスク。家族関係語彙と〜の〜（所有）が前提。",
+      "procedure": [
+        "各自の欠落家系図を確認",
+        "「〜さんのお母さんは誰ですか」等で欠けた情報を聞く",
+        "情報を記入して完成させる",
+        "答え合わせ"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 65%",
+      "applicableLessons": "lesson_02〜03以降（家族語彙・所有表現導入後）",
+      "lesson1Note": "家族語彙と所有表現（noun_no_possession）が必要。lesson_02〜03以降推奨。",
+      "source": "初級言語教育アプローチ調査.docx §3.4",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "家系図シートが必要"
+      },
+      "playerExplanation": {
+        "ja": "家系図の空欄を質問で埋めてください。「〜さんの〜は誰ですか」と聞きましょう。",
+        "en": "Fill in the blanks in the family tree by asking questions like '〜さんの〜は誰ですか?'"
+      },
+      "teacherTip": "lesson_01のp3（〜の〜）の発展版として位置づけ可能。家族語彙の導入後に実施。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_daily_routine_task",
+      "name": "日課の並べ替え",
+      "nameEn": "Daily Routine Sorting",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "15min",
+      "preparation": "なし（口頭のみで可）またはホワイトボードにカード配置",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "ホワイトボード（任意）"
+      ],
+      "description": "自分の1日の活動をランダムな順序で話し、パートナーがそれを時系列に並べ直す。時刻表現と動詞（〜ます形）が必要。情報ギャップ構造で自然な対話が生まれる。",
+      "procedure": [
+        "自分の1日の活動を5〜6件ランダムに話す（「7時に起きます」等）",
+        "パートナーがホワイトボード等で時系列に並べる",
+        "答え合わせ・役割交代"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 70%",
+      "applicableLessons": "lesson_05以降（時刻・〜ます形導入後）",
+      "lesson1Note": "動詞（〜ます）と時刻表現が必要。lesson_05以降推奨。",
+      "source": "初級言語教育アプローチ調査.docx §3.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭のみで可"
+      },
+      "playerExplanation": {
+        "ja": "自分の1日の活動をランダムに話します。時系列に並べ替えてください。",
+        "en": "Tell your partner your daily activities in random order. They will put them in the right sequence."
+      },
+      "teacherTip": "time_expression_clock導入後にそのまま練習タスクとして使える。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_monster_design",
+      "name": "モンスター・デザイン",
+      "nameEn": "Monster Design",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "15-20min",
+      "preparation": "白紙またはホワイトボード",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "オンラインホワイトボード"
+      ],
+      "description": "クライアント（教師）の要望（「目が3つ、手が6本、緑の体」等）を聞き取り、正確にモンスターを描く。数字・身体部位・色・形容詞の聴解練習。描いた絵との照合がフィードバックになる。",
+      "procedure": [
+        "教師が要望を口頭で伝える",
+        "学習者がホワイトボードに描く",
+        "「確認してもいいですか」で聴き返し表現を練習",
+        "完成後に「〜があります」で発表"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%",
+      "applicableLessons": "lesson_03〜04以降（身体部位・数・色導入後）",
+      "lesson1Note": "身体部位・数・色が必要。lesson_03〜04以降推奨。",
+      "source": "初級言語教育アプローチ調査.docx §3.4",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "ホワイトボード機能で完結"
+      },
+      "playerExplanation": {
+        "ja": "先生の注文通りのモンスターを描いてください。わからない部分は「〜ですか？」と確認しましょう。",
+        "en": "Draw a monster based on the teacher's specifications. Confirm details with '〜ですか?' if unsure."
+      },
+      "teacherTip": "誇張したデザインが出ると楽しい雰囲気になる。「足が10本でもOK」と伝えてクリエイティビティを促す。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_school_schedule",
+      "name": "学校の時間割",
+      "nameEn": "School Schedule Coordination",
+      "stage": [
+        "stage4"
+      ],
+      "level": [
+        "N4",
+        "N3"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [],
+      "duration": "15-20min",
+      "preparation": "時間割・スケジュール表（教師・学習者で異なる予定）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有"
+      ],
+      "description": "互いの異なるスケジュールを口頭で共有し、「いつなら一緒に〜できますか」と調整する。時間表現・曜日・予定の表現が前提の実用的タスク。",
+      "procedure": [
+        "各自のスケジュール表を持つ（画面共有で提示しない）",
+        "「月曜日の3時はどうですか」等で空き時間を確認",
+        "合意できるタイミングを見つける"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 70%",
+      "applicableLessons": "lesson_05以降（時刻・曜日導入後）",
+      "lesson1Note": "時刻・曜日・〜は大丈夫ですか等の表現が必要。lesson_05以降推奨。",
+      "source": "初級言語教育アプローチ調査.docx §3.4",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "スケジュール表が必要"
+      },
+      "playerExplanation": {
+        "ja": "互いのスケジュールを確認して、一緒にできる時間を見つけてください。",
+        "en": "Check each other's schedules and find a time that works for both of you."
+      },
+      "teacherTip": "ビジネス系学習者には会議調整シナリオで行うと実用性が高まる。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_virtual_card_exchange",
+      "name": "バーチャル名刺交換",
+      "nameEn": "Virtual Business Card Exchange",
+      "stage": [
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "roleplay"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_affirmative",
+        "noun_predicate_question",
+        "noun_no_affiliation"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10min",
+      "preparation": "名刺画像（教師が事前作成、または授業中に一緒に作る）",
+      "tools": [
+        "Zoom バーチャル背景",
+        "Google Meet"
+      ],
+      "description": "名刺画像をバーチャル背景に設定し、画面越しに「はじめまして」の挨拶と名刺交換を練習する。オンラインビジネスの実際の習慣をそのまま練習できる。act_hajimemashite_conversationの発展版または前段として使用可。",
+      "procedure": [
+        "名刺画像（名前・会社名・役職を含む）を準備",
+        "バーチャル背景に名刺を設定",
+        "「はじめまして」から始まる自己紹介会話を行う",
+        "相手の名刺の内容に基づき「〜ですか」で確認質問"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 65%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "名刺の情報（名前・所属・職業）がp1/p2/p3と完全に対応。ビジネス系学習者に特に有効。",
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx バーチャル背景セクション",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "reason": "名刺画像があると没入感が増すが口頭のみでも可"
+      },
+      "playerExplanation": {
+        "ja": "名刺交換の練習をしましょう。バーチャル背景の名刺を見ながら「はじめまして」の会話をしてください。",
+        "en": "Practice exchanging business cards. Have a はじめまして conversation using the virtual background business card."
+      },
+      "teacherTip": "名刺はCanva等で簡単に作れる。学習者に事前課題として作成させると次回への興味が高まる。",
+      "defaultMaterialTypes": [
+        "slide_content"
+      ]
+    },
+    {
+      "id": "act_chat_kanji_quiz",
+      "name": "チャットで漢字変換クイズ",
+      "nameEn": "Chat Kanji Conversion Quiz",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5"
+      ],
+      "skillFocus": [
+        "reading",
+        "writing"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5-8min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom チャット",
+        "Google Meet チャット"
+      ],
+      "description": "教師がひらがなで文をチャットに送り（例：「きょうはあついです」）、学習者が漢字変換して打ち返す（「今日は暑いです」）。変換候補から正しい漢字を選ぶ作業を通じて文字の形態認識能力を高める。キーボード入力の練習にもなる。",
+      "procedure": [
+        "教師がひらがなのみの文をチャットに送る",
+        "学習者が変換して漢字交じりの文をチャットで返す",
+        "正解を確認し、間違いがあれば解説"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 40%（タイピング中心）",
+      "applicableLessons": "all",
+      "lesson1Note": "Brain Breakとして5分使うのが効果的。「今日（きょう）」「私（わたし）」など頻出漢字から始める。",
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx チャット機能セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "チャット機能のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生がひらがなで送った文を、漢字に変換してチャットで返してください。",
+        "en": "The teacher will send a message in hiragana. Convert it to include kanji and send it back in the chat."
+      },
+      "teacherTip": "IMEの使い方が初めての学習者には最初に説明が必要。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_realtime_error_correction",
+      "name": "リアルタイム誤用修正",
+      "nameEn": "Real-time Error Correction via Chat",
+      "stage": [
+        "stage3",
+        "stage4",
+        "stage5"
+      ],
+      "level": [
+        "N5",
+        "N4",
+        "N3"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "feedback_technique"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "随時（他のアクティビティと並行）",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom チャット",
+        "Google Meet チャット"
+      ],
+      "description": "学習者が話している間、教師がその中で出た誤用や不自然な表現をチャットにリアルタイムで記録する。会話の区切りでチャットを一緒に見直し、訂正する。単独アクティビティというより全授業に応用できる「教師の指導テクニック」。",
+      "procedure": [
+        "他のアクティビティを実施中に教師がチャットへ誤用をメモ",
+        "アクティビティ終了後「チャットを見てください」と促す",
+        "誤用を一緒に確認・正用を提示",
+        "学習者が正用でもう一度言い直す"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 80%（通常会話を妨げない）",
+      "applicableLessons": "all",
+      "lesson1Note": "誤用の全件修正は禁物。「この授業で最も重要な1〜2件」に絞る。",
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx チャット機能セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "チャット機能のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "先生がチャットに気になる表現を書きます。後で一緒に確認しましょう。",
+        "en": "The teacher will note expressions in the chat. We'll review them together later."
+      },
+      "teacherTip": "チャットへの記録は簡潔に（例：「× は先生です → ○ 先生です」）。会話の流れを止めないことが最優先。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_whiteboard_categorize",
+      "name": "カテゴリ分類付箋ワーク",
+      "nameEn": "Whiteboard Category Sort",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "reading"
+      ],
+      "activityType": [
+        "drill"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10-15min",
+      "preparation": "ホワイトボードにカテゴリ枠と単語付箋を事前配置",
+      "tools": [
+        "Zoomホワイトボード",
+        "Miro",
+        "Padlet"
+      ],
+      "description": "教師がホワイトボードに「職業・国名・動詞」等のカテゴリ枠を作り、学習者が単語付箋をドラッグ＆ドロップで分類する。身体的な操作を伴うため抽象的な文法カテゴリの理解を助ける。",
+      "procedure": [
+        "ホワイトボードにカテゴリ枠を作成",
+        "単語の付箋をバラバラに配置",
+        "学習者が付箋をドラッグして正しい枠へ移動",
+        "分類後「〜は〜です」で文作成"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 40%",
+      "applicableLessons": "all",
+      "lesson1Note": "lesson_01の語彙（職業・国籍・名前）でカテゴリを作成。品詞分類にも使える。",
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx ホワイトボードセクション",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "ホワイトボード上の付箋配置が必要"
+      },
+      "playerExplanation": {
+        "ja": "付箋を正しいカテゴリに移動してください。",
+        "en": "Drag and drop the sticky notes into the correct categories."
+      },
+      "teacherTip": "ZoomのAnnotation機能でも代用可能。付箋色を品詞ごとに変えると視覚効果が高まる。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_silhouette_quiz",
+      "name": "シルエット・クイズ",
+      "nameEn": "Silhouette Quiz",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "listening",
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5-8min",
+      "preparation": "なし（no-prep）またはシルエット画像（任意）",
+      "tools": [
+        "Zoom カメラ",
+        "Google Meet カメラ"
+      ],
+      "description": "物をカメラに極限まで近づける・または照明を背にして影だけを映し、「これは何だと思いますか」と質問する。カメラの画角制限を逆手に取ったオンライン特有の語彙クイズ。",
+      "procedure": [
+        "物をカメラの前に持ってくる（または影だけを映す）",
+        "「これは何ですか」または「〜ですか」で質問",
+        "学習者が「〜です」「〜じゃありませんか」で答える",
+        "徐々に物を引いて全体を見せる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 50%",
+      "applicableLessons": "all",
+      "lesson1Note": "語彙カードの復習として使うと効果的。学習者に出題側にまわさせるとSTTが増える。",
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx 観察活動セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "身近な物をカメラで映すだけ"
+      },
+      "playerExplanation": {
+        "ja": "シルエットや影から、何の物か当ててください。「これは〜ですか？」と質問してもOKです。",
+        "en": "Guess what the object is from its silhouette or shadow. You can ask '〜ですか?' to confirm."
+      },
+      "teacherTip": "act_virtual_treasureとの組み合わせで活動のバリエーションが広がる。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_background_change",
+      "name": "背景変化探し",
+      "nameEn": "Spot the Background Change",
+      "stage": [
+        "stage2",
+        "stage3"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "game"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "5-8min",
+      "preparation": "なし（no-prep）",
+      "tools": [
+        "Zoom バーチャル背景",
+        "Google Meet"
+      ],
+      "description": "教師が一瞬カメラをオフにして背景や自分の何かを変え（背景画像変更・帽子を被る等）、「どこが変わりましたか」と質問する。オンラインならではの「画面の切り替え」を使った観察練習。変化を説明する語彙の産出を促す。",
+      "procedure": [
+        "教師がカメラをオフにして何かを変える",
+        "カメラをオンに戻す",
+        "「どこが変わりましたか」と学習者に問う",
+        "学習者が変化を説明する"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "all",
+      "lesson1Note": "変化は1箇所から始め、慣れたら2〜3箇所に増やす。Brain Breakとしても機能する。",
+      "source": "オンライン日本語マンツーマン授業アクティビティ.docx 観察活動セクション",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "ツール機能のみ"
+      },
+      "playerExplanation": {
+        "ja": "先生がカメラをオフにします。オンになったら、どこが変わったか教えてください。",
+        "en": "The teacher will turn off the camera briefly. When it comes back on, tell them what changed."
+      },
+      "teacherTip": "変化の大きさで難度が変わるので調整しやすい。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_personality_quiz",
+      "name": "性格診断クイズ",
+      "nameEn": "Personality Quiz",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "quiz"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "15min",
+      "preparation": "診断シート（質問と結果タイプ一覧）",
+      "tools": [
+        "Zoom",
+        "Google Meet",
+        "画面共有"
+      ],
+      "description": "教師の「〜ですか」質問にYes/Noで答え続け、最後に「あなたは〇〇タイプです」と診断される。診断結果を使って自己紹介文を作る活動に発展させられる。",
+      "procedure": [
+        "診断シートを画面共有",
+        "教師が「猫が好きですか」「朝早く起きますか」等の質問を出す",
+        "学習者が「はい」「いいえ」で答える",
+        "結果を「私は〜タイプです」と言わせる"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 55%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "結果の「タイプ名」をlesson_01語彙（職業）にすると復習になる（例：「あなたは先生タイプです！」）。",
+      "source": "初級日本語アクティビティ調査報告.docx §2（疑問文アクティビティ）",
+      "contentRequirement": {
+        "judgment": "required",
+        "reason": "診断シートが必要"
+      },
+      "playerExplanation": {
+        "ja": "先生の質問に「はい」か「いいえ」で答えてください。最後にあなたのタイプがわかります。",
+        "en": "Answer the teacher's questions with はい or いいえ. You'll find out your personality type at the end!"
+      },
+      "teacherTip": "lesson_01語彙（職業）を結果タイプとして使うとそのまま復習になる。",
+      "defaultMaterialTypes": [
+        "activity_content"
+      ]
+    },
+    {
+      "id": "act_two_choice_quiz",
+      "name": "二択クイズ：どちらが好き？",
+      "nameEn": "Two-Choice Quiz",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5",
+        "N4"
+      ],
+      "skillFocus": [
+        "speaking"
+      ],
+      "activityType": [
+        "quiz"
+      ],
+      "interactionPattern": "pair",
+      "prerequisitePatterns": [
+        "noun_predicate_question"
+      ],
+      "validatedForLessons": [
+        1
+      ],
+      "duration": "10min",
+      "preparation": "なし（no-prep）または絵カード2枚",
+      "tools": [
+        "Zoom",
+        "Google Meet"
+      ],
+      "description": "「リンゴとバナナ、どちらが好きですか」等の二択質問を互いに行う。文型が固定されているため発話のハードルが低く、好みの共有を通じてインタラクションを楽しめる。",
+      "procedure": [
+        "教師がモデルを示す（「〜と〜、どちらが好きですか」）",
+        "教師→学習者で質問",
+        "学習者→教師で役割交代",
+        "面白い答えが出たら「なぜですか」で理由を問う"
+      ],
+      "materials": [],
+      "stt_ttt_ratio": "STT 60%",
+      "applicableLessons": "lesson_01以降",
+      "lesson1Note": "最初は食べ物・色など簡単な語彙から始め、慣れたら「猫と犬」「東京と大阪」等にテーマを広げる。",
+      "source": "初級日本語アクティビティ調査報告.docx §2（疑問文アクティビティ）",
+      "contentRequirement": {
+        "judgment": "not_needed",
+        "reason": "口頭のみで完結"
+      },
+      "playerExplanation": {
+        "ja": "「〜と〜、どちらが好きですか」という二択質問を先生にしてください。",
+        "en": "Ask the teacher '〜と〜、どちらが好きですか?' two-choice questions."
+      },
+      "teacherTip": "「どちらも好きです」という答えへの対処法も教えておく。",
+      "defaultMaterialTypes": [
+        "none"
+      ]
+    },
+    {
+      "id": "act_belongings_qa",
+      "name": "先生の持ち物Q&A",
+      "nameEn": "Teacher's Belongings Q&A",
+      "stage": [
+        "stage3",
+        "stage4"
+      ],
+      "level": [
+        "N5"
+      ],
+      "duration": "7-12min",
+      "preparation": "教師の持ち物（かばん・ペン・本等）または実物写真・画面共有用スライド",
+      "tools": [
+        "スライド（画面共有）",
+        "実物"
+      ],
+      "description": "教師が自分の持ち物（またはペット・家族の写真）を見せながら「先生の○○ですか」の Q&A を行うマンツーマン・オンライン向けアクティビティ。ABC 教科書第2課 p.034 オンライン授業コラムに記載された「落としもの返しごっこ」のマンツーマン代替案。所有（〜の〜）と指示代名詞（これ/それ/あれ）を組み合わせた実践的な Q&A。",
+      "procedure": [
+        "教師が自分の持ち物（かばん・ペン・本等）を画面に映す、または事前にスライドに写真を用意する",
+        "学習者に「これは先生の○○ですか」と質問させる（または教師が「これはわたしの〜です」と提示して学習者に「先生の○○ですか」と確認させる）",
+        "はい/いいえ の応答 + 「〜さんのです」の所有確認を行う",
+        "次に学習者の持ち物や写真を見せてもらい、同じ活動を逆方向で行う",
+        "慣れたら「〜さんの〜はどれですか」と複数の物から1つを特定する練習に発展させる（p4連携）"
+      ],
+      "materials": [
+        "auto_generated_vocab"
+      ],
+      "stt_ttt_ratio": "STT 65%",
+      "applicableLessons": [
+        2
+      ],
+      "source": "日本語の教え方ABC 第2課 p.034 オンライン授業コラム",
+      "_source_note": "PDF p.034 記載: 「1対1の授業の場合は、教師や教師の家族の持ち物、ペットの写真、子どもの頃の写真などを見せて、「先生の○○ですか」などと質問させたり、反対に学習者のものや写真を見せてもらって質問したりするとよい。」",
+      "contentRequirement": {
+        "judgment": "slide_alt",
+        "_judgmentValues": "required(activity_content 必須) / slide_alt(slide_content で代替可) / not_needed(口頭・チャット等で完結) / borderline(検討要)",
+        "reason": "実物または写真を使った口頭 Q&A。スライドで写真を表示すれば完結できるため slide_alt。",
+        "axes": {
+          "interaction": "single_view",
+          "timing": "none",
+          "state": "ephemeral"
+        }
+      },
+      "playerExplanation": {
+        "ja": "先生の持ち物（または写真）を見て、「これは先生の〜ですか」と質問しましょう。次に自分の持ち物や写真を見せて、先生に同じように質問してもらいましょう。",
+        "en": "Look at the teacher's belongings (or photos) and ask 'Is this your ~, Sensei?'. Then show your own belongings or photos and let the teacher ask the same questions."
+      },
+      "teacherTip": "事前に自分の持ち物・ペット・家族などの写真をスライドに準備しておくとスムーズ。学習者の持ち物も事前に聞いておくと授業の個別感が増す。第1課の「〜の〜（所属）」との違い（所有 vs 所属）を意識させるタイミングとしても有効。慣れてきたら複数の物を並べて「どれですか」（p4）に発展させる。",
+      "defaultMaterialTypes": [
+        "teacher_photo",
+        "auto_generated_vocab"
+      ],
+      "validatedForLessons": [
+        2
+      ],
+      "prerequisitePatterns": [
+        "kosoado_demonstrative_pronoun",
+        "noun_no_possession"
+      ],
+      "skillFocus": [
+        "speaking",
+        "listening"
+      ],
+      "activityType": [
+        "task"
+      ],
+      "interactionPattern": "pair",
+      "textbookOrigins": [
+        {
+          "textbookId": "ABC",
+          "lesson": 2,
+          "patterns": [
+            "p3",
+            "p4"
+          ],
+          "activity_name": "落としもの返しごっこ（マンツーマン版）",
+          "description": "ABC p.034 オンライン授業コラムに記載のマンツーマン代替案。教師の持ち物・ペット・家族の写真を使った所有確認 Q&A。",
+          "pdfRef": "p.034 オンライン授業コラム"
+        }
+      ]
+    }
+  ],
+  "materialTypes": {
+    "_note": "オンライン1対1向け素材タイプ体系(6タイプ)。Phase 1-D-1 で確定。lesson_NN.json から派生する各種素材の schema を集約する。各タイプは固有の outputTo・persistence・purposeTags・applicableStages を持ち、DRY 原則(wordRef/patternRef で lesson_NN.json 参照)に従う。",
+    "_typeSystemContext": {
+      "totalTypes": 6,
+      "confirmedTypes": [
+        "slide_content",
+        "activity_content"
+      ],
+      "pendingTypes": [
+        "handout",
+        "teacher_notes",
+        "homework",
+        "lesson_summary"
+      ],
+      "designPrinciples": [
+        "出力先(A軸): 各タイプは固有の出力先を持つ",
+        "永続性(D軸): session_only / permanent",
+        "教育目的(E軸): presentation / practice / production / evaluation",
+        "使用stage(F軸): lesson_NN.json の flow.stage と対応",
+        "DRY: lesson_NN.json は wordRef/patternRef で参照(直接コピーしない)",
+        "画像連携: imageId で master_prompt_design_guide.py 参照",
+        "デザイン: design_tokens.json は生成時に implicit に参照",
+        "subtype: 観測されたパターンのみ catalog に書く(YAGNI 原則・Phase 1-E 教訓)"
+      ]
+    },
+    "slide_content": {
+      "name": "スライドコンテンツ",
+      "description": "授業中に画面共有される、教師主導の提示用素材。9種類のサブタイプを type 属性で切り替える(フラット構造)。1ファイル = 1 slide_content オブジェクト(slides[] 集合)。",
+      "outputTo": "第N課_スライド.html",
+      "persistence": "session_only",
+      "purposeTags": [
+        "presentation",
+        "modeling",
+        "practice_guided"
+      ],
+      "applicableStages": [
+        "intro",
+        "pattern",
+        "vocabulary",
+        "examples",
+        "practice",
+        "activity_intro",
+        "wrap"
+      ],
+      "schema": {
+        "deck": {
+          "lessonNo": "integer",
+          "title": "string",
+          "totalSlides": "integer",
+          "slides": "array<slide>"
+        },
+        "slide": {
+          "id": "string (s01, s02, ...)",
+          "order": "integer",
+          "stageRef": "string (lesson_NN.json flow.stage への参照)",
+          "type": "enum: title|intro|pattern|vocabulary|examples|practice|activity_intro|summary|transition",
+          "header": {
+            "label": "string?",
+            "title": "string (ruby記法対応)",
+            "titleEn": "string?"
+          },
+          "body": "object (type に応じて schema 切替)",
+          "speakerNotes": "string? (slide単位の短メモ・30字程度)"
+        }
+      },
+      "bodySchemas": {
+        "title": {
+          "lessonNumber": "integer",
+          "lessonTitle": "string",
+          "canDoStatements": "array<string>",
+          "imageId": "string?"
+        },
+        "intro": {
+          "characters": "array<{ name, role, imageId }>",
+          "sceneText": "string",
+          "sceneImageId": "string"
+        },
+        "pattern": {
+          "patternBox": {
+            "label": "string (例: PATTERN)",
+            "formula": "array<{ kind: slot|particle|ending, text }>",
+            "formulaEn": "string"
+          },
+          "exampleCards": "array<{ imageId, jp, en }>",
+          "practiceBoxRef": "string?"
+        },
+        "vocabulary": {
+          "gridLayout": "string (例: 4x2)",
+          "items": "array<{ wordRef, imageId }>"
+        },
+        "examples": {
+          "rows": "array<{ patternTag, patternRef, examples: [{ imageId, jp, en }] }>"
+        },
+        "practice": {
+          "sections": "array<{ label, patternRef, template, hints[] }>"
+        },
+        "activity_intro": {
+          "activityRef": "string",
+          "activityTitle": "string",
+          "instruction": "string",
+          "handoutRef": "string?"
+        },
+        "summary": {
+          "canDoChecks": "array<{ statement, patternRef }>",
+          "nextLessonPreview": "string"
+        },
+        "transition": {
+          "transitionText": "string",
+          "imageId": "string?"
+        }
+      },
+      "references": {
+        "lesson_NN.json": [
+          "wordRef",
+          "patternRef",
+          "stageRef",
+          "activityRef"
+        ],
+        "master_prompt_design_guide.py": [
+          "imageId"
+        ],
+        "design_tokens.json": "implicit (生成時に参照)",
+        "teacher_notes type": "speakerNotes は短メモ、詳細は teacher_notes へ"
+      },
+      "exampleUsage": "第1課: 9枚のスライドで構成(title→intro→pattern1→vocabulary→pattern2→pattern3→vocabulary→examples→practice→activity_intro→summary)。第1課_スライド.html が現状実装。",
+      "_decisions": {
+        "subtypeStrategy": "A) フラット(type 属性で切替)",
+        "fileStrategy": "a) 集合(slides[] 配列・1ファイル = 1 deck)",
+        "imageStrategy": "i) imageId のみ参照(SSOT 連携)",
+        "vocabularyStrategy": "a) 参照型(wordRef/patternRef で lesson_NN.json 参照・DRY)",
+        "speakerNotesStrategy": "c) 両方使い分け(slide単位の短メモ + teacher_notes に詳細)"
+      }
+    },
+    "activity_content": {
+      "name": "アクティビティコンテンツ",
+      "description": "授業中に学習者が画面で能動的に操作する独立 HTML 素材。スライドでは表現できないインタラクション(タップ・アニメーション・タイマー・自動判定・状態保存)を伴う活動に使用。3軸モデル(interaction / timing / state)で活動の性格を記述する。",
+      "outputTo": "第N課_アクティビティ.html",
+      "persistence": "session_only",
+      "purposeTags": [
+        "practice_semi_controlled",
+        "production"
+      ],
+      "applicableStages": [
+        "activity"
+      ],
+      "axes": {
+        "_note": "activity_content の本質を3軸で記述する。これらの組み合わせで活動の性格が決まる。",
+        "interaction": {
+          "description": "学習者が画面で何をするか",
+          "values": {
+            "tap": "選択肢をタップして回答",
+            "drag": "要素をドラッグ&ドロップ",
+            "input": "テキストを入力",
+            "animate_view": "アニメーションを視聴(ランダム選出等)",
+            "dual_view": "教師と異なる画面を見る(権限分離)"
+          }
+        },
+        "timing": {
+          "description": "時間がどう関わるか",
+          "values": {
+            "none": "時間制限なし・自然なテンポ",
+            "timer": "秒単位カウントダウン",
+            "autoflow": "回答後に自動進行・即時判定"
+          }
+        },
+        "state": {
+          "description": "セッション中・後にデータをどう扱うか",
+          "values": {
+            "ephemeral": "その場限り・データ保存しない",
+            "score": "スコア集計・最後に表示",
+            "history": "履歴保存・復習可能"
+          }
+        }
+      },
+      "_subtypes_note": "subtype 名は Phase 2 以降で実装された活動から観測的に命名・追加する(YAGNI 原則・Phase 1-E 教訓と一貫)。現時点では axes(3軸)のみで活動を記述する。観測済み事例として: act_info_gap_picture (dual_view + none + ephemeral), act_online_roulette (animate_view + timer + ephemeral), act_jlpt_time_attack (tap + timer+autoflow + score)。",
+      "schema": {
+        "id": "string (例: ac_lesson1_a1)",
+        "type": "activity_content",
+        "axes": {
+          "interaction": "string (axes.interaction.values のキー)",
+          "timing": "string (axes.timing.values のキー)",
+          "state": "string (axes.state.values のキー)"
+        },
+        "activityRef": "string? (activity_catalog.json activities[].id への参照・任意)",
+        "title": "string",
+        "instruction": {
+          "ja": "string",
+          "en": "string?"
+        },
+        "body": "object (axes に応じて必要なフィールドを記述)",
+        "permissions": {
+          "_note": "interaction = dual_view の時のみ必須・他は省略可",
+          "teacherView": "object?",
+          "studentView": "object?"
+        }
+      },
+      "references": {
+        "activity_catalog.json": "activityRef",
+        "lesson_NN.json": "(必要に応じて wordRef/patternRef を body 内で参照)",
+        "master_prompt_design_guide.py": "imageId",
+        "design_tokens.json": "implicit (生成時に参照)"
+      },
+      "notes": [
+        "第1課サジェスト候補5個(usedInLesson1=true)はすべて activity_content 不要(slide_content で代替可能)",
+        "Phase 1-D-2(別チャット)で第1課が activity_content を持つかは別途判断",
+        "subtype 名は実装段階で観測された活動から命名(YAGNI 原則・Phase 1-E 教訓と一貫)"
+      ],
+      "_decisions": {
+        "axisModel": "3軸(interaction / timing / state)で activity_content の本質を記述",
+        "subtypeStrategy": "C) subtype を後送り(YAGNI・観測事例のみ参考記載)",
+        "interactionValues": [
+          "tap",
+          "drag",
+          "input",
+          "animate_view",
+          "dual_view"
+        ],
+        "timingValues": [
+          "none",
+          "timer",
+          "autoflow"
+        ],
+        "stateValues": [
+          "ephemeral",
+          "score",
+          "history"
+        ]
+      }
+    },
+    "handout": {
+      "name": "配布資料",
+      "description": "学習者に送付・配布される独立した資料。事前送付(pre_session)・セッション中送付(in_session)・事後送付(post_session)の3タイミングを timing 属性で切り替える。1ファイル=1資料の個別単位で管理し、html/pdf の2形式に対応。生成方法は generationMode 属性で切替(generated / handwritten / hybrid)。",
+      "outputTo": "第N課_配布資料_<slug>.<ext> (例: 第1課_配布資料_role_card.pdf)",
+      "persistence": "permanent",
+      "purposeTags": [
+        "pre_reading",
+        "reference_material",
+        "activity_support",
+        "post_review"
+      ],
+      "applicableStages": [
+        "pre_class",
+        "intro",
+        "pattern",
+        "vocabulary",
+        "examples",
+        "practice",
+        "activity",
+        "wrap",
+        "post_class"
+      ],
+      "_designPrinciples": {
+        "粒度": "1 handout = 1 ファイル = 1 資料(個別単位・Q3: 案Y)",
+        "timing": "pre_session / in_session / post_session の3値・1 handout は1 timing(複数指定不可・Q1: 案2)",
+        "outputFormat": "html / pdf の2値(homework と統一・Q2: 案A)",
+        "generationMode": "generated / handwritten / hybrid の3値(Q4: 案R)",
+        "DRY": "generationMode が generated/hybrid の場合、lesson_NN.json への wordRef/patternRef 参照可。配布時は値展開して独立ファイル化。",
+        "教師オリジナル領域": "generationMode='handwritten' なら lesson_NN.json 参照不要・教師がゼロから作成"
+      },
+      "schema": {
+        "id": "string (例: ho_lesson1_role_card)",
+        "type": "handout",
+        "lessonRef": "string (lesson_NN.json への参照)",
+        "metadata": {
+          "title": "string (例: 「自己紹介ロールカード」)",
+          "titleEn": "string?",
+          "slug": "string (ファイル名用・例: role_card)",
+          "category": "enum: pre_reading | reference | activity_support | review_material | other",
+          "description": "string (この handout の用途・1-2行)"
+        },
+        "delivery": {
+          "_note": "配布関連の属性",
+          "timing": "enum: pre_session | in_session | post_session",
+          "outputFormat": "enum: html | pdf",
+          "deliveryMethod": "enum?: email | chat | shared_link | print (任意・参考情報)",
+          "printable": "boolean (印刷を想定するか・pdf なら通常 true)"
+        },
+        "generation": {
+          "_note": "生成方法の制御",
+          "generationMode": "enum: generated | handwritten | hybrid",
+          "stageRef": "string? (handwritten 時は任意・generated/hybrid 時は推奨)",
+          "activityRef": "string? (アクティビティに紐づく handout の場合)"
+        },
+        "content": {
+          "_note": "generationMode によって構造が変わる",
+          "_when_generated": {
+            "_kind": "generated",
+            "source": {
+              "wordRef": "array<string>? (lesson_NN.json vocabulary[] への参照)",
+              "patternRef": "array<string>? (lesson_NN.json patterns[] への参照)",
+              "imageId": "array<string>? (master_prompt_design_guide.py への参照)"
+            },
+            "layout": "enum: card_grid | list | table | text | mixed",
+            "sections": "array<{ heading?, body }> (lesson_NN.json から展開された値)"
+          },
+          "_when_handwritten": {
+            "_kind": "handwritten",
+            "rawHtml": "string? (outputFormat=html 時)",
+            "rawMarkdown": "string? (任意・pdf 変換用)",
+            "assets": "array<{ id, type: image|file, ref }>?"
+          },
+          "_when_hybrid": {
+            "_kind": "hybrid",
+            "_note": "generated 部分と handwritten 部分の両方を持つ",
+            "generatedSections": "array<{ heading?, source: {...}, body? }>",
+            "handwrittenSections": "array<{ heading?, rawHtml | rawMarkdown }>"
+          }
+        }
+      },
+      "references": {
+        "lesson_NN.json": "wordRef / patternRef (generated/hybrid のみ)",
+        "master_prompt_design_guide.py": "imageId (generated/hybrid のみ)",
+        "design_tokens.json": "implicit (生成時に参照)",
+        "activity_catalog.json": "activityRef (アクティビティ連携時)"
+      },
+      "exampleUsage": {
+        "_note": "実装段階で観測される事例の参考記録(YAGNI 準拠・catalog の枠ではない)",
+        "case_1_role_card": {
+          "scenario": "act_business_roleplay 用のロールカード",
+          "config": {
+            "timing": "in_session",
+            "outputFormat": "pdf",
+            "generationMode": "generated",
+            "category": "activity_support",
+            "activityRef": "act_business_roleplay"
+          }
+        },
+        "case_2_pre_reading": {
+          "scenario": "事前に語彙リストを送付して予習させる",
+          "config": {
+            "timing": "pre_session",
+            "outputFormat": "pdf",
+            "generationMode": "generated",
+            "category": "pre_reading",
+            "source": {
+              "wordRef": "vocab_p1[]"
+            }
+          }
+        },
+        "case_3_news_article": {
+          "scenario": "act_news_discussion 用に教師が選んだニュース記事",
+          "config": {
+            "timing": "pre_session",
+            "outputFormat": "pdf",
+            "generationMode": "handwritten",
+            "category": "activity_support",
+            "activityRef": "act_news_discussion"
+          }
+        },
+        "case_4_review_summary": {
+          "scenario": "レッスン後に送る復習用まとめ(自動生成+教師コメント)",
+          "config": {
+            "timing": "post_session",
+            "outputFormat": "html",
+            "generationMode": "hybrid",
+            "category": "review_material"
+          }
+        }
+      },
+      "_decisions": {
+        "timingValues": "pre_session / in_session / post_session(Q1: 案2)",
+        "outputFormatValues": "html / pdf(Q2: 案A・homework と統一)",
+        "fileGranularity": "1 handout = 1 ファイル(Q3: 案Y・個別単位)",
+        "generationModeValues": "generated / handwritten / hybrid(Q4: 案R)"
+      },
+      "_pending_for_phase_1F_or_implementation": [
+        "html→pdf 変換の標準パイプライン(印刷向けレイアウト規範)",
+        "pre_session 送付の自動化(メール/チャット連携・スコープ外候補)",
+        "handwritten 領域の Markdown→HTML/PDF レンダラ仕様",
+        "category 列挙の安定化(Phase 2 以降の観測で追加判断)"
+      ]
+    },
+    "teacher_notes": {
+      "name": "教師ノート(教案)",
+      "description": "課全体の授業設計を記述した教師向けドキュメント。lesson_NN.json から大半を自動生成し、教師固有のメモのみ手書きで追加するハイブリッド型。speakerNotes(slide単位の短メモ)とは役割が異なり、課全体の文型解説・教師注意事項を集約する。",
+      "outputTo": "第N課_教案.docx",
+      "persistence": "permanent",
+      "purposeTags": [
+        "teacher_reference"
+      ],
+      "applicableStages": [
+        "all"
+      ],
+      "generationMode": "hybrid",
+      "_designPrinciples": {
+        "派生元": "lesson_NN.json のみ(教科書由来情報は対象外)",
+        "教科書引用_対象外": "「使用教材」「会話例(モデル)」は教科書「日本語の教え方ABC」からの引用情報であり、本プロジェクトの SSOT 対象外。schema には含めず、教師が必要に応じて customNotes 領域に手動追加する。",
+        "DRY": "wordRef/patternRef ではなく、生成時に lesson_NN.json から値を展開する(教案docx は配布されたら独立して読まれるため、参照ではなく値展開)",
+        "教師メモ領域": "customNotes セクションのみ手書き(自由記述)"
+      },
+      "schema": {
+        "id": "string (例: tn_lesson1)",
+        "type": "teacher_notes",
+        "lessonRef": "string (lesson_NN.json への参照)",
+        "header": {
+          "_source": "lesson_NN.json から自動展開",
+          "lessonNo": "integer (lesson.no)",
+          "title": "string (lesson.title)",
+          "topic": "string (lesson.topic)",
+          "patterns": "string (patterns[].label を「①〜②〜③〜」形式で連結)",
+          "level": "string (lesson.level)",
+          "target": "string (lesson.target)",
+          "duration": "integer (lesson.duration)"
+        },
+        "sections": {
+          "learningGoals": {
+            "_source": "patterns[].canDo[] から集約",
+            "_kind": "generated",
+            "title": "学習目標",
+            "items": "array<string>"
+          },
+          "patternList": {
+            "_source": "patterns[] の label と examples[0].sentence",
+            "_kind": "generated",
+            "title": "文型一覧",
+            "rows": "array<{ no: string, pattern: string, example: string }>"
+          },
+          "vocabulary": {
+            "_source": "lesson_NN.json vocabulary[] (パターン別グループ化)",
+            "_kind": "generated",
+            "title": "導入語彙",
+            "groups": "array<{ patternRef, label, items: [{ word, reading, en, exampleSentence }] }>"
+          },
+          "classFlow": {
+            "_source": "flow[] から minutes/stage/content を展開",
+            "_kind": "generated",
+            "title": "授業の流れ",
+            "totalMinutes": "integer (sum of flow[].minutes)",
+            "rows": "array<{ stage, content, minutes, materials, note }>"
+          },
+          "teacherMemo": {
+            "_source": "patterns[].plusAlpha[] と patterns[].note[]",
+            "_kind": "generated",
+            "title": "教師メモ",
+            "perPattern": "array<{ patternRef, label, plusAlpha[], note[] }>",
+            "grammarOverall": {
+              "_source": "lesson.grammarMemo (新設・P案・lesson_01.json 更新は Phase 1-D-2 で実施)",
+              "title": "文法知識の整理",
+              "content": "string?"
+            }
+          },
+          "customNotes": {
+            "_kind": "handwritten",
+            "_note": "唯一の手書き領域。教師が docx 編集で自由に追加。再生成時も保持される(マージ戦略は 1-F で詳細化)。",
+            "title": "教師の補足メモ",
+            "free": "string?",
+            "perStage": "array<{ stageRef, memo }>?",
+            "textbookExcerpts": "string? (教科書引用を手動で貼り付ける領域・任意)"
+          }
+        }
+      },
+      "references": {
+        "lesson_NN.json": {
+          "lesson.*": "header / classFlow",
+          "patterns[].canDo": "learningGoals",
+          "patterns[].label": "patternList",
+          "patterns[].examples[0].sentence": "patternList",
+          "patterns[].plusAlpha[]": "teacherMemo.perPattern",
+          "patterns[].note[]": "teacherMemo.perPattern",
+          "lesson.grammarMemo": "teacherMemo.grammarOverall (新設・要追加)",
+          "vocabulary[]": "vocabulary",
+          "flow[]": "classFlow"
+        },
+        "design_tokens.json": "implicit (docx スタイル生成時に参照)"
+      },
+      "_decisions": {
+        "generationMode": "c) ハイブリッド(generated 主体 + customNotes 少量)",
+        "speakerNotesRelation": "1) 確定通り(slide=短メモ / notes=詳細)",
+        "scopeStrategy": "A) 骨格のみ(詳細規範は 1-F で)",
+        "textbookExcerpts": "scope 外(教師が手動追加・将来 textbook_sources 連動も検討)"
+      },
+      "_pending_for_phase_1F": [
+        "docx スタイル詳細(見出しレベル、表形式、フォント)",
+        "再生成時の customNotes マージ戦略(diff/append/manual)",
+        "PDF エクスポート時のレイアウト",
+        "_kind: handwritten 領域の永続化方法(docx 内アンカーコメント等)"
+      ],
+      "_lesson_NN_changes_required": [
+        "lesson.grammarMemo: string? を新設(P案・Phase 1-D-2 で実施)"
+      ]
+    },
+    "homework": {
+      "name": "宿題",
+      "description": "レッスン後に学習者が自習する練習教材。1ファイル=1宿題=複数モード集合の構造で、現状は「絵を見て選ぶ・文を並べる・例文を聞く」等の練習モードを切り替えながら学習する。outputFormat 属性で html/pdf を切替。modes は array 構造でモード追加(α)に対応し、各 mode の questions も generated+handwritten のハイブリッド構造で問題追加(β)に対応する。",
+      "outputTo": "第N課_宿題.<ext> (例: 第1課_宿題.html)",
+      "persistence": "permanent",
+      "purposeTags": [
+        "self_study",
+        "review",
+        "evaluation"
+      ],
+      "applicableStages": [
+        "post_class"
+      ],
+      "_designPrinciples": {
+        "粒度": "1 homework = 1 ファイル = 複数モードの集合(Q1: 案1)",
+        "outputFormat": "html / pdf の2値(Q2: 案A・引き継ぎ確定)",
+        "tracking": "オプショナル属性(Q3: 案Y)・schema では切替可、デフォルト値も規定",
+        "modes": "array<{type, ...}> で型は参考記載・後送り(Q4: 案Q・YAGNI)",
+        "generationMode": "ハイブリッド単一(Q5: 案Q + α+β)",
+        "拡張性_α": "新モードは modes 配列に追加するだけ(catalog 側で型を増やす不要)",
+        "拡張性_β": "各 mode の questions は generated/handwritten 領域を持ち、教師が問題追加可能"
+      },
+      "schema": {
+        "id": "string (例: hw_lesson1)",
+        "type": "homework",
+        "lessonRef": "string (lesson_NN.json への参照)",
+        "metadata": {
+          "title": "string (例: 「第1課 宿題アプリ」)",
+          "titleEn": "string?",
+          "description": "string? (この宿題の用途・1-2行)",
+          "estimatedMinutes": "integer? (想定学習時間)"
+        },
+        "delivery": {
+          "outputFormat": "enum: html | pdf",
+          "deliveryMethod": "enum?: shared_link | email | print"
+        },
+        "tracking": {
+          "_note": "学習進捗の追跡設定。outputFormat=pdf の場合は通常すべて false。",
+          "score": "boolean (スコア集計するか)",
+          "progress": "boolean (プログレスバー表示するか)",
+          "attempts": "boolean (再挑戦回数を記録するか)",
+          "_defaults": {
+            "html": {
+              "score": true,
+              "progress": true,
+              "attempts": false
+            },
+            "pdf": {
+              "score": false,
+              "progress": false,
+              "attempts": false
+            }
+          }
+        },
+        "ui": {
+          "_note": "UI レベルのオプション(html 時のみ意味を持つ)",
+          "furiganaToggle": "boolean (ふりがな表示切替)",
+          "englishToggle": "boolean (英訳表示切替)"
+        },
+        "modes": {
+          "_note": "各モードは独立した練習形式。type は参考記載で後送り(YAGNI)。配列に追加するだけで新モードを実装できる(α拡張)。",
+          "_observed_types": [
+            "picture_choice (絵を見て4択・第1課モード1)",
+            "sentence_ordering (文を並べる・第1課モード2)",
+            "audio_listening (例文を聞く・第1課モード3)"
+          ],
+          "schema": "array<mode>",
+          "mode": {
+            "id": "string (例: m1, m2 - homework 内で一意)",
+            "order": "integer",
+            "type": "string (例: picture_choice 等・catalog 側では未確定列挙)",
+            "label": {
+              "ja": "string (例: 「絵を見て選ぶ」)",
+              "en": "string?",
+              "icon": "string? (例: 🖼️)"
+            },
+            "questions": {
+              "_note": "ハイブリッド構造(β拡張)。generated は再生成時に上書きされ、handwritten は教師が追加・永続。",
+              "_kind": "hybrid",
+              "generated": {
+                "_kind": "generated",
+                "_source": "lesson_NN.json + materials_lessonN.json から自動生成",
+                "items": "array<question>",
+                "source": {
+                  "wordRef": "array<string>?",
+                  "patternRef": "array<string>?",
+                  "imageId": "array<string>?"
+                }
+              },
+              "handwritten": {
+                "_kind": "handwritten",
+                "_note": "教師が後から追加した問題(β対応)。再生成時も保持される(マージ戦略は 1-F で詳細化)。",
+                "items": "array<question>"
+              }
+            },
+            "question": {
+              "_note": "mode の type ごとに body の中身は異なる(YAGNI で固定列挙はしない)",
+              "id": "string (例: q1, q2)",
+              "patternRef": "string?",
+              "wordRef": "array<string>?",
+              "imageId": "string?",
+              "body": "object (mode.type に依存)",
+              "answer": "object (mode.type に依存)",
+              "explanation": "string?"
+            }
+          }
+        }
+      },
+      "references": {
+        "lesson_NN.json": "wordRef / patternRef (questions 自動生成元)",
+        "materials_lessonN.json": "(将来) 自動生成された問題群の中間ファイル",
+        "master_prompt_design_guide.py": "imageId",
+        "design_tokens.json": "implicit (生成時に参照)"
+      },
+      "exampleUsage": {
+        "_note": "観測事例の参考記録(YAGNI 準拠・catalog の枠ではない)",
+        "case_1_lesson1_html": {
+          "scenario": "第1課宿題HTML(現状実装)",
+          "config": {
+            "outputFormat": "html",
+            "tracking": {
+              "score": true,
+              "progress": true,
+              "attempts": false
+            },
+            "ui": {
+              "furiganaToggle": true,
+              "englishToggle": true
+            },
+            "modes": [
+              {
+                "type": "picture_choice",
+                "id": "m1",
+                "label": {
+                  "ja": "絵を見て選ぶ",
+                  "icon": "🖼️"
+                }
+              },
+              {
+                "type": "sentence_ordering",
+                "id": "m2",
+                "label": {
+                  "ja": "文を並べる",
+                  "icon": "🔀"
+                }
+              },
+              {
+                "type": "audio_listening",
+                "id": "m3",
+                "label": {
+                  "ja": "例文を聞く",
+                  "icon": "🔊"
+                }
+              }
+            ]
+          }
+        },
+        "case_2_pdf_print": {
+          "scenario": "印刷用PDF宿題",
+          "config": {
+            "outputFormat": "pdf",
+            "tracking": {
+              "score": false,
+              "progress": false,
+              "attempts": false
+            },
+            "ui": {
+              "furiganaToggle": false,
+              "englishToggle": false
+            }
+          }
+        },
+        "case_3_with_handwritten": {
+          "scenario": "自動生成+教師追加問題のハイブリッド(β拡張)",
+          "config": {
+            "outputFormat": "html",
+            "modes_example": {
+              "questions": {
+                "generated": "items: [q1...q7] ← 自動生成",
+                "handwritten": "items: [hq1...hq3] ← 教師追加"
+              }
+            }
+          }
+        }
+      },
+      "_decisions": {
+        "fileGranularity": "1 homework = 複数モード集合(Q1: 案1)",
+        "outputFormatValues": "html / pdf(Q2: 案A)",
+        "trackingStrategy": "オプショナル(Q3: 案Y)",
+        "modesStrategy": "array<{type,...}>・型は後送り(Q4: 案Q・YAGNI)",
+        "generationModeStrategy": "ハイブリッド単一+α(モード追加)+β(問題追加)対応(Q5)",
+        "alpha_extension": "modes 配列に新要素を追加するだけで拡張可能",
+        "beta_extension": "各 mode の questions に generated[] と handwritten[] の2領域を保持"
+      },
+      "_modeAdditionGuide": {
+        "_note": "新モード追加の手順(本チャットで質問対応・参考記載)",
+        "step1": "新モードの仕様を決定(操作・判定・表示)",
+        "step2": "catalog の modes._observed_types に1行追記(任意・参考記載)",
+        "step3": "lesson_NN 用 homework JSON の modes 配列に新要素を追加",
+        "step4": "生成スクリプト+HTMLテンプレートで新モード対応コードを実装(catalog/schema レベル外・実装作業)",
+        "schemaImpact": "なし(YAGNI 戦略により mode.type は string 自由)"
+      },
+      "_pending_for_phase_1F_or_implementation": [
+        "再生成時の handwritten[] マージ戦略(diff/append/manual)",
+        "mode.type の安定化(Phase 2 以降の観測で subtype 化判断)",
+        "html→pdf 変換の標準パイプライン(handout と共有)",
+        "questions.body / answer の mode.type 別 schema(後送り)",
+        "audio_listening 系の音声ファイル管理(TTS or 録音)"
+      ]
+    },
+    "lesson_summary": {
+      "name": "レッスンサマリー(学習者配布)",
+      "description": "レッスン後に学習者へ渡す配布物。固定フォーマットで、語彙・文型・宿題等の事前書き込み可能な情報は lesson_NN.json から自動生成し、教師は事後の達成記録・コメント部分のみ追記する。教師の記入負担を最小化する『半完成テンプレート』型。",
+      "outputTo": "第N課_サマリー.<ext> (例: 第1課_サマリー.pdf)",
+      "persistence": "permanent",
+      "purposeTags": [
+        "post_lesson_handout",
+        "achievement_record"
+      ],
+      "applicableStages": [
+        "post_class"
+      ],
+      "_status": "placeholder",
+      "_status_note": "Phase 1-D-1 では枠のみ確定。詳細 schema は Phase 2(シラバス設計・複数課運用)で詳細化予定。",
+      "_role_definition": {
+        "受け手": "学習者",
+        "タイミング": "レッスン後配布",
+        "形式": "固定フォーマット(html/pdf)",
+        "作成構造": "2段階: 事前書き込み(自動) + 事後追記(教師手書き)",
+        "設計目標": "教師の事後記入負担を最小化する『半完成テンプレート』"
+      },
+      "_distinction_from_other_types": {
+        "vs_handout": "handout(post_session) との差分は『教師の追記欄を持つ』点。handout は配布で閉じるが、lesson_summary は事後追記前提。",
+        "vs_teacher_notes": "受け手が学習者(平易な言葉づかい)。teacher_notes の customNotes は教師の自分用メモ。",
+        "vs_homework": "homework は練習問題、lesson_summary は記録・参照。",
+        "vs_slide_content": "画面共有ではなく印刷・配布。"
+      },
+      "_anticipated_schema_sketch": {
+        "_note": "Phase 2 で詳細化予定の構造の方向性メモ(規範ではない・参考)",
+        "id": "string (例: ls_lesson1)",
+        "type": "lesson_summary",
+        "lessonRef": "string",
+        "delivery": {
+          "outputFormat": "html | pdf",
+          "timing": "post_session"
+        },
+        "preFilledSections": {
+          "_kind": "generated",
+          "_source": "lesson_NN.json + materials_lessonN.json から自動生成",
+          "candidates_for_phase_2": [
+            "今日の語彙(vocabulary[] から展開)",
+            "今日の文型(patterns[].label から展開)",
+            "今日の宿題リンク(materials_lessonN.json hw への参照)",
+            "次回予告(lesson_(N+1).json 接続情報・将来)"
+          ]
+        },
+        "postFillSections": {
+          "_kind": "handwritten",
+          "_note": "教師がレッスン後に追記。固定枠で記入箇所を最小化。",
+          "candidates_for_phase_2": [
+            "今日できるようになったこと(canDo チェックリスト)",
+            "今日のがんばりポイント(自由記述・短文枠)",
+            "次回への一言(自由記述・短文枠)"
+          ]
+        }
+      },
+      "_decisions": {
+        "role": "学習者向けレッスン後配布物・事前生成+事後追記型(Q1: 案A の精緻化)",
+        "detailLevel": "P) placeholder + 役割定義 + Phase 2 用スケッチ(Q2 案 P を最小限肉付け)",
+        "detailingTimeline": "Y) Phase 2 以降(シラバス設計・複数課運用の中で詳細化)(Q3: 案Y)"
+      },
+      "_pending_for_phase_2": [
+        "preFilledSections の確定 schema(候補リスト → 列挙固定)",
+        "postFillSections の確定 schema",
+        "html → pdf 変換の標準パイプライン(handout/homework と共有)",
+        "教師の事後追記UI(html 版での入力体験)",
+        "シラバス全体での位置づけ(課完了時の総括との関係)",
+        "次課への接続情報(prerequisitesFor / leadsTo)",
+        "学習者保管・教師参照の双方向性(将来検討)"
+      ]
+    }
+  },
+  "stumbling": {
+    "_note": "資料12: 認知過負荷の検知とバックトラッキング。マンツーマン指導の優位性は、つまずきの兆候を瞬時に検知して練習難易度を動的に調整できる点にある。エラーは『知識の欠如』と『処理落ち(パフォーマンス・エラー)』に大別され、後者には階層を下げる介入が必要。",
+    "indicators": [
+      {
+        "id": "latency",
+        "name": "反応時間の遅延",
+        "nameEn": "Response Latency",
+        "threshold": "前段階で1秒以内 → 次段階で3秒以上のポーズ",
+        "interpretation": "ワーキングメモリの容量限界を示唆"
+      },
+      {
+        "id": "self_repair",
+        "name": "自己修正の多発",
+        "nameEn": "Self-repair",
+        "threshold": "発話途中で『食べ…飲んで…飲みます』のような言い直しを繰り返す",
+        "interpretation": "プランニングと実行プロセスの破綻"
+      },
+      {
+        "id": "gaze_wander",
+        "name": "視線の彷徨",
+        "nameEn": "Gaze Wandering",
+        "threshold": "教師の顔やテキストから視線を外し、空間の無関係な部分を凝視",
+        "interpretation": "内的処理に全認知資源を投入している状態"
+      }
+    ],
+    "backtrackingAlgorithm": {
+      "step1_minus1": {
+        "name": "1段階戻る(意味処理の負荷低減)",
+        "stageMove": "stage4 → stage3",
+        "action": "状況の自律的描写を止めさせ、教師が先行オーガナイザー(主語+助詞のセット)を音声で提示する。学習者には動詞の正しい形態のみを産出させ、統語的判断の負荷を教師が肩代わりする。"
+      },
+      "step2_minus2": {
+        "name": "2段階戻る(産出負荷の完全排除)",
+        "stageMove": "stage3 → stage1",
+        "action": "発話そのものを中止させ、受容練習へ回帰する。教師が2つの音声を提示し、学習者は該当するイラストを指差しで選択する。"
+      },
+      "recovery": {
+        "trigger": "受容練習で連続して100%正答 → 形態と意味の再結合を確認",
+        "action": "1段階ずつ階層を上がり、元の難易度へ復帰する"
+      },
+      "principle": "難易度を下げることは学習者の失敗を意味するものではなく、システム化された学習支援の一部であるという態度を教師が明示する"
+    },
+    "diagnosis": {
+      "vocabulary_lapse": {
+        "symptom": "単なる語彙のド忘れ",
+        "action": "音声プロンプト(最初の1文字提示)で同じ段階に留まる"
+      },
+      "grammar_breakdown": {
+        "symptom": "文法規則の適用エラー",
+        "action": "1つ前の段階(機械的練習または受容練習)へ後退する"
+      }
+    },
+    "warning": "無闇に同じ段階で正答を強要することは、学習者の情意フィルター(Affective Filter)を高め、学習を完全に阻害する結果を招く"
+  },
+  "homeworkTiming": {
+    "_note": "資料12: 分散学習(Spaced Practice)に基づく3段階の復習。エビングハウスの忘却曲線に対抗し、学習間隔を空けて反復することで記憶保持率を高める。",
+    "schedule": [
+      {
+        "day": "Day1夜",
+        "focus": "正確性",
+        "purpose": "形態の正確性を担保。新文型単体での変換問題で機械的処理を完成させる",
+        "exampleTask": "新文型単体での変換問題(stage2 機械的処理)。例: 『田中さん/医者』→『田中さんは医者です』",
+        "stage": "stage2"
+      },
+      {
+        "day": "Day3-4",
+        "focus": "流暢性",
+        "purpose": "反応速度の向上・自動化(Proceduralization)。タイムプレッシャーで処理速度を上げる",
+        "exampleTask": "タイムプレッシャーをかけた即答練習(画像を見て1秒以内に発話)",
+        "stage": "stage3"
+      },
+      {
+        "day": "Day7",
+        "focus": "産出統合",
+        "purpose": "過去文型と新文型の結合(インターリービング)。次回授業冒頭で複文構造を産出",
+        "exampleTask": "次回授業冒頭の複文構造産出タスク。第N課の文型と第1課文型を組み合わせる",
+        "stage": "stage4-5"
+      }
+    ],
+    "principle": "同一文脈の固定を避け、文脈や登場人物を常に刷新する。同じ絵や状況にのみ結びついた脆弱な記憶(Cue-dependent forgetting)を防ぐ。"
+  },
+  "teacherChecklist": {
+    "_note": "資料2(教師向けチェックリスト) + 資料3(STT > TTT) + 資料12(段階・つまずき) を統合した運用チェックリスト。授業中・授業後の自己点検に使用する。",
+    "designCheck": [
+      "テキスト量: 1スライドのテキスト量は適切か(短文・余白を確保しているか)",
+      "情報単位: 1スライド1メッセージか(複数概念の同居を避けているか)",
+      "視覚と文字: 視覚情報と文字情報のバランスは適切か",
+      "焦点化: 学習者の注意が中心情報に向かう構成か",
+      "視認性: フォントサイズ・コントラストは画面共有でも読めるか(見出し36pt以上/本文24pt以上/ルビ14pt以上)"
+    ],
+    "interactionCheck": [
+      "STT促進: 学習者の発話時間が教師より長いか(STT > TTT、目安は STT 60%以上)",
+      "双方向性: 視覚プロンプトのみで学習者が考えて発話できる余白があるか",
+      "エラー訂正: 流暢時=遅延訂正、ドリル時=即時訂正の使い分けができているか"
+    ],
+    "stageCheck": [
+      "段階適合: 現在の活動は5段階フェイディングのどれに位置するか明確か",
+      "変数統制: 同時に変える変数は1つに絞れているか(認知負荷管理)",
+      "つまずき検知: 反応時間遅延・自己修正多発・視線の彷徨の3兆候をモニタしているか",
+      "バックトラッキング準備: つまずいた場合の戻り先(1段階戻る/2段階戻る)を事前に想定しているか"
+    ]
+  }
+}

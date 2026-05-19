@@ -1,0 +1,1999 @@
+{
+  "_meta": {
+    "formatVersion": "2.7",
+    "lessonVersion": "2.11.11",
+    "_formatVersion_note": "lesson_01 v2.7 と統一済み（T3: 2026-05-14）。formatVersion は lesson_NN.json の schema 版数を示し、各課個別のバージョンではない。",
+    "lessonStatus": "ready_for_step_2",
+    "_lessonStatus_note": "ready_for_step_2: Phase 1-F 完了済み。Step 2(image_prompts_lesson2.json 設計)に進行可能。旧値 ready_for_phase1f_then_step_2 は Phase 1-F 着手前のステータスであり、Phase 1-F 完了(2026-05-11)に伴い更新。",
+    "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
+    "createdAt": "2026-05-11",
+    "lastModified": "2026-05-19",
+    "changes": [
+      "v1.0 (2026-05-11): Step 1a 骨格作成。全6文型(p1〜p6)網羅・materialNeeds[] 付与・grammarConcept/jlptLevel/canDo を最初から記述(教科書非依存)。架空有名人キャラ(やまだまさし・すずきはなこ)を Layer 2 に追加(handoff_phase2_design_review §6-1 整合)。vocabulary は Step 1b で確定予定(現時点プレースホルダ)。examples は Step 1c で確定予定(現時点プレースホルダ)。formatVersion は lesson_01 v2.5 と同期。",
+      "v1.1 (2026-05-11): Step 1b 完了。vocab_lesson2.json (draft) を生成し、vocabulary.byPattern を 4 カテゴリ・16 語で確定。patterns[].vocabCount を Step 1b 確定値に更新(p1=14, p2=10, p3=11, p4=10, p5=1, p6=1)。第1課語彙12語は既習として _inheritedFromLesson1 セクションに記録。Step 1c(examples 確定)に進行可能。",
+      "v1.2 (2026-05-11): Step 1c 完了。全 6 文型の examples を確定(計 26 例文)。p1=9(これ/それ/あれ 領域対立を網羅・教科書 2-1-1〜3 継承)、p2=4(単独『何ですか』+ Q&A 3組・教科書 2-2 継承・学習者役にケリーさん)、p3=5(教科書 2-3 継承 + キャラ Q&A + 否定訂正 + 省略形・第1課キャラ全活用)、p4=3(教科書 2-4 継承 + plusAlpha どちら)、p5=3(アインシュタイン → やまだまさし/すずきはなこ/田中先生に置換・Q2 確定反映)、p6=2(教科書 2-6 継承 + 物への適用)。各 example に no/pattern/sentence/characterId/character_assignment_type/originalSources/vocab/_comment を記入。教科書由来例文 9 件に originalSources[] を付与し置換情報を replacementNote に明記。SKILL.md v1.1 例文網羅性チェックリスト全項目クリア。_step1c_status 全 6 pattern を確定後文言に更新。_step1a_completionChecklist.patterns / _overall_status を Step 1c 完了状態に更新。Step 2(image_prompts_lesson2.json 設計)に進行可能。",
+      "v1.3 (2026-05-11): Step 1c PDF照合修正版。教科書 PDF (日本語の教え方ABC 第2課 p.026-034) を 本チャットコンテキストで精読し、v1.2 確定例文と全面照合した結果、以下を修正/追加: [修正必須5点] (1) p3-2: originalSentence 冒頭『それは』を補完 → 『それはAさんのかばんです。』、 (2) p3-4: originalSentence に T 発話『これは』補完 + T/C 話者ラベル明示、 (3) p5-2: L(学習者)発話であることを明示(T-促し型テンプレート発話)、 (4) p5-3: PDF 直接記載なしを originalSentence に明示し、p.031『*の人は〜』テンプレート + p.032『あの〜は〜』導入の統合解釈拡張例として扱う(田中先生は維持・著作権配慮の正当化)、 (5) p6-1: sentence を PDF p.033 の T-L 往復構造『どの人ですか → この人です → その人は田中先生です』に 修正、教師ジェスチャー(輪を描く指示動作)を _comment に追記。 [追加検討反映3点] (A) p2-5: 教科書 p.029 否定先行型導入ストーリー(ケーキ→消しゴム)を Q&A 形式に再構成して追加、 (B) p3-6: 教科書 p.034『落としもの返しごっこ』会話例の A-B 往復冒頭を main_activity 連動素材として追加、 (D) p6-1: 教師ジェスチャーを _comment に追記(修正必須[5]と統合)。 [既載確認のみ1点] (C) p5『さん』なし注意は plusAlpha[0] に既載・追加対応不要。 [結果] examples 総数 26 → 28(p2: 4→5, p3: 5→6)。 教科書例文 originalSources を完全網羅・PDF と齟齬なし。_step1c_status 全 6 pattern を v1.3 文言に更新。_step1a_completionChecklist.patterns / _step1c_completion_note を v1.3 状態に更新。_step1c_check の results に PDF 照合結果を追記。Step 2(image_prompts_lesson2.json 設計)に進行可能。",
+      "v1.4 (2026-05-11): 固定キャラ概念廃止(選択肢X 確定)。[修正内容] (1) examples 12 件の sentence を教科書原典の固有名詞に戻す: p3-2/3-3/3-4/3-6 = リン/ケリー/田中先生 → Aさん/Bさん/Cさん(教科書記号)、p4-2/4-3 = 田中先生/ケリーさん → Aさん/Bさん(教科書例 p.031 整合)、p5-1/5-2/5-3 = やまだまさし/すずきはなこ/田中先生 → アインシュタイン(教科書原典)、p6-1/6-2 = 田中先生/リンさん → アインシュタイン/Aさん。(2) 全 examples から characterId / character_assignment_type フィールド削除。(3) ファイル全体から characters セクション(named_characters / generic_characters / deprecated_characters / layer_strategy_note)削除。バックアップは _phase1f_handover に保存。(4) 各 example の replacementNote / _comment を固定キャラ廃止方針に整合化。[判断根拠] ABC 教科書は物語性のない教材・固有名詞は画像と切り離すべき・教師は授業中に 学習者の実名で適宜置換する(教科書の意図)。管理コスト > 教育的価値。課マスターは文法軸で管理する設計に統一(将来のげんき・みんなの日本語等への移行コスト削減)。[件数] examples 総数 28(v1.3 から維持)。教科書例文 originalSources を完全準拠。[次フェーズ] Phase 1-F で lesson_01 v2.6 に同じ修正を適用 + master_prompt_design_guide.py の CHARACTER_PROFILES 簡素化 + SKILL.md v1.3 改訂(キャラ廃止 + 時間概念責務分離明文化)。Phase 1-F 完了後に Step 2 (image_prompts) に進行可能。",
+      "v2.0 (2026-05-14): T2完了。引き継ぎ資料v5のレベル1問題(#1〜#9)を一括修正。(1) activityセクション削除(#1)。(2) patterns[*].note → cautionNote にrename(#2・全6パターン p1〜p6)。(3) vocabulary全16語にvocabType/imageRole/jlptLevel/isFirstAppearanceを追加(#3〜#6・p1_p4_thing群10語+p1_distant_building群4語+p5_p6_person群1語+p3_pronoun群1語=計16語)。(4) patterns[*].examples[*]全28件にimageRoleを追加(#7・p1=scene×9, p2=scene×5, p3=scene×6, p4=scene×3, p5=vocab_person×3, p6=scene×2)。(5) _meta.lessonVersion: \"1.0\"を追加(#8)。(6) flow[main_act_1]にABCactivityRef(activityName/fadingStage/taskType/groupVersion/soloVersion/playerSteps[])を追加(#9・playerSteps 3ステップja/en付き・グループ版とマンツーマン版の両方を記録)。formatVersion 2.5維持(T3で2.7に統一予定)。",
+      "v2.1 (2026-05-14): T3完了。formatVersion を 2.5 → 2.7 に更新（lesson_01 v2.7 と統一）。lastModified を 2026-05-14 に更新。lessonVersion・コンテンツは変更なし。",
+      "v2.11.0 (2026-05-17): Step 1a-fix 完了(SKILL.md v1.2 準拠)。(1) flow[] 文型ブロック構造を再設計: 全体まとめの単一 example/practice エントリを削除し、各文型ブロックに example_p1〜p6 + practice_p1〜p6 の 12 エントリを追加(4エントリ×6文型=24エントリ、合計28エントリ)。patternRef 付与済み。(2) flow[intro_activity] 全6件に ABCactivityRef(activityName/fadingStage/taskType/playerSteps[3])を追加。(3) namedCharacters[] セクションを新設(鈴木/リン/キム/タノム/ケリー 5件・第1課共通キャラ継承)。リンさんは p4-1 に教科書原典として登場する旨を _note に記録。(4) github.repo を 'japanese-lesson-html' → 'japanese-lesson-creator' に修正。formatVersion 2.7 維持。",
+      "v2.11.1 (2026-05-17): Step 1b-fix + Step 1c-fix 完了(SKILL.md v1.2 準拠)。(1) vocabulary 全16語に imageId(word_* 命名規則)/audioId を追加、vocabType を全て 'vocabulary_card' に修正。p5_p6_person.人 から primaryCharacterId(旧キャラシステム残滓)を削除。病院の isFirstAppearance を true → false に修正(lesson_01 p3 で初出済み)。_inheritedFromLesson1 に病院を追記(12→13語)。(2) patterns 全6件に canDoEn(英語学習目標)と practiceImageSource を追加。(3) examples 全28件に isAnchor / imageId(ex_L02_001〜028) / audioId(sentence_ex_L02_001〜028) / sentenceEn を追加。アンカー: 1-1(これは時計) / 2-2(これは何ですか—消しゴム) / 3-1(これはわたしのかばん) / 4-1(リンさんのペン) / 5-1(この人はアインシュタイン) / 6-1(どの人ですか)。formatVersion 2.7 維持。",
+      "v2.11.2 (2026-05-17): 分析チェック（網羅的検証）で発見した旧キャラ参照（v1.4 廃止済み・やまだまさし/すずきはなこ）をアクティブセクション8箇所から除去。対象: vocabulary.primaryCharacter_note / byPattern.p5_p6_person.description / patterns[p5]._vocabCount_note / cautionNote / plusAlpha / flow[intro_act_p5]._assignmentNote / materialNeeds.description / materialNeeds.keywords。formatVersion 2.7 維持。",
+      "v2.11.3 (2026-05-17): 分析チェック追加修正。textbook_sources._comment と patterns[p5]._examples_note の旧キャラ参照（やまだまさし/すずきはなこ）を更新。originalSources[].replacementNote は変更歴の記録として保持（機能的影響なし）。formatVersion 2.7 維持。",
+      "v2.11.4 (2026-05-17): handoff_v2_3 照合修正。(1) flow[intro_act_p1].activityId: act_picture_card_vocab_intro → act_kosoado_object_intro（第2課p1は実物/絵カードによるこそあど語彙導入が正しい）。(2) flow[intro_act_p3].activityId: act_attribute_modeling_intro → act_possession_intro（第2課p3は所有の導入であり所属導入とは別）。formatVersion 2.7 維持。",
+      "v2.11.5 (2026-05-17): 例文設計基準（SKILL.md v1.3）の適用による全面見直し。(1) 語彙追加: p5_p6_objectグループ新設（犬・写真 2語・N5 Goi_List確認済み）。totalWords: 16→18。(2) p1: 例文9→6件（1-2/1-5/1-6 削除・これ×2/それ×2/あれ×2 に整理）。(3) p2: 例文5→4件（2-5削除→ABCactivityRefへ移行、2-2/2-3/2-4 の答えを省略形に修正）。(4) p3: Aさん/Bさん/Cさん → namedCharacters に置換（3-2:リン/3-3:キム/3-4:鈴木・リン/3-6:ケリー）。(5) p4: Aさん/Bさん → namedCharacters に置換（4-2:キム/4-3:タノム）、例文3→5件（4-4/4-5 新規追加）。(6) p5: 例文3→6件（5-4/5-5/5-6 新規追加・既存語彙使用・純粋p5）。(7) p6: Aさん → ケリーさんに置換（6-2）、例文2→4件（6-3/6-4 新規追加・新語彙使用）。総例文数: 28→31件。formatVersion 2.7 維持。",
+      "v2.11.6 (2026-05-17): 例文設計原則①の厳密適用による追加修正。(1) p2: 2-2/2-3/2-4 を削除（「これは/それは/あれは」はp1要素のため）。例文1件（2-1「何ですか。」★のみ）に整理。「これは何ですか」型はpracticeTemplatesで対応。(2) p6-1: 第3文「その人はアインシュタインです」を削除（p5の完全文のため）。「どの人ですか。— この人です。★」に簡略化。総例文数: 31→28件。formatVersion 2.7 維持。",
+      "v2.11.7 (2026-05-17): handoff_v2_4.md §2 の12点修正一括適用。(1) p3-4: じゃありません削除（原則④違反）→「いいえ、リンさんのかばんです。」に修正。sentenceEn更新。(2) p5.vocabCount: 1→3・_vocabCount_note更新（人・犬・写真）。(3) p6.vocabCount: 1→3・_vocabCount_note更新。(4) _step1c_check.results.all_patterns_have_examples: 実績を6/1/6/5/6/4に更新。(5) _step1c_check.results.image_marking: 計12件確定版に更新。(6) _step1c_check.results.material_usage_examples: 2-2/2-3/2-4参照を削除・現行例文番号に更新。(7) _step1a_completionChecklist.vocabulary: 全18語確定に更新。(8) _step1a_completionChecklist.flow: 全28エントリに更新。(9) _step1c_check.results.character_layer_consistency: Layer体系廃止方針に更新。(10) _step1c_check.results.pattern_core_coverage: 現行例文件数・修正内容に更新。formatVersion 2.7 維持。",
+      "v2.11.8 (2026-05-17): 低〜中優先残課題適用。(1) intro_act_p5 activityId: act_picture_card_vocab_intro → act_famous_person_intro。(2) intro_act_p6 activityId: act_qa_pattern_intro → act_famous_person_intro。(3) p5 practiceTemplates: 犬・写真のパターンを追加（vocabCount=3 に整合）。formatVersion 2.7 維持。",
+      "v2.11.9 (2026-05-17): 導入アクティビティ全件照合による修正。(1) intro_act_p2 activityId: act_qa_pattern_intro → act_nani_desu_ka_intro（何ですか専用に変更）。(2) intro_act_p4 activityId: act_qa_pattern_intro → act_which_one_intro（どれですか専用に変更）。(3) main_act_1 activityId: null → act_belongings_qa・skipped: true → false（メインアクティビティ正式接続）。formatVersion 2.7 維持。",
+      {
+        "version": "2.11.10",
+        "date": "2026-05-18",
+        "changes": [
+          "A-1: materialNeeds type 統一 (special_diagram/special_comparison_table → special_slide)",
+          "A-2: A-4ルール reusedFrom 対称化 (intro_act_p3/p4 に追加)",
+          "A-3: _meta._phase1f_handover を除去 (lesson_01固有の引き継ぎ記録)"
+        ]
+      },
+      {
+        "version": "2.11.11",
+        "date": "2026-05-18",
+        "changes": [
+          "C-4: _step1c_check.results.missing_examples_review 文言修正（p4 4-3「どちら」はplusAlphaではなくexamples[]に収録済みである旨を実態に合わせて訂正）",
+          "画像化対象マーク補完: ex_L02_022/025/026/028 の _comment に【画像化対象】マークを追加（image_prompts_lesson2_v2_0 との整合）"
+        ]
+      },
+      "vocab_type 追加 (2026-05-19): 全18語に vocab_type を設定。concrete_object=13語(時計/腕時計/ペン/鉛筆/ケータイ/本/雑誌/新聞/かばん/消しゴム/山/犬/写真)・building=3語(ビル/病院/市役所)・person=2語(人/わたし)。master_prompt_design_guide_v2_9.py Step 0 ゲート要件準拠。"
+    ]
+  },
+  "lesson": {
+    "no": 2,
+    "title": "こ・そ・あ・ど",
+    "topic": "指示詞(代名詞・連体詞)・所有・疑問詞(何/どれ/どの)",
+    "level": "初級前半(Lv.1)",
+    "target": "完全初心者(ひらがな学習済み・第1課完了)、年齢混在(子ども・中高生・大学生・社会人)、マンツーマン・オンライン",
+    "_recommendedDuration": 50,
+    "_recommendedDuration_note": "標準授業時間(分)の目安値(reference only)。session_NNN.json の session.duration で実時間を指定する(session 値が常に優先・D-優先1)。第2課は全6文型網羅のため、1セッションで全部を扱うのは困難。教師は session で teach[] を組み合わせて分割する(例: session_X = p1+p2 / session_Y = p3+p4 / session_Z = p5+p6)。",
+    "grammarMemo": {
+      "_note": "教師が文法上の注意点を集約するメモ。複数の参考文献から学んだ知見・教師自身の経験・他言語との対比など、いずれも記入可。教科書本文の逐語コピーは行わないが、複数の参考文献を統合した教師の解釈・要約は推奨される(SKILL.md ルール5整合)。teacher_notes(教案docx)生成時に参照される。",
+      "general": "「こ・そ・あ・ど」は教科書記載の6種(もの・名詞修飾・場所・方向・様態・方法)のうち、本課で導入するのは『もの』(これ/それ/あれ/どれ)と『名詞修飾』(この/その/あの/どの)の2系統のみ。場所(ここ/そこ/あそこ/どこ)・方向(こちら/そちら/あちら/どちら)等は後の課で導入する。『こそあ』には現場指示(その場に見えている)と文脈指示(話の中の『きのう来たあの人』等)があるが、初級では現場指示のみ教える。話し手と聞き手の領域については、対立(図1:これ/それ)を基本とし、共有(図2-3)は導入時には触れず余裕があれば紹介する。マンツーマン・オンライン授業では画面越しの距離感が独特で、教師の画面=学習者の画面のため『これ/それ』の使い分けに工夫が必要(オンライン授業コラム参照)。「この・その・あの」のあとには必ず名詞が続くことを板書で明示する。「どちら/どっち」(選択肢2つの場合)は『どれ』のプラスαとして紹介。",
+      "teacherNotes": "",
+      "_teacherNotes_note": "教師個人のメモ(授業を重ねて気づいたこと等)。教師のみが記入する自由記述欄。",
+      "references": [
+        {
+          "label": "日本語の教え方ABC 第2課 文法知識の整理",
+          "type": "textbook"
+        },
+        {
+          "label": "資料12 日本語初級文型習得の難易度カーブ設計",
+          "type": "research"
+        }
+      ]
+    }
+  },
+  "textbook_sources": [
+    {
+      "id": "ABC",
+      "name": "日本語の教え方ABC",
+      "publisher": null,
+      "lesson": 2,
+      "section": "第2課: こ・そ・あ・ど",
+      "isPrimary": true,
+      "narrativeStyle": "non_narrative",
+      "pages": "p.026-034",
+      "_comment": "現時点での主参考教科書。物語性なし(課ごとに単発キャラ)のため、本プロジェクトは文法軸で管理する設計。第2課の例文に登場する『アインシュタイン』(2-5)は教科書原典の固有名詞として維持する。画像生成では generic フラットベクターイラスト（白髪・口ひげの elderly man）を使用し著作権・肖像権に配慮。各 example の originalSources で教科書原文を追跡。（注: v1.4 (2026-05-11) で架空キャラ（やまだまさし・すずきはなこ）への置換を廃止し、教科書原典（アインシュタイン）に戻す決定をした。固定キャラクターシステム廃止。）"
+    }
+  ],
+  "textbook_compatibility_note": "Phase 4 で textbook_character_mapping.json を新設し、複数教科書(みんなの日本語・げんき等)への対応を実装予定。第2課の他教材対応については textbook_compatibility.json の lesson:2 エントリ(6 mappings)を参照。注意: 『どれ』『どの』は教材によって扱う課が異なる(みんなの日本語では16課・N4相当)。",
+  "vocabulary": {
+    "_comment": "第2課の採用語彙。18語。",
+    "_stepStatus": "Step 1a 完了・Step 1b 完了",
+    "totalWords": 18,
+    "readingNotation": "ひらがな(学習者向け表示と統一、横断論点α 整合)",
+    "byPattern": {
+      "p1_p4_thing": {
+        "patternIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ],
+        "vocabCount": 10,
+        "description": "身近な「もの」。p1(これ・それ・あれ)で導入し、p2(何ですか)・p3(所有)・p4(どれ)で再利用する。教科書 PDF p.027 で『時計、ペン、ケータイ、鉛筆、本、雑誌、新聞、かばん、チョコレートなど』として列挙されているもののうち、本プロジェクトでは『チョコレート』を除外して10語に精選(『チョコレート』は語彙カードでの絵としての必要性が低いため)。『消しゴム』はGoi_ListのLv.4だがPDFで『何ですか』導入の中核例(『ケーキに見える消しゴム』)のため第2課レベル1として採用。",
+        "words": [
+          {
+            "word": "時計",
+            "reading": "とけい",
+            "en": "clock",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_時計",
+            "audioId": "word_時計",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "腕時計",
+            "reading": "うでどけい",
+            "en": "wristwatch",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_腕時計",
+            "audioId": "word_腕時計",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "ペン",
+            "reading": "ペン",
+            "en": "pen",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_ペン",
+            "audioId": "word_ペン",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "鉛筆",
+            "reading": "えんぴつ",
+            "en": "pencil",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_鉛筆",
+            "audioId": "word_鉛筆",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "ケータイ",
+            "reading": "ケータイ",
+            "en": "cell phone",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_ケータイ",
+            "audioId": "word_ケータイ",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "本",
+            "reading": "ほん",
+            "en": "book",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_本",
+            "audioId": "word_本",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "雑誌",
+            "reading": "ざっし",
+            "en": "magazine",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_雑誌",
+            "audioId": "word_雑誌",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "新聞",
+            "reading": "しんぶん",
+            "en": "newspaper",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_新聞",
+            "audioId": "word_新聞",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "かばん",
+            "reading": "かばん",
+            "en": "bag",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_かばん",
+            "audioId": "word_かばん",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "消しゴム",
+            "reading": "けしゴム",
+            "en": "eraser",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_消しゴム",
+            "audioId": "word_消しゴム",
+            "vocab_type": "concrete_object"
+          }
+        ]
+      },
+      "p1_distant_building": {
+        "patternIds": [
+          "p1"
+        ],
+        "vocabCount": 4,
+        "description": "「あれ」導入用の遠くの建物・山。教師が窓から見えるものを指して使う想定(オンライン授業ではスライド代用)。教科書 PDF p.029『市役所・病院などの公共の建物、山などを利用して練習するとよい』、教科書例文 2-1-3『あれはABCビルです』。",
+        "words": [
+          {
+            "word": "ビル",
+            "reading": "ビル",
+            "en": "building",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_ビル",
+            "audioId": "word_ビル",
+            "vocab_type": "building"
+          },
+          {
+            "word": "病院",
+            "reading": "びょういん",
+            "en": "hospital",
+            "jlptLevel": "N5",
+            "isFirstAppearance": false,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_病院",
+            "audioId": "word_病院",
+            "_note": "lesson_01 p3 グループで初出済み(word_病院 は既存ID)。第2課では『あれ』導入の遠景建物として再利用。",
+            "vocab_type": "building"
+          },
+          {
+            "word": "市役所",
+            "reading": "しやくしょ",
+            "en": "city hall",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_市役所",
+            "audioId": "word_市役所",
+            "vocab_type": "building"
+          },
+          {
+            "word": "山",
+            "reading": "やま",
+            "en": "mountain",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_山",
+            "audioId": "word_山",
+            "vocab_type": "concrete_object"
+          }
+        ]
+      },
+      "p5_p6_person": {
+        "patternIds": [
+          "p5",
+          "p6"
+        ],
+        "vocabCount": 1,
+        "description": "p5(この/その/あの+N)・p6(どの+N)で使用する『人』。連体詞+名詞の中核語彙。例文ではアインシュタイン（教科書原典・generic フラットベクターイラストで表現）を使用する。固定キャラクターシステムは v1.4 (2026-05-11) で廃止済み。",
+        "words": [
+          {
+            "word": "人",
+            "reading": "ひと",
+            "en": "person",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "imageId": "word_人",
+            "audioId": "word_人",
+            "_note": "汎用的な人物像。p5/p6 では『この人/その人/あの人/どの人』として有名人（アインシュタイン等）を指す。",
+            "vocab_type": "person"
+          }
+        ]
+      },
+      "p3_pronoun": {
+        "patternIds": [
+          "p3"
+        ],
+        "vocabCount": 1,
+        "description": "p3(所有)で使用する1人称代名詞。教科書例文 2-3『これはわたしのかばんです』、教え方の例 3.『自分の胸を指して: わたし』。imageUrl は null(代名詞のため絵カード化対象外)。",
+        "words": [
+          {
+            "word": "わたし",
+            "reading": "わたし",
+            "en": "I/me",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_person",
+            "imageId": "word_わたし",
+            "audioId": "word_わたし",
+            "_note": "代名詞。語彙カードは教師のジェスチャー(自分を指す)で代替可。GASパイプラインでの画像生成は任意扱い。",
+            "vocab_type": "person"
+          }
+        ]
+      },
+      "p5_p6_object": {
+        "patternIds": [
+          "p5",
+          "p6"
+        ],
+        "vocabCount": 2,
+        "description": "p5（この/その/あの＋N）・p6（どの＋N）の例文バリエーション用語彙。PDF p.034「ペットの写真」記述を根拠に追加。Goi_List 1.初級前半（N5相当）確認済み。p5例文では既存のp1_distant_building語彙を使用し、本グループはp6例文のバリエーション確保が主目的。",
+        "_jlptLevel_note": "犬（N5・1.初級前半）・写真（N5・1.初級前半）ともGoi_List確認済み。",
+        "words": [
+          {
+            "word": "犬",
+            "reading": "いぬ",
+            "en": "dog",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_犬",
+            "audioId": "word_犬",
+            "_note": "PDF p.034「ペットの写真」記述に基づきp6例文バリエーション用として追加。Goi_List 1.初級前半確認済み。",
+            "vocab_type": "concrete_object"
+          },
+          {
+            "word": "写真",
+            "reading": "しゃしん",
+            "en": "photo",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_写真",
+            "audioId": "word_写真",
+            "_note": "p6の指示連体詞練習でフォトカードとして自然に使用できる語彙。Goi_List 1.初級前半確認済み。",
+            "vocab_type": "concrete_object"
+          }
+        ]
+      }
+    },
+    "draftSource": "vocab_lesson2.json (v1.0)",
+    "_draftSource_note": "vocab_lesson2.json は Goi_List.pdf 由来の draft (Step 1b で生成)。第2課の採用語彙の SSOT は本セクション(byPattern)。例文・imageNote 等の詳細は vocab_lesson2.json を参照。",
+    "primaryCharacter_note": "第2課の語彙は主に『もの』のため、第1課のような人物ロール紐付けはほぼ不要。p5/p6 の『人』(word_人)は汎用画像として扱い、例文で言及するアインシュタイン等の固有名詞は教科書原典に従う。固定キャラクターシステムは v1.4 (2026-05-11) で廃止済み。",
+    "_inheritedFromLesson1": {
+      "count": 13,
+      "words": [
+        "医者",
+        "男の人",
+        "女の人",
+        "外国人",
+        "会社員",
+        "学生",
+        "先生",
+        "病院",
+        "会社",
+        "学校",
+        "銀行",
+        "大学",
+        "デパート"
+      ],
+      "_note": "第1課で導入済みの語彙。第2課の examples で自由に再利用可能(明示的な再導入は不要)。病院(word_病院)は lesson_01 v2.10 で追加済み・第2課 p1_distant_building でも使用。"
+    }
+  },
+  "flow": [
+    {
+      "id": "review",
+      "type": "review",
+      "stage": "復習",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。第2課は第1課の文型復習(〜は〜です・〜ですか・〜の〜)を含むため、enabled:true を推奨。",
+      "enabled": true,
+      "_enabled_note": "第2課は最初の復習対象課のため、デフォルトで有効。第1課の文型 p1/p2/p3 の定着確認に使う。session で個別の review[] を指定すれば、その内容で上書きされる。",
+      "optional": true,
+      "skipped": false,
+      "sourceLesson": 1,
+      "patterns": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "_patterns_note": "復習対象は session.review[] で個別指定可能。本フィールドはデフォルト復習対象。",
+      "materials": "スライド(口頭確認のみ・素材なし)",
+      "_note": "review type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "intro_slide",
+      "type": "intro_slide",
+      "stage": "導入(スライド)",
+      "_recommendedMinutes": 3,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "今日のテーマ(『こ・そ・あ・ど』指示詞)と学習目標を提示する。",
+      "_materialNeeds_note": "intro_slide type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "intro_act_p1",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p1: これ・それ・あれ)",
+      "patternRef": "p1",
+      "activityId": "act_kosoado_object_intro",
+      "_recommendedMinutes": 8,
+      "_recommendedMinutes_note": "目安値。第2課 p1 は身近な実物の語彙導入+領域対立(図1〜4)の確認を含むため、第1課より長め(8分)。session で実時間を指定。",
+      "optional": true,
+      "skipped": false,
+      "materials": "身近な実物(時計・ペン・本等)・領域対立図(special_diagram)",
+      "_assignmentNote": "PDF 教え方の例『1. これは〜です』『2. それは〜です』『3. あれは〜です』を統合して扱う。教師が catalog から別 activityId を選択することも可。",
+      "materialNeeds": [
+        {
+          "type": "teacher_real_object",
+          "description": "身近な実物(時計・ペン・ケータイ・鉛筆・本・雑誌・新聞・かばん・チョコレート等)。掛け時計と腕時計の両方が望ましい。教師の手元と学習者の手元の両方の領域感を示すために使用。",
+          "_note": "PDF記述: 『時計、ペン、ケータイ、鉛筆、本、雑誌、新聞、かばん、チョコレートなど身近なものを用意して、すらすらと言えるようになるまで十分に言わせる』(p.027)・『時計は、掛け時計も腕時計も時計ということをわからせるために、両方用意する』(p.027)"
+        },
+        {
+          "type": "auto_generated_vocab",
+          "description": "実物が用意できない場合の代替絵カード(時計・ペン・鉛筆・本・雑誌・かばん等)。オンライン授業では画面共有用に使う。",
+          "keywords": [
+            "時計",
+            "腕時計",
+            "ペン",
+            "ケータイ",
+            "鉛筆",
+            "本",
+            "雑誌",
+            "新聞",
+            "かばん",
+            "消しゴム"
+          ],
+          "imageRef": "image://lesson2/context/vocabulary_thing",
+          "usedAlsoIn": [
+            "intro_act_p2",
+            "intro_act_p3",
+            "intro_act_p4",
+            "pattern_p1"
+          ],
+          "_note": "Step 1b で正確な count・keywords を確定。"
+        },
+        {
+          "type": "special_slide",
+          "description": "遠くの建物スライド(『あれ』導入用)。市役所・病院・山・ABCビル等の写真または絵カード。窓から見えるものを表現する画面。",
+          "_note": "PDF記述: 『窓から見えるものを指して、「あれはABCビルです」などと言って、「あれ」の使い方を理解させる。初めは室内にあるものより、窓から見えるもので、皆が共通に知っているもの、市役所・病院などの公共の建物、山などを利用して練習するとよい』(p.029)。オンライン授業では実物が見えないため、スライド代用が必須。"
+        },
+        {
+          "type": "special_slide",
+          "description": "話し手と聞き手の領域対立図(図1: これ/それ、図2: これ/これ、図3: それ/それ、図4: あれ/あれ)。話者・聞き手の関係性を視覚化する概念図。",
+          "_note": "PDF p.027 に図示。DL第2課参照あり。導入は図1(対立)を基本とし、図2・図3(共有)はプラスαとして余裕があれば紹介。図4は『あれ』導入時に使用。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "実物・絵カードによるこそあど語彙導入",
+        "fadingStage": "stage1",
+        "taskType": "語彙提示・リピート",
+        "playerSteps": [
+          {
+            "ja": "先生が指している物をよく見ましょう",
+            "en": "Look carefully at what the teacher is pointing to."
+          },
+          {
+            "ja": "先生のあとについて「これは〜です」「それは〜です」「あれは〜です」と言いましょう",
+            "en": "Repeat after the teacher: 'This is ~', 'That is ~', 'That over there is ~'."
+          },
+          {
+            "ja": "近くのものを指しながら「これは〜です」と言ってみましょう",
+            "en": "Try pointing to nearby objects and saying the phrases yourself."
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p1",
+      "type": "pattern",
+      "stage": "文型①(これ・それ・あれ)",
+      "patternId": "p1",
+      "_recommendedMinutes": 7,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド・板書",
+      "content": "『これ/それ/あれ + は + N + です』の構造を板書。領域図を再確認しながらモデル→リピート。",
+      "materialNeeds": [
+        {
+          "type": "special_slide",
+          "description": "領域図(intro_act_p1 で使用したものを再利用)。",
+          "reusedFrom": "intro_act_p1"
+        },
+        {
+          "type": "special_slide",
+          "description": "こそあど一覧表(もの・名詞修飾・場所・方向・様態・方法 の 6 列 × 4 行)。本課で導入するのは『もの』と『名詞修飾』のみだが、全体像を見せるための一覧表。",
+          "_note": "PDF p.026 に表として明記。第2課で本格的に扱うのは2列のみだが、教師ノートで全体像を見せる。"
+        }
+      ]
+    },
+    {
+      "id": "example_p1",
+      "type": "example",
+      "stage": "例文まとめ (p1: これ・それ・あれ)",
+      "patternRef": "p1",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p1の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p1",
+      "type": "practice",
+      "stage": "練習しよう (p1: これ・それ・あれ)",
+      "patternRef": "p1",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p1の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第2課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p2",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p2: 何ですか)",
+      "patternRef": "p2",
+      "activityId": "act_nani_desu_ka_intro",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。意外性のある実物を使うので教師の演技的要素が必要。",
+      "optional": true,
+      "skipped": false,
+      "materials": "意外性のある実物・代替写真",
+      "_assignmentNote": "PDF 教え方の例『2. 「何ですか」の導入』に対応。教師が catalog から別 activityId を選択することも可。",
+      "materialNeeds": [
+        {
+          "type": "teacher_real_object",
+          "description": "ケーキに見える消しゴム、きれいな石けん、カービングされた野菜など、見た目と実態が違う実物。学習者が自然に『何?』と聞きたくなる状況を作る。",
+          "_note": "PDF記述: 『一見、ほかのものに見えて実は違うものや、自然に「何?」と聞きたくなるようなものを用意する』『一見、何かわからないきれいな石けんや、花のようにカービングされた野菜などを使うとよい』(p.029)"
+        },
+        {
+          "type": "teacher_photo",
+          "description": "実物が用意できない場合の代替写真(オンライン授業では画面共有用)。",
+          "_note": "PDF記述: 『実物が用意できない場合は写真を利用することもできる』(p.029)。オンライン授業では実物より写真の方が現実的。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "見た目と中身が違う実物を使った『何ですか』導入",
+        "fadingStage": "stage1〜2",
+        "taskType": "疑問詞導入・Q&A",
+        "playerSteps": [
+          {
+            "ja": "先生が持っているものを見てください。「何ですか」と聞きましょう",
+            "en": "Look at what the teacher is holding. Ask 'What is it?'"
+          },
+          {
+            "ja": "先生が「〜じゃありません」と否定したら、もう一度「何ですか」と聞きましょう",
+            "en": "When the teacher says 'It's not ~', ask 'What is it?' again."
+          },
+          {
+            "ja": "正解を聞いたら、「これは〜です」と答える練習をしましょう",
+            "en": "When you hear the answer, practice saying 'This is ~'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p2",
+      "type": "pattern",
+      "stage": "文型②(何ですか)",
+      "patternId": "p2",
+      "_recommendedMinutes": 4,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "板書",
+      "content": "『〜は何ですか』の構造を板書。p1 の語彙を使って Q&A 練習。",
+      "materialNeeds": [
+        {
+          "type": "none",
+          "description": "板書のみで完結。追加素材不要。",
+          "_note": "PDF記述: 『板書のみ』(survey 参照)。"
+        }
+      ]
+    },
+    {
+      "id": "example_p2",
+      "type": "example",
+      "stage": "例文まとめ (p2: 何ですか)",
+      "patternRef": "p2",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p2の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p2",
+      "type": "practice",
+      "stage": "練習しよう (p2: 何ですか)",
+      "patternRef": "p2",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p2の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第2課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p3",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p3: 〜の〜 所有)",
+      "patternRef": "p3",
+      "activityId": "act_possession_intro",
+      "_recommendedMinutes": 6,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。学習者の持ち物を使うため、参加感を高めるための時間を確保。",
+      "optional": true,
+      "skipped": false,
+      "materials": "教師・学習者の持ち物(かばん・本等)",
+      "_assignmentNote": "PDF 教え方の例『3. 「〜の〜」(所有)の導入』に対応。教師のかばん→自分の胸→学習者のかばん の順で『わたしの/Aさんの』を導入。",
+      "materialNeeds": [
+        {
+          "type": "teacher_real_object",
+          "description": "教師のかばん・学習者の持ち物(かばん・本など)。マンツーマンの場合は教師の物と学習者(オンライン上)の物を活用。",
+          "_note": "PDF記述: 『自分のかばんを指して』『学習者Bの本を手に取ってBに聞く』(p.030)。オンライン授業では、教師の持ち物 + 学習者にカメラで自分の物を見せてもらう形式。",
+          "reusedFrom": "intro_act_p1"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "持ち物を使った所有表現『〜の〜』導入",
+        "fadingStage": "stage1",
+        "taskType": "モデル文リピート・自己産出",
+        "playerSteps": [
+          {
+            "ja": "先生のかばんを指しながら「これはわたしのかばんです」と言うのを聞きましょう",
+            "en": "Listen as the teacher points to their bag and says 'This is my bag'."
+          },
+          {
+            "ja": "先生が「〜さんの〜ですか」と聞いたら、「はい」か「いいえ」で答えましょう",
+            "en": "When the teacher asks 'Is this ~ san's ~?', answer with 'yes' or 'no'."
+          },
+          {
+            "ja": "自分の持ち物を指しながら「これはわたしの〜です」と言ってみましょう",
+            "en": "Point to your own belongings and say 'This is my ~'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p3",
+      "type": "pattern",
+      "stage": "文型③(〜の〜 所有)",
+      "patternId": "p3",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "板書",
+      "content": "『〜の〜です』(所有)の構造を板書。第1課 p3(所属)との違いを意識的に示す。『わたしのです』(省略形)も導入。",
+      "materialNeeds": [
+        {
+          "type": "none",
+          "description": "板書のみで完結。『わたしのです』の省略形を扱う際は補足板書のみ。",
+          "_note": "PDF記述: 『次に「わたしの〜です」の「の」の後ろの名詞が省略された形「わたしのです」を導入し、練習する』(p.030)"
+        }
+      ]
+    },
+    {
+      "id": "example_p3",
+      "type": "example",
+      "stage": "例文まとめ (p3: 〜の〜 所有)",
+      "patternRef": "p3",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p3の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p3",
+      "type": "practice",
+      "stage": "練習しよう (p3: 〜の〜 所有)",
+      "patternRef": "p3",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p3の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第2課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p4",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p4: どれ)",
+      "patternRef": "p4",
+      "activityId": "act_which_one_intro",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。複数のペンを使うため事前準備が必要。",
+      "optional": true,
+      "skipped": false,
+      "materials": "複数のペン(4〜5本)",
+      "_assignmentNote": "PDF 教え方の例『4. 「どれ」の導入』に対応。『これ』(1本ずつ指す)と『どれ』(全体を輪を描くように指す)のジェスチャー対比が重要。",
+      "materialNeeds": [
+        {
+          "type": "teacher_real_object",
+          "description": "4〜5本のペン(学習者から集める想定だが、マンツーマンでは教師が4-5本用意)。『どれ』導入時に並べて使用。",
+          "_note": "PDF記述: 『4、5人の学習者のペンを集めて』(p.031)。マンツーマンでは教師の手元に複数のペンを並べる形に調整。",
+          "reusedFrom": "intro_act_p1"
+        },
+        {
+          "type": "special_handout",
+          "description": "実際の場面に近い練習として、玄関で傘や靴を探す場面の絵カードまたは写真。",
+          "_note": "PDF記述: 『実際の場面に近い練習として、玄関で傘や靴を探す場面などを設定して、練習させるのもよい』(p.031)。プラスα的扱い。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "複数の物の中から選ぶ『どれ』導入",
+        "fadingStage": "stage2",
+        "taskType": "特定・Q&A",
+        "playerSteps": [
+          {
+            "ja": "先生が並べた複数のペンをよく見てください",
+            "en": "Look carefully at the several pens the teacher has laid out."
+          },
+          {
+            "ja": "「〜さんのペンはどれですか」と聞かれたら、「これです」か「それです」で答えましょう",
+            "en": "When asked '~ san's pen—which one is it?', answer with 'This one' or 'That one'."
+          },
+          {
+            "ja": "友達のものを指して「〜さんの〜はどれですか」と聞いてみましょう",
+            "en": "Point to a friend's item and ask 'Which one is ~ san's ~?'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p4",
+      "type": "pattern",
+      "stage": "文型④(どれ)",
+      "patternId": "p4",
+      "_recommendedMinutes": 4,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "板書",
+      "content": "『〜は どれですか』の構造を板書。プラスαで『どちら/どっち』(選択肢2つの場合)も紹介可。",
+      "materialNeeds": [
+        {
+          "type": "none",
+          "description": "板書のみで完結。『どちら』を扱う場合は補足板書のみ。",
+          "_note": "PDF プラスα記述: 『選ぶ対象が2つの場合は、「どちら」(会話では「どっち」も使われる)で質問することを教える』(p.031)"
+        }
+      ]
+    },
+    {
+      "id": "example_p4",
+      "type": "example",
+      "stage": "例文まとめ (p4: どれ)",
+      "patternRef": "p4",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p4の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p4",
+      "type": "practice",
+      "stage": "練習しよう (p4: どれ)",
+      "patternRef": "p4",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p4の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第2課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p5",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p5: この・その・あの)",
+      "patternRef": "p5",
+      "activityId": "act_famous_person_intro",
+      "_recommendedMinutes": 6,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。架空有名人の写真・似顔絵を見せる場面のため、画像準備が必要。",
+      "optional": true,
+      "skipped": false,
+      "materials": "架空有名人の写真または似顔絵",
+      "_assignmentNote": "PDF 教え方の例『5. 「この・その・あの」の導入』に対応。教科書ではアインシュタイン等の有名人の写真・似顔絵を使用。本プロジェクトでは generic フラットベクターイラスト（白髪・口ひげの elderly man 等）で表現し、著作権・肖像権配慮を図る（固定キャラクター廃止済み・v1.4）。教師が catalog から別 activityId を選択することも可。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "有名人・著名人の似顔絵または写真（アインシュタイン等）。複数枚用意して『この人/その人/あの人』の練習に使用。実際の画像生成では generic フラットベクターイラストを使用する（著作権配慮）。",
+          "keywords": [
+            "アインシュタイン（generic elderly man with white hair）"
+          ],
+          "imageRef": "image://lesson2/context/famous_character",
+          "usedAlsoIn": [
+            "intro_act_p6"
+          ],
+          "_note": "教科書ではアインシュタイン等の実在有名人だが、著作権・肖像権配慮のため架空キャラに置換(Q2 確定)。教科書記述: 『アインシュタインなど世界的な有名人や政治家、スターの写真または似顔絵などを用意する』(p.031)・『写真または似顔絵などを用意する』『著作権配慮のため写真より似顔絵推奨』(survey)"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "有名人の写真・似顔絵を使った指示連体詞『この・その・あの』導入",
+        "fadingStage": "stage1〜2",
+        "taskType": "語彙提示・Q&A",
+        "playerSteps": [
+          {
+            "ja": "先生が見せる写真の人物を見てください。「この人はだれですか」と聞きましょう",
+            "en": "Look at the photos the teacher shows. Ask 'Who is this person?'"
+          },
+          {
+            "ja": "先生の後に「この人は〜です」「その人は〜です」「あの人は〜です」と言いましょう",
+            "en": "Repeat after the teacher: 'This person is ~' / 'That person is ~' / 'That person over there is ~'."
+          },
+          {
+            "ja": "自分のケータイで有名人の写真を出して、友達に「この人はだれですか」と聞いてみましょう",
+            "en": "Show a photo on your phone and ask your partner 'Who is this person?'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p5",
+      "type": "pattern",
+      "stage": "文型⑤(この/その/あの + N)",
+      "patternId": "p5",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "板書",
+      "content": "『この/その/あの + N + は + N + です』の構造を板書。指示連体詞のあとには必ず名詞がつくことを明示。『これ/それ/あれ』と並べて整理板書する。",
+      "materialNeeds": [
+        {
+          "type": "special_slide",
+          "description": "『これ/それ/あれ』と『この/その/あの+N』の対比表。指示代名詞と指示連体詞の違いを視覚化。",
+          "_note": "PDF記述: 『「この・その・あの」を「これ・それ・あれ」と並べて、整理して板書する。「この・その・あの」のあとには必ず名詞がつくことを板書で示す』(p.032)"
+        }
+      ]
+    },
+    {
+      "id": "example_p5",
+      "type": "example",
+      "stage": "例文まとめ (p5: この・その・あの+N)",
+      "patternRef": "p5",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p5の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p5",
+      "type": "practice",
+      "stage": "練習しよう (p5: この・その・あの+N)",
+      "patternRef": "p5",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p5の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第2課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "intro_act_p6",
+      "type": "intro_activity",
+      "stage": "導入アクティビティ(p6: どの+N)",
+      "patternRef": "p6",
+      "activityId": "act_famous_person_intro",
+      "_recommendedMinutes": 4,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。p5 で使った写真を再利用するため準備時間は短い。",
+      "optional": true,
+      "skipped": false,
+      "materials": "p5 の有名人写真を再利用",
+      "_assignmentNote": "PDF 教え方の例『6. 「どの」の導入』に対応。少し離れたところから写真を指して『あの人はだれですか』→学習者が困る→近づいて1枚ずつ指して『この人ですか』→全体を輪を描いて『どの人ですか』、というジェスチャー指導が重要。",
+      "materialNeeds": [
+        {
+          "type": "auto_generated_vocab",
+          "description": "p5 で使った架空有名人の似顔絵を複数枚並べて使用。",
+          "reusedFrom": "intro_act_p5",
+          "_note": "PDF記述: 『導入5で使用した有名人の写真をそのまま使用する。ホワイトボードに数枚の写真を貼っておくか立て掛けておき、教師は学習者側に行く』(p.033)。オンライン授業ではスライド上に複数枚を表示する形に調整。"
+        }
+      ],
+      "ABCactivityRef": {
+        "activityName": "複数の写真の中から特定する『どの+N』導入",
+        "fadingStage": "stage2〜3",
+        "taskType": "特定・Q&A",
+        "playerSteps": [
+          {
+            "ja": "先生が少し離れたところから写真を指します。「どの人ですか」と聞きましょう",
+            "en": "The teacher points to a photo from a distance. Ask 'Which person is it?'"
+          },
+          {
+            "ja": "先生が「この人ですか。この人ですか」と1枚ずつ指したら、正解の写真を選んでください",
+            "en": "When the teacher points one by one asking 'This person?', choose the correct photo."
+          },
+          {
+            "ja": "「その人は〜です」と答えて、自分でも「どの人ですか」と質問してみましょう",
+            "en": "Answer 'That person is ~', then try asking 'Which person is it?' yourself."
+          }
+        ]
+      }
+    },
+    {
+      "id": "pattern_p6",
+      "type": "pattern",
+      "stage": "文型⑥(どの + N)",
+      "patternId": "p6",
+      "_recommendedMinutes": 4,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "板書",
+      "content": "『どの + N + ですか』の構造を板書。p4『どれ』と p6『どの+N』の違いを示す。",
+      "materialNeeds": [
+        {
+          "type": "none",
+          "description": "板書のみで完結。",
+          "_note": "p5 と同じく『どの』の後ろには必ず名詞が必要であることを板書で示す。"
+        }
+      ]
+    },
+    {
+      "id": "example_p6",
+      "type": "example",
+      "stage": "例文まとめ (p6: どの+N)",
+      "patternRef": "p6",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p6の例文を確認する。",
+      "_materialNeeds_note": "example type は materialNeeds 付与対象外(schema 規則)。"
+    },
+    {
+      "id": "practice_p6",
+      "type": "practice",
+      "stage": "練習しよう (p6: どの+N)",
+      "patternRef": "p6",
+      "_recommendedMinutes": 2,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。v2.11: 文型ブロック化に伴い専用エントリ化。",
+      "optional": false,
+      "skipped": false,
+      "materials": "スライド",
+      "content": "p6の practiceTemplates で口頭練習。",
+      "_materialNeeds_note": "practice type の materialNeeds は極めて稀(第13課のみ)。第2課は口頭練習のみで完結するため省略。"
+    },
+    {
+      "id": "main_act_1",
+      "type": "main_activity",
+      "stage": "アクティビティ(メイン: 落としもの返しごっこ)",
+      "_recommendedMinutes": 10,
+      "_recommendedMinutes_note": "目安値。skipped:true でも『有効化したら 10 分』という参考値として保持。session で実時間を指定。",
+      "optional": true,
+      "skipped": false,
+      "activityId": "act_belongings_qa",
+      "_activityId_note": "教科書の活動例『落としもの返しごっこ』はグループ活動(5人程度)のため、マンツーマン・オンライン授業ではそのまま実施困難。マンツーマン用にアレンジしたアクティビティ(教師の持ち物・ペットの写真などを使った『これは先生の○○ですか』タイプの Q&A)が PDF オンライン授業コラムに記載されている。Phase 1-F で activity_catalog に新規追加検討。",
+      "ABCactivityRef": {
+        "activityName": "落としもの返しごっこ(グループ版) / 先生の持ち物Q&A(マンツーマン版)",
+        "fadingStage": "stage4〜5",
+        "taskType": "所有物Q&A",
+        "groupVersion": {
+          "description": "学習者を5人グループに分け、互いにペン・鉛筆・鍵・時計などを集めて袋に入れる。1枚ずつ取り出しながら『これはAさんのペンですか』と質問して持ち主に返す。"
+        },
+        "soloVersion": {
+          "description": "教師の持ち物・ペット・家族の写真を見せ『先生の○○ですか』と質問させる。次に学習者の持ち物や写真を見せてもらい同じ活動を行う(PDF p.034 オンライン授業コラム)。"
+        },
+        "playerSteps": [
+          {
+            "ja": "先生の持ち物や写真を見ましょう",
+            "en": "Look at the teacher's belongings or photos."
+          },
+          {
+            "ja": "だれのものか質問しましょう",
+            "en": "Ask who each item belongs to."
+          },
+          {
+            "ja": "自分の持ち物や写真を見せましょう",
+            "en": "Show your own belongings or photos."
+          }
+        ]
+      },
+      "materials": "(skipped 状態のため未指定)",
+      "materialNeeds": [
+        {
+          "type": "teacher_real_object",
+          "description": "教師の持ち物(かばん・ペン・本等)・教師の家族の持ち物・ペットの写真・子どもの頃の写真等(オンラインマンツーマン版の代替素材)。",
+          "_note": "PDF オンライン授業コラム記述: 『1対1の授業の場合は、教師や教師の家族の持ち物、ペットの写真、子どもの頃の写真などを見せて、「先生の○○ですか」などと質問させたり、反対に学習者のものや写真を見せてもらって質問したりするとよい』(p.034)"
+        },
+        {
+          "type": "special_handout",
+          "description": "教科書版『落としもの返しごっこ』を実施する場合(対面授業/グループ授業): 持ち物を集める袋。会話例をホワイトボードに事前に書く。",
+          "_note": "PDF記述: 『学習者を5人ぐらいのグループに分け、互いに数本のペン・鉛筆・鍵・時計などを集めて袋に入れる』『会話例をホワイトボードに書くなどして、事前に練習させておく』(p.033)。マンツーマン・オンラインでは使用しない。"
+        }
+      ],
+      "_previous_skip_reason": "第2課のメインアクティビティ『落としもの返しごっこ』はグループ活動(5人)前提のため、マンツーマン・オンライン授業ではそのまま実施できない。PDF オンライン授業コラムにマンツーマン版の代替案が記載されているが、これを activity_catalog に新規追加するのは Phase 1-F 申し送り。教師は session で個別に mainActivities[] を追加可能。"
+    },
+    {
+      "id": "wrapUp",
+      "type": "wrapUp",
+      "stage": "まとめ",
+      "_recommendedMinutes": 5,
+      "_recommendedMinutes_note": "目安値。session で実時間を指定。",
+      "optional": false,
+      "skipped": false,
+      "materials": "",
+      "content": "振り返り:『今日は何が言えるようになりましたか?』こ・そ・あ・どを使った自己紹介・物の名前の確認。宿題の説明。",
+      "_materialNeeds_note": "wrapUp type は materialNeeds 付与対象外(schema 規則)。"
+    }
+  ],
+  "namedCharacters": [
+    {
+      "name": "鈴木さん",
+      "occupation": "先生",
+      "nationality": "日本人",
+      "imageId": "char_鈴木",
+      "_note": "第1課から継続。第2課では直接例文に登場しないが、全課共通キャラとして参照可能。"
+    },
+    {
+      "name": "リンさん",
+      "occupation": "学生",
+      "nationality": "中国人",
+      "imageId": "char_リン",
+      "_note": "第1課から継続。第2課 p4 例文 4-1『リンさんのペンはどれですか』に教科書原典として登場。"
+    },
+    {
+      "name": "キムさん",
+      "occupation": "会社員",
+      "nationality": "韓国人",
+      "imageId": "char_キム",
+      "_note": "第1課から継続。第2課では直接例文に登場しないが、全課共通キャラとして参照可能。"
+    },
+    {
+      "name": "タノムさん",
+      "occupation": "医者",
+      "nationality": "ベトナム人",
+      "imageId": "char_タノム",
+      "_note": "第1課から継続。第2課では直接例文に登場しないが、全課共通キャラとして参照可能。"
+    },
+    {
+      "name": "ケリーさん",
+      "occupation": "——",
+      "nationality": "アメリカ人",
+      "imageId": "char_ケリー",
+      "_note": "第1課から継続。第2課 p2 例文の学習者役として想定(教科書記述「学習者役にケリーさん」)。"
+    }
+  ],
+  "patterns": [
+    {
+      "id": "p1",
+      "pattern": "これ/それ/あれ は 〜 です",
+      "label": "これ・それ・あれ",
+      "grammarConcept": "kosoado_pronoun_thing",
+      "_grammarConcept_note": "教科書非依存の文法概念 ID。指示代名詞(もの)。話し手と聞き手の領域対立(現場指示)を基本とする。文脈指示は初級では扱わない。",
+      "jlptLevel": "N5",
+      "canDo": "目の前のものや遠くの建物を指して、「これ/それ/あれは〜です」で名前を言える。話し手と聞き手の領域に応じて使い分けられる。",
+      "canDoEn": "Can point to nearby and distant objects using 'kore/sore/are wa ~ desu', choosing the correct demonstrative based on the speaker's and listener's positions.",
+      "_step1c_status": "完了 (v1.4): 9 例文確定。これ(3)/それ(3)/あれ(3)の領域対立を網羅。教科書例文 2-1-1〜3 を継承。物中心のため固有名詞なし。画像化候補: 1-1(時計)/1-4(ペン)/1-7(ABCビル)。",
+      "vocabCount": 14,
+      "_vocabCount_note": "Step 1b 確定: 身近なもの 10 + 遠くの建物 4 = 14 語(vocabulary.byPattern.p1_p4_thing + p1_distant_building)。",
+      "shareVocabWith": null,
+      "examples": [
+        {
+          "no": "1-1",
+          "pattern": "これは〜です",
+          "vocab": "時計",
+          "sentence": "これは時計です。",
+          "sentenceEn": "This is a clock.",
+          "imageId": "ex_L02_001",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_001",
+          "isAnchor": true,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "これは時計です。",
+              "textbookRef": "2-1-1",
+              "replacementNote": "教科書例文を継承(置換なし)"
+            }
+          ],
+          "_comment": "p1 代表例文(これ)。スライド導入時の最初の例として使用。画像化対象(机上の時計)。"
+        },
+        {
+          "no": "1-3",
+          "pattern": "これは〜です",
+          "vocab": "ケータイ",
+          "sentence": "これはケータイです。",
+          "sentenceEn": "This is a cell phone.",
+          "imageId": "ex_L02_003",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_003",
+          "isAnchor": false,
+          "_comment": "学習者が手に持つ身近なもの。オンライン授業で画面越しに見せやすい。"
+        },
+        {
+          "no": "1-4",
+          "pattern": "それは〜です",
+          "vocab": "ペン",
+          "sentence": "それはペンです。",
+          "sentenceEn": "That is a pen.",
+          "imageId": "ex_L02_004",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_004",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "それはペンです。",
+              "textbookRef": "2-1-2",
+              "replacementNote": "教科書例文を継承(置換なし)"
+            }
+          ],
+          "_comment": "p1 代表例文(それ)。教科書例文。画像化対象。"
+        },
+        {
+          "no": "1-7",
+          "pattern": "あれは〜です",
+          "vocab": "ビル",
+          "sentence": "あれはABCビルです。",
+          "sentenceEn": "That over there is the ABC Building.",
+          "imageId": "ex_L02_007",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_007",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "あれはABCビルです。",
+              "textbookRef": "2-1-3",
+              "replacementNote": "教科書例文を継承(置換なし)。固有名『ABCビル』は教科書通り。"
+            }
+          ],
+          "_comment": "p1 代表例文(あれ)。教科書例文。画像化対象(遠景のビル)。"
+        },
+        {
+          "no": "1-8",
+          "pattern": "あれは〜です",
+          "vocab": "病院",
+          "sentence": "あれは病院です。",
+          "sentenceEn": "That over there is a hospital.",
+          "imageId": "ex_L02_008",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_008",
+          "isAnchor": false,
+          "_comment": "あれ=遠景の建物カテゴリ拡張。"
+        },
+        {
+          "no": "1-9",
+          "pattern": "あれは〜です",
+          "vocab": "山",
+          "sentence": "あれは山です。",
+          "sentenceEn": "That over there is a mountain.",
+          "imageId": "ex_L02_009",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_009",
+          "isAnchor": false,
+          "_comment": "建物以外の遠景。あれ=『話し手・聞き手双方から遠い』を強調できる例。"
+        }
+      ],
+      "_examples_note": "[v2.11.5 更新] 6例文。これ×2(1-1/1-3)/それ×2(1-4 教科書原典/削除済み)/あれ×3(1-7/1-8/1-9)。1-2(腕時計)/1-5(本)/1-6(鉛筆)は語彙カードで差別化を示すため例文からは削除。画像化対象: 1-1/1-4/1-7。",
+      "practiceImageSource": "vocabulary",
+      "practiceTemplates": [
+        {
+          "pattern": "これは　＿＿＿　です。",
+          "hint": "(手元のもの)"
+        },
+        {
+          "pattern": "それは　＿＿＿　です。",
+          "hint": "(相手のそばのもの)"
+        },
+        {
+          "pattern": "あれは　＿＿＿　です。",
+          "hint": "(遠くのもの)"
+        }
+      ],
+      "plusAlpha": [
+        "学習者の様子を見て余裕があれば、図3(領域共有: 両者にとって『それ』)もあることを理解させる。",
+        "オンライン授業は『話し手』と『聞き手』の領域がはっきりしているので、『これ/それ』の練習に適している。学習者の画面に映っているものについて『それは何ですか』『これは〜です』と答えさせると、実際のコミュニケーションに近い練習ができる。"
+      ],
+      "cautionNote": [
+        "『こそあ』は現場指示(その場に見えている場合)のみ扱う。文脈指示(『きのう来たあの人』のような)は初級では扱わない。",
+        "『あれ』は窓から見える遠くのものを指して導入するのが効果的。市役所・病院・山などの公共建物や、学習者が共通に知っているもの。"
+      ]
+    },
+    {
+      "id": "p2",
+      "pattern": "〜は 何ですか",
+      "label": "何ですか",
+      "grammarConcept": "interrogative_what",
+      "_grammarConcept_note": "疑問詞『何(なん/なに)』。本課では『何(なん)ですか』の形のみ導入。『なに』との読み分けは別の課で。",
+      "jlptLevel": "N5",
+      "canDo": "名前がわからないものを『〜は何ですか』で質問し、相手の答えを聞いて理解できる。",
+      "canDoEn": "Can ask 'What is this/that?' using '~ wa nan desu ka' and understand the response.",
+      "_step1c_status": "完了 (v1.4): 5 例文確定。単独『何ですか』(教科書 2-2 継承)+ これ/それ/あれ × 何ですか の Q&A 3組 + 否定先行型ストーリー再現(2-5・ケーキ→消しゴム)。物中心のため固有名詞なし。画像化候補: 2-2(消しゴム)/2-3(雑誌)/2-4(市役所)/2-5(ケーキに見える消しゴム)。",
+      "vocabCount": 10,
+      "_vocabCount_note": "Step 1b 確定: 10 語(vocabulary.byPattern.p1_p4_thing を p1 から再利用・shareVocabWith=p1)。",
+      "shareVocabWith": "p1",
+      "examples": [
+        {
+          "no": "2-1",
+          "pattern": "何ですか",
+          "sentence": "何ですか。",
+          "sentenceEn": "What is it?",
+          "imageId": "ex_L02_010",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_010",
+          "isAnchor": true,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "何ですか。",
+              "textbookRef": "2-2",
+              "replacementNote": "教科書例文を継承(置換なし)。学習者役(ケリーさん)が質問する想定。"
+            }
+          ],
+          "_comment": "p2 唯一の純粋例文。「何」という疑問詞のみがp2の新要素。「これは何ですか」等のp1＋p2組み合わせ形はpracticeTemplatesで扱う（例文設計原則①）。2-2/2-3/2-4（これは・それは・あれは何ですか）はp1の主語を含むため例文から除去（v2.11.6）。"
+        }
+      ],
+      "_examples_note": "[v2.11.6 更新] 1例文。「何ですか。」のみ（純粋p2）。「これは/それは/あれは何ですか」形はp1との組み合わせのためpracticeTemplatesへ。isAnchor: 2-1。",
+      "practiceImageSource": "vocabulary",
+      "practiceTemplates": [
+        {
+          "pattern": "これは　なんですか。",
+          "hint": "(手元のものを聞く)"
+        },
+        {
+          "pattern": "それは　なんですか。",
+          "hint": "(相手のそばを聞く)"
+        },
+        {
+          "pattern": "あれは　なんですか。",
+          "hint": "(遠くを聞く)"
+        }
+      ],
+      "plusAlpha": [
+        "『何ですか』の導入には、一見何かわからないきれいな石けんや、花のようにカービングされた野菜などを使うとよい。",
+        "実物が用意できない場合は写真を利用することもできる。"
+      ],
+      "cautionNote": [
+        "『何ですか』を導入する際には、教師が首を横に振って『いいえ、〜じゃありません』と否定し、学習者の『??』という気持ちを引き出してから『何ですか』を提示する流れが効果的(PDF教え方の例 2.)。",
+        "オンライン授業では、画面越しに学習者の知らない実物を見せ、自然に『何?』と聞きたくなる場面を作る。"
+      ]
+    },
+    {
+      "id": "p3",
+      "pattern": "〜の〜 (所有)",
+      "label": "〜の〜です(所有)",
+      "grammarConcept": "noun_no_possession",
+      "_grammarConcept_note": "Q1 確定: 教科書非依存の文法概念 ID。所有(N の N)。第1課 p3 の noun_no_affiliation(所属: 会社の会社員)とは明確分離する。所有(Aさんの本)と所属(銀行の社員)は文法的には同じ『N の N』だが、意味的・教育的に区別する。",
+      "jlptLevel": "N5",
+      "canDo": "『わたしの本』『Aさんのかばん』のように所有を表現できる。『これはBさんの本ですか』のように所有確認の Q&A ができる。省略形『わたしのです』も使える。",
+      "canDoEn": "Can express possession using '~ no ~', confirm ownership with Q&A, and use the shortened form '~ no desu'.",
+      "_step1c_status": "完了 (v1.4): 6 例文確定。教科書 2-3 継承(『これはわたしのかばんです』)+ Aさん/Bさん/Cさん(教科書記号・教師は学習者の実名で適宜置換)+ 省略形『わたしのです』+ 落としもの返しごっこ会話例の冒頭(3-6)。固定キャラ廃止により教科書原典に完全準拠。画像化候補: 3-1(わたしのかばん)/3-6(かばん+generic人物)。",
+      "vocabCount": 11,
+      "_vocabCount_note": "Step 1b 確定: 11 語(身近なもの 10 + わたし 1)。第1課の語彙(医者・先生 等)も人物名として再利用可。",
+      "shareVocabWith": "p1",
+      "examples": [
+        {
+          "no": "3-1",
+          "pattern": "〜は〜の〜です",
+          "vocab": "わたし / かばん",
+          "sentence": "これはわたしのかばんです。",
+          "sentenceEn": "This is my bag.",
+          "imageId": "ex_L02_015",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_015",
+          "isAnchor": true,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "これはわたしのかばんです。",
+              "textbookRef": "2-3",
+              "replacementNote": "教科書例文を継承(置換なし)"
+            }
+          ],
+          "_comment": "p3 代表例文(教科書ベース)。スライド導入時の最初の例。画像化対象(『わたし』のかばん)。"
+        },
+        {
+          "no": "3-2",
+          "pattern": "〜は〜さんの〜です",
+          "vocab": "かばん",
+          "sentence": "それはリンさんのかばんです。",
+          "sentenceEn": "That is Lin-san's bag.",
+          "imageId": "ex_L02_016",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_016",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "それはAさんのかばんです。",
+              "textbookRef": "2-3 (p.030 教え方の例 3)",
+              "replacementNote": "v2.11.5: Aさん → リンさん（namedCharacters）に置換。新規作成例文はnamedCharacters使用のSKILL.md v1.3方針に準拠。"
+            }
+          ],
+          "_comment": "他人の所有を表現する例。リンさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5 例文設計基準適用）。画像生成では generic な人物＋かばんで表現。"
+        },
+        {
+          "no": "3-3",
+          "pattern": "〜は〜さんの〜ですか / はい、わたしの〜です",
+          "vocab": "本",
+          "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
+          "sentenceEn": "Is this Kim-san's book? — Yes, it's my book.",
+          "imageId": "ex_L02_017",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_017",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "Bさんの本ですか。/ はい、わたしの本です。",
+              "textbookRef": "2-3 Q&A モデル (p.030)",
+              "replacementNote": "v2.11.5: Bさん → キムさん（namedCharacters）に置換。"
+            }
+          ],
+          "_comment": "Q&A 肯定応答。キムさん（namedCharacters）を使用。教科書記号Bさんから置換（v2.11.5 例文設計基準適用）。"
+        },
+        {
+          "no": "3-4",
+          "pattern": "〜は〜さんの〜ですか / いいえ、〜さんの〜です",
+          "vocab": "かばん",
+          "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
+          "sentenceEn": "Is this Suzuki-san's bag? — No, it's Lin-san's bag.",
+          "imageId": "ex_L02_018",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_018",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(T)これはCさんのかばんですか。/(C)いいえ、わたしのかばんじゃありません。Aさんのかばんです。",
+              "textbookRef": "2-3 否定+訂正モデル (p.030)",
+              "replacementNote": "v2.11.5: Cさん → 鈴木さん、Aさん → リンさん（namedCharacters）に置換。"
+            }
+          ],
+          "_comment": "否定形＋訂正。鈴木さん（質問対象）・リンさん（実際の所有者）を使用。じゃありません（L1 p2）は述語に混入しないよう削除（v2.11.7 原則④適用）。"
+        },
+        {
+          "no": "3-5",
+          "pattern": "わたしのです(省略形)",
+          "sentence": "わたしのです。",
+          "sentenceEn": "It's mine.",
+          "imageId": "ex_L02_019",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_019",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "わたしのです。",
+              "textbookRef": "2-3 (p.030)",
+              "replacementNote": "教科書例文を継承(置換なし)。省略形の重要例。"
+            }
+          ],
+          "_comment": "省略形『わたしのです』(名詞繰り返し省略)。p3 の plusAlpha で扱う応用形。"
+        },
+        {
+          "no": "3-6",
+          "pattern": "すみません。これは〜さんの〜ですか / はい、そうです。わたしのです。どうも、ありがとう。",
+          "vocab": "ペン",
+          "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
+          "sentenceEn": "Excuse me. Is this Kelly-san's pen? — Yes, it is. It's mine. Thank you.",
+          "imageId": "ex_L02_020",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_020",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(A)すみません。これはBさんのペンですか。/(B)はい、そうです。わたしのです。どうも、ありがとう。",
+              "textbookRef": "2-3 + 活動例 p.034(落としもの返しごっこ 会話例)",
+              "replacementNote": "v2.11.5: Bさん → ケリーさん（namedCharacters）に置換。"
+            }
+          ],
+          "_comment": "p3＋落としもの返しごっこアクティビティ連動例文。ケリーさん（namedCharacters）を使用。教科書記号Bさんから置換（v2.11.5）。"
+        }
+      ],
+      "_examples_note": "[Step 1c 完了 / 2026-05-11] 5 例文確定。元メモ: Step 1c で確定予定。『これはわたしの〜です』『それはAさんの〜です』『これはBさんの〜ですか / はい、わたしの〜です』『わたしのです』(省略形)を最低限カバー。",
+      "practiceImageSource": "vocabulary",
+      "practiceTemplates": [
+        {
+          "pattern": "これは　わたしの　＿＿＿　です。",
+          "hint": "(自分の所有物)"
+        },
+        {
+          "pattern": "それは　＿＿＿さんの　＿＿＿　です。",
+          "hint": "(相手の所有物)"
+        },
+        {
+          "pattern": "これは　＿＿＿さんの　＿＿＿　ですか。",
+          "hint": "(所有確認の質問)"
+        },
+        {
+          "pattern": "はい、わたしの　＿＿＿　です。/ わたしのです。",
+          "hint": "(肯定の答え・省略形)"
+        }
+      ],
+      "plusAlpha": [
+        "『わたしの〜です』の『の』の後ろの名詞が省略された形『わたしのです』も導入し、練習する。",
+        "第1課 p3 の所属(『会社の会社員』『大学の学生』)との違いを明示。所属は『所属先 + の + 職業』、所有は『所有者 + の + 物』。",
+        "オンライン授業では、事前に学習者にペットや身の回りの物の写真を送ってもらい、画面で見せ合いながら『〜さんの猫ですか』『〜さんの○○ですか』と質問する活動が効果的。"
+      ],
+      "cautionNote": [
+        "教師の自分のかばん→自分の胸を指して『わたし』『これはわたしのかばんです』、次に学習者のかばんを指して『それはAさんのかばんです』、という順で導入(PDF教え方の例 3.)。",
+        "Q&A 練習では、人や物を替えて自然な会話の流れで繰り返す。"
+      ]
+    },
+    {
+      "id": "p4",
+      "pattern": "〜は どれですか",
+      "label": "どれ",
+      "grammarConcept": "interrogative_which_thing",
+      "_grammarConcept_note": "疑問詞『どれ』(指示代名詞・複数の中から1つを選ぶ)。本課では『〜はどれですか』の形を導入。",
+      "jlptLevel": "N5",
+      "canDo": "複数の選択肢の中から1つを『〜はどれですか』で特定して聞ける。選択肢が2つの場合は『どちら(どっち)』も使える。",
+      "canDoEn": "Can ask which specific item belongs to someone using '~ wa dore desu ka' when selecting from multiple options.",
+      "_step1c_status": "完了 (v1.4): 3 例文確定。教科書 2-4 継承(『リンさんのペン』・リンさんは教科書原典の固有名詞)+ Aさんのかばん(4-2)+ plusAlpha どちら=Bさんの本(4-3)。画像化候補: 4-1(複数ペン)/4-2(複数かばん)。画像は人物+物で generic 人物 + 物として生成。",
+      "vocabCount": 10,
+      "_vocabCount_note": "Step 1b 確定: 10 語(p3 から再利用・shareVocabWith=p3)。複数のペンを並べる例が中心。",
+      "shareVocabWith": "p3",
+      "examples": [
+        {
+          "no": "4-1",
+          "pattern": "〜さんの〜はどれですか / それです",
+          "vocab": "ペン",
+          "sentence": "リンさんのペンはどれですか。— それです。",
+          "sentenceEn": "Which one is Lin-san's pen? — That one.",
+          "imageId": "ex_L02_021",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_021",
+          "isAnchor": true,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "リンさんのペンはどれですか。",
+              "textbookRef": "2-4",
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)後も維持。『リンさん』は教科書 PDF p.026 文型 4 に明記された原典固有名詞であり、教科書由来の固有名詞として保持。画像生成では generic 人物 + ペン で表現。"
+            }
+          ],
+          "_comment": "p4 代表例文(教科書ベース)。複数の選択肢から1つを特定する典型。『リンさん』は教科書原典の固有名詞のため維持。画像化対象(複数のペンの中から1つを指す場面)。"
+        },
+        {
+          "no": "4-2",
+          "pattern": "〜さんの〜はどれですか / これです",
+          "vocab": "かばん",
+          "sentence": "キムさんのかばんはどれですか。— これです。",
+          "sentenceEn": "Which one is Kim-san's bag? — This one.",
+          "imageId": "ex_L02_022",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_022",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "Aさん、Aさんのペンはこれですか。これですか。— それです。",
+              "textbookRef": "2-4 (p.031 教え方の例)",
+              "replacementNote": "v2.11.5: Aさん → キムさん（namedCharacters）に置換。"
+            }
+          ],
+          "_comment": "教科書例文のキャラ・物バリエーション。キムさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。【画像化対象】"
+        },
+        {
+          "no": "4-3",
+          "pattern": "〜さんの〜はどちら(どっち)ですか / こちらです",
+          "vocab": "本",
+          "sentence": "タノムさんの本はどちらですか。— こちらです。",
+          "sentenceEn": "Which one is Tanomu-san's book? — This one (here).",
+          "imageId": "ex_L02_023",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_023",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(2本のペンを見せて)Aさんのペンはどちらですか。",
+              "textbookRef": "2-4 プラスα (p.031)",
+              "replacementNote": "v2.11.5: Bさん → タノムさん（namedCharacters）に置換。"
+            }
+          ],
+          "_comment": "選択肢2つのplusAlpha例。タノムさん（namedCharacters）を使用。教科書記号Bさんから置換（v2.11.5）。"
+        },
+        {
+          "no": "4-4",
+          "pattern": "〜さんの〜はどれですか / あれです",
+          "vocab": "時計",
+          "sentence": "タノムさんの時計はどれですか。— あれです。",
+          "sentenceEn": "Which one is Tanomu-san's clock? — That one over there.",
+          "imageId": "ex_L02_029",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_029",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.11.5 新規追加。「あれです」バリエーションでこれ/それ/あれ全答え形を網羅。namedCharacters使用。"
+            }
+          ],
+          "_comment": "どれ＋あれ の答えバリエーション。語彙「時計」使用。画像化対象（複数の時計の中から遠くのものを指す）。"
+        },
+        {
+          "no": "4-5",
+          "pattern": "〜さんの〜はどれですか / これです",
+          "vocab": "消しゴム",
+          "sentence": "ケリーさんの消しゴムはどれですか。— これです。",
+          "sentenceEn": "Which one is Kelly-san's eraser? — This one.",
+          "imageId": "ex_L02_030",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_030",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.11.5 新規追加。ケリーさん（namedCharacters）使用。"
+            }
+          ],
+          "_comment": "p4の語彙バリエーション例。ケリーさん使用。語彙「消しゴム」。"
+        }
+      ],
+      "_examples_note": "[v2.11.5 更新] 5例文。4-1(リンさん★ 教科書原典)/4-2(キムさん・かばん)/4-3(タノムさん・どちら)/4-4(タノムさん・時計)/4-5(ケリーさん・消しゴム)。A/B → namedCharacters に置換済み。画像化対象: 4-1/4-2。",
+      "practiceImageSource": "vocabulary",
+      "practiceTemplates": [
+        {
+          "pattern": "＿＿＿さんの　＿＿＿　は　どれですか。",
+          "hint": "(複数の中から特定する質問)"
+        }
+      ],
+      "plusAlpha": [
+        "選ぶ対象が2つの場合は、『どちら』(会話では『どっち』も使われる)で質問することを教える(例: 「2本のペンを見せて」Aさんのペンはどちらですか)。",
+        "玄関で傘や靴を探す場面など、実際の場面に近い練習を設定するとよい。"
+      ],
+      "cautionNote": [
+        "『これ』のときは1本ずつ指し、『どれ』のときは輪を描くように全体を指すジェスチャーで意味を視覚的に補強する(PDF教え方の例 4.)。",
+        "PDF活動例『落としもの返しごっこ』の中心文型でもある。"
+      ]
+    },
+    {
+      "id": "p5",
+      "pattern": "この/その/あの + N",
+      "label": "この・その・あの+N",
+      "grammarConcept": "kosoado_attributive",
+      "_grammarConcept_note": "指示連体詞(『この/その/あの』+ 名詞)。指示代名詞(p1: これ/それ/あれ)との違いを明示することが重要。連体詞の後ろには必ず名詞が必要。",
+      "jlptLevel": "N5",
+      "canDo": "写真や絵を見せて『この人はアインシュタインです』『あの建物は○○です』のように指示連体詞 + 名詞で人物や物を指して情報を述べられる。",
+      "canDoEn": "Can refer to people and things using the attributive demonstratives 'kono/sono/ano + noun'.",
+      "_step1c_status": "完了 (v1.4): 3 例文確定。教科書 2-5『アインシュタイン』を全例で維持(架空キャラ廃止)。この/その/あの の領域対立を全カバー。画像生成は『elderly man with white messy hair and mustache』として generic フラットベクターで実装(実在人物の似顔絵直接生成は回避)。1枚の画像を 5-1/5-2/5-3 で使い回し可。",
+      "vocabCount": 3,
+      "_vocabCount_note": "3語（人・犬・写真）。p5_p6_person + p5_p6_object。",
+      "shareVocabWith": null,
+      "examples": [
+        {
+          "no": "5-1",
+          "pattern": "この + N + は〜です",
+          "vocab": "人",
+          "sentence": "この人はアインシュタインです。",
+          "sentenceEn": "This person is Einstein.",
+          "imageId": "ex_L02_024",
+          "imageRole": "vocab_person",
+          "audioId": "sentence_ex_L02_024",
+          "isAnchor": true,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "この人はアインシュタインです。",
+              "textbookRef": "2-5 (p.031)",
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により架空キャラ『やまだまさし』→ アインシュタインに戻す。教科書原典通り。画像生成では『elderly man with white messy hair and mustache』程度の generic フラットベクターイラストで表現(実在人物の似顔絵生成は回避)。"
+            }
+          ],
+          "_comment": "p5 代表例文(この+N)。話し手のそばにある写真を指す想定。アインシュタインは教科書原典の固有名詞・実名置換不要。画像化対象: 白髪・口ひげ・老齢男性の generic フラットベクターイラストとして生成。プラスα: 教師は『○○』を別の有名人(自国の有名人等)に置換して練習可能(PDF p.031)。"
+        },
+        {
+          "no": "5-2",
+          "pattern": "その + N + は〜です",
+          "vocab": "人",
+          "sentence": "その人はアインシュタインです。",
+          "sentenceEn": "That person is Einstein.",
+          "imageId": "ex_L02_025",
+          "imageRole": "vocab_person",
+          "audioId": "sentence_ex_L02_025",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(L)その人はアインシュタインです。",
+              "textbookRef": "2-5 (p.031)",
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により『すずきはなこ』→ アインシュタインに戻す。PDF p.031 では T-促し型(*の人は〜)で L 発話として教科書に提示されている。"
+            }
+          ],
+          "_comment": "p5 代表例文(その+N)。聞き手のそばにある写真を指す想定。PDF p.031 では T が手を学習者のほうに差し出して発話を促した結果の L 発話。画像は 5-1 と同じアインシュタイン画像を使い回す(同一人物を異なる方向から指す場面)。【画像化対象】"
+        },
+        {
+          "no": "5-3",
+          "pattern": "あの + N + は〜です",
+          "vocab": "人",
+          "sentence": "あの人はアインシュタインです。",
+          "sentenceEn": "That person over there is Einstein.",
+          "imageId": "ex_L02_026",
+          "imageRole": "vocab_person",
+          "audioId": "sentence_ex_L02_026",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(教科書では『あの人はアインシュタインです』の直接形は未記載。PDF p.031『*の人はアインシュタインです』テンプレート(*=こ/そ/あ)を p.032『あの〜は〜です』導入文脈と統合した拡張形。)",
+              "textbookRef": "2-5 + p.032(『あの』別途導入)",
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により『田中先生』→ アインシュタインに戻す。PDF 直接記載はないが、p.031『*の人は〜』テンプレート(*=こ/そ/あ)を p.032『あの〜は〜です』導入文脈と統合した拡張形として正当化。"
+            }
+          ],
+          "_comment": "p5 代表例文(あの+N)。話し手と聞き手の双方から離れた位置の人物を指す。PDF 直接記載なしの統合解釈拡張。画像は 5-1/5-2 と同じアインシュタイン画像を使い回す (距離・指示方向の違いを領域対立図 p.027 のように演出)。【画像化対象】"
+        },
+        {
+          "no": "5-4",
+          "pattern": "あの + N + は〜です",
+          "vocab": "市役所",
+          "sentence": "あの建物は市役所です。",
+          "sentenceEn": "That building over there is city hall.",
+          "imageId": "ex_L02_031",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_031",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.11.5 新規追加。純粋p5例文。人物以外（建物）での指示連体詞練習。既存語彙（市役所）使用。"
+            }
+          ],
+          "_comment": "純粋p5例文（建物）。指示連体詞「あの」＋名詞「建物」の典型。p1の「あれは市役所です」との対比で連体詞vs代名詞の違いを示す。画像化対象（遠景の市役所）。"
+        },
+        {
+          "no": "5-5",
+          "pattern": "その + N + は〜ですか / はい、そうです",
+          "vocab": "ビル",
+          "sentence": "その建物はABCビルですか。— はい、そうです。",
+          "sentenceEn": "Is that building the ABC Building? — Yes, it is.",
+          "imageId": "ex_L02_032",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_032",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.11.5 新規追加。純粋p5例文。L1の「〜ですか/はい、そうです」使用。"
+            }
+          ],
+          "_comment": "純粋p5例文（建物・疑問形）。「その建物」でp5連体詞を使い、L1既習の「〜ですか/はい、そうです」で応答。同一課他パターン混在なし。"
+        },
+        {
+          "no": "5-6",
+          "pattern": "あの + N + は〜です",
+          "vocab": "山",
+          "sentence": "あの山は富士山です。",
+          "sentenceEn": "That mountain over there is Mt. Fuji.",
+          "imageId": "ex_L02_033",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_033",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "あの山は富士山です。",
+              "replacementNote": "PDF p.032 オンライン授業コラム「あの山は富士山です」を直接採用。純粋p5例文。"
+            }
+          ],
+          "_comment": "純粋p5例文（自然物）。PDF p.032 に直接記載された例文。「あの」＋自然物で指示連体詞の用法を示す。富士山は固有名詞のため「さん」不要（p5.plusAlpha参照）。画像化対象（遠景の富士山）。"
+        }
+      ],
+      "_examples_note": "[v2.11.5 更新] 6例文。5-1(この人★)/5-2(その人)/5-3(あの人)はアインシュタイン（教科書原典）。5-4(あの建物=市役所)/5-5(その建物=ABCビル)/5-6(あの山=富士山)は既存語彙による純粋p5例文（人物以外）。画像化対象: 5-1/5-4/5-6。",
+      "practiceImageSource": "namedCharacters",
+      "practiceTemplates": [
+        {
+          "pattern": "この人は　＿＿＿　です。",
+          "hint": "(近くにいる人を指す)"
+        },
+        {
+          "pattern": "その人は　＿＿＿　です。",
+          "hint": "(相手のそばの人を指す)"
+        },
+        {
+          "pattern": "あの人は　＿＿＿　です。",
+          "hint": "(遠くの人を指す)"
+        },
+        {
+          "pattern": "この犬は　＿＿＿　です。",
+          "hint": "(近くの犬を指す)"
+        },
+        {
+          "pattern": "その写真は　＿＿＿　です。",
+          "hint": "(相手のそばの写真を指す)"
+        }
+      ],
+      "plusAlpha": [
+        "アインシュタインのような著名人の名前には『さん』をつけないことを教える(呼び捨て)。教師は学習者が知っている有名人の写真・似顔絵に差し替えて練習可能。",
+        "『あの』については、窓の外に見えるものを指して『あの建物は何ですか』のようなやりとりができる。",
+        "オンライン授業でも、画面越しにケータイ画面や写真などを見せ合い、『その人はだれですか』『この人は〜』とやりとりさせると、より現実的な会話になる。"
+      ],
+      "cautionNote": [
+        "『この・その・あの』を『これ・それ・あれ』と並べて、整理して板書する。『この・その・あの』のあとには必ず名詞がつくことを板書で示す。",
+        "『この・その・あの』を『これ・それ・あれ』と並べて、整理して板書する。『この・その・あの』のあとには必ず名詞がつくことを板書で示す。"
+      ]
+    },
+    {
+      "id": "p6",
+      "pattern": "どの + N",
+      "label": "どの+N",
+      "grammarConcept": "interrogative_which_attributive",
+      "_grammarConcept_note": "疑問連体詞『どの』+ 名詞(p4『どれ』の連体詞版)。複数の中から1つを名詞付きで特定する。",
+      "jlptLevel": "N5",
+      "canDo": "複数の人物・物の中から1つを『どの+N+ですか』で特定して聞ける。",
+      "canDoEn": "Can ask which specific person or thing is meant using 'dono + noun + desu ka' when multiple options are present.",
+      "_step1c_status": "完了 (v1.4): 2 例文確定。教科書 2-6 継承(6-1: PDF p.033 T-L 往復構造『どの人ですか → この人です → その人はアインシュタインです』・教師ジェスチャーを _comment に反映)+ 物への適用(6-2: Aさんのかばん・落としもの返しごっこ連動)。p4『どれ』との違いを note で明示。画像化候補: 6-1(複数有名人写真)/6-2(複数かばん)。",
+      "vocabCount": 3,
+      "_vocabCount_note": "3語（p5と共有: 人・犬・写真）。",
+      "shareVocabWith": "p5",
+      "examples": [
+        {
+          "no": "6-1",
+          "pattern": "どの + N + ですか / この + N + です / その + N + は〜です",
+          "vocab": "人",
+          "sentence": "どの人ですか。— この人です。",
+          "sentenceEn": "Which person is it? — This person.",
+          "imageId": "ex_L02_027",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_027",
+          "isAnchor": true,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(T)どの人ですか。/(T)この人です。/(L)その人は○○です。",
+              "textbookRef": "2-6 + p.033 教師発話",
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により『田中先生』→ アインシュタインに戻す。PDF p.033 教師ジェスチャー + 流れ(T どの人ですか → T この人です → L その人は○○です)に整合。"
+            }
+          ],
+          "_comment": "p6 代表例文（教科書ベース）。「どの人ですか → この人です」でp6のQ&Aが完結。旧第3文「その人はアインシュタインです」はp5の完全文のため削除（v2.11.6 原則①）。人物同定の全会話流れはABCactivityRef(intro_act_p6)に記録済み。画像化対象（複数の有名人写真・アインシュタイン含む）。"
+        },
+        {
+          "no": "6-2",
+          "pattern": "〜さんの〜はどの + N + ですか / その + N + です",
+          "vocab": "かばん",
+          "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
+          "sentenceEn": "Which bag is Kelly-san's bag? — That bag.",
+          "imageId": "ex_L02_028",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_028",
+          "isAnchor": false,
+          "_comment": "p6-2: 物への適用例。p3（所有）＋p6（どのN）の統合。ケリーさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。p4「どれ」との違いを教師が解説（どれ=単独/どの＋N=名詞明示）。【画像化対象】"
+        },
+        {
+          "no": "6-3",
+          "pattern": "どの + N + ですか / この + N + です",
+          "vocab": "犬",
+          "sentence": "どの犬ですか。— この犬です。",
+          "sentenceEn": "Which dog is it? — This dog.",
+          "imageId": "ex_L02_034",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_034",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「犬」使用。"
+            }
+          ],
+          "_comment": "純粋p6例文。新語彙「犬」を使用。複数の犬の中から1匹を特定する場面。画像化対象（複数の犬の中からこの犬を指す場面）。"
+        },
+        {
+          "no": "6-4",
+          "pattern": "どの + N + ですか / その + N + です",
+          "vocab": "写真",
+          "sentence": "どの写真ですか。— その写真です。",
+          "sentenceEn": "Which photo is it? — That photo.",
+          "imageId": "ex_L02_035",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_035",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「写真」使用。"
+            }
+          ],
+          "_comment": "純粋p6例文。新語彙「写真」を使用。複数の写真の中から1枚を特定する場面。画像化対象（複数の写真の中からその写真を指す場面）。"
+        }
+      ],
+      "_examples_note": "[v2.11.5 更新] 4例文。6-1(どの人★ 教科書原典)/6-2(ケリーさんのかばん・Aさんから置換)/6-3(どの犬)/6-4(どの写真)。6-3/6-4は新語彙（犬・写真）による純粋p6例文。画像化対象: 6-1/6-3/6-4。",
+      "practiceImageSource": "namedCharacters",
+      "practiceTemplates": [
+        {
+          "pattern": "どの人ですか。",
+          "hint": "(複数の人物から特定)"
+        },
+        {
+          "pattern": "どの　＿＿＿　ですか。",
+          "hint": "(複数の物から特定)"
+        }
+      ],
+      "plusAlpha": [
+        "『どれ』(p4)との違いを示す: 『どれ』= 名詞なし(代名詞)、『どの + N』= 必ず名詞が必要(連体詞)。"
+      ],
+      "cautionNote": [
+        "p5 で使った有名人写真をそのまま使用する(同じ素材を再利用することで学習者の認知負荷を下げる)。",
+        "『あの人はだれですか』(少し離れた位置からどの写真を指しているかわからない状況)→『??』(学習者困惑)→『この人ですか。この人ですか』(1枚ずつ指す)→『どの人ですか』(全体を輪を描いて指す)、という流れで導入(PDF教え方の例 6.)。"
+      ]
+    }
+  ],
+  "github": {
+    "repo": "japanese-lesson-creator",
+    "owner": "popJteacher",
+    "branch": "main",
+    "lessonAssets": [],
+    "_lessonAssets_note": "課マスターから生成される静的アセット。第2課では課単位の静的アセットは存在しない(空配列)。session 単位の出力ファイル(session_NNN_スライド.html 等)は session_NNN.json の output.files で管理(Phase 2-B Q1/Q2 確定・lesson_01 v2.4 から継承)。"
+  },
+  "_step1a_completionChecklist": {
+    "lessonMeta": "✅ lesson.no/title/topic/level/target/_recommendedDuration/grammarMemo 完備",
+    "textbookSources": "✅ ABC 第2課 p.026-034 を参照元として記録",
+    "characters": "✅ v1.4: 固定キャラ概念廃止(選択肢X)。characters セクション削除。lesson_NN.json は文法軸のみで管理。",
+    "vocabulary": "✅ Step 1b 完了(全18語確定・v2.11.5で犬・写真を追加)",
+    "flow": "✅ 全28エントリ（文型ブロック構造: review/intro_slide + 4エントリ×6文型 + main_act_1 + wrapUp）・materialNeeds[] 必須箇所付与済み",
+    "patterns": "✅ Step 1c v2.11.6 完了（例文設計原則①厳密適用）。p1=6 / p2=1 / p3=6 / p4=5 / p5=6 / p6=4 = 計28例文。",
+    "github": "✅ 新設計(lessonAssets:[])",
+    "_overall_status": "Step 1a/1b/1c (v1.4) 完了。Phase 1-F (設計負債解消) → Step 2 (image_prompts) の順に進行。",
+    "_step1c_completion_note": "v1.0: 全 6 文型 26 例文確定。v1.3 (2026-05-11): PDF 照合により 9 件修正/追加。v1.4 (2026-05-11): 固定キャラ概念廃止(選択肢X)。12 例文の固有名詞を教科書原典に戻す(Aさん/Bさん/Cさん/アインシュタイン)。全 examples から characterId/character_assignment_type を削除。ファイル全体から characters セクションを削除。lesson_NN.json は文法軸で管理(物語性なし・教科書非依存原則と整合)。総計 28 例文。教科書例文(originalSources)を完全準拠。SKILL.md v1.1 例文網羅性チェックリスト全項目クリア(肯定/否定/疑問・疑問詞・各素材代表例・画像化候補識別・originalSources)。Phase 1-F で同じ修正を lesson_01 v2.6 に適用予定。"
+  },
+  "_step1c_check": {
+    "_comment": "SKILL.md v1.1 例文網羅性チェックリスト(Step 1c で実施)の完了結果。",
+    "checkedAt": "2026-05-11",
+    "results": {
+      "all_patterns_have_examples": "✅ 全 6 patterns (p1〜p6) について最低 1 例文以上(実績: 6/1/6/5/6/4)",
+      "pattern_core_coverage": {
+        "肯定形": "✅ 全 pattern で肯定形カバー(p1=これ/それ/あれの肯定 6例 / p2=純粋「何ですか」1件 / p3=肯定 + 省略形 / p4=応答側 / p5=肯定 6例 / p6=応答側)",
+        "否定形": "✅ p3-4 で原則④適用済み(v2.11.7修正1)。じゃありません削除→「いいえ、リンさんのかばんです。」に修正。他 pattern は文型核要素に否定形含まない",
+        "疑問形": "✅ p2/p4/p6 が疑問文中心の文型。p1/p3/p5 は宣言文中心(疑問形は p2/p4/p6 と組み合わせて練習)",
+        "疑問詞": "✅ なに(p2-1: 1件のみ)・どれ(p4-1〜4-5)・どの(p6-1〜6-4)を網羅。p2は純粋「何ですか」1件(v2.11.6削除後)。だれは第1課で既習・本課では言及なし。"
+      },
+      "material_usage_examples": {
+        "スライド代表例(各 pattern 1 以上)": "✅ p1=1-1(これは時計)/1-4(それはペン)/1-7(あれはABCビル) / p2=2-1(何ですか) / p3=3-1(これはわたしのかばん) / p4=4-1(リンさんのペンはどれ) / p5=5-1(この人はアインシュタイン)/5-4(あの建物は市役所)/5-6(あの山は富士山) / p6=6-1(どの人ですか)/6-3(どの犬)/6-4(どの写真)",
+        "宿題 fill_blank(画像ヒント必須)": "✅ 画像化対象12件(image_marking参照): 1-1/1-4/1-7/3-1/4-1/4-4/5-1/5-4/5-6/6-1/6-3/6-4",
+        "宿題 sentence_ordering(画像不要)": "✅ Q&A 形式の例文(3-3/3-4/3-6/4-1/4-2/4-3/4-4/4-5/6-1/6-2/6-3/6-4)が利用可能",
+        "宿題 audio_listening(音声読み上げ)": "✅ 全例文が音声化可能(短文中心・各 30 文字以内)",
+        "教案 docx(全例文参照)": "✅ 全 28 例文が docx 参照対象"
+      },
+      "image_marking": "✅ 各 example の _comment に『画像化対象』マークを明記(計12件確定: p1: 1-1/1-4/1-7 / p3: 3-1 / p4: 4-1/4-4 / p5: 5-1/5-4/5-6 / p6: 6-1/6-3/6-4)",
+      "original_sources": "✅ 教科書由来例文 9 件に originalSources[] を付与: 1-1/1-4/1-7(p1)/2-1(p2)/3-1/3-2/3-5(p3)/4-1(p4)/5-1/5-2/5-3(p5)/6-1(p6)。各 textbookRef・replacementNote 記入済み。",
+      "character_layer_consistency": "✅ v2.11.5以降の固定キャラ廃止方針に準拠。Layer 1/2/3 体系は廃止済み。新規作成例文はnamedCharacters（鈴木/リン/キム/タノム/ケリー）を使用。教科書原典例文はoriginalSourcesで追跡。",
+      "missing_examples_review": "✅ 不足する例文の追加検討完了: p4 に『どちら』例文(4-3)を examples[] に収録（教科書原典例文のため plusAlpha ではなく examples[] に配置・SKILL 原則② 構造上の必然に該当）、p3 に省略形『わたしのです』を追加(3-5)、p6 に物適用例を追加(6-2)。SKILL.md チェックリスト全項目クリア。"
+    },
+    "_post_step_action": "[v2.11.5] Step 2(image_prompts_lesson2.json 設計)で画像化対象の例文を登録する。削除例文(ex_L02_002/005/006/014)はmaster_image_registry.jsonでstatus:outdatedに変更すること。新規追加例文(ex_L02_029〜035)はimage_prompts_lesson2.jsonに追加すること。",
+    "_v1_3_pdf_verification": {
+      "_note": "v1.3 で教科書 PDF (ABC 第2課 p.026-034) と全 examples を照合した結果。",
+      "verifiedAt": "2026-05-11",
+      "pdfSource": "日本語の教え方ABC 第2課 p.026-034(本チャットコンテキストにアップロード済み)",
+      "modifications_applied": {
+        "必須修正_5件": {
+          "p3-2": "✅ PDF p.030『それはAさんのかばんです。』に合わせ originalSentence 冒頭補完",
+          "p3-4": "✅ PDF p.030 T/C 発話を整理し『これは』補完 + T/C 話者ラベル明示",
+          "p5-2": "✅ PDF p.031 L 発話(T-促し型)であることを originalSentence と replacementNote に明示",
+          "p5-3": "✅ PDF 直接記載なしを originalSentence に明示・p.031 + p.032 の統合解釈拡張として正当化",
+          "p6-1": "✅ PDF p.033 T-L 往復構造に sentence を修正・教師ジェスチャー(輪を描く動作)を _comment に追記"
+        },
+        "追加検討_反映3件": {
+          "A (p2-5)": "✅ PDF p.029 否定先行型ストーリー(ケーキ→消しゴム)を Q&A 形式で追加。教科書のメイン導入シナリオ再現",
+          "B (p3-6)": "✅ PDF p.034 落としもの返しごっこ会話例の A-B 往復冒頭を main_activity 連動素材として追加",
+          "D (p6-1 ジェスチャー)": "✅ 修正必須[5] と統合・PDF p.033 教師の指示動作(全体を大きく輪を描く)を _comment に追記"
+        },
+        "既載確認_1件": {
+          "C (p5『さん』なし)": "✅ p5.plusAlpha[0] に既載確認(『アインシュタインのような有名人の名前には「さん」をつけないことを教える』)。追加対応不要"
+        }
+      },
+      "pdf_unused_elements": [
+        "PDF p.030 上部のオンライン授業コラム(サファリ動物園・東京スカイツリー)は p1/p5 の note に既に部分反映済み。具体例文化は教師選択(Step 2 image_prompts 設計時に検討)",
+        "PDF p.034 末尾『マンツーマン版・教師の持ち物/ペット/子どもの頃の写真』はマンツーマン用アクティビティとして Phase 1-F で activity_catalog 追加検討(handoff §5-2 申し送り対応)",
+        "PDF p.032 板書例『この〜は 〜です。/ あの〜は 〜です。』はスライド/教案の板書素材として Step 2 以降で使用可能"
+      ],
+      "consistency_with_v1_2_decisions": {
+        "Q2_アインシュタイン置換": "✅ 維持: やまだまさし/すずきはなこ/田中先生への置換は p5 全例で適用済み。著作権・肖像権配慮として正当",
+        "p5-3_あの人_田中先生": "✅ 維持: PDF 直接記載なしだが、p.031 テンプレート(*=こ/そ/あ)+ p.032 あの〜は〜 の統合解釈として正当化。第1課既知キャラ活用の復習効果あり"
+      }
+    },
+    "_v1_4_character_removal": {
+      "_note": "v1.4 で固定キャラ概念を廃止した記録",
+      "modifiedAt": "2026-05-11",
+      "decision": "選択肢X(教科書忠実化)+ 固定キャラ廃止",
+      "rationale": [
+        "ABC 教科書は物語性のない教材(handoff_phase2_C_step1b_completed §3-2 確認)",
+        "固有名詞は画像と切り離す(画像生成時は generic フラットベクター人物使用)",
+        "教師は授業中に学習者の実名で適宜置換する(ABC 教科書の意図)",
+        "管理コスト > 教育的価値(マンツーマン授業では教師本人がいる)",
+        "将来の教材移行(げんき・みんなの日本語等)で固定キャラが妨げになる",
+        "Phase 1-F で lesson_01 v2.6 にも同じ修正を適用予定"
+      ],
+      "scope": {
+        "lesson_02_examples_sentence_revised": 12,
+        "lesson_02_characterId_removed": "全 examples(28 件)",
+        "lesson_02_characters_section_removed": true,
+        "lesson_01_v2_6_phase1f_handover": true,
+        "master_prompt_design_guide_phase1f_handover": true,
+        "skill_md_v1_3_phase1f_handover": true
+      },
+      "examples_modification_summary": {
+        "p1": "変更なし(物中心の例文・固有名詞登場なし)",
+        "p2": "変更なし(物中心の例文・固有名詞登場なし)",
+        "p3": "4 例文(3-2/3-3/3-4/3-6)修正: リン/ケリー/田中先生 → A/B/C さん(教科書記号)",
+        "p4": "2 例文(4-2/4-3)修正: 田中先生/ケリーさん → A/B さん(教科書例 p.031 整合)・4-1 は維持(リンさん=教科書原典)",
+        "p5": "3 例文(5-1/5-2/5-3)修正: やまだまさし/すずきはなこ/田中先生 → アインシュタイン(教科書原典)",
+        "p6": "2 例文(6-1/6-2)修正: 田中先生/リンさん → アインシュタイン/Aさん"
+      }
+    }
+  }
+}
