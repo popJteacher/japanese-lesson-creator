@@ -1,0 +1,312 @@
+{
+  "_meta": {
+    "version": "1.2",
+    "description": "音声資産レジストリ。word_* は語彙音声、sentence_* は例文音声。audioUrl は音声生成後に設定する。",
+    "createdAt": "2026-05-15",
+    "lastModified": "2026-05-20",
+    "changes": [
+      "v1.0 (2026-05-15): 初版。L01 語彙17件 + 例文15件 = 32件登録。",
+      "v1.1 (2026-05-17): L02 語彙15件 (word_病院はL01既存のため上書き更新のみ) + 例文28件 = 実質43件新規追加。totalEntries: 32 -> 75。",
+      "v1.2 (2026-05-17): handoff_v2_4.md §5 適用。[5-A] sentence更新8件（旧A/B/Cさん→namedCharacters・v2.11.7修正後）。[5-B] 新規追加9件（word_犬/写真 + sentence_ex_L02_029〜035）。[5-C] outdated化7件（002/005/006/011/012/013/014）。totalEntries: 77件（active）。"
+    ],
+    "totalEntries": 77
+  },
+  "entries": {
+    "word_医者": {
+      "audioUrl": "https://drive.google.com/uc?id=16eLr9cUIzEs_EwoUEedPYZb2ZmB2aRGk"
+    },
+    "word_会社員": {
+      "audioUrl": "https://drive.google.com/uc?id=19F4KDPvnALXd7YZzrdlfv6jHsIdU4rzr"
+    },
+    "word_学生": {
+      "audioUrl": "https://drive.google.com/uc?id=1-MItNXBUCSHlECg_hboSFpz4RIocZGhk"
+    },
+    "word_大学生": {
+      "audioUrl": "https://drive.google.com/uc?id=1kae9BO7Oefe_30JR8ki8KuRRV_rv91uf"
+    },
+    "word_先生": {
+      "audioUrl": "https://drive.google.com/uc?id=1msYxih9-V5IqHRWbm849AwmllbBPbPkJ"
+    },
+    "word_日本人": {
+      "audioUrl": "https://drive.google.com/uc?id=1CKOPoMu6bObWGEcp8xuTcPCJUs7jp_ny"
+    },
+    "word_中国人": {
+      "audioUrl": "https://drive.google.com/uc?id=1qwtnRAn86_8mUG3mY69KzSAKMZEkKfUO"
+    },
+    "word_アメリカ人": {
+      "audioUrl": "https://drive.google.com/uc?id=1lrU5I6kSnzEQewrl9RtBmhY1AKWxuBVa"
+    },
+    "word_韓国人": {
+      "audioUrl": "https://drive.google.com/uc?id=1JUuKKoQ0Q6pzAqPkLIPDFgNN_OZ-z68p"
+    },
+    "word_ブラジル人": {
+      "audioUrl": "https://drive.google.com/uc?id=12c040WCcn0PIAI8-aPXW7z924Dh0khJy"
+    },
+    "word_ベトナム人": {
+      "audioUrl": "https://drive.google.com/uc?id=11jSJOp9jzFV0qjoFTJJLzep5KDVkm0Op"
+    },
+    "word_スペイン人": {
+      "audioUrl": "https://drive.google.com/uc?id=1R9liiXB0tNO_e9ks9TOX0eOmu9TvDnv1"
+    },
+    "word_病院": {
+      "audioUrl": "https://drive.google.com/uc?id=1VuBwhptKBc0K1wk5icvaQov0nnzO19De"
+    },
+    "word_学校": {
+      "audioUrl": "https://drive.google.com/uc?id=1OPX93G0OFxYIjBM2DwaGCRRCUi-SmWwx"
+    },
+    "word_銀行": {
+      "audioUrl": "https://drive.google.com/uc?id=1fv93DRJhehCFLuqOMKASsOW9jlPRYeWl"
+    },
+    "word_大学": {
+      "audioUrl": "https://drive.google.com/uc?id=1YedD3F0vmhJyfBo-U5k4-meB9LhF1w_w"
+    },
+    "word_デパート": {
+      "audioUrl": "https://drive.google.com/uc?id=1ierHVQLM_6FvGDC8UC4NWvMu5QEjvE8n"
+    },
+    "sentence_ex_L01_001": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_002": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_003": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_004": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_005": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_006": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_007": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_008": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_009": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_010": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_011": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_012": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_013": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_014": {
+      "audioUrl": null
+    },
+    "sentence_ex_L01_015": {
+      "audioUrl": null
+    },
+    "word_時計": {
+      "audioUrl": null
+    },
+    "word_腕時計": {
+      "audioUrl": null
+    },
+    "word_ペン": {
+      "audioUrl": null
+    },
+    "word_鉛筆": {
+      "audioUrl": null
+    },
+    "word_ケータイ": {
+      "audioUrl": null
+    },
+    "word_本": {
+      "audioUrl": null
+    },
+    "word_雑誌": {
+      "audioUrl": "https://drive.google.com/uc?id=1K3I3C_cs_FVmCt9C-86cyXvjVLLMPjpd"
+    },
+    "word_新聞": {
+      "audioUrl": null
+    },
+    "word_かばん": {
+      "audioUrl": "https://drive.google.com/uc?id=1_xJv5MoCbFk9UCebO2bVeuCt8D7sTy75"
+    },
+    "word_消しゴム": {
+      "audioUrl": null
+    },
+    "word_ビル": {
+      "audioUrl": null
+    },
+    "word_市役所": {
+      "audioUrl": null
+    },
+    "word_山": {
+      "audioUrl": null
+    },
+    "word_人": {
+      "audioUrl": null
+    },
+    "word_わたし": {
+      "audioUrl": null
+    },
+    "sentence_ex_L02_001": {
+      "audioUrl": null,
+      "sentence": "これは時計です。"
+    },
+    "sentence_ex_L02_002": {
+      "audioUrl": null,
+      "sentence": "これは腕時計です。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_003": {
+      "audioUrl": null,
+      "sentence": "これはケータイです。"
+    },
+    "sentence_ex_L02_004": {
+      "audioUrl": null,
+      "sentence": "それはペンです。"
+    },
+    "sentence_ex_L02_005": {
+      "audioUrl": null,
+      "sentence": "それは本です。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_006": {
+      "audioUrl": null,
+      "sentence": "それは鉛筆です。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_007": {
+      "audioUrl": null,
+      "sentence": "あれはABCビルです。"
+    },
+    "sentence_ex_L02_008": {
+      "audioUrl": null,
+      "sentence": "あれは病院です。"
+    },
+    "sentence_ex_L02_009": {
+      "audioUrl": null,
+      "sentence": "あれは山です。"
+    },
+    "sentence_ex_L02_010": {
+      "audioUrl": null,
+      "sentence": "何ですか。"
+    },
+    "sentence_ex_L02_011": {
+      "audioUrl": null,
+      "sentence": "これは何ですか。— これは消しゴムです。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_012": {
+      "audioUrl": null,
+      "sentence": "それは何ですか。— それは雑誌です。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_013": {
+      "audioUrl": null,
+      "sentence": "あれは何ですか。— あれは市役所です。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_014": {
+      "audioUrl": null,
+      "sentence": "これは何ですか。— これはケーキです。— いいえ、ケーキじゃありません。— 何ですか。— これは消しゴムです。",
+      "status": "outdated"
+    },
+    "sentence_ex_L02_015": {
+      "audioUrl": null,
+      "sentence": "これはわたしのかばんです。"
+    },
+    "sentence_ex_L02_016": {
+      "audioUrl": null,
+      "sentence": "それはリンさんのかばんです。"
+    },
+    "sentence_ex_L02_017": {
+      "audioUrl": null,
+      "sentence": "これはキムさんの本ですか。— はい、わたしの本です。"
+    },
+    "sentence_ex_L02_018": {
+      "audioUrl": null,
+      "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。"
+    },
+    "sentence_ex_L02_019": {
+      "audioUrl": null,
+      "sentence": "わたしのです。"
+    },
+    "sentence_ex_L02_020": {
+      "audioUrl": null,
+      "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。"
+    },
+    "sentence_ex_L02_021": {
+      "audioUrl": null,
+      "sentence": "リンさんのペンはどれですか。— それです。"
+    },
+    "sentence_ex_L02_022": {
+      "audioUrl": null,
+      "sentence": "キムさんのかばんはどれですか。— これです。"
+    },
+    "sentence_ex_L02_023": {
+      "audioUrl": null,
+      "sentence": "タノムさんの本はどちらですか。— こちらです。"
+    },
+    "sentence_ex_L02_024": {
+      "audioUrl": null,
+      "sentence": "この人はアインシュタインです。"
+    },
+    "sentence_ex_L02_025": {
+      "audioUrl": null,
+      "sentence": "その人はアインシュタインです。"
+    },
+    "sentence_ex_L02_026": {
+      "audioUrl": null,
+      "sentence": "あの人はアインシュタインです。"
+    },
+    "sentence_ex_L02_027": {
+      "audioUrl": null,
+      "sentence": "どの人ですか。— この人です。"
+    },
+    "sentence_ex_L02_028": {
+      "audioUrl": null,
+      "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。"
+    },
+    "word_犬": {
+      "audioUrl": "https://drive.google.com/uc?id=1Qg4WamSifnv273EzmJvtnUQa50KHC8El",
+      "sentence": "犬"
+    },
+    "word_写真": {
+      "audioUrl": "https://drive.google.com/uc?id=1sAV6rld-6unJq1P2BI8xTQ3InJaHJ4df",
+      "sentence": "写真"
+    },
+    "sentence_ex_L02_029": {
+      "audioUrl": null,
+      "sentence": "タノムさんの時計はどれですか。— あれです。"
+    },
+    "sentence_ex_L02_030": {
+      "audioUrl": null,
+      "sentence": "ケリーさんの消しゴムはどれですか。— これです。"
+    },
+    "sentence_ex_L02_031": {
+      "audioUrl": null,
+      "sentence": "あの建物は市役所です。"
+    },
+    "sentence_ex_L02_032": {
+      "audioUrl": null,
+      "sentence": "その建物はABCビルですか。— はい、そうです。"
+    },
+    "sentence_ex_L02_033": {
+      "audioUrl": null,
+      "sentence": "あの山は富士山です。"
+    },
+    "sentence_ex_L02_034": {
+      "audioUrl": null,
+      "sentence": "どの犬ですか。— この犬です。"
+    },
+    "sentence_ex_L02_035": {
+      "audioUrl": null,
+      "sentence": "どの写真ですか。— その写真です。"
+    }
+  }
+}
