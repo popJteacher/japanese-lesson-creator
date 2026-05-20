@@ -74,9 +74,9 @@
 
 ---
 
-## archive/gas_old/（14 ファイル）
+## archive/gas_old/（15 ファイル）
 
-旧スタンドアロン `.gs` ファイル群＋非正典 monolith コピー。
+旧スタンドアロン `.gs` ファイル群＋非正典 monolith コピー＋Phase 1 ④ 退役 GAS。
 
 | ファイル | 種別 | 注記 |
 |---|---|---|
@@ -84,6 +84,7 @@
 | `setupSpreadsheet.gs` / `seedLesson01.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` / `classifyAndTranslate.gs` / `classifyAndTranslate_v1_1.gs` / `generateImages.gs` / `generateImages_v5_1.gs` / `generateAudio.gs` / `generateAudio (1).gs` / `syncRegistries.gs` | 旧スタンドアロン | **monolith にマージ済**。これらは死んだファイル（monolith 内のセクション名と同名なのが混乱の原因） |
 | `Gasv5.json` | 古い Drive エクスポート | — |
 | `japanese-lesson-pipeline.json` | 最新の Drive エクスポートバンドル（`setupSpreadsheet` ソース 152660 B） | 中身は `gas/pipeline.gs` と同じ（Drive 投入用 wrapper） |
+| `exportVocabTypes_v1_0.gs` | Phase 1 ④ 退役（2026-05-20）| `gas/pipeline.gs` v7.2 から削除。後継 `scripts/classify-and-translate.mjs` が `data/vocab_types_lessonNN.json` を直接書く |
 
 ---
 

@@ -1,11 +1,10 @@
 {
   "_meta": {
     "lessonNo": 1,
-    "generatedAt": "2026-05-19",
-    "generator": "BOOTSTRAP from archive/misc/image_prompts_lesson01_v1_4.json",
-    "source": "archive/misc/image_prompts_lesson01_v1_4.json (vocab_type 列の人手分類・GAS 実行前のブートストラップ)",
-    "rowCount": 17,
-    "note": "gas/pipeline.gs#exportVocabTypesAll を人間が実行したら同名ファイルが Drive 経由で上書きされる。"
+    "generatedAt": "2026-05-20",
+    "generator": "scripts/classify-and-translate.mjs",
+    "source": "data/lesson_01.json (local classify; exportVocabTypes 引退)",
+    "rowCount": 17
   },
   "vocabulary": [
     {
@@ -20,7 +19,7 @@
       "imageId": "word_会社員",
       "word": "会社員",
       "reading": "かいしゃいん",
-      "en": "company employee",
+      "en": "office worker",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
@@ -52,7 +51,7 @@
       "imageId": "word_日本人",
       "word": "日本人",
       "reading": "にほんじん",
-      "en": "Japanese person",
+      "en": "japanese person",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
@@ -60,15 +59,15 @@
       "imageId": "word_中国人",
       "word": "中国人",
       "reading": "ちゅうごくじん",
-      "en": "Chinese person",
+      "en": "chinese person",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
     {
       "imageId": "word_アメリカ人",
       "word": "アメリカ人",
-      "reading": "あめりかじん",
-      "en": "American person",
+      "reading": "アメリカじん",
+      "en": "american",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
@@ -76,31 +75,31 @@
       "imageId": "word_韓国人",
       "word": "韓国人",
       "reading": "かんこくじん",
-      "en": "Korean person",
+      "en": "korean person",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
     {
       "imageId": "word_ブラジル人",
       "word": "ブラジル人",
-      "reading": "ぶらじるじん",
-      "en": "Brazilian person",
+      "reading": "ブラジルじん",
+      "en": "brazilian",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
     {
       "imageId": "word_ベトナム人",
       "word": "ベトナム人",
-      "reading": "べとなむじん",
-      "en": "Vietnamese person",
+      "reading": "ベトナムじん",
+      "en": "vietnamese person",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
     {
       "imageId": "word_スペイン人",
       "word": "スペイン人",
-      "reading": "すぺいんじん",
-      "en": "Spanish person",
+      "reading": "スペインじん",
+      "en": "spanish person",
       "vocab_type": "person",
       "lessonRef": "lesson_01"
     },
@@ -139,7 +138,7 @@
     {
       "imageId": "word_デパート",
       "word": "デパート",
-      "reading": "でぱーと",
+      "reading": "デパート",
       "en": "department store",
       "vocab_type": "building",
       "lessonRef": "lesson_01"

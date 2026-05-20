@@ -1,6 +1,10 @@
 // ============================================================
 // classifyAndTranslate.gs  v1.1  (2026-05-18)
 //
+// [archived 2026-05-20 — Phase 1 ④] gas/pipeline.gs v7.2 から退役。
+//   後継: scripts/classify-and-translate.mjs（ローカル Gemini 呼び出し版）。
+//   GAS 版は仕様の一次資料として保全（contracts: 入出力・モデル・generationConfig）。
+//
 // 目的:
 //   Vocabulary シートの en（C列）と vocab_type（F列）が空の行に対して
 //   Gemma 4 API を使って英語訳と語彙タイプを自動付与する。

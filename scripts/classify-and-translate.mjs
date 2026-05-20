@@ -420,7 +420,6 @@ async function main() {
       generator: 'scripts/classify-and-translate.mjs',
       source: `data/lesson_${lessonNN}.json (local classify; exportVocabTypes 引退)`,
       rowCount: vocabulary.length,
-      ...(existingJson?._meta?.note ? { note: existingJson._meta.note } : {}),
     },
     vocabulary,
   };

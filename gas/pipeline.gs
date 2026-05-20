@@ -1,9 +1,13 @@
 /**
  * ================================================================
  * GASパイプライン 統合スクリプト
- * 最終更新: 2026-05-16 (v7.1)
+ * 最終更新: 2026-05-20 (v7.2)
  *
  * 変更履歴:
+ *   v7.2: Phase 1 ④ — classifyAndTranslate.gs / exportVocabTypes.gs を
+ *         ローカル版へ退役。コードは archive/gas_old/ に保全。
+ *         後継: scripts/classify-and-translate.mjs（vocab_type 真実源を
+ *         data/vocab_types_lessonNN.json に直接書く）。
  *   v7.1: STYLE_RECIPE完全化（sub_color #6B7C85 + skin_tones 追加）
  *         OBJECT_SIGNATURES 辞書追加（concrete_object 識別シグネチャー）
  *         ABSTRACT_METAPHORS 辞書追加（TIAC メタファー辞書）
@@ -714,272 +718,16 @@ function writeImportLog_(ss, lessonName, count, wordList) {
 
 
 // ================================================================
-// classifyAndTranslate.gs  v1.1
-// en / vocab_type を Gemma 4 API で自動付与する
-//
-// v1.1 変更点:
-//   MODEL: gemma-4-26b-a4b-it に修正（gemma-4-26b-it は存在しない）
-//   buildPrompt_() 冒頭に "Do not think out loud..." を追加
-//   → Gemma 4 の thinking mode による JSON パース失敗を防止
+// [REMOVED 2026-05-20 — Phase 1 ④] classifyAndTranslate.gs v1.1
+//   退役済み。ローカル版 scripts/classify-and-translate.mjs が後継。
+//   コードは archive/gas_old/classifyAndTranslate_v1_1.gs に保全。
+//   退役した識別子（GAS スコープから消滅）:
+//     CLASSIFY_SETTINGS / VALID_VOCAB_TYPES /
+//     classifyBatch / previewClassify / reclassifyWords /
+//     setupDailyTrigger / setupHourlyTrigger /
+//     callGemmaAPI_ / buildPrompt_ / parseGemmaResponse_ /
+//     getPendingRows_ / getAllVocabRows_ / logToSheet_
 // ================================================================
-
-const CLASSIFY_SETTINGS = {
-  SPREADSHEET_ID:   PropertiesService.getScriptProperties()
-                      .getProperty("SPREADSHEET_ID") || "YOUR_SPREADSHEET_ID_HERE",
-  VOCAB_SHEET_NAME: "Vocabulary",
-  LOG_SHEET_NAME:   "Log",
-  // ✓ v1.1 修正: gemma-4-26b-a4b-it（gemma-4-26b-it は不正なモデル名）
-  MODEL:            "gemma-4-26b-a4b-it",  // 代替: "gemma-4-31b-it"
-  BATCH_SIZE:       3,
-  SLEEP_MS:         500,
-};
-
-const VALID_VOCAB_TYPES = [
-  // v2.5 既存型
-  "person", "building", "concrete_object", "action_verb", "adjective",
-  "abstract_concept", "spatial_relation", "demonstrative",
-  // v2.6 新規型
-  "pronoun", "interjection", "set_expression", "adverb", "counter",
-  "time", "transportation", "family", "weather", "sensory",
-  // fallback
-  "other",
-];
-
-function classifyBatch() {
-  const ss    = SpreadsheetApp.openById(CLASSIFY_SETTINGS.SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(CLASSIFY_SETTINGS.VOCAB_SHEET_NAME);
-  if (!sheet) { Logger.log("ERROR: Vocabulary シートが見つかりません"); return; }
-
-  const pendingRows = getPendingRows_(sheet);
-  if (pendingRows.length === 0) { Logger.log("INFO: 未処理の行はありません。"); return; }
-
-  const batch = pendingRows.slice(0, CLASSIFY_SETTINGS.BATCH_SIZE);
-  Logger.log("INFO: " + pendingRows.length + " 件が未処理 → 今回 " + batch.length + " 件処理");
-
-  let successCount = 0, failCount = 0;
-  batch.forEach(function(row, i) {
-    try {
-      Logger.log("  [" + (i+1) + "/" + batch.length + "] " + row.word + " を処理中...");
-      const result = callGemmaAPI_(row.word, row.reading, row.pos);
-      sheet.getRange(row.rowIndex, 3).setValue(result.en);
-      sheet.getRange(row.rowIndex, 6).setValue(result.vocab_type);
-      logToSheet_(ss, "classify", row.word, "success", result.en + " / " + result.vocab_type);
-      successCount++;
-    } catch (e) {
-      Logger.log("  ERROR: " + row.word + " → " + e.message);
-      logToSheet_(ss, "classify", row.word, "failed", e.message);
-      failCount++;
-    }
-    if (i < batch.length - 1) Utilities.sleep(CLASSIFY_SETTINGS.SLEEP_MS);
-  });
-
-  Logger.log("=== 完了 ===");
-  Logger.log("  成功: " + successCount + " / 失敗: " + failCount);
-  Logger.log("  残り: " + (pendingRows.length - batch.length) + " 件（次回実行で処理）");
-}
-
-function previewClassify() {
-  const ss    = SpreadsheetApp.openById(CLASSIFY_SETTINGS.SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(CLASSIFY_SETTINGS.VOCAB_SHEET_NAME);
-  if (!sheet) { Logger.log("ERROR: シートが見つかりません"); return; }
-  const pendingRows = getPendingRows_(sheet);
-  Logger.log("未処理件数: " + pendingRows.length);
-  pendingRows.slice(0, 5).forEach(function(row, i) {
-    try {
-      const result = callGemmaAPI_(row.word, row.reading, row.pos);
-      Logger.log("[" + (i+1) + "] " + row.word + " → en: " + result.en + " / vocab_type: " + result.vocab_type);
-    } catch (e) { Logger.log("[" + (i+1) + "] " + row.word + " → ERROR: " + e.message); }
-    Utilities.sleep(CLASSIFY_SETTINGS.SLEEP_MS);
-  });
-}
-
-function reclassifyWords(targetWords) {
-  if (!targetWords || targetWords.length === 0) { Logger.log("ERROR: targetWords が空です"); return; }
-  const ss        = SpreadsheetApp.openById(CLASSIFY_SETTINGS.SPREADSHEET_ID);
-  const sheet     = ss.getSheetByName(CLASSIFY_SETTINGS.VOCAB_SHEET_NAME);
-  if (!sheet) { Logger.log("ERROR: シートが見つかりません"); return; }
-  const targetSet = new Set(targetWords);
-  const targets   = getAllVocabRows_(sheet).filter(function(r) { return targetSet.has(r.word); });
-  if (targets.length === 0) { Logger.log("INFO: 対象語が見つかりませんでした"); return; }
-  Logger.log("INFO: " + targets.length + " 件を再処理します");
-  targets.forEach(function(row) {
-    try {
-      const result = callGemmaAPI_(row.word, row.reading, row.pos);
-      sheet.getRange(row.rowIndex, 3).setValue(result.en);
-      sheet.getRange(row.rowIndex, 6).setValue(result.vocab_type);
-      Logger.log("  ✓ " + row.word + " → " + result.en + " / " + result.vocab_type);
-      logToSheet_(ss, "reclassify", row.word, "success", result.en + " / " + result.vocab_type);
-    } catch (e) {
-      Logger.log("  ERROR: " + row.word + " → " + e.message);
-      logToSheet_(ss, "reclassify", row.word, "failed", e.message);
-    }
-    Utilities.sleep(CLASSIFY_SETTINGS.SLEEP_MS);
-  });
-}
-
-// =====================================================================
-// classifyBatch を毎日1回（8:00）実行するトリガーを登録する
-// ※ 毎時実行が不要になった場合はこちらに切り替える
-// =====================================================================
-function setupDailyTrigger() {
-  const triggers = ScriptApp.getProjectTriggers();
-  triggers.forEach(function(t) {
-    if (t.getHandlerFunction() === "classifyBatch") {
-      ScriptApp.deleteTrigger(t);
-    }
-  });
-
-  ScriptApp.newTrigger("classifyBatch")
-    .timeBased()
-    .everyDays(1)
-    .atHour(8)
-    .create();
-
-  Logger.log("INFO: classifyBatch の日次トリガーを設定しました（毎日 8:00）");
-}
-
-function setupHourlyTrigger() {
-  const triggers = ScriptApp.getProjectTriggers();
-  triggers.forEach(function(t) {
-    if (t.getHandlerFunction() === "classifyBatch") ScriptApp.deleteTrigger(t);
-  });
-  ScriptApp.newTrigger("classifyBatch").timeBased().everyHours(1).create();
-  Logger.log("✓ classifyBatch を1時間ごとに設定しました");
-}
-
-function callGemmaAPI_(word, reading, pos) {
-  const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
-  if (!apiKey) throw new Error("GEMINI_API_KEY が ScriptProperties に設定されていません");
-
-  const url     = "https://generativelanguage.googleapis.com/v1beta/models/"
-                  + CLASSIFY_SETTINGS.MODEL + ":generateContent?key=" + apiKey;
-  const prompt  = buildPrompt_(word, reading, pos);
-  const payload = {
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.1, maxOutputTokens: 100, topP: 0.9,},
-  };
-  const options = { method: "post", contentType: "application/json",
-                    payload: JSON.stringify(payload), muteHttpExceptions: true,};
-
-  const response   = UrlFetchApp.fetch(url, options);
-  const statusCode = response.getResponseCode();
-  if (statusCode !== 200) {
-    throw new Error("API エラー: HTTP " + statusCode + " / " + response.getContentText());
-  }
-  return parseGemmaResponse_(JSON.parse(response.getContentText()), word);
-}
-
-function buildPrompt_(word, reading, pos) {
-  const vocabTypeList = VALID_VOCAB_TYPES.join(", ");
-  return [
-    // ✓ v1.1 修正: thinking mode による余計な出力を抑制
-    "You are a Japanese vocabulary classifier for JLPT learners. Do not think out loud. Do not self-correct. Output only the JSON object and nothing else.",
-    "Given a Japanese word, return ONLY a JSON object with these two keys:",
-    '- "en": English translation (short, 1-4 words, lowercase)',
-    '- "vocab_type": one of [' + vocabTypeList + ']',
-    "",
-    "Vocab type guide:",
-    "  person          → words for people (医者, 学生, 先生, 会社員, etc.)",
-    "  building        → buildings / facilities (病院, 学校, 銀行, 大学, etc.)",
-    "  concrete_object → tangible items (本, ペン, 財布, 電話, etc.)",
-    "  action_verb     → verbs / actions (食べる, 読む, 飲む, 行く, etc.)",
-    "  adjective       → i-adj / na-adj (大きい, 新しい, 便利, etc.)",
-    "  abstract_concept→ abstract nouns (時間, 気持ち, 意見, etc.)",
-    "  spatial_relation→ location words (上, 下, 右, 左, そば, etc.)",
-    "  demonstrative   → ko-so-a-do words (これ, それ, あれ, どれ, etc.)",
-    "── New types (K-T) ──",
-    "  pronoun         ← personal/interrogative pronouns (わたし, あなた, だれ, etc.)",
-    "  interjection    ← response/filler words (はい, いいえ, あ, etc.)",
-    "  set_expression  ← fixed social phrases (おはよう, いただきます, etc.)",
-    "  adverb          ← degree/frequency/manner/time adverbs (とても, いつも, etc.)",
-    "  counter         ← counter suffixes (〜本, 〜枚, 〜冊, etc.)",
-    "  time            ← time words (〜時, 〜曜日, 季節, etc.)",
-    "  transportation  ← vehicles (電車, バス, タクシー, etc.)",
-    "  family          ← family terms (父, 母, お父さん, etc.)",
-    "  weather         ← weather/nature (雨, 雪, 晴れ, etc.)",
-    "  sensory         ← perception verbs (見ます, 聞きます, etc.)",
-    "  other           → anything that doesn't fit above",
-    "",
-    "Word:    " + word,
-    "Reading: " + reading,
-    "POS:     " + pos,
-    "",
-    "Return ONLY valid JSON. No explanation. No markdown. No backticks.",
-    'Example: {"en": "doctor", "vocab_type": "person"}',
-  ].join("\n");
-}
-
-function parseGemmaResponse_(responseJson, word) {
-  let rawText = "";
-  try { rawText = responseJson.candidates[0].content.parts[0].text.trim(); }
-  catch (e) { throw new Error("レスポンス構造が不正: " + JSON.stringify(responseJson).substring(0, 200)); }
-
-  rawText = rawText
-    .replace(/^```json\s*/i, "").replace(/^```\s*/, "").replace(/\s*```$/, "").trim();
-
-  const start = rawText.indexOf('{');
-if (start === -1) throw new Error("JSONが見つかりません: " + rawText.substring(0, 200));
-const end = rawText.indexOf('}', start);
-if (end === -1) throw new Error("JSONが見つかりません: " + rawText.substring(0, 200));
-const jsonMatch = [rawText.substring(start, end + 1)];
-
-  let parsed;
-  try { parsed = JSON.parse(jsonMatch[0]); }
-  catch (e) { throw new Error("JSONパース失敗: " + jsonMatch[0].substring(0, 200)); }
-
-  if (!parsed.en || typeof parsed.en !== "string")
-    throw new Error("'en' フィールドが不正: " + JSON.stringify(parsed));
-  if (!parsed.vocab_type || typeof parsed.vocab_type !== "string")
-    throw new Error("'vocab_type' フィールドが不正: " + JSON.stringify(parsed));
-
-  const vt = parsed.vocab_type.trim().toLowerCase();
-  if (!VALID_VOCAB_TYPES.includes(vt)) {
-    Logger.log("  WARN: '" + word + "' の vocab_type '" + vt + "' が未知。'other' に変換します");
-    parsed.vocab_type = "other";
-  } else { parsed.vocab_type = vt; }
-
-  return { en: parsed.en.trim().toLowerCase(), vocab_type: parsed.vocab_type };
-}
-
-function getPendingRows_(sheet) {
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return [];
-  const data    = sheet.getRange(2, 1, lastRow - 1, 14).getValues();
-  const pending = [];
-  data.forEach(function(row, i) {
-    const word      = String(row[0]).trim();
-    const en        = String(row[2]).trim();
-    const vocabType = String(row[5]).trim();
-    if (!word) return;
-    if (en === "" && vocabType === "")
-      pending.push({ rowIndex: i + 2, word: word,
-                     reading: String(row[1]).trim(), pos: String(row[4]).trim() });
-  });
-  return pending;
-}
-
-function getAllVocabRows_(sheet) {
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return [];
-  const data = sheet.getRange(2, 1, lastRow - 1, 6).getValues();
-  const rows = [];
-  data.forEach(function(row, i) {
-    const word = String(row[0]).trim();
-    if (!word) return;
-    rows.push({ rowIndex: i + 2, word: word,
-                reading: String(row[1]).trim(), pos: String(row[4]).trim() });
-  });
-  return rows;
-}
-
-function logToSheet_(ss, type, word, status, message) {
-  try {
-    const logSheet = ss.getSheetByName(CLASSIFY_SETTINGS.LOG_SHEET_NAME);
-    if (!logSheet) return;
-    logSheet.appendRow([new Date(), type, "word_" + word, status, message || ""]);
-  } catch (e) { Logger.log("WARN: ログ書き込み失敗: " + e.message); }
-}
-
 
 /**
  * ============================================================
@@ -3518,122 +3266,11 @@ function clearImagePromptColumnValidation() {
 
 
 // ================================================================
-// exportVocabTypes.gs  v1.0  (2026-05-19)
-// Vocabulary シートの word/imageId/reading/en/vocab_type/lessonRef を
-// 課ごとに Drive JSON へエクスポートする。
-// build_prompts.py（scripts/build_prompts.py）が読む正典化されたソース。
-// 既存 syncRegistries の Drive 書き込みパターンと同型。
+// [REMOVED 2026-05-20 — Phase 1 ④] exportVocabTypes.gs v1.0
+//   退役済み。data/vocab_types_lessonNN.json は
+//   scripts/classify-and-translate.mjs が直接書く。
+//   コードは archive/gas_old/exportVocabTypes_v1_0.gs に保全。
+//   退役した識別子: exportVocabTypesAll
 // ================================================================
-//
-// 前提:
-//   ScriptProperties に "VOCAB_TYPES_FOLDER_ID" を設定する。
-//   このフォルダ内に `vocab_types_lessonNN.json` を課ごとに上書き出力する。
-//   既存ファイルが無ければ新規作成。
-//
-// 実行例（人間）:
-//   exportVocabTypesAll()    全課を書き出し
-//
-// 出力 JSON スキーマ:
-//   {
-//     "_meta": {
-//       "lessonNo": 1,
-//       "generatedAt": "YYYY-MM-DD",
-//       "generator": "gas/pipeline.gs#exportVocabTypesAll",
-//       "source": "Vocabulary sheet (SPREADSHEET_ID)",
-//       "rowCount": 17
-//     },
-//     "vocabulary": [
-//       { "imageId": "word_医者", "word": "医者", "reading": "いしゃ",
-//         "en": "doctor", "vocab_type": "person", "lessonRef": "lesson_01" },
-//       ...
-//     ]
-//   }
 
-function exportVocabTypesAll() {
-  Logger.log("===== exportVocabTypesAll 開始 =====");
-  const folderId = PropertiesService.getScriptProperties().getProperty("VOCAB_TYPES_FOLDER_ID");
-  if (!folderId) {
-    Logger.log("ABORT: ScriptProperty VOCAB_TYPES_FOLDER_ID が未設定。");
-    Logger.log("  → Drive にフォルダを作成し、その ID を ScriptProperty に設定してください。");
-    return;
-  }
-
-  const ss    = SpreadsheetApp.openById(SYNC_SETTINGS.SPREADSHEET_ID);
-  const sheet = ss.getSheetByName("Vocabulary");
-  if (!sheet) { Logger.log("✗ Vocabulary シートが見つかりません"); return; }
-
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const COL     = buildColIndex(headers);
-  const lastRow = sheet.getLastRow();
-  if (lastRow <= 1) { Logger.log("空 (header のみ)"); return; }
-
-  // 必須列の存在チェック
-  const required = ["word", "reading", "en", "vocab_type", "imageId", "lessonRef"];
-  for (const k of required) {
-    if (COL[k] === undefined) {
-      Logger.log("✗ Vocabulary シートに列 '" + k + "' が見つかりません");
-      return;
-    }
-  }
-
-  const data    = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
-  const byLesson = {};  // lessonNN(string, zero-padded) → array of entries
-
-  let skipped = 0;
-  for (const row of data) {
-    const word      = String(row[COL.word]       || "").trim();
-    const reading   = String(row[COL.reading]    || "").trim();
-    const en        = String(row[COL.en]         || "").trim();
-    const vocabType = String(row[COL.vocab_type] || "").trim();
-    const imageId   = String(row[COL.imageId]    || "").trim();
-    const lessonRef = String(row[COL.lessonRef]  || "").trim();
-
-    if (!word || !imageId || !vocabType || !lessonRef) { skipped++; continue; }
-
-    // lessonRef は "lesson_01" / "lesson_2" 等 → zero-padded 2 桁にする
-    const m = /lesson[_-]?(\d{1,3})/i.exec(lessonRef);
-    if (!m) { skipped++; continue; }
-    const lessonNN = String(parseInt(m[1], 10)).padStart(2, "0");
-
-    if (!byLesson[lessonNN]) byLesson[lessonNN] = [];
-    byLesson[lessonNN].push({
-      imageId:    imageId,
-      word:       word,
-      reading:    reading,
-      en:         en,
-      vocab_type: vocabType,
-      lessonRef:  "lesson_" + lessonNN,
-    });
-  }
-
-  const folder = DriveApp.getFolderById(folderId);
-  const today  = new Date().toISOString().slice(0, 10);
-
-  for (const lessonNN of Object.keys(byLesson).sort()) {
-    const filename = "vocab_types_lesson" + lessonNN + ".json";
-    const out = {
-      _meta: {
-        lessonNo:    parseInt(lessonNN, 10),
-        generatedAt: today,
-        generator:   "gas/pipeline.gs#exportVocabTypesAll",
-        source:      "Vocabulary sheet (SPREADSHEET_ID=" + SYNC_SETTINGS.SPREADSHEET_ID + ")",
-        rowCount:    byLesson[lessonNN].length,
-      },
-      vocabulary: byLesson[lessonNN],
-    };
-    const content = JSON.stringify(out, null, 2);
-
-    // 既存ファイル検索
-    const existing = folder.getFilesByName(filename);
-    if (existing.hasNext()) {
-      const f = existing.next();
-      f.setContent(content);
-      Logger.log("  ✓ 上書き: " + filename + " (" + byLesson[lessonNN].length + " 件・" + f.getId() + ")");
-    } else {
-      const f = folder.createFile(filename, content, "application/json");
-      Logger.log("  ✓ 新規作成: " + filename + " (" + byLesson[lessonNN].length + " 件・" + f.getId() + ")");
-    }
-  }
-  Logger.log("===== exportVocabTypesAll 完了（" + Object.keys(byLesson).length + " 課 / skipped " + skipped + " 行）=====");
-}
 
