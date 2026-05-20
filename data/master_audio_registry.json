@@ -64,67 +64,67 @@
       "audioUrl": "https://drive.google.com/uc?id=1ierHVQLM_6FvGDC8UC4NWvMu5QEjvE8n"
     },
     "sentence_ex_L01_001": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_001.mp3"
     },
     "sentence_ex_L01_002": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_002.mp3"
     },
     "sentence_ex_L01_003": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_003.mp3"
     },
     "sentence_ex_L01_004": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_004.mp3"
     },
     "sentence_ex_L01_005": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_005.mp3"
     },
     "sentence_ex_L01_006": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_006.mp3"
     },
     "sentence_ex_L01_007": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_007.mp3"
     },
     "sentence_ex_L01_008": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_008.mp3"
     },
     "sentence_ex_L01_009": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_009.mp3"
     },
     "sentence_ex_L01_010": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_010.mp3"
     },
     "sentence_ex_L01_011": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_011.mp3"
     },
     "sentence_ex_L01_012": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_012.mp3"
     },
     "sentence_ex_L01_013": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_013.mp3"
     },
     "sentence_ex_L01_014": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_014.mp3"
     },
     "sentence_ex_L01_015": {
-      "audioUrl": null
+      "audioUrl": "data/audio/sentence_ex_L01_015.mp3"
     },
     "word_時計": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_時計.mp3"
     },
     "word_腕時計": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_腕時計.mp3"
     },
     "word_ペン": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ペン.mp3"
     },
     "word_鉛筆": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_鉛筆.mp3"
     },
     "word_ケータイ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ケータイ.mp3"
     },
     "word_本": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_本.mp3"
     },
     "word_雑誌": {
       "audioUrl": "https://drive.google.com/uc?id=1K3I3C_cs_FVmCt9C-86cyXvjVLLMPjpd"
@@ -136,25 +136,25 @@
       "audioUrl": "https://drive.google.com/uc?id=1_xJv5MoCbFk9UCebO2bVeuCt8D7sTy75"
     },
     "word_消しゴム": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_消しゴム.mp3"
     },
     "word_ビル": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ビル.mp3"
     },
     "word_市役所": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_市役所.mp3"
     },
     "word_山": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_山.mp3"
     },
     "word_人": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_人.mp3"
     },
     "word_わたし": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_わたし.mp3"
     },
     "sentence_ex_L02_001": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_001.mp3",
       "sentence": "これは時計です。"
     },
     "sentence_ex_L02_002": {
@@ -163,11 +163,11 @@
       "status": "outdated"
     },
     "sentence_ex_L02_003": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_003.mp3",
       "sentence": "これはケータイです。"
     },
     "sentence_ex_L02_004": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_004.mp3",
       "sentence": "それはペンです。"
     },
     "sentence_ex_L02_005": {
@@ -181,19 +181,19 @@
       "status": "outdated"
     },
     "sentence_ex_L02_007": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_007.mp3",
       "sentence": "あれはABCビルです。"
     },
     "sentence_ex_L02_008": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_008.mp3",
       "sentence": "あれは病院です。"
     },
     "sentence_ex_L02_009": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_009.mp3",
       "sentence": "あれは山です。"
     },
     "sentence_ex_L02_010": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_010.mp3",
       "sentence": "何ですか。"
     },
     "sentence_ex_L02_011": {
@@ -217,59 +217,59 @@
       "status": "outdated"
     },
     "sentence_ex_L02_015": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_015.mp3",
       "sentence": "これはわたしのかばんです。"
     },
     "sentence_ex_L02_016": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_016.mp3",
       "sentence": "それはリンさんのかばんです。"
     },
     "sentence_ex_L02_017": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_017.mp3",
       "sentence": "これはキムさんの本ですか。— はい、わたしの本です。"
     },
     "sentence_ex_L02_018": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_018.mp3",
       "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。"
     },
     "sentence_ex_L02_019": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_019.mp3",
       "sentence": "わたしのです。"
     },
     "sentence_ex_L02_020": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_020.mp3",
       "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。"
     },
     "sentence_ex_L02_021": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_021.mp3",
       "sentence": "リンさんのペンはどれですか。— それです。"
     },
     "sentence_ex_L02_022": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_022.mp3",
       "sentence": "キムさんのかばんはどれですか。— これです。"
     },
     "sentence_ex_L02_023": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_023.mp3",
       "sentence": "タノムさんの本はどちらですか。— こちらです。"
     },
     "sentence_ex_L02_024": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_024.mp3",
       "sentence": "この人はアインシュタインです。"
     },
     "sentence_ex_L02_025": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_025.mp3",
       "sentence": "その人はアインシュタインです。"
     },
     "sentence_ex_L02_026": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_026.mp3",
       "sentence": "あの人はアインシュタインです。"
     },
     "sentence_ex_L02_027": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_027.mp3",
       "sentence": "どの人ですか。— この人です。"
     },
     "sentence_ex_L02_028": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_028.mp3",
       "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。"
     },
     "word_犬": {
@@ -281,31 +281,31 @@
       "sentence": "写真"
     },
     "sentence_ex_L02_029": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_029.mp3",
       "sentence": "タノムさんの時計はどれですか。— あれです。"
     },
     "sentence_ex_L02_030": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_030.mp3",
       "sentence": "ケリーさんの消しゴムはどれですか。— これです。"
     },
     "sentence_ex_L02_031": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_031.mp3",
       "sentence": "あの建物は市役所です。"
     },
     "sentence_ex_L02_032": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_032.mp3",
       "sentence": "その建物はABCビルですか。— はい、そうです。"
     },
     "sentence_ex_L02_033": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_033.mp3",
       "sentence": "あの山は富士山です。"
     },
     "sentence_ex_L02_034": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_034.mp3",
       "sentence": "どの犬ですか。— この犬です。"
     },
     "sentence_ex_L02_035": {
-      "audioUrl": null,
+      "audioUrl": "data/audio/sentence_ex_L02_035.mp3",
       "sentence": "どの写真ですか。— その写真です。"
     }
   }

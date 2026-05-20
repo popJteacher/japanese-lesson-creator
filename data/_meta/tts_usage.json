@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "description": "Cloud TTS monthly character usage (Phase 3 ③)"
+  },
+  "months": {
+    "2026-05": {
+      "charCount": 753,
+      "lastUpdated": "2026-05-20"
+    }
+  }
+}
