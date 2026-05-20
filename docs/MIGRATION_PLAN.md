@@ -84,8 +84,9 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   系を返し、`x-goog-user-project` 等の権限エラーが出ない）。プラン非依存。
 - **②** `scripts/lib/imagen-client.mjs` で `imagen-4.0-generate-001` を 1 件生成。
   `scripts/_imagen-smoke.mjs` から固定プロンプトで叩く。まだ QC なし／バッチ
-  なし／registry 連携なし。完了＝ 1 件 PNG が `data/images/_smoke/` に出る。
-  プラン非依存。
+  なし／registry 連携なし。完了＝ 1 件 PNG が `.tmp_verify/_imagen_smoke.png`
+  に出力され、PNG 署名（`89 50 4E 47`）が検出される。billing 有効化の最終
+  検証も兼ねる。プラン非依存。
 - **③ ＜プラン強依存＞** `scripts/generate-images-local.mjs` ＝ プロンプトビルド
   ＋バッチ＋日次 RPD カウンタ＋上限ガード＋ registry 連携（`status=pending` /
   `null` のみ拾う・`master_image_registry.json` を local path で更新）。
