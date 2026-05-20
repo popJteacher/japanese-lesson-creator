@@ -64,6 +64,51 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
 Imagen 呼び出しをローカルへ。これで GAS は完全消滅。明示保留（移行を止めない
 下流決定）：有料 Imagen 継続 か 自前 Stable Diffusion か は GAS 消滅"後"に別決定。
 
+**着手結果（2026-05-20 着手 / 進行中）**：
+- 別 worktree `phase4-prompt-plan`（`.claude/worktrees/image-prompt-plan`）で master prompt
+  guide 修正プランを並行作成中。③ 以降は **プラン取り込み後に組み直す**（独立に走らせない）。
+- 残作業：人間タスクとして GAS Triggers `generateImageBatch` × 3 件（9 / 13 / 17 時）削除 → ⑥ で実行。
+
+## Phase 4 スライス（2026-05-20 確定）
+
+順序付き ①〜⑥。Phase 3 と同じく各スライス完了時にコミット境界を切る。
+active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
+③④⑤ は `phase4-prompt-plan` の master prompt guide 修正プラン取り込み後に
+詳細を確定する（プラン依存）。① と ② は **プラン非依存・先行実装可**。
+
+- **①** Imagen API バックエンド = **Google AI Studio**（Phase 1 の `GEMINI_API_KEY`
+  を流用、SA 不要）。`.env` 設計・`scripts/check-imagen-key.mjs` で疎通確認。
+  Imagen 4 に無料枠はなし（Fast $0.02 / Standard $0.04 / Ultra $0.06 per image）—
+  事前に AI Studio コンソールで billing を有効化する人間タスクが前提。
+  完了＝ `npm run check-imagen-key` PASS（ListModels が `imagen-4.0-generate-001`
+  系を返し、`x-goog-user-project` 等の権限エラーが出ない）。プラン非依存。
+- **②** `scripts/lib/imagen-client.mjs` で `imagen-4.0-generate-001` を 1 件生成。
+  `scripts/_imagen-smoke.mjs` から固定プロンプトで叩く。まだ QC なし／バッチ
+  なし／registry 連携なし。完了＝ 1 件 PNG が `data/images/_smoke/` に出る。
+  プラン非依存。
+- **③ ＜プラン強依存＞** `scripts/generate-images-local.mjs` ＝ プロンプトビルド
+  ＋バッチ＋日次 RPD カウンタ＋上限ガード＋ registry 連携（`status=pending` /
+  `null` のみ拾う・`master_image_registry.json` を local path で更新）。
+  プロンプトビルドは取り込んだ master prompt guide 版を使う（GAS の v2.9.1
+  相当 STYLE_RECIPE をローカルに移設）。完了＝ pending エントリの生成が一周し、
+  `npm run missing-assets` の `no_images_array` 件数が減る。QC は未組込みでよい。
+- **④ ＜プラン弱依存＞** 画像 QC パイプライン（`scripts/lib/image-qc.mjs`）。
+  プラン側で確定したスタイル不変条件（サイズ／フォーマット／透過／余白／
+  カラーチェック等）を機械検証として組み込み、③ の出力を QC 通過版に置換。
+  「移設でなく獲得」枠（Phase 3 の ffmpeg と同様、GAS には不可能だった検証）。
+  完了＝ 全 PNG が QC 通過版・QC ログが出力される。
+- **⑤ ＜プラン弱依存＞** 画像 QC スペック検証スクリプト（`npm run validate-images`
+  系）＋ `invariants[E]` を `npm run validate` 出力に追加。LUFS 相当として
+  画像のサイズ／パレット適合／余白比率を検査。完了＝ `invariants[E]` 行が
+  `npm run validate` 出力に出て PASS する。
+- **⑥** GAS `generateImageBatch` 退役。コードを
+  `archive/gas_old/generateImages_v5_3_phase4_retired.gs` に保全し、
+  `gas/pipeline.gs` から該当セクション（generateImageBatch / testSingleImage /
+  previewPrompts / retryImages / setupImageTriggersX3 / setupImageDailyTrigger
+  および付随ヘルパ）を削除。人間が GAS トリガー `generateImageBatch` × 3 件を
+  削除し、削除確認を docs 反映。完了＝ 生存中の GAS トリガー 0 件・GAS 完全消滅・
+  `NEXT_ACTIONS.md` の人間タスク欄が空。
+
 # 横断要件（全 Phase）
 - データ＋行単位状態台帳（現シート：語彙438／例文1027＋status 列）を
   repo ローカル JSON に移す（SSOT）。
