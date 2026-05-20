@@ -22,10 +22,20 @@
 ローカルが registry を repo に直接書く。Drive download/upload ループ廃止。
 完了＝ Drive registry 経由の手作業ゼロ。
 
-# Phase 3：音声のローカル化＋音声 QC
+# Phase 3：音声のローカル化＋音声 QC（完了 2026-05-20）
 Cloud TTS（Neural2）をローカルから呼ぶ＋月間文字カウンタ。ffmpeg で
 loudnorm／トリム／フェード QC を追加（注記：移設でなく獲得。GAS は ffmpeg
 不可で QC 不可能だった）。完了＝ generateAudioBatch の GAS 消滅・音声 QC 稼働。
+
+**完了結果（2026-05-20 v7.4）**：
+- ローカル `scripts/generate-audio-local.mjs` が Cloud TTS Neural2 でバッチ合成、
+  `data/audio/*.mp3` を出力、`master_audio_registry.json` を local path に更新
+- ffmpeg two-pass loudnorm + silenceremove + afade を `scripts/lib/audio-qc.mjs` で適用
+- `invariants[D]`（55/55 PASS、3 WARN）で QC スペックを機械検証
+- 月間文字カウンタ（既定上限 800,000 / 100 万文字無料枠の 80%）
+- GAS `generateAudioBatch` セクション全削除 → `archive/gas_old/generateAudio_v2_0_phase3_retired.gs` に保全
+- 横断課題は `docs/PHASE_BACKLOG.md` の Phase 4 セクションに退避（registry 未登録 120 件 + word_新聞 sync 漏れ）
+- 残作業：人間タスクとして GAS Triggers `generateAudioBatch`（毎日 10:00）削除
 
 ## Phase 3 スライス（2026-05-20 確定）
 
