@@ -2,7 +2,7 @@
 
 > 1 ページ以内。毎回まるごと書き直す。解決済みは削除。**追記のみ禁止。**
 
-**最終更新：** 2026-05-20（v3.3 → v3.4 完了 / 残 M-15 wave のみ次セッション）
+**最終更新：** 2026-05-20（v3.5 完了 / M-15 wave 反映済・残作業は main merge）
 
 ---
 
@@ -11,36 +11,23 @@
 - **Phase 4 ① ②**：完了。
 - **v3.3 (72 件監査一括是正)**：完了（apply_v3_3.py, hash `80de1a8e675f`）。
 - **v3.4 (v3.3 deferred + M-7 wave 補助辞書キー正規化)**：完了（apply_v3_4.py, hash `738af3e76983`）。
-  - 個別: M-5 / M-10 / M-11 / M-27/M-40 / M-32 / M-36 / M-39/M-41 / M-6（M-7 統合）
-  - M-7 wave: 5 補助辞書（BUILDING_CUES / OBJECT_SIGNATURES / ABSTRACT_METAPHORS / SPATIAL_GRID_PATTERNS / VISUAL_SYMBOLS）をキー正規化＋`_en` フィールド追加
-  - M-52: ABSTRACT_METAPHORS 全 13 件に `composition_mood` 追加
-  - PART 8.5 プレースホルダ出所表新設
-  - `npm run validate`: B PASS (`738af3e76983`) / C PASS (v3_2.json, v3_3.json, v3_4.json 各 12 件)
+- **v3.5 (M-15 wave: D/H/J を `{STRATEGY_BLOCK}` 構造化)**：完了（apply_v3_5.py, hash `d6bf4c4eb90d`, 11 patch）。
+  - テンプレ D 本文 → `{STRATEGY_BLOCK}` + 新規 PART 4.10 OBJECT_STRATEGIES（2 戦略）
+  - テンプレ H 本文 → `{STRATEGY_BLOCK}` + 新規 PART 4.11 ACTION_VERB_STRATEGIES（5 戦略）
+  - テンプレ J 本文 → `{STRATEGY_BLOCK}` + 新規 PART 4.12 ADJECTIVE_STRATEGIES（3 戦略）
+  - HOW_TO_USE Step 3-C / Step 5-D / Step 6.5-C を新 PART に向け直し
+  - PART 8.5 PLACEHOLDER ORIGINS の `{STRATEGY_BLOCK}` 行を「予定」→「実装済」に
+  - HOW_TO_USE Step 5-A の `SYMBOLIC_MOTION` → `SYMBOLIC_MOTION_LINES` 名称統一（v3.5 監査で発見した v2.4 起源の truncated 表記。M-15 wave で lookup key 化したため同期修正）
+  - `npm run validate`: B PASS (`d6bf4c4eb90d`) / C PASS (v3_2/v3_3/v3_4/v3_5.json 各 12 件)
+  - build_prompts.py の戦略展開ロジックは Phase 4 ② で同期実装（本 v3.5 はガイド側構造変更のみ）
 
-- **Phase 4 ③** バッチ生成：未着手（v3.4 を main に merge 後）。
+- **Phase 4 ③** バッチ生成：未着手（v3.5 を main に merge 後）。
 
 ---
 
 ## 残作業
 
-### 1. **M-15 wave**（次セッションで apply_v3_5.py として実装）
-
-テンプレ D / H / J を `{STRATEGY_BLOCK}` 構造化（PATCHES.md Wave 4）：
-
-- テンプレ D（2 戦略: OBJECT_ALONE / HAND_HOLDING）
-- テンプレ H（5 戦略: MOTION_ARROW / OUTCOME / BEFORE_AFTER / SEQUENCE_3PANEL / SYMBOLIC_MOTION_LINES）
-- テンプレ J（3 戦略: PAIR_CONTRAST / SINGLE_HIGHLIGHT / PROPERTY_OVERLAY）
-
-実装：
-1. 新規 PART 4.10 OBJECT_STRATEGIES / 4.11 ACTION_VERB_STRATEGIES / 4.12 ADJECTIVE_STRATEGIES を辞書として追加
-2. テンプレ本文の `[STRATEGY: ...]` ブロックを `{STRATEGY_BLOCK}` プレースホルダに置換
-3. HOW_TO_USE Step 3-D / 5-B / 6.5-B の参照を新 PART に向け直し
-4. `scripts/build_prompts.py` に戦略選択 → ブロック展開ロジック実装（非 person 拡張時）
-5. invariants C2/C3 への影響確認（テンプレ D/H/J は invariants C の対象外なので影響なし見込み）
-
-理由で次回送り：構造変更が大きく、build_prompts.py の戦略選択ロジックを新規実装する必要があるため、別パッチとした。
-
-### 2. **main への merge**
+### 1. **main への merge**
 
 ```
 git checkout main
@@ -49,15 +36,16 @@ git merge phase4-prompt-plan
 npm run validate    # B PASS / C PASS 再確認
 ```
 
-### 3. **整理（任意・別コミット）**
+### 2. **整理（任意・別コミット）**
 
-- `prompts/master_prompt_design_guide_v3_2.py` / `_v3_3.py` を `archive/prompts/` へ移動
-- `data/image_prompts_lesson01_v3_2.json` / `_v3_3.json` を削除（_v3_4.json で代替）
+- `prompts/master_prompt_design_guide_v3_2.py` / `_v3_3.py` / `_v3_4.py` を `archive/prompts/` へ移動
+- `data/image_prompts_lesson01_v3_2.json` / `_v3_3.json` / `_v3_4.json` を削除（_v3_5.json で代替）
 
-### 4. **Phase 4 ③ 以降**
+### 3. **Phase 4 ③ 以降**
 
 - `scripts/generate-images-local.mjs` 実装
 - lesson_01 person 12 件で実機検証（M-47 多文化対応 + M-7 キー正規化の画像品質確認）
+- build_prompts.py に D/H/J 用の戦略展開ロジック実装（OBJECT_STRATEGIES / ACTION_VERB_STRATEGIES / ADJECTIVE_STRATEGIES から `{STRATEGY_BLOCK}` を 1 つ転記）→ vocab_type=concrete_object / action_verb / adjective を追加するタイミング
 
 ---
 
@@ -75,16 +63,17 @@ npm run validate    # B PASS / C PASS 再確認
 
 ## ブロッカー
 
-なし。M-15 wave を実装するか、現状の v3.4 で main merge するかを次セッションで判断。
+なし。v3.5 で M-15 wave 完了。次は main merge → Phase 4 ③（バッチ生成）。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate             # B=hash 738af3e76983 / C=12+12+12 件 / D=音声 QC（環境）
+npm run validate             # B=hash d6bf4c4eb90d / C=12+12+12+12 件 / D=音声 QC（環境）
 npm run missing-assets
 python archive/prompts/apply_v3_3.py    # v3.2 → v3.3 再生成（79 patch）
 python archive/prompts/apply_v3_4.py    # v3.3 → v3.4 再生成（63 patch）
-python scripts/build_prompts.py --lesson 1   # data/image_prompts_lesson01_v3_4.json 再生成
+python archive/prompts/apply_v3_5.py    # v3.4 → v3.5 再生成（10 patch）
+python scripts/build_prompts.py --lesson 1   # data/image_prompts_lesson01_v3_5.json 再生成
 ```
