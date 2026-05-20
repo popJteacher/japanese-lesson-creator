@@ -22,12 +22,14 @@
 //   npm run generate-audio -- --only sentence           # 種別フィルタ
 //   npm run generate-audio -- --max-chars 100000        # 月間上限を明示
 //   npm run generate-audio -- --force                   # 既存ファイルも上書き
+//   npm run generate-audio -- --no-qc                   # QC をスキップ（debug 用）
 
 import { readFile, writeFile, mkdir, rename, stat } from 'node:fs/promises';
 import { resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEnv, createTtsClient, synthesize } from './lib/tts-client.mjs';
 import { createSheetsClient, fetchVocabulary, fetchExamples } from './lib/sheets-client.mjs';
+import { applyQc } from './lib/audio-qc.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const AUDIO_REGISTRY = resolve(ROOT, 'data/master_audio_registry.json');
@@ -105,12 +107,13 @@ function extractTargets({ vocab, examples }) {
 function parseArgs(argv) {
   const args = {
     dryRun: false, limit: null, only: null,
-    maxChars: DEFAULT_MAX_CHARS_MONTH, force: false,
+    maxChars: DEFAULT_MAX_CHARS_MONTH, force: false, noQc: false,
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--dry-run') args.dryRun = true;
     else if (a === '--force') args.force = true;
+    else if (a === '--no-qc') args.noQc = true;
     else if (a === '--limit') {
       const v = parseInt(argv[++i], 10);
       if (!Number.isFinite(v) || v <= 0) { console.error('--limit must be positive int'); process.exit(2); }
@@ -124,7 +127,7 @@ function parseArgs(argv) {
       if (!Number.isFinite(v) || v <= 0) { console.error('--max-chars must be positive int'); process.exit(2); }
       args.maxChars = v;
     } else if (a === '--help' || a === '-h') {
-      console.log('Usage: node scripts/generate-audio-local.mjs [--dry-run] [--limit N] [--only word|sentence] [--max-chars N] [--force]');
+      console.log('Usage: node scripts/generate-audio-local.mjs [--dry-run] [--limit N] [--only word|sentence] [--max-chars N] [--force] [--no-qc]');
       process.exit(0);
     } else {
       console.error(`Unknown arg: ${a}`); process.exit(2);
@@ -143,6 +146,7 @@ async function main() {
   console.log('===== generate-audio-local 開始 =====');
   console.log(`  voice:        ${VOICE.name} (${VOICE.languageCode})`);
   console.log(`  audio dir:    ${relative(ROOT, AUDIO_DIR)}/`);
+  console.log(`  qc:           ${args.noQc ? '無効（--no-qc）' : 'loudnorm + silenceremove + afade'}`);
   console.log(`  max chars/月: ${args.maxChars.toLocaleString()} (free tier ${FREE_TIER_LIMIT.toLocaleString()})`);
   if (args.dryRun) console.log('  mode: --dry-run（API 呼ばず、書き込みなし）');
   if (args.limit) console.log(`  --limit: ${args.limit}`);
@@ -224,12 +228,14 @@ async function main() {
     const out = resolve(AUDIO_DIR, `${t.id}.mp3`);
     const relPath = `data/audio/${t.id}.mp3`;
     try {
-      const audio = await synthesize(tts, { text: t.text, voice: VOICE });
-      await writeFile(out, audio);
+      const raw = await synthesize(tts, { text: t.text, voice: VOICE });
+      const finalAudio = args.noQc ? raw : await applyQc(raw);
+      await writeFile(out, finalAudio);
       registry.entries[t.id].audioUrl = relPath;
       charsThisRun += t.text.length;
       okCount++;
-      console.log(`  ✓ [${i+1}/${targets.length}] ${t.id} (${t.text.length} chars, ${audio.length}B)`);
+      const qcTag = args.noQc ? '' : ` → QC ${finalAudio.length}B`;
+      console.log(`  ✓ [${i+1}/${targets.length}] ${t.id} (${t.text.length} chars, raw ${raw.length}B${qcTag})`);
     } catch (e) {
       errCount++;
       console.error(`  ✗ [${i+1}/${targets.length}] ${t.id}: ${e.message || e}`);

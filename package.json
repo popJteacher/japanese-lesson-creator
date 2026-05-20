@@ -10,6 +10,7 @@
     "classify": "node scripts/classify-and-translate.mjs",
     "check-sa": "node scripts/check-sheets-sa.mjs",
     "check-tts-sa": "node scripts/check-tts-sa.mjs",
+    "check-ffmpeg": "node scripts/check-ffmpeg.mjs",
     "sync-registries": "node scripts/sync-registries-local.mjs",
     "generate-audio": "node scripts/generate-audio-local.mjs"
   },
