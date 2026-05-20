@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.5 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.6 主経路）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -30,14 +30,35 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_5.py")
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_6.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_5", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_6", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
+
+
+# ─────────────────────────────────────────────────────────────
+# v3.6: {NATIONALITY_EXCEPTION_BLOCK} の kind 別注入文
+#   role        → anti-flag 強表現を [CONSTRAINTS] に挿入。Imagen が
+#                 「役職に旗は付かない」という慣習を持たないため、削除では
+#                 不十分で明示的禁止が必要（v3.5 検証で role 5 件中 2 件確認 → 100% 推定）。
+#   nationality → 旧 EXCEPTION 句を簡潔化して残す（v3.1 ラベルは v3.6 で外す）。
+#                 NATIONALITY_NOUN_POLICY.subject_block_pattern に旗の描き方詳細あり。
+# ─────────────────────────────────────────────────────────────
+ROLE_ANTI_FLAG_BLOCK = (
+    "The clothing, accessories, props, and any visible badges must NEVER include "
+    "any flag, national emblem, nationality pin, country indicator, political "
+    "symbol, or red-and-white circular badge. This is a role-based vocabulary "
+    "card, not a nationality card."
+)
+NATIONALITY_EXCEPTION_BLOCK = (
+    "EXCEPTION (NATIONALITY_NOUN_POLICY): a small national-flag pin/patch is "
+    "permitted as a subtle nationality cue, at most about 4% of the image area. "
+    "Absolutely no text, letters, or numbers on the flag itself."
+)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -118,15 +139,18 @@ def render_person(g, entry, kind, sub):
     if kind == "role":
         char_desc = compose_role_subject(g, sub["role_key"])
         char_pose = compose_role_pose()
+        exception_block = ROLE_ANTI_FLAG_BLOCK
     elif kind == "nationality":
         char_desc = compose_nationality_subject(g, sub["flag_shape_and_colors"])
         char_pose = compose_nationality_pose()
+        exception_block = NATIONALITY_EXCEPTION_BLOCK
     else:
         raise ValueError(f"unknown person kind: {kind}")
     return (template
             .replace("[TARGET_WORD]", entry["word"])
             .replace("{CHARACTER_DESCRIPTION}", char_desc)
-            .replace("{CHARACTER_POSE_AND_EXPRESSION}", char_pose))
+            .replace("{CHARACTER_POSE_AND_EXPRESSION}", char_pose)
+            .replace("{NATIONALITY_EXCEPTION_BLOCK}", exception_block))
 
 
 # ─────────────────────────────────────────────────────────────
@@ -142,7 +166,8 @@ RE_FLAG_OR_NAT   = re.compile(r"flag|nationality|国旗", re.IGNORECASE)
 RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
 
 PLACEHOLDERS = ["[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
-                "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}"]
+                "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
+                "{NATIONALITY_EXCEPTION_BLOCK}"]
 
 
 def preflight(text, vocab_type, word):
@@ -246,12 +271,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_5.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_6.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.5",
+            "guideVersion": "v3.6",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
