@@ -27,6 +27,7 @@
 | 過去の決定・経緯・バグ史 | git 履歴 ＋ `handoff_archive.md` | 新セッションは原則読まない。特定の過去判断を調べる時だけ参照 |
 | 不変の仕様・スキーマ | `docs/REFERENCE.md` | 参照用。安定。プロトコルではない |
 | 各ステップの分類・分業 | `PIPELINE_INVENTORY.md` | Claude Code が実ファイルから生成・維持する。語りではない |
+| 移行ロードマップ | `docs/MIGRATION_PLAN.md` | Phase 0〜4 の順序・各 Phase 完了条件 1 行。NEXT_ACTIONS は active な Phase のみ |
 
 **状態はナレーションではなく機械導出する。**
 新しいセッションは前任者の文章を信じない。最初に検証コマンドを走らせ、
