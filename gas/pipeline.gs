@@ -1,9 +1,17 @@
 /**
  * ================================================================
  * GASパイプライン 統合スクリプト
- * 最終更新: 2026-05-20 (v7.2)
+ * 最終更新: 2026-05-20 (v7.3)
  *
  * 変更履歴:
+ *   v7.3: Phase 2 ⑥ — syncRegistries セクション（syncAll / syncImageRegistry /
+ *         syncAudioRegistry / isProtected / buildColIndex / saveJsonToDriveById /
+ *         setupSyncDailyTrigger / testProtectedKeys）を退役。
+ *         loadJsonFromDriveById は importExamplesFromLesson02 が依存するため残置。
+ *         旧セクション全体は archive/gas_old/syncRegistries_v_NA.gs に保全。
+ *         後継: scripts/sync-registries-local.mjs（Sheets API でローカルから直接
+ *         data/master_*_registry.json を書く）。
+ *         人間タスク：GAS Triggers から syncAll（毎日 23:00）の削除が必要。
  *   v7.2: Phase 1 ④ — classifyAndTranslate.gs / exportVocabTypes.gs を
  *         ローカル版へ退役。コードは archive/gas_old/ に保全。
  *         後継: scripts/classify-and-translate.mjs（vocab_type 真実源を
@@ -784,7 +792,7 @@ function writeImportLog_(ss, lessonName, count, wordList) {
  *    3. Vocabulary シートに補助列 O〜R を追加（addAuxiliaryColumns() 実行）
  *    4. testSingleImage() で動作確認（1件だけ生成）
  *    5. generateImageBatch() を実行 or タイマートリガーに設定
- *    6. 完了後に syncRegistries.gs を実行（registry 反映）
+ *    6. 完了後にローカルで `npm run sync-registries` を実行（v7.3 で GAS の syncAll は退役）
  * ============================================================
  */
 
@@ -1022,7 +1030,7 @@ function generateImageBatch() {
   if (remaining > 0) {
     Logger.log("残り " + remaining + " 件 → 次回 generateImageBatch() で継続します");
   } else {
-    Logger.log("✅ 全件処理完了！syncRegistries.gs を実行して registry に反映してください。");
+    Logger.log("✅ 全件処理完了！ローカルで `npm run sync-registries` を実行して registry に反映してください。");
   }
 }
 
@@ -2575,7 +2583,7 @@ function generateAudioBatch() {
 
   Logger.log("===== バッチ完了 ===== 成功: " + successCount + " / エラー: " + errorCount);
   if (remaining > 0) Logger.log("残り " + remaining + " 件 → 次回継続");
-  else Logger.log("✓ 全件完了！syncRegistries.gs を実行してください。");
+  else Logger.log("✓ 全件完了！ローカルで `npm run sync-registries` を実行してください。");
 }
 
 function testSingleAudio() {
@@ -2803,183 +2811,18 @@ function writeAudioLog_(ss, audioId, status, url, errorMsg) {
 
 
 // ================================================================
-// syncRegistries.gs
-// スプレッドシートの生成済みエントリを
-// master_image_registry.json / master_audio_registry.json に書き戻す
+// loadJsonFromDriveById（syncRegistries 撤去後の保留ユーティリティ）
+// 2026-05-20: Phase 2 ⑥ で syncRegistries セクション本体を退役。
+// この関数は importExamplesFromLesson02（下方）が依存しているため残置。
+// loadJsonFromDrive_（line 701）とは「名前が似ているが別物」（CLAUDE.md §1）。
+// 旧 syncRegistries セクション全体は archive/gas_old/syncRegistries_v_NA.gs 参照。
 // ================================================================
-
-const SYNC_SETTINGS = {
-  SPREADSHEET_ID:    "1l-gH5MPfRyqNyuzj9x3c2xQoQeji60yF7mKc7_50Nlk",
-  // 2026-05-19: 新 Drive ID へ移行。旧 IMAGE_REGISTRY_ID="14NL_LqudXIQzY68klspH3SBlR21hiqbW" /
-  // 旧 AUDIO_REGISTRY_ID="1ANG89c6z8qpSyNdTQ5zB3y73yD7z9vL0" は破損したため superseded。
-  IMAGE_REGISTRY_ID: "17WnltHEvymkua4hgfak2951f5BgphV9O",
-  AUDIO_REGISTRY_ID: "1y0-mzxQGfZVHyj6tT1ttXzt0knlueb3M",
-};
-
-const PROTECTED_PREFIXES = ["char_", "ex_L"];
-const PROTECTED_EXACT    = ["world_map"];
-
-function syncAll() {
-  console.log("===== syncRegistries 開始 =====");
-  const imageResult = syncImageRegistry();
-  const audioResult = syncAudioRegistry();
-  console.log("===== syncRegistries 完了 =====");
-  console.log(`画像registry: ${imageResult.updated}件更新 / ${imageResult.skipped}件スキップ / ${imageResult.protected}件保護`);
-  console.log(`音声registry: ${audioResult.updated}件更新 / ${audioResult.skipped}件スキップ / ${audioResult.protected}件保護`);
-  console.log("次のステップ: build-embedded-data.py を手動実行してください");
-  writeLog("sync", "syncAll", `✓ 画像:${imageResult.updated}更新 / 音声:${audioResult.updated}更新`, "", "");
-}
-
-function syncImageRegistry() {
-  const registry = loadJsonFromDriveById(SYNC_SETTINGS.IMAGE_REGISTRY_ID);
-  if (!registry) { console.error("✗ master_image_registry.json の読み込みに失敗"); return { updated: 0, skipped: 0, protected: 0 }; }
-
-  const ss    = SpreadsheetApp.openById(SYNC_SETTINGS.SPREADSHEET_ID);
-  const sheet = ss.getSheetByName("Vocabulary");
-  if (!sheet) { console.error("✗ Vocabulary シートが見つかりません"); return { updated: 0, skipped: 0, protected: 0 }; }
-
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const COL     = buildColIndex(headers);
-  const lastRow = sheet.getLastRow();
-  if (lastRow <= 1) return { updated: 0, skipped: 0, protected: 0 };
-
-  const data = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
-  let updated = 0, skipped = 0, protected_ = 0;
-
-  for (const row of data) {
-    const imageId     = String(row[COL.imageId]     || "").trim();
-    const imageStatus = String(row[COL.imageStatus] || "").trim();
-    const imageUrl    = String(row[COL.imageUrl]    || "").trim();
-
-    if (!imageId) { skipped++; continue; }
-    if (isProtected(imageId)) { console.log(`  🛡 保護スキップ: ${imageId}`); protected_++; continue; }
-    if (!imageUrl || imageStatus === "pending" || imageStatus === "failed") { skipped++; continue; }
-    if (!registry.entries || registry.entries[imageId] === undefined) {
-      console.log(`  ⚠️ registry に未登録（スキップ）: ${imageId}`); skipped++; continue;
-    }
-
-    const entry = registry.entries[imageId];
-    if (!entry.images || entry.images.length === 0) entry.images = [{}];
-    entry.images[0].imageUrl    = imageUrl;
-    entry.images[0].generatedAt = entry.images[0].generatedAt || new Date().toISOString().slice(0, 10);
-    if (entry.status !== "approved") entry.status = imageStatus;
-    console.log(`  ✓ 画像更新: ${imageId}`);
-    updated++;
-  }
-
-  if (registry._meta) registry._meta.lastUpdated = new Date().toISOString().slice(0, 10);
-  saveJsonToDriveById(SYNC_SETTINGS.IMAGE_REGISTRY_ID, registry);
-  console.log(`  ✓ master_image_registry.json 書き込み完了`);
-  return { updated, skipped, protected: protected_ };
-}
-
-function syncAudioRegistry() {
-  const registry = loadJsonFromDriveById(SYNC_SETTINGS.AUDIO_REGISTRY_ID);
-  if (!registry) { console.error("✗ master_audio_registry.json の読み込みに失敗"); return { updated: 0, skipped: 0, protected: 0 }; }
-
-  const ss = SpreadsheetApp.openById(SYNC_SETTINGS.SPREADSHEET_ID);
-  let updated = 0, skipped = 0, protected_ = 0;
-
-  const vocabSheet = ss.getSheetByName("Vocabulary");
-  if (vocabSheet && vocabSheet.getLastRow() > 1) {
-    const headers = vocabSheet.getRange(1, 1, 1, vocabSheet.getLastColumn()).getValues()[0];
-    const COL     = buildColIndex(headers);
-    const data    = vocabSheet.getRange(2, 1, vocabSheet.getLastRow() - 1, headers.length).getValues();
-    for (const row of data) {
-      const audioId     = String(row[COL.audioId]     || "").trim();
-      const audioStatus = String(row[COL.audioStatus] || "").trim();
-      const audioUrl    = String(row[COL.audioUrl]    || "").trim();
-      if (!audioId) { skipped++; continue; }
-      if (isProtected(audioId)) { protected_++; continue; }
-      if (!audioUrl || audioStatus === "pending" || audioStatus === "failed") { skipped++; continue; }
-      if (!registry.entries || registry.entries[audioId] === undefined) { skipped++; continue; }
-      registry.entries[audioId].audioUrl = audioUrl;
-      console.log(`  ✓ 音声更新（語彙）: ${audioId}`);
-      updated++;
-    }
-  }
-
-  const exSheet = ss.getSheetByName("Examples");
-  if (exSheet && exSheet.getLastRow() > 1) {
-    const headers    = exSheet.getRange(1, 1, 1, exSheet.getLastColumn()).getValues()[0];
-    const idIdx      = headers.indexOf("id");
-    const audioStIdx = headers.indexOf("audioStatus");
-    const audioUrlIdx= headers.indexOf("audioUrl");
-    if (idIdx >= 0 && audioStIdx >= 0 && audioUrlIdx >= 0) {
-      const data = exSheet.getRange(2, 1, exSheet.getLastRow() - 1, headers.length).getValues();
-      for (const row of data) {
-        const id          = String(row[idIdx]        || "").trim();
-        const audioStatus = String(row[audioStIdx]   || "").trim();
-        const audioUrl    = String(row[audioUrlIdx]  || "").trim();
-        if (!id) { skipped++; continue; }
-        if (isProtected(id)) { protected_++; continue; }
-        if (!audioUrl || audioStatus === "pending" || audioStatus === "failed") { skipped++; continue; }
-        if (!registry.entries || registry.entries[id] === undefined) { skipped++; continue; }
-        registry.entries[id].audioUrl = audioUrl;
-        console.log(`  ✓ 音声更新（例文）: ${id}`);
-        updated++;
-      }
-    }
-  }
-
-  if (registry._meta) registry._meta.lastModified = new Date().toISOString().slice(0, 10);
-  saveJsonToDriveById(SYNC_SETTINGS.AUDIO_REGISTRY_ID, registry);
-  console.log(`  ✓ master_audio_registry.json 書き込み完了`);
-  return { updated, skipped, protected: protected_ };
-}
-
-function isProtected(key) {
-  if (!key) return false;
-  if (PROTECTED_EXACT.includes(key)) return true;
-  for (const prefix of PROTECTED_PREFIXES) { if (key.startsWith(prefix)) return true; }
-  return false;
-}
-
-function buildColIndex(headers) {
-  const map = {};
-  headers.forEach((h, i) => { map[h] = i; });
-  return map;
-}
 
 function loadJsonFromDriveById(fileId) {
   try {
     const file = DriveApp.getFileById(fileId);
     return JSON.parse(file.getBlob().getDataAsString("utf-8"));
   } catch (e) { console.error(`JSON 読み込みエラー (${fileId}): ${e.message}`); return null; }
-}
-
-function saveJsonToDriveById(fileId, data) {
-  try {
-    DriveApp.getFileById(fileId).setContent(JSON.stringify(data, null, 2));
-  } catch (e) { console.error(`JSON 書き込みエラー (${fileId}): ${e.message}`); throw e; }
-}
-
-function setupSyncDailyTrigger() {
-  const triggers = ScriptApp.getProjectTriggers();
-  let deletedCount = 0;
-  for (const trigger of triggers) {
-    if (trigger.getHandlerFunction() === "syncAll") { ScriptApp.deleteTrigger(trigger); deletedCount++; }
-  }
-  if (deletedCount > 0) console.log(`  既存の syncAll トリガーを ${deletedCount} 件削除しました`);
-  ScriptApp.newTrigger("syncAll").timeBased().everyDays(1).atHour(23).create();
-  console.log("✓ syncAll() のタイマートリガーを登録しました（毎日 23:00）");
-}
-
-function testProtectedKeys() {
-  const testCases = [
-    { key: "char_鈴木",           expect: true  },
-    { key: "ex_L01_007",          expect: true  },
-    { key: "world_map",           expect: true  },
-    { key: "word_医者",           expect: false },
-    { key: "sentence_ex_L01_001", expect: false },
-  ];
-  let pass = 0, fail = 0;
-  for (const { key, expect } of testCases) {
-    const result = isProtected(key);
-    if (result === expect) { console.log(`  ✓ OK: "${key}" → ${result}`); pass++; }
-    else { console.log(`  ✗ NG: "${key}" → 期待:${expect} 実際:${result}`); fail++; }
-  }
-  console.log(`\n保護チェック: ${pass}件OK / ${fail}件NG`);
 }
 
 

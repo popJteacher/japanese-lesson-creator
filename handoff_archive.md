@@ -85,6 +85,7 @@
 | `Gasv5.json` | 古い Drive エクスポート | — |
 | `japanese-lesson-pipeline.json` | 最新の Drive エクスポートバンドル（`setupSpreadsheet` ソース 152660 B） | 中身は `gas/pipeline.gs` と同じ（Drive 投入用 wrapper） |
 | `exportVocabTypes_v1_0.gs` | Phase 1 ④ 退役（2026-05-20）| `gas/pipeline.gs` v7.2 から削除。後継 `scripts/classify-and-translate.mjs` が `data/vocab_types_lessonNN.json` を直接書く |
+| `syncRegistries_v_NA.gs` | Phase 2 ⑥ 退役（2026-05-20）| `gas/pipeline.gs` v7.3 から削除。`loadJsonFromDriveById` のみ `importExamplesFromLesson02` 依存のため本体に残置。後継 `scripts/sync-registries-local.mjs` が Sheets API で `data/master_*_registry.json` を直接書く。同値検証 PASS（`archive/registries_snapshot_2026-05-20_gas/` と `scripts/diff-registries.mjs` 参照） |
 
 ---
 
