@@ -4,7 +4,7 @@
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 
-**最終更新：** 2026-05-20（Phase 2 ①②③ 完了・④ 同値検証 active へ）
+**最終更新：** 2026-05-20（Phase 2 コード完了・人間タスク 1 件待ち）
 
 ---
 
@@ -13,69 +13,70 @@
 - **Phase 0：完了。** repo-as-brain 規律確立／validator・invariants 稼働。
 - **Phase 1：完了。** `vocab_type` をローカル `scripts/classify-and-translate.mjs` が生成。
   GAS `classifyAndTranslate` / `exportVocabTypes` は v7.2 で退役・`archive/gas_old/` 保全。
-- **Phase 2：active。** registry を repo ネイティブ化。①②③ 完了。
-  - ① SA 設置と `.env`/`.gitignore` 拡張・`googleapis` 追加・`npm run check-sa` 疎通済み
-  - ② `scripts/lib/sheets-client.mjs`（loadEnv / createSheetsClient / fetchSheet /
-    requireColumns / SHEET_SCHEMAS / fetchVocabulary / fetchExamples）
-  - ③ `scripts/sync-registries-local.mjs`（GAS syncAll 等価・atomic write）
-    初回実行で word_雑誌 / word_写真 の音声 URL 2 件を repo に反映。idempotent 確認済み。
+- **Phase 2：コード完了（⑦ 完了条件 人間タスク 1 件待ち）。**
+  - ① `.env` 設置 + `googleapis` + `npm run check-sa` 疎通
+  - ② `scripts/lib/sheets-client.mjs`
+  - ③ `scripts/sync-registries-local.mjs`（GAS syncAll 等価・atomic write・idempotent 確認済み）
+  - ④ 同値検証 PASS（`scripts/diff-registries.mjs` で残差分 0 件）
+  - ⑤ `archive/registries_snapshot_2026-05-20_gas/` に GAS 最終出力を保全
+  - ⑥ `gas/pipeline.gs` v7.3 で syncRegistries セクション退役（174 行純減）。
+    `loadJsonFromDriveById` のみ残置（importExamplesFromLesson02 依存）。
 - **Phase 3〜4：未着手。**
 
 ---
 
-## 今やること（Phase 2 ④ active から続き・順番通り）
+## 今やること
 
-すべて `[Phase 2]` 接頭辞を付ける。`/` 区切りは「実行主体／補足」。
+**[Phase 2 ⑦ / 人間タスク] GAS 側の最終クリーンアップ（実害なし＝急ぎではない）。**
 
-1. **[Phase 2 ④ / 人間タスク] GAS syncAll を 1 回手動実行 → Drive snapshot 取得。**
-   - GAS スクリプトエディタで関数 `syncAll` を選択 → 「実行」。
-   - 完了後、Drive で以下 2 ファイルをダウンロード（右クリック → ダウンロード）：
-     - `master_image_registry.json` (ID: `17WnltHEvymkua4hgfak2951f5BgphV9O`)
-     - `master_audio_registry.json` (ID: `1y0-mzxQGfZVHyj6tT1ttXzt0knlueb3M`)
-   - ローカルの `archive/registries_snapshot_2026-05-20_gas/` に保存（Claude Code がディレクトリ作成・diff 実施）。
+1. **GAS スクリプトエディタを開く** → `gas/pipeline.gs` の中身を全選択コピーで貼り替え（v7.3 を live に反映）。
+   - 既存の syncAll / syncImageRegistry / syncAudioRegistry / saveJsonToDriveById /
+     setupSyncDailyTrigger / testProtectedKeys は GAS 側から自動的に消える。
+2. **GAS Triggers 画面で `syncAll` トリガー（毎日 23:00）を削除。**
+   - 削除しない場合：23:00 に「`syncAll is not defined`」エラーで即座に no-op 終了。
+     データ破壊なし・スプレッドシート操作なし・実害ゼロ。気付いた時に削除すればよい。
+3. **完了確認：** 翌日 23:00 以降に GAS Triggers 画面で `syncAll` が消えていれば Phase 2 完了。
 
-2. **[Phase 2 ④ / Claude Code] 同値 diff の実施。**
-   - 同タイミングで `npm run sync-registries` を再実行（シート状態を揃える）。
-   - `archive/registries_snapshot_2026-05-20_gas/*.json` と `data/master_*_registry.json` を diff。
-   - 期待：`_meta.lastUpdated` / `_meta.lastModified` 以外ゼロ差分。
-   - 差分があれば原因分析（status 上書きルール、protected キー、未登録 skip など）。
-
-3. **[Phase 2 ⑤ / Claude Code] Drive snapshot を archive/ に確定保管。**
-   - `archive/registries_snapshot_2026-05-20_gas/` を tracked のままコミット。
-   - `handoff_archive.md` に「Drive registry SSOT 引退」を 1 行追記。
-
-4. **[Phase 2 ⑥ / 人間 + Claude Code] GAS syncAll 引退（v7.3）。**
-   - 人間：GAS Triggers から `syncAll`（毎日 23:00）を削除。
-   - Claude Code：`gas/pipeline.gs` の syncRegistries セクション撤去 → ヘッダー v7.3。
-   - `archive/gas_old/syncRegistries_v_NA.gs` に退避。
-   - `scripts/invariants.mjs` の GAS 期待 section リストを v7.3 用に更新。
-   - 人間：v7.3 を GAS エディタに貼り直す。
-
-5. **[Phase 2 完了条件]** Drive registry 経由の手作業ゼロ／`npm run sync-registries` が動作（達成済み）／
-   `syncAll` トリガー＋セクション消滅／invariants A/B/C 継続 PASS。
+→ 完了報告で **Phase 3 着手** に進む。
 
 ---
 
 ## ブロッカー
 
-無し。④ 人間タスク待ち。
+無し（Phase 2 完了条件は人間タスク待ちのみ）。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate             # スキーマ + invariants A/B/C（A は v7.2・section 5 件）
+npm run validate             # invariants A=v7.3 / B=hash OK / C=件数
 npm run missing-assets       # imageUrl/audioUrl null 列挙
-npm run check-sa             # Phase 2 ① 疎通確認（Vocabulary 先頭 3 行表示）
-npm run sync-registries [-- --dry-run | --verbose | --only image|audio]   # Phase 2 ③
-npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]   # Phase 1
+npm run check-sa             # Sheets API 疎通（Vocabulary 先頭 3 行）
+npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
+node scripts/diff-registries.mjs <gas-snapshot> <local-registry>   # 同値検証
+npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 ```
 
 人間側（Claude Code 実行不可）：
 
 ```
-# Phase 2 ④ active：GAS syncAll を 1 回手動実行 → Drive registry をダウンロード
-syncAll                   # 毎日 23:00 トリガーは ⑥ まで現状維持
-generateAudioBatch        # 毎日 10:00（Phase 3 で引退）
+# Phase 2 ⑦：v7.3 貼り替え + syncAll トリガー削除（実害なし・任意のタイミング）
+# 残る生存 GAS トリガー（Phase 3 で引退予定）：
+generateAudioBatch        # 毎日 10:00
+```
+
+---
+
+## 本日（2026-05-20）のコミット履歴（参考・git log で再導出可能）
+
+```
+e3640b6 chore(phase2): GAS syncRegistries 退役（Phase 2 ⑤⑥ 完了・v7.3）
+892f840 test(phase2): 同値検証 PASS（Phase 2 ④ 完了）
+781c07d docs(next): Phase 2 ①②③ 完了 → ④ 同値検証 active
+edaaa7f feat(phase2): sync-registries-local.mjs と初回実行（Phase 2 ③ 完了）
+01190b8 feat(phase2): Sheets 読み出しクライアント（Phase 2 ② 完了）
+983e1c0 chore(phase2): googleapis 追加と SA 疎通確認スクリプト（Phase 2 ① 追補）
+e6b66da chore(phase2): .env / .gitignore に SA 設置の場所を確保（Phase 2 ① 完了）
+d05c677 docs(next): Phase 2 スライスを 7 項に確定（registry repo ネイティブ化）
 ```
