@@ -27,6 +27,29 @@ Cloud TTS（Neural2）をローカルから呼ぶ＋月間文字カウンタ。f
 loudnorm／トリム／フェード QC を追加（注記：移設でなく獲得。GAS は ffmpeg
 不可で QC 不可能だった）。完了＝ generateAudioBatch の GAS 消滅・音声 QC 稼働。
 
+## Phase 3 スライス（2026-05-20 確定）
+
+順序付き ①〜⑥。各スライス完了時にコミット境界を切る。
+active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
+
+- **①** Cloud TTS SA 鍵・`.env` 設計・`scripts/check-tts-sa.mjs` で疎通確認。
+  完了＝ `npm run check-tts-sa` PASS。
+- **②** `scripts/lib/tts-client.mjs` で Cloud TTS Neural2 を 1 件合成。
+  まだ QC なし／バッチなし／カウンタなし。完了＝ 1 件 mp3 がローカルに出る。
+- **③** `scripts/generate-audio-local.mjs` ＝ バッチ＋月間文字カウンタ＋上限ガード
+  ＋ registry 連携（`status=null` のみ拾う）。完了＝ L02 例文の合成が一周し、
+  `missing-assets` の `null_audioUrl` が減る。QC は未組込みでよい。
+- **④** ffmpeg QC（loudnorm / トリム / フェード）パイプライン組込み。
+  ③ の出力を QC 通したものに置換する。完了＝ 全 mp3 が QC 通過版。
+- **⑤** 音声 QC スペック検証スクリプト（`npm run validate-audio` 系）。
+  LUFS／duration／clipping を invariants に追加し、既存 GAS 生成音声との
+  並列 A/B 確認も行う（bit 一致ではなくスペック合格を見る）。
+  完了＝ invariants D（仮）= 音声 QC PASS が validate 出力に出る。
+- **⑥** GAS `generateAudioBatch` 退役。コードを `archive/gas_old/` へ保全し、
+  `gas/pipeline.gs` から該当セクション削除。人間が GAS トリガー
+  `generateAudioBatch`（毎日 10:00）を削除し、削除確認を docs 反映。
+  完了＝ 生存中の GAS トリガー 0 件・`NEXT_ACTIONS.md` の人間タスク欄が空。
+
 # Phase 4：画像の呼び出し側ローカル化
 Imagen 呼び出しをローカルへ。これで GAS は完全消滅。明示保留（移行を止めない
 下流決定）：有料 Imagen 継続 か 自前 Stable Diffusion か は GAS 消滅"後"に別決定。
