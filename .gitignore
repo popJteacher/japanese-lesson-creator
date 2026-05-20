@@ -23,6 +23,9 @@ npm-debug.log*
 .env.*
 !.env.example
 
+# Service Account JSON（Phase 2・Sheets API 用）。secrets/ 配下は一切 tracked にしない。
+secrets/
+
 # build-embedded-data.py の生成物（data/*.js）
 data/*.js
 
