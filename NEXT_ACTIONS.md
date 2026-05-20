@@ -4,54 +4,74 @@
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 
-**最終更新：** 2026-05-20（Phase 3 ⑥ コード退役完了・人間タスク 1 件待ち）
+**最終更新：** 2026-05-20（Phase 3 完了確定・Phase 4 着手前）
 
 ---
 
 ## 現在地
 
-- **Phase 0／1／2／3：コード完了。**
-  - Phase 3 ⑥ で gas/pipeline.gs を v7.4 に bump、音声セクション全削除済み
-  - `archive/gas_old/generateAudio_v2_0_phase3_retired.gs` に保全完了
-  - `invariants[A]` から `generateAudio.gs` が消滅したことを `npm run validate` で確認
-- **Phase 4：未着手。** 別 worktree `phase4-prompt-plan` でプラン作成中。
+- **Phase 0／1／2／3：完了。** すべてコード + GAS トリガー両面でクローズ済み。
+  - 2026-05-20 Phase 3 ⑥ 確認時に発覚した orphan トリガー
+    （`syncAll` / `classifyBatch`）も同日削除済み
+- **Phase 4：active 候補（未着手）。** Imagen 呼び出しのローカル化で GAS 完全消滅。
+  並行：別 worktree `phase4-prompt-plan` で master prompt guide 修正プラン作成中。
+
+生存中の GAS トリガー：`generateImageBatch` × 3 件 — Phase 4 ⑥ で引退対象。
 
 ---
 
 ## 今やること
 
-**Phase 3 完了の最後の 1 ピース：人間タスク待ち。**
+**Phase 4 のスライス分解と着手は新セッションで実施する。**
 
-### 人間タスク（Claude Code 実行不可）
+このセッションは Phase 3 クローズで終了。Phase 4 は別セッションで開始する
+（memory [[parallel-worktrees]] ：1 セッション = 1 worktree、切替運用しない）。
 
-GAS エディタを開いて **`generateAudioBatch` トリガーを削除**してください：
+### 並行プランニングとの依存関係（新セッション開始前に把握）
 
-1. https://script.google.com/ で対象プロジェクトを開く
-2. 左サイドバーの ⏰ アイコン（トリガー）をクリック
-3. 一覧から `generateAudioBatch`（毎日 10:00 / または 10:00/14:00/18:00 の 3 件）を見つける
-4. 各行右端「⋮」→「トリガーを削除」
-5. 確認：トリガー一覧に `generateAudioBatch` が 0 件であること
+`phase4-prompt-plan` worktree で master prompt guide 修正プランが作成中。
+プラン完了前に Phase 4 で進めて良いスライスは限定的：
 
-**生存トリガーが 0 件になった時点で Phase 3 は完了確定**。
+| Phase 4 スライス | プラン依存 | 並行可否 |
+|---|---|---|
+| ① Imagen API SA 設定・疎通 | なし（インフラ） | OK |
+| ② Imagen client library | なし（インフラ） | OK |
+| ③ バッチ生成（実プロンプト送信） | **強依存** | プラン取り込み後 |
+| ④ 画像 QC（必要なら） | 弱依存 | プラン取り込み後 |
+| ⑤ 画像 QC invariants[E] | 弱依存 | プラン取り込み後 |
+| ⑥ GAS generateImageBatch 引退 | 独立 | ③ 後 |
 
-### 確認後にこちらでやること
+新セッションでは ① と ② を先行、プランが届いたら ③ 以降を組み直す。
 
-- `NEXT_ACTIONS.md` を Phase 4 active 化形に書き直す（このページの内容を全消し）
-- Phase 4 のスライス分解（別 worktree `phase4-prompt-plan` のプラン文書を取り込んで実施）
+### Phase 4 で取り戻す Phase 3 横断課題
+
+`docs/PHASE_BACKLOG.md` の Phase 4 セクション参照：
+- registry 未登録 120 件のバックフィル（image 側不足分と統一処理）
+- `word_新聞` の sync 漏れ（`npm run sync-registries` 1 発で解消見込み）
 
 ---
 
-## Phase 3 で残った課題（Phase 4 active 化時に取り戻す）
+## 新 Phase 4 セッションの開始方法
 
-`docs/PHASE_BACKLOG.md` の Phase 4 セクション参照：
-- **registry 未登録 120 件のバックフィル**：image 側不足分と統一処理予定
-- **`word_新聞` の sync 漏れ**：`npm run sync-registries` 1 発で解消見込み
+Claude Code 拡張機能で新セッション開始、最初のメッセージは：
+
+```
+CLAUDE.md と NEXT_ACTIONS.md と docs/SESSION_START.md を読む。
+
+このセッションの目的は Phase 4（Imagen 呼び出しのローカル化）。
+別 worktree `phase4-prompt-plan` で master prompt guide 修正プランが
+並行作成中。プラン依存のないスライス ①（Imagen API SA 設定・疎通）と
+② （client library）を先行して実装。③ 以降はプランが届いてから判断。
+
+最初に Phase 4 のスライス分解（Phase 2/3 と同じく ①〜⑥ 程度）を
+docs/MIGRATION_PLAN.md に書いてから着手すること。
+```
 
 ---
 
 ## ブロッカー
 
-無し。トリガー削除は人間が GAS Web エディタで 1 分でできる作業。
+無し。
 
 ---
 
@@ -74,6 +94,6 @@ npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 人間側（Claude Code 実行不可）：
 
 ```
-# Phase 3 ⑥ 最後の人間タスク：これを GAS から削除すると Phase 3 完了確定
-generateAudioBatch        # 毎日 10:00（または 10/14/18 の 3 件）
+# 残る生存 GAS トリガー（Phase 4 ⑥ で引退対象）
+generateImageBatch × 3 件   # 10/14/18 時のいずれか
 ```
