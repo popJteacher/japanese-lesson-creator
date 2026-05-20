@@ -24,18 +24,25 @@ const ROOT = resolve(__dirname, '..');
 
 // 正典パスと期待 hash（実ファイル由来・docs/REFERENCE.md §9）
 // hash は LF 正規化（CRLF→LF・末尾改行 strip）後に計算する。
-// apply_v3_2.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
+// apply_v3_3.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
-  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_2.py'),
-  promptGuideExpectedHashPrefix: '566b8ad68753', // LF 正規化後 SHA256 先頭 12 桁
-  // S列プロンプト JSON の置き場（v3.2 で再生成後はここに置く想定）
+  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_3.py'),
+  promptGuideExpectedHashPrefix: '80de1a8e675f', // v3.3 LF 正規化後 SHA256 先頭 12 桁
+  // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
   sColumnPattern: /^image_prompts_lesson\d{2}_v3_\d+\.json$/,
 };
 
 // 6 不変条件の文字列定数
-const BACKGROUND_EXACT = 'soft cream off-white background (warm off-white, NOT pure stark white)';
+// v3.3 (M-5): C4/C5 は vocab_type 別の背景文字列分岐に対応
+//   default（人物 / 物体 / 抽象等）→ off-white
+//   building（テンプレ B）       → pale sky-blue full-bleed
+const BACKGROUND_BY_TYPE = {
+  default:  'soft cream off-white background (warm off-white, NOT pure stark white)',
+  building: 'pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette',
+};
+const BACKGROUND_EXACT = BACKGROUND_BY_TYPE.default; // 後方互換（既存参照用）
 const NOT_TOKEN = 'NOT pure stark white'; // 大文字 NOT が確定。小文字 'not' に揺れていないか
 const FORBIDDEN_PERSON_AREA = /fills\s+\d+\s*[-–]?\s*\d*\s*%\s+of\s+the\s+image\s+area/i;
 const FORBIDDEN_PORTRAIT_LENS = /85\s*mm\s+portrait\s+lens/i;
@@ -163,16 +170,17 @@ async function checkSColumnInvariants() {
         continue;
       }
       const type = item.vocab_type ?? item.vocabType ?? '';
+      const expectedBg = type === 'building' ? BACKGROUND_BY_TYPE.building : BACKGROUND_BY_TYPE.default;
 
-      // 4. 背景文字列の一字一句一致（全タイプ共通）
-      if (!prompt.includes(BACKGROUND_EXACT)) {
+      // 4. 背景文字列の一字一句一致（vocab_type 別・v3.3 M-5）
+      if (!prompt.includes(expectedBg)) {
         errors.push(
-          `invariants[C4] ${tag}: 背景文字列の一字一句一致違反。`
-          + ` 必須: "${BACKGROUND_EXACT}"`
+          `invariants[C4] ${tag}: 背景文字列の一字一句一致違反（type=${type || 'default'}）。`
+          + ` 必須: "${expectedBg}"`
         );
       }
-      // 5. NOT 表記の一字一句一致（小文字 not に揺れていないか）
-      if (!prompt.includes(NOT_TOKEN)) {
+      // 5. NOT 表記の一字一句一致（building は確定色のためトークン揺れ防止不要）
+      if (type !== 'building' && !prompt.includes(NOT_TOKEN)) {
         errors.push(
           `invariants[C5] ${tag}: NOT 表記の一字一句一致違反。`
           + ` 必須: "${NOT_TOKEN}"（小文字 not への揺れ禁止）`

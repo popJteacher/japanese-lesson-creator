@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.2 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.3 主経路）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
-  - v3.2 ガイドを Python モジュールとして直接 import する（文字列パース不可）。
+  - v3.3 ガイドを Python モジュールとして直接 import する（文字列パース不可）。
   - vocab_type の真実源は data/vocab_types_lessonNN.json（GAS Vocabulary
     シートからの export 経由・現状はブートストラップ済）。archive 参照しない。
   - GAS の build*Prompt_ は副経路フォールバックで v3.2 invariants を満たさないため
@@ -30,11 +30,11 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_2.py")
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_3.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_2", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_3", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -82,13 +82,15 @@ def classify_person(word):
 # 合成関数
 # ─────────────────────────────────────────────────────────────
 def compose_role_subject(g, role_key):
+    """v3.3 (M-47 wave): skin tone NOT specified / hair varied dark で多文化配慮対応。"""
     role = g.ROLE_BASED_GENERIC_PROFILES[role_key]
     outfit_lines = "; ".join(role["outfit_hints"])
     return (
         f"A {role['role_en']} ({role['role_ja']}). "
         f"Outfit and props: {outfit_lines}. "
         f"The character's gender is unspecified — use a generic adult appearance with "
-        f"warm medium skin tone, short to medium neat dark brown hair, "
+        f"naturally diverse skin tone (multicultural variation) and "
+        f"naturally varied dark hair (dark brown to black), "
         f"and a calm friendly expression. The role must be immediately readable from "
         f"clothing and props alone."
     )
@@ -244,12 +246,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_2.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_3.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.2",
+            "guideVersion": "v3.3",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
