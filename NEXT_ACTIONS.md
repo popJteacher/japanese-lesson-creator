@@ -4,7 +4,7 @@
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 
-**最終更新：** 2026-05-20（Phase 3 ④ 完了・⑤ active 化）
+**最終更新：** 2026-05-20（Phase 3 ⑤ 完了・⑥ active 化）
 
 ---
 
@@ -15,18 +15,19 @@
   - **①** Cloud TTS SA 鍵・疎通確認：**完了**
   - **②** ローカル TTS クライアント・1 件合成：**完了**
   - **③** バッチ＋月間文字カウンタ＋registry 連携：**完了**
-  - **④** ffmpeg QC（loudnorm/silenceremove/afade）：**完了（2026-05-20）**
-    - `scripts/lib/audio-qc.mjs` に `applyQc` 実装、`npm run check-ffmpeg` 提供
-    - 全 55 件を QC 適用版に置換（ffprobe: 48kHz mono / 99kbps / mp3 ✓）
-    - silence trim 効果で 1.2 MB → 1.1 MB、loudnorm で -16 LUFS 正規化
-- **Phase 4：未着手。** 別 worktree `phase4-prompt-plan` でマスタープロンプト
-  ガイド修正プランを並行作成中（main 本筋には影響なし）。
+  - **④** ffmpeg QC（two-pass loudnorm/silenceremove/afade）：**完了**
+  - **⑤** 音声 QC スペック検証 + invariants[D]：**完了（2026-05-20）**
+    - `npm run validate-audio` 提供（LUFS/TP/duration/codec/sample_rate 検証）
+    - `invariants[D]` 統合：`npm run validate` で 55/55 PASS（3 WARN）
+    - WARN/ERROR 二段判定：±1.5 LUFS 超で WARN、±4 LUFS 超で ERROR
+    - WARN 3 件は L01_010/L02_026/L02_031（TP 制約で loudnorm が target に到達しない正常範囲）
+- **Phase 4：未着手。** 別 worktree `phase4-prompt-plan` で並行プラン作成中。
 
 生存中の GAS トリガー：`generateAudioBatch`（毎日 10:00）— Phase 3 ⑥ で引退。
 
-### 既知の Phase 3 横断課題
+### 既知の Phase 3 横断課題（⑥ に持ち越し）
 - **registry 未登録 120 件のバックフィル** — Vocabulary シートに存在するが
-  `master_audio_registry.json` にエントリが無い語。⑤/⑥ までに方針確定。
+  `master_audio_registry.json` にエントリが無い語。⑥ までに方針確定。
 - **`word_新聞` の sync 漏れ** — sheet は `generated`+Drive URL だが
   registry の audioUrl 空。`npm run sync-registries` で解消するはず（未検証）。
 
@@ -34,59 +35,53 @@
 
 ## 今やること
 
-**Phase 3 ⑤ — 音声 QC スペック検証スクリプト＋invariants 追加。**
+**Phase 3 ⑥ — GAS `generateAudioBatch` 引退と Phase 3 確定。**
 
 完了条件：
 
-1. `scripts/validate-audio.mjs` 新規作成。`data/audio/*.mp3` を ffprobe で計測：
-   - **LUFS**：`-16 ± 1 LUFS`（loudnorm の目標値内）
-   - **true peak**：`-1.5 dB 以下`（クリッピング無し）
-   - **duration**：`0.3 〜 30 秒`（極端な短／長を検出）
-   - **bit rate**：`>= 64 kbps`（過剰圧縮を検出）
-   - **codec/sample rate**：`mp3 / 48 kHz`（QC 出力仕様の固定確認）
-2. `npm run validate-audio` を package.json に追加。
-3. `scripts/validate.mjs` の invariants[D] として音声 QC PASS を追加
-   （invariants A=GAS版 / B=hash / C=件数 / D=音声 QC）。
-   `npm run validate` で D の集計だけ走らせる（個別違反は --type=audio で詳細）。
-4. 既存 55 件全件 PASS を確認。違反があれば QC パラメータを ④ 側で再調整。
-5. （参考）GAS Drive 由来の Drive URL audio との並列 A/B：deep diff は意味が
-   ないが「両方とも spec PASS」を確認すれば置換正当性の根拠になる。
+1. **コード退役**：`gas/pipeline.gs` から音声生成セクション（`generateAudioBatch` /
+   `processAudioEntry_` / `callGoogleCloudTTS_` / `getAllAudioRows_` 等の
+   ~250 行）を削除し、`archive/gas_old/generateAudio_v2_0.gs` として保全。
+2. **GAS ヘッダー版**を v7.4 に bump（v7.3 → v7.4）。`validate.mjs` invariants[A]
+   出力に反映。
+3. **人間タスク**：GAS トリガー `generateAudioBatch`（毎日 10:00）を
+   GAS エディタから削除。完了確認は「`ScriptApp.getProjectTriggers()` の
+   ハンドラ一覧に `generateAudioBatch` が無い」こと（人間が GAS で確認）。
+4. **NEXT_ACTIONS** から「生存中の GAS トリガー」行を消す（Phase 3 完了の証拠）。
+5. **Phase 3 完了宣言**を `docs/MIGRATION_PLAN.md` Phase 3 セクションに 1 行追記。
+6. 残課題（registry 未登録 120 件 + word_新聞 sync 漏れ）を
+   `docs/PHASE_BACKLOG.md` の Phase 4 セクションに退避。
 
-このスライスで Phase 3 の品質保証ループが閉じる。⑥ で GAS を引退させる前に
-**ローカル合成版が GAS 版と同等以上の品質である**ことを invariants で示すのが目的。
+このスライスで Phase 3 完了。残る生存 GAS は画像生成のみ → Phase 4 で完全引退。
 
 ---
 
 ## ブロッカー
 
-無し。④ の audio-qc / ffprobe がそのまま使える。
+無し。GAS コードは Phase 1/2 で複数回退役させた前例があり、
+`archive/gas_old/` 配下の構造は確立済み。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate             # invariants A=v7.3 / B=hash / C=件数 / D=音声 QC（⑤ で追加予定）
+npm run validate             # invariants A=v7.3 / B=hash / C=件数 / D=音声 QC
 npm run missing-assets       # imageUrl/audioUrl null 列挙
 npm run check-sa             # Sheets API 疎通
 npm run check-tts-sa         # Cloud TTS API 疎通
 npm run check-ffmpeg         # ffmpeg / ffprobe / filter / encoder 疎通
 npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
 npm run generate-audio [-- --dry-run | --limit N | --only word|sentence | --max-chars N | --force | --no-qc]
-node scripts/_tts-smoke.mjs  # Phase 3 ② スモーク（.tmp_verify/_tts_smoke.mp3）
+npm run validate-audio       # data/audio/*.mp3 の QC スペック検証（55/55 PASS, 3 WARN）
+node scripts/_tts-smoke.mjs  # Phase 3 ② スモーク
 node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
-```
-
-Phase 3 ⑤ で追加予定：
-
-```
-npm run validate-audio        # data/audio/*.mp3 を ffprobe で計測してスペック PASS 判定
 ```
 
 人間側（Claude Code 実行不可）：
 
 ```
 # 残る生存 GAS トリガー（Phase 3 ⑥ で引退対象）
-generateAudioBatch        # 毎日 10:00
+generateAudioBatch        # 毎日 10:00 ← ⑥ 完了時に人間が GAS から削除
 ```

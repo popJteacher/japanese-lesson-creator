@@ -8,6 +8,8 @@
 //   B. canonical プロンプトガイドが v3.2 であることを SHA256 でアサート
 //   C. S列プロンプト JSON の 6 不変条件（人物 full-body / 物体 ~50mm /
 //      抽象 flat-solid-only / 背景文字列一致 / NOT 表記一致 / 国旗強表現）
+//   D. data/audio/*.mp3 の QC スペック（codec/sample_rate/channels/bit_rate/
+//      duration/LUFS/TP）— scripts/validate-audio.mjs に委譲
 //
 // 終了コード（単独実行時）: errors が 1 件以上で 1、それ以外 0。
 // （validate.mjs から呼ばれた場合は errors / warns / infos を返すだけ）
@@ -223,9 +225,23 @@ async function checkSColumnInvariants() {
   return { errors, warns, infos };
 }
 
+// D. data/audio/*.mp3 の QC スペック検証（scripts/validate-audio.mjs に委譲）
+async function checkAudioQc() {
+  try {
+    const mod = await import('./validate-audio.mjs');
+    return await mod.runAudioValidation();
+  } catch (e) {
+    return {
+      errors: [`invariants[D] 音声 QC 検証失敗: ${e.message}`],
+      warns: [],
+      infos: [],
+    };
+  }
+}
+
 export async function runAll() {
   const out = { errors: [], warns: [], infos: [] };
-  for (const fn of [checkGasVersionDrift, checkPromptGuideHash, checkSColumnInvariants]) {
+  for (const fn of [checkGasVersionDrift, checkPromptGuideHash, checkSColumnInvariants, checkAudioQc]) {
     const r = await fn();
     out.errors.push(...r.errors);
     out.warns.push(...r.warns);
