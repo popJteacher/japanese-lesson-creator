@@ -18,6 +18,11 @@ Thumbs.db
 node_modules/
 npm-debug.log*
 
+# Secrets / API keys（.env.example のみ tracked）
+.env
+.env.*
+!.env.example
+
 # build-embedded-data.py の生成物（data/*.js）
 data/*.js
 

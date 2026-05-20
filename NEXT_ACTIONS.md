@@ -4,7 +4,7 @@
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 
-**最終更新：** 2026-05-20（移行ロードマップを宣言・Phase 0 完了／Phase 1 active へ）
+**最終更新：** 2026-05-20（Phase 1 ① 完了：`.env.example` 追加・`.gitignore` 登録）
 
 ---
 
@@ -21,12 +21,13 @@
 
 以後どのスライスも所属 Phase を明示する運用。すべて `[Phase 1]` 接頭辞を付ける。
 
-1. **[Phase 1] `.env` 設計と `.gitignore` 登録。**
-   `GEMINI_API_KEY` をローカル `.env` へ。`.gitignore` への登録は **最初の commit と同じタイミング**
-   で行う（過去に .gitignore 漏れの前例あり）。
+1. **[Phase 1] 人間タスク：実 `.env` をローカルに作成。**
+   `.env.example` を `.env` にコピーし `GEMINI_API_KEY` を埋める
+   （鍵入手元 https://aistudio.google.com/apikey）。Claude Code 側は実行不可。
 2. **[Phase 1] ローカル classify/translate の実装＋レート制限／backoff。**
    Gemini API の RPM/TPM/RPD に対するスロットリング設計を最初から入れる
    （GAS の BATCH_SIZE:3 timeout 対策が API レート対策に置き換わるだけ）。
+   入出力契約は GAS の `classifyAndTranslate.gs` を一次資料とする。
 3. **[Phase 1] 同値検証。**
    ローカル分類出力 == 現 GAS 出力 を diff 確認してから切替。
    `exportVocabTypes` を一度きりの基準スナップショットとして使い、検証後に永久引退させる。
