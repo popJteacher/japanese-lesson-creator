@@ -4,20 +4,22 @@
 > ここの記述は検証コマンド出力に劣後する（矛盾したらコマンドが正）。
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 
-**最終更新：** 2026-05-20（Phase 4 ① ② 完了確定）
+**最終更新：** 2026-05-20（Phase 4 ① ② 完了 / v3.3 プロンプト実装は別 worktree で進行中）
 
 ---
 
 ## 現在地
 
 - **Phase 0／1／2／3：完了。** 全クローズ済み。
-- **Phase 4：着手中。** Imagen 呼び出しのローカル化（GAS 完全消滅まで残 1 phase）。
-  バックエンドは **Google AI Studio + GEMINI_API_KEY 流用**（Vertex AI ではない・SA 不要）。
+- **Phase 4：着手中。**
   - **①** Imagen API 疎通：**完了**（`npm run check-imagen-key` PASS）。
-  - **②** Imagen client + smoke：**完了**（`node scripts/_imagen-smoke.mjs` PASS、
-    Standard 1 件 PNG 663,677 bytes / 27 秒 / $0.04 課金成立で billing 有効化も実機確認）。
-  - 並行：別 worktree `phase4-prompt-plan` で master prompt guide 修正プラン作成中。
-    ③ 以降は **プラン取り込み後に組み直す**（独立に走らせない）。
+  - **②** Imagen client + smoke：**完了**（PNG 663 KB / 27 秒 / $0.04 課金で billing 実機確認）。
+  - **v3.3 プロンプト辞書修正（72 件）**：別 worktree
+    `.claude/worktrees/image-prompt-plan`（branch `phase4-prompt-plan`）で
+    **実装進行中**。プランは `C:\Users\kohn0\.claude\plans\partitioned-bubbling-babbage.md`。
+    Step 1〜7 完了予定。`main` への merge 待ち。
+  - **③** バッチ生成（`scripts/generate-images-local.mjs`）：未着手。
+    v3.3 プロンプトを `main` に merge してから着手する。
 
 生存中の GAS トリガー：`generateImageBatch` × 3 件（9 / 13 / 17 時）— ⑥ で引退対象。
 
@@ -25,34 +27,30 @@
 
 ## 今やること
 
-**`phase4-prompt-plan` worktree の進捗確認・③ 着手判断。**
+**main 側はプロンプト実装の merge 待ち。** 別 worktree のセッションが
+Step 1〜7 を完了してから新セッションで main に戻り：
 
-プラン非依存スライスは ① ② で打ち止め。次は ③ バッチ生成だが、③ は master
-prompt guide 修正プランに **強依存**。次セッション開始時に：
+1. `git log phase4-prompt-plan` で Step 1〜7 のコミット履歴を確認
+2. `git merge phase4-prompt-plan`（NEXT_ACTIONS.md だけが conflict する想定）
+3. `npm run validate` で全件 PASS 確認（v3.3 hash に置き換わる）
+4. Phase 4 ③（`scripts/generate-images-local.mjs`）の実装着手判断
+5. ④⑤⑥ と進める
 
-1. `phase4-prompt-plan` worktree（`.claude/worktrees/image-prompt-plan`）の
-   git log で進捗を確認する。
-2. プラン docs が main へ merge 可能な状態なら：
-   - merge してプロンプトビルドのローカル移植を含む ③ を組み直す
-   - `scripts/generate-images-local.mjs`（バッチ＋registry 連携＋RPD/コスト
-     ガード）を実装着手
-3. まだ作成中なら ③ には入らず、Phase 3 横断課題（下）の片付けに回すか
-   セッションを終了する。
+### main で並行できること（プラン非依存・任意）
 
-### Phase 4 で取り戻す Phase 3 横断課題
+merge 待ちの間でも main 側で独立に進められる作業：
 
-`docs/PHASE_BACKLOG.md` の Phase 4 セクション参照：
-- registry 未登録 120 件のバックフィル（image 側不足分と統一処理）
-- `word_新聞` の audio sync 漏れ（`npm run sync-registries` 1 発で解消見込み）
+- **registry 未登録 120 件のバックフィル**（`docs/PHASE_BACKLOG.md` Phase 4 セクション）
+- **`word_新聞` の audio sync 漏れ**（`npm run sync-registries` 1 発で解消見込み）
 
-これらは ③ の本体着手前に片付けてもよい（プラン非依存で進められる）。
+これらをやるか、merge を待つだけかはセッション開始時に判断する。
 
 ---
 
 ## ブロッカー
 
-- **③ 以降：** `phase4-prompt-plan` worktree の master prompt guide 修正プラン依存。
-  プランが取り込まれるまでは ③ 詳細を確定できない。
+- **③ 以降：** 別 worktree での v3.3 プロンプト実装（Step 1〜7）の完了と
+  `phase4-prompt-plan` → `main` merge を待つ。
 
 ---
 
@@ -79,4 +77,8 @@ npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 ```
 # 残る生存 GAS トリガー（Phase 4 ⑥ で引退対象）
 generateImageBatch × 3 件   # 9/13/17 時
+
+# 今は VSCode 側で次のフォルダを開いて新セッションを起動：
+#   c:\Users\kohn0\Desktop\japanese-lesson-creator-main\.claude\worktrees\image-prompt-plan
+# 最初のメッセージは partitioned-bubbling-babbage.md を読ませて Step 1 から実装。
 ```
