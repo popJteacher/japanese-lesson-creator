@@ -2,7 +2,7 @@
   "_meta": {
     "version": "2.0",
     "createdAt": "2026-05-10",
-    "lastUpdated": "2026-05-19",
+    "lastUpdated": "2026-05-20",
     "purpose": "全課横断の画像登録簿。同一素材の重複生成を防ぐ SSOT。lesson_NN.json の materialNeeds[].imageRef が参照する。",
     "primaryKeyRules": {
       "auto_generated_vocab": "vocab_{word}  例: vocab_医者",

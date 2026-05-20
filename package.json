@@ -8,7 +8,8 @@
     "validate": "node scripts/validate.mjs",
     "missing-assets": "node scripts/missing-assets.mjs",
     "classify": "node scripts/classify-and-translate.mjs",
-    "check-sa": "node scripts/check-sheets-sa.mjs"
+    "check-sa": "node scripts/check-sheets-sa.mjs",
+    "sync-registries": "node scripts/sync-registries-local.mjs"
   },
   "engines": {
     "node": ">=18"
