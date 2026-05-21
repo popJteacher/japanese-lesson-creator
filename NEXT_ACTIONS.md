@@ -5,97 +5,63 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（Phase 4 ⑥ Option C コード完了 / gas/pipeline.gs 2815→799 行 / Sheet 操作 utility 9 件 + loadJsonFromDriveById も同時退役 / validate ERROR 0 + GAS ヘッダー v7.5 検出 / **残作業：人間タスク = GAS Triggers 削除 → Phase 4 完了宣言**）
+**最終更新：** 2026-05-21（**Phase 4 完了宣言** / GAS Triggers `generateImageBatch` × 3 件削除を人間検証済 / 生存中 GAS 自動 trigger = 0 件 / 次は Phase 5 設計議論 + Phase 4 後 backlog 優先度判断）
 
 ---
 
 ## 現在地
 
-- **Phase 0／1／2／3：完了。**
-- **Phase 4：着手中（残作業：人間タスク + 完了宣言のみ）。**
-  - **①〜⑤**：完了（③ は smoke 5 件で同値検証 PASS、④⑤ は Phase 4 後 backlog 移管）
-  - **⑥ コード**：**完了（2026-05-21）。**
-    - `gas/pipeline.gs`：v7.4 → **v7.5**（2815→799 行・-2016 行）
-    - Cut 範囲（Option C）：
-      - **Range A**（line 750-2528）：generateImages.gs 主要 6 関数 + build*Prompt_ × 19 + その他 helper = 1779 行
-      - **Range B**（line 2545-2803）：loadJsonFromDriveById + 9 Sheet 操作 utility = 259 行
-    - 保全：`archive/gas_old/generateImages_v5_3_phase4_retired.gs`（171 → 2222 行）
-    - 検証：`npm run validate` ERROR 0 / invariants[A] から `generateImages.gs v5.3` 行が自動消失 / `npm run check-imagen-key` PASS
+- **Phase 0／1／2／3／4：完了。** ✅
+- **Phase 5：未着手・設計待ち** — user が優先度を確定したら NEXT_ACTIONS に降ろす
+- **Phase 4 後 backlog：着手待ち** — `docs/PHASE_BACKLOG.md` に各項目の出所 / 退避理由 / 戻し方を記載済
 
-生存中の GAS トリガー：`generateImageBatch` × 3 件（9 / 13 / 17 時）— **人間タスク：削除待ち**。
+生存中の GAS 自動 trigger：**0 件**（CLAUDE.md memory: GAS トリガーは文書を信用しない → 2026-05-21 人間が Triggers パネルで実視確認済）。
+残存している GAS：手動実行用 `seedLesson01` / `extractFromGoiList` / `importFromLessonJson` の 3 系統のみ（自動実行されない）。
 
 ---
 
-## 今やること
+## 今やること（user 判断待ち）
 
-### A. ⑥ コミット（即実行）
+以下 2 種類の作業が parallel に走り得る。user の優先度判断を待つ：
 
-`gas/pipeline.gs` / `archive/gas_old/generateImages_v5_3_phase4_retired.gs` / `docs/REFERENCE.md` / `NEXT_ACTIONS.md` を 1 commit。
+### 議題 A：Phase 5 設計議論（入力系のローカル化）
 
-### B. 人間タスク（Claude Code 実行不可）
+`docs/MIGRATION_PLAN.md` § Phase 5 にスコープ候補 6 項目を記載済。
+着手前に user が以下を確定する：
 
-GAS エディタを開き、Triggers パネルから以下 3 件を削除：
+1. **lesson_NN.json の repo 化**：Drive → `data/lessons/lesson_NN.json` に移す
+2. **Goi_List.pdf の repo 取り込み**：PDF を repo に置くか / 抽出結果 JSON を固定化するか
+3. **`extractFromGoiList.gs` の local 化**：PDF→JSON 抽出ロジックを Python or Node に移植
+4. **`importFromLessonJson.gs` の local 化**：Sheet を経由せず registry に直接書く
+5. **Sheet 自体の退役**：Vocabulary / Examples 撤去
+6. **`seedLesson01.gs` の退役**：lesson_01 ハードコードを lesson_01.json + 汎用 importer に統合
 
-```
-generateImageBatch  09:00 daily
-generateImageBatch  13:00 daily
-generateImageBatch  17:00 daily
-```
+優先順位 / 段階分け / スライス境界の議論が必要。完了条件は「新規課追加が
+ローカルだけで完結する」。
 
-削除後、Triggers パネルの一覧に `generateImageBatch` が含まれないことを目視確認
-（`feedback_verify_gas_triggers.md` memory：文書を信用せず必ず実視）。
-削除確認できたらこのファイルに「人間タスク完了」と一言コメントしてください。
+### 議題 B：Phase 4 後 backlog の優先度判断
 
-### C. Phase 4 完了宣言（人間タスク完了後）
+詳細は `docs/PHASE_BACKLOG.md` 参照。主な候補：
 
-- `docs/MIGRATION_PLAN.md` Phase 4 セクションに完了マーク
-- `NEXT_ACTIONS.md` を「Phase 5 設計議論 / Phase 4 後 backlog 優先度判断」に書き直し
+| 優先度候補 | 項目 | 想定コスト |
+|---|---|---|
+| 🔴 高 | v3.12 マスタープロンプトガイド修正（worktree 担当・9 項目） | API 課金なし |
+| 🟡 中 | 残り 436 件の本生成（v3.12 改修後） | $17.4 |
+| 🟡 中 | ③ で生成した 5 件の `--force` 再生成（v3.12 適用後） | $0.20 |
+| 🟢 低 | lesson_01 既存 41 件 person 画像の再生成 | 数 $ |
+| 🟢 低 | 画像 QC ④⑤ 実装（旧 Phase 4 ④⑤・photo drift 検出に有効と判明） | $0.80 校正 + 実装 |
+| 🟢 低 | `scripts/apply_v5_3_patches.py` archive 移設（dead code 化） | なし |
+| 🟢 低 | `docs/REFERENCE.md` 包括 audit（v7.3 時点で凍結気味） | なし |
+| 🟢 低 | scene-rich テンプレ A2 設計 / OBJECT_SIGNATURES.avoid (M-67) / NAMED_CHARACTER_PROFILES 生成パス (M-16) / M-23 テンプレ J 対義語 / M-48 FAMILY_TEMPLATES / `scripts/build_prompts.py` D/H/J 戦略展開 | プラン依存 |
 
----
-
-## Phase 4 完了後の重要議題
-
-### Phase 5 設計（仮称：入力系のローカル化）
-
-2026-05-21 user 確認で **「完全ローカル」想定との gap** が判明。Phase 4 完了後も
-以下が GAS/Drive/Sheets 依存のまま残る：
-
-| 依存先 | 何が残るか |
-|---|---|
-| **GAS（手動実行）** | `seedLesson01.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` の 3 系統 |
-| **Google Drive** | Goi_List.pdf（N5 語彙原典）/ lesson_NN.json（課マスター） |
-| **Google Sheets** | Vocabulary / Examples シート（registry の入力源） |
-
-`docs/MIGRATION_PLAN.md` 冒頭の「GAS・Google Sheets・Google Drive はランタイムから引退」は長期 vision として書かれていたが、Phase 1〜4 にはこの作業が割り当てられていない（横断要件として line 137-138 に書かれているのみ）。
-
-**Phase 5（仮）として議論すべき項目：**
-1. lesson_NN.json を Drive → repo 直置きに移行
-2. Goi_List.pdf を repo 取り込み or 抽出結果 JSON 固定化
-3. `extractFromGoiList.gs` の local 化
-4. `importFromLessonJson.gs` の local 化（Sheet 経由を撤廃し registry に直接書く）
-5. Sheet 自体の退役
-6. `seedLesson01.gs` の退役（lesson_01.json + 汎用 importer に統合）
-
-着手は Phase 4 完了宣言後に user 判断。
-
-### Phase 4 後 backlog（既存）
-
-詳細は `docs/PHASE_BACKLOG.md` 参照。優先度は user 判断。
-
-- **v3.12 マスタープロンプトガイド修正**（worktree 担当・9 項目）
-- **残り 436 件の本生成**（③ 持ち越し分・v3.12 改修後・$17.4）
-- **③ で生成した 5 件の `--force` 再生成**（v3.12 適用後・$0.20）
-- **lesson_01 既存 41 件 person 画像の再生成**
-- **画像 QC ④⑤ 実装**（旧 Phase 4 ④⑤・$0.80 校正 + 実装）
-- **`scripts/apply_v5_3_patches.py` archive 移設**（今回 cut で dead code 化した one-shot patcher）
-- **`docs/REFERENCE.md` 包括 audit**（v7.3 時点で凍結気味・line 番号 / AUDIO_SETTINGS 詳細 等が drift）
-- その他：scene-rich テンプレ A2 設計 / OBJECT_SIGNATURES.avoid 取り込み (M-67) / NAMED_CHARACTER_PROFILES 生成パス実装 (M-16) / M-23 テンプレ J 対義語 / M-48 FAMILY_TEMPLATES / `scripts/build_prompts.py` D/H/J 戦略展開
+着手は user 判断。worktree 担当（プロンプト系）と main 担当（コード系）の振り分けは
+`docs/WORKFLOW.md` 参照。
 
 ---
 
 ## ブロッカー
 
-- なし。⑥ コード commit → 人間タスク → 完了宣言 の一直線。
+- なし。user 判断待ちのみ。
 
 ---
 
@@ -123,15 +89,4 @@ npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 python scripts/build_prompts.py --lesson 1       # worktree で実行
 ```
 
-人間側（Claude Code 実行不可）：
-
-```
-# 退役対象 GAS トリガー（Phase 4 ⑥ commit 完了後に GAS Triggers パネルから削除）
-generateImageBatch  09:00 daily
-generateImageBatch  13:00 daily
-generateImageBatch  17:00 daily
-
-# 削除後の確認
-GAS エディタ → Triggers パネル → 一覧が generateImageBatch を含まないことを目視
-（memory: GAS トリガーは文書を信用しない）
-```
+人間タスク：**なし**（Phase 4 完了で 0 件）。Phase 5 着手判断のみ。

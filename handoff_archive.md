@@ -86,6 +86,8 @@
 | `japanese-lesson-pipeline.json` | 最新の Drive エクスポートバンドル（`setupSpreadsheet` ソース 152660 B） | 中身は `gas/pipeline.gs` と同じ（Drive 投入用 wrapper） |
 | `exportVocabTypes_v1_0.gs` | Phase 1 ④ 退役（2026-05-20）| `gas/pipeline.gs` v7.2 から削除。後継 `scripts/classify-and-translate.mjs` が `data/vocab_types_lessonNN.json` を直接書く |
 | `syncRegistries_v_NA.gs` | Phase 2 ⑥ 退役（2026-05-20）| `gas/pipeline.gs` v7.3 から削除。`loadJsonFromDriveById` のみ `importExamplesFromLesson02` 依存のため本体に残置。後継 `scripts/sync-registries-local.mjs` が Sheets API で `data/master_*_registry.json` を直接書く。同値検証 PASS（`archive/registries_snapshot_2026-05-20_gas/` と `scripts/diff-registries.mjs` 参照） |
+| `generateAudio_v2_0_phase3_retired.gs` | Phase 3 ⑥ 退役（2026-05-20）| `gas/pipeline.gs` v7.4 から削除。後継 `scripts/generate-audio-local.mjs`（Cloud TTS Neural2 ローカル）+ `scripts/lib/audio-qc.mjs`（ffmpeg two-pass loudnorm/silenceremove/afade）+ `scripts/validate-audio.mjs`（invariants[D] = 音声 QC スペック検証）。GAS Trigger `generateAudioBatch`（毎日 10:00）削除済 |
+| `generateImages_v5_3_phase4_retired.gs` | Phase 4 ⑥ 退役（2026-05-21）| `gas/pipeline.gs` v7.5 から削除（2815→799 行・**-2016 行**）。Option C で **画像生成 + 関連 Sheet 操作 utility 9 件 + loadJsonFromDriveById** を一括退役。後継 `scripts/generate-images-local.mjs`（Imagen 4 ローカル）+ `scripts/lib/imagen-client.mjs`（AI Studio key 経由）+ `prompts/master_prompt_design_guide_v3_11_1.py`。GAS Trigger `generateImageBatch` × 3 件（9 / 13 / 17 時）削除済。**Sheet 操作 utility 退役理由：Phase 2 で registry が SSOT 化後、Sheet 直接操作は drift を生む anti-pattern**。`loadJsonFromDriveById` は唯一 consumer `importExamplesFromLesson02` 退役で同時引退 |
 
 ---
 

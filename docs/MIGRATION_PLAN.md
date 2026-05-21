@@ -60,9 +60,11 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   `generateAudioBatch`（毎日 10:00）を削除し、削除確認を docs 反映。
   完了＝ 生存中の GAS トリガー 0 件・`NEXT_ACTIONS.md` の人間タスク欄が空。
 
-# Phase 4：画像の呼び出し側ローカル化
-Imagen 呼び出しをローカルへ。これで GAS は完全消滅。明示保留（移行を止めない
-下流決定）：有料 Imagen 継続 か 自前 Stable Diffusion か は GAS 消滅"後"に別決定。
+# Phase 4：画像の呼び出し側ローカル化（完了 2026-05-21）
+Imagen 呼び出しをローカルへ。これで **GAS の自動実行 trigger は完全消滅**（手動
+GAS の seedLesson01 / extractFromGoiList / importFromLessonJson と Sheet / Drive
+は **入力系として残存** — 別 Phase 5 で対処）。明示保留（移行を止めない下流
+決定）：有料 Imagen 継続 か 自前 Stable Diffusion か は GAS trigger 消滅"後"に別決定。
 
 **Phase 4 完了条件の再定義（2026-05-21）：**
 
@@ -78,14 +80,16 @@ Phase 4 後 backlog に明示移管。** registry-as-canon 規律により画像
 `--force` 再生成で差し替え可能なので、Phase 4 後の iterative 改善で
 v3.12+ プロンプトガイドと併せて品質向上を追求する。
 
-**着手結果（2026-05-20 着手 / 進行中）**：
-- ① ② 完了（2026-05-20）。`scripts/check-imagen-key.mjs` PASS（全 3 モデル検出）、
-  `scripts/_imagen-smoke.mjs` PASS（Standard 1 件 PNG 663,677 bytes / 27 秒 / $0.04 課金成立で
-  billing 有効化も実機確認）。Client は `scripts/lib/imagen-client.mjs` に retry/backoff・
-  課金算出・billing 未有効化エラー判別込みで設置。
-- 別 worktree `phase4-prompt-plan`（`.claude/worktrees/image-prompt-plan`）で master prompt
-  guide 修正プランを並行作成中。③ 以降は **プラン取り込み後に組み直す**（独立に走らせない）。
-- 残作業：人間タスクとして GAS Triggers `generateImageBatch` × 3 件（9 / 13 / 17 時）削除 → ⑥ で実行。
+**完了結果（2026-05-21 v7.5）**：
+- ローカル `scripts/generate-images-local.mjs` が Imagen 4 でバッチ生成、
+  `data/images/*.png` を出力、`master_image_registry.json` を local path に更新
+- Client は `scripts/lib/imagen-client.mjs` に retry/backoff・課金算出・billing 未有効化エラー判別込みで設置
+- マスタープロンプトガイド：`prompts/master_prompt_design_guide_v3_11_1.py`（hash `a79e54a29e51`）
+- ③ smoke 5 件完走（`word_医者 / 会社員 / 学生 / 大学生 / 先生`・$0.20）／PNG QC A1〜A4 全件 PASS
+- 人間目視で品質 3 課題（線スタイル不一致 / 学生テキスト焼き込み / 会社員 photoreal drift）発見＝v3.12 修正候補として `docs/PHASE_BACKLOG.md` に保全（既存 6 + Imagen 4 由来 3 = 計 9 項目）
+- GAS `generateImageBatch` セクション + 関連 Sheet 操作 utility 9 件全削除（gas/pipeline.gs 2815→799 行）→ `archive/gas_old/generateImages_v5_3_phase4_retired.gs` に保全（2222 行）
+- GAS Triggers から `generateImageBatch` × 3 件（9 / 13 / 17 時）削除完了（2026-05-21 人間検証済）
+- ④⑤（image QC / invariants[E]）と 残り 436 件本生成は `docs/PHASE_BACKLOG.md` Phase 4 後 backlog に移管
 
 ## Phase 4 スライス（2026-05-20 確定）
 
@@ -133,8 +137,36 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   削除し、削除確認を docs 反映。完了＝ 生存中の GAS トリガー 0 件・GAS 完全消滅・
   `NEXT_ACTIONS.md` の人間タスク欄が空。
 
+# Phase 5：入力系のローカル化（未着手・設計待ち）
+
+Phase 4 完了時点で **trigger 駆動の GAS 自動実行は 0 件**になったが、以下が
+入力系として残存し、user が当初想定していた「完全ローカル」とは gap がある
+（2026-05-21 user 確認で判明・本 Phase を新規追加）：
+
+| 依存先 | 現状の役割 |
+|---|---|
+| **GAS（手動実行）** | `seedLesson01.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` の 3 系統。新規課追加時に人間が GAS エディタから手動実行する |
+| **Google Drive** | `Goi_List.pdf`（N5 語彙原典）/ `lesson_NN.json`（課マスター）が Drive 上に存在し、GAS が Drive API で読む |
+| **Google Sheets** | Vocabulary / Examples シートが「Stage 1 出力先 + ローカル registry の入力源」として残存 |
+
+冒頭の「GAS・Google Sheets・Google Drive はランタイムから引退」（line 2-4）を
+完成させるための Phase。Phase 1〜4 が「実行系のローカル化」だったのに対し、
+Phase 5 は「**入力系（編集 / 取り込み）のローカル化**」。
+
+**スコープ候補**（着手前に user 判断で確定する）：
+1. `lesson_NN.json` を Drive → repo 直置きに移行（`data/lessons/lesson_NN.json`）
+2. `Goi_List.pdf` を repo 取り込み or 抽出結果 JSON 固定化
+3. `extractFromGoiList.gs` の local 化（PDF→JSON 抽出。一度きりで OK の可能性高）
+4. `importFromLessonJson.gs` の local 化（Sheet を経由せず registry に直接書く）
+5. Sheet 自体の退役（Vocabulary / Examples 撤去、registry だけが SSOT に）
+6. `seedLesson01.gs` の退役（lesson_01 ハードコードを lesson_01.json + 汎用 importer に統合）
+
+**着手条件**：Phase 4 完了宣言 + user が優先度を確定すること。完了条件は
+「`gas/pipeline.gs` 削除済 + Vocabulary/Examples シート撤去済 + 新規課追加が
+ローカルだけで完結する」。スライス分割は着手時に決める。
+
 # 横断要件（全 Phase）
 - データ＋行単位状態台帳（現シート：語彙438／例文1027＋status 列）を
-  repo ローカル JSON に移す（SSOT）。
+  repo ローカル JSON に移す（SSOT）。**Phase 5 のメインゴール**として扱う。
 - 人間ビュー：シートの一覧性を `npm run status` 等で代替。
 - 各 Phase に「完了＝この検証が通る」を1行明記。
