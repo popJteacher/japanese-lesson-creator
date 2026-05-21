@@ -137,33 +137,97 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   削除し、削除確認を docs 反映。完了＝ 生存中の GAS トリガー 0 件・GAS 完全消滅・
   `NEXT_ACTIONS.md` の人間タスク欄が空。
 
-# Phase 5：入力系のローカル化（未着手・設計待ち）
+# Phase 5：入力系のローカル化（未着手・スコープ確定 2026-05-21）
 
 Phase 4 完了時点で **trigger 駆動の GAS 自動実行は 0 件**になったが、以下が
-入力系として残存し、user が当初想定していた「完全ローカル」とは gap がある
-（2026-05-21 user 確認で判明・本 Phase を新規追加）：
+入力系として残存し、user が当初想定していた「完全ローカル」とは gap がある：
 
 | 依存先 | 現状の役割 |
 |---|---|
-| **GAS（手動実行）** | `seedLesson01.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` の 3 系統。新規課追加時に人間が GAS エディタから手動実行する |
-| **Google Drive** | `Goi_List.pdf`（N5 語彙原典）/ `lesson_NN.json`（課マスター）が Drive 上に存在し、GAS が Drive API で読む |
-| **Google Sheets** | Vocabulary / Examples シートが「Stage 1 出力先 + ローカル registry の入力源」として残存 |
+| **GAS（手動実行）** | `seedLesson01.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` の 3 系統 |
+| **Google Drive** | `Goi_List.pdf` / `lesson_NN.json` が Drive 上に存在し GAS が読む |
+| **Google Sheets** | Vocabulary / Examples シートが行単位状態台帳として残存 |
 
 冒頭の「GAS・Google Sheets・Google Drive はランタイムから引退」（line 2-4）を
 完成させるための Phase。Phase 1〜4 が「実行系のローカル化」だったのに対し、
 Phase 5 は「**入力系（編集 / 取り込み）のローカル化**」。
 
-**スコープ候補**（着手前に user 判断で確定する）：
-1. `lesson_NN.json` を Drive → repo 直置きに移行（`data/lessons/lesson_NN.json`）
-2. `Goi_List.pdf` を repo 取り込み or 抽出結果 JSON 固定化
-3. `extractFromGoiList.gs` の local 化（PDF→JSON 抽出。一度きりで OK の可能性高）
-4. `importFromLessonJson.gs` の local 化（Sheet を経由せず registry に直接書く）
-5. Sheet 自体の退役（Vocabulary / Examples 撤去、registry だけが SSOT に）
-6. `seedLesson01.gs` の退役（lesson_01 ハードコードを lesson_01.json + 汎用 importer に統合）
+**完了条件：**
 
-**着手条件**：Phase 4 完了宣言 + user が優先度を確定すること。完了条件は
-「`gas/pipeline.gs` 削除済 + Vocabulary/Examples シート撤去済 + 新規課追加が
-ローカルだけで完結する」。スライス分割は着手時に決める。
+```
+gas/pipeline.gs 削除済（⑥）
++ 新規課追加がローカルだけで完結する（⑤ で例文画像 line 含めて達成）
++ Vocabulary / Examples シート撤去済（人間タスクとして残る）
+```
+
+## 設計判断（2026-05-21 user 議論で確定）
+
+1. **catalog アーキテクチャは source 非依存**：`data/vocab_catalog.json` を SSOT として
+   確立し、`sourceIds[]` で複数ソース（Goi_List N5〜N1 / 将来別書籍 / 自作リスト）を
+   受け入れる構造にする。dedup キー = word+reading。Goi_List を SSOT そのものとはせず
+   「最初の流入元」として扱う。
+2. **抽出 script は移植せず凍結**：`extractFromGoiList.gs` のロジックは一度だけ
+   local 実行 → `data/sources/goi_list_raw.json` に凍結 → 抽出 script は archive 行き。
+   将来別ソースが来たら新規 importer を書く（既存 script は触らない・メンテ不要）。
+3. **例文画像 line を Phase 5 に統合**：完了条件「新規課追加がローカルだけで完結」を
+   満たすには例文画像のローカル生成が必須。例文用 master prompt template は worktree
+   側で新設し、build_prompts.py を catalog 駆動 + 全 vocab_type 対応に拡張する。
+4. **catalog-driven 先行 prompt 生成 + 予算駆動 batch 生成**：vocabulary 画像は catalog
+   全件に対して先行 prompt 生成（無料）＋ `npm run generate-images -- --limit N` で
+   user 都合の batch 生成（コスト分散）。例文は lesson-scoped のため先行生成不可。
+5. **v3.12 マスタープロンプトガイド person 品質修正は Phase 5 と独立**：修正 1-6 は
+   PHASE_BACKLOG「Phase 4 後 backlog」に残置。Phase 5 ④ の worktree 作業とは別
+   タイミングで着手（既存 v3.11.1 画像は --force 再生成しない限り変わらないため
+   timing 制約なし・user 判断 2026-05-21）。
+6. **音声自然さチェックは Phase 5 と独立**：Gemini 2.5 audio path で PHASE_BACKLOG
+   「Phase 3 後 backlog」に記録済（着手は Phase 5 完了後・user 判断 2026-05-21）。
+
+## Phase 5 スライス（2026-05-21 確定）
+
+順序付き ①〜⑥。Phase 3/4 と同じく各スライス完了時にコミット境界を切る。
+active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
+**① と ④ は依存関係なく並行可能**（main / worktree 別セッションで進める。
+1 セッション = 1 worktree の規律は維持）。
+
+- **①** Goi_List 全レベル抽出 + raw source 凍結。**main 専属・プラン非依存**。
+  既存 `extractFromGoiList.gs` のロジックを一度だけ local 実行して全レベル
+  （N5/N4/N3/N2/N1）を抽出し `data/sources/goi_list_raw.json` に凍結。
+  抽出 script は `archive/scripts_old/` 行き（再実行不要）。
+  完了＝`data/sources/goi_list_raw.json` が全レベル commit 済・抽出 script 凍結済。
+
+- **②** `vocab_catalog.json` の確立。**main 専属・プラン非依存（① 完了後）**。
+  `scripts/build-catalog.mjs` 新規作成（source-agnostic スキーマで構築・
+  dedup = word+reading・`sourceIds[]` / `lessonRefs[]` 保持・既存 lesson_01/02
+  vocabulary も統合）。`scripts/classify-and-translate.mjs` を catalog 入力に
+  切替。完了＝`vocab_catalog.json` が SSOT 化・`npm run validate` PASS。
+
+- **③** `import-lesson.mjs` の vocab 配線。**main 専属・プラン非依存（② 完了後）**。
+  `scripts/import-lesson.mjs` 新規作成（lesson_NN.json → catalog 追記 +
+  registry pending 追加・**vocab のみ**）。Drive 参照を `data/lessons/lesson_NN.json`
+  に切替。**例文配線は ⑤ で行う**（④ worktree 作業を待たずに main 側を進める分離）。
+  完了＝`npm run import-lesson -- --lesson 01` が `seedLesson01` 同等動作で完走。
+
+- **④ ＜プラン強依存・worktree 専属＞** 例文 master prompt template 新設 +
+  build_prompts.py 拡張。**① と並行可能**。`master_prompt_design_guide_v3_N.py`
+  に `vocabulary_example_sentence` template 新設（STYLE_BIBLE / 不変条件を
+  vocabulary_person から継承）。`build_prompts.py` を catalog 駆動 + 全 vocab_type
+  （person / concrete_object / building / action_verb / adjective / etc.）+
+  例文にスコープ拡張。**v3.12 person 品質修正 1-6 は別作業（PHASE_BACKLOG 残置）**。
+  完了＝`python scripts/build_prompts.py --catalog` で vocab 全タイプ + 例文の
+  prompt JSON 出力・`invariants[C]` PASS。
+
+- **⑤** 例文配線 + smoke 生成。**main 専属・プラン依存（③ + ④ 完了後）**。
+  ③ の `import-lesson.mjs` を ④ の builder に接続（vocab + 例文両方の prompt が
+  registry に乗る）。lesson_02 例文 5 件 smoke 生成（nanobanana・~$0.20）で
+  同値検証。完了＝lesson_02 例文 5 件が pending→ready まで通り、
+  `missing-assets` の image missing が -5。
+
+- **⑥** GAS 入力系 3 系統 + Sheet/Drive 退役。**main 専属・プラン非依存（⑤ 完了後）**。
+  `gas/pipeline.gs` から seedLesson01 / extractFromGoiList / importFromLessonJson
+  を削除 → `archive/gas_old/inputs_v1_phase5_retired.gs` に保全。`gas/` ディレクトリが
+  空になればディレクトリごと撤去。**Sheet 削除は人間タスクとして残す**（Sheets API
+  経由削除はやらない）。完了＝`gas/` ディレクトリ削除済・人間タスク欄に
+  「Sheet (Vocabulary/Examples) 削除確認」のみ残る。
 
 # 横断要件（全 Phase）
 - データ＋行単位状態台帳（現シート：語彙438／例文1027＋status 列）を

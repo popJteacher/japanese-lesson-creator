@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記 / **方針転換：nanobanana 一本化** = v3.12 主指針を「nanobanana 安全」に変更、Imagen 4 由来 3 項目の優先度↓ / nanobanana で 5 件 --force 再生成 human review で項目 7-9 が未再現を実機確認、v3.12 では項目 1-6 のみ必須対応で OK）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記 / **方針転換：nanobanana 一本化** = v3.12 主指針を「nanobanana 安全」に変更、Imagen 4 由来 3 項目の優先度↓ / nanobanana で 5 件 --force 再生成 human review で項目 7-9 が未再現を実機確認、v3.12 では項目 1-6 のみ必須対応で OK / **Phase 3 後 backlog セクション新設** = Phase 5 設計議論で発見した音声自然さチェックを音声 line backlog として記録（Gemini 2.5 audio マルチモーダル path で実装確定・着手は Phase 5 完了後）/ 運用ルールに「Phase N 後」命名規則注記追加）
 
 ---
 
@@ -26,6 +26,32 @@
 - 退避理由：Phase 2 で registry を repo ネイティブ化する＝ローカルが registry を repo に
   直接書くため、Drive download/upload ループ自体が消滅する。先に作ると Phase 2 で捨てる。
 - 戻し方：戻さない。Phase 2 で「Drive registry 経由の手作業ゼロ」を達成した時点で恒久解決。
+
+---
+
+## Phase 3 後 backlog（Phase 3 完了後に個別着手）
+
+### 音声自然さチェック（発音・アクセント・プロソディ）
+- 出所：Phase 5 設計議論（2026-05-21）。現 `invariants[D]` は技術スペック
+  （LUFS / TP / 48kHz mono）のみで「自然さ」は未検証。人間の耳が SSOT 状態。
+- 退避理由：Phase 5 完了条件「新規課追加がローカルだけで完結する」に不要・
+  Phase 5 の主題（入力系ローカル化）と直交。Phase 3 のテーマ（音声・"獲得"
+  系統）に分類される。
+- 戻し方：Phase 5 完了後の任意のタイミングで着手（Phase 3 は既に完了済の
+  ため即時着手可・user 判断のみ）。**user 確定（2026-05-21）：オプション (2)
+  Gemini 2.5 audio マルチモーダルで実装**（包括的・~$0.5 / 500 ファイル・
+  2-3 日想定）。
+- 実装メモ：
+  - 入力：`data/audio/*.mp3` + 元テキスト（`lesson_NN.json` から）
+  - 呼出：Gemini 2.5 Flash で「この音声で対象語が自然な日本語アクセントで
+    読まれているか・誤読や不自然なプロソディはないか」を確認
+  - 出力：自然さスコア + 問題点コメント → registry に WARN として記録
+  - `invariants[D]` に WARN 件数を集計（既存 LUFS WARN と同じ流儀）
+  - **HARD ERROR にはしない**（人間レビューを置き換えない・補助に留める。
+    CLAUDE.md memory `feedback_dont_preempt_visual_review` の音声版規律）
+- 棄却された代替案（2026-05-21 user 議論）：
+  - (1) Whisper round-trip：発音のみ対象・同音語判別不可で検出力低い
+  - (3) F0 + OJAD：研究級・辞典データ入手困難・実装 2-4 週間
 
 ---
 
@@ -212,6 +238,12 @@ stats.json + 決定したしきい値を `image-qc.mjs` 内の `CALIBRATION` con
   7 件サンプル画像（学生 / スペイン / ベトナム / ブラジル / アメリカ / 日本 / 先生）
   をユーザーと目視レビューして発見。Phase 4 を「③⑥」最小スコープで完了させる
   方針に切替えたため、v3.12+ 修正は Phase 4 完了後の worktree 担当作業として退避。
+- **Phase 5 との関係（2026-05-21 user 確定）：Phase 5 ④ には統合しない。別作業として
+  独立着手する。** 理由は (a) v3.12 修正 1-6 は単語レベル（vocabulary_person）
+  品質の観察に基づくため Phase 5 の例文 template 新設とは焦点が異なる、(b) 既存
+  v3.11.1 画像は `--force` 再生成しない限り変わらないため timing 制約がなく独立。
+  Phase 5 ④ の worktree セッションで一緒にやりたくなる誘惑があるが、混ぜると
+  スライス境界が崩れるので分離する。
 - 退避理由：構造修正にプロンプトガイド本体の改修が必要で、worktree 専属領域。
   main 側からは触らない（WORKFLOW.md §「worktree でやってよいこと」1-2 番）。
 - 戻し方：Phase 4 完了後の任意のタイミングで worktree セッション
@@ -441,3 +473,8 @@ bias 差を意味する。v3.12 ではどちらのモデルでも安全に動く
   記述不足のまま放置しない。
 - 所属 Phase が active になったら NEXT_ACTIONS へ移し、本ファイルからは削除する。
 - 永久に戻さない項目（Phase 2 で吸収されるなど）は「戻し方：戻さない」と明記する。
+- セクション名「**Phase N 後 backlog**」は **テーマ別グルーピング**（Phase N の主題に
+  分類されるが Phase N 中には拾わなかった作業）であり、**着手 gate ではない**。
+  Phase N が既に完了している場合（現状 Phase 1〜4 すべて該当）、その backlog の項目は
+  user 判断で即時着手可能。例：Phase 4 後 backlog は Phase 4（画像 line）テーマの
+  退避項目で、Phase 4 完了済の現在は任意のタイミングで着手できる。

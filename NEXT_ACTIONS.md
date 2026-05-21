@@ -5,69 +5,67 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（**Phase 4 完了宣言** + **nanobanana 化実装完了** / GAS Triggers `generateImageBatch` × 3 件削除を人間検証済 / 生存中 GAS 自動 trigger = 0 件 / `generate-images-local.mjs` 既定 backend = nanobanana (Imagen 4 は `--backend imagen4` で opt-in) / 次は Phase 5 設計議論）
+**最終更新：** 2026-05-21（**Phase 5 着手・スコープ確定** / スライス ①〜⑥ 確定 / 設計判断 6 項目を MIGRATION_PLAN に追記 / 音声自然さチェックを Phase 3 後 backlog に記録）
 
 ---
 
 ## 現在地
 
 - **Phase 0／1／2／3／4：完了。** ✅
-- **Phase 5：未着手・設計待ち** — user が優先度を確定したら NEXT_ACTIONS に降ろす
-- **Phase 4 後 backlog：着手待ち** — `docs/PHASE_BACKLOG.md` に各項目の出所 / 退避理由 / 戻し方を記載済
-- **nanobanana 化：完了（2026-05-21）** — `generate-images-local.mjs` 既定 backend が nanobanana に。Imagen 4 は `--backend imagen4` で fallback 残存
+- **Phase 5：着手中（① active）** — スライス ①〜⑥ 確定（`docs/MIGRATION_PLAN.md` § Phase 5 参照）
+- **Phase 4 後 backlog**：着手保留（v3.12 person 品質修正 1-6 + 残り 436 件本生成）
+- **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
-生存中の GAS 自動 trigger：**0 件**（CLAUDE.md memory: GAS トリガーは文書を信用しない → 2026-05-21 人間が Triggers パネルで実視確認済）。
-残存している GAS：手動実行用 `seedLesson01` / `extractFromGoiList` / `importFromLessonJson` の 3 系統のみ（自動実行されない）。
-
-**画像生成 backend 状況：**
-- 既定 = `gemini-2.5-flash-image` (Nano Banana) / ~$0.0387/img (output tokens ベース・実機 $0.0387 確認済)
-- opt-in = `imagen-4.0-generate-001` (Imagen 4 Standard) / $0.04/img 固定
-- check：`npm run check-nanobanana-key` PASS（3 モデル全検出）/ `npm run check-imagen-key` PASS（3 モデル全検出）
-- smoke：`node scripts/_nanobanana-smoke.mjs` PASS（1024×1024 PNG / cost $0.0387）
+生存中の GAS 自動 trigger：**0 件**（Phase 4 完了時点・人間検証済 2026-05-21）。
+残存 GAS は手動実行用 `seedLesson01` / `extractFromGoiList` / `importFromLessonJson`
+の 3 系統のみ（Phase 5 ⑥ で退役予定）。
 
 ---
 
-## 今やること（user 判断待ち）
+## active：Phase 5 ① — Goi_List 全レベル抽出 + raw source 凍結
 
-以下 2 種類の作業が parallel に走り得る。user の優先度判断を待つ：
+**担当**：main 専属・プラン非依存
+**並行**：worktree セッションで ④ を別途立ち上げて並行起動可（後述）
 
-### 議題 A：Phase 5 設計議論（入力系のローカル化）
+**やること：**
 
-`docs/MIGRATION_PLAN.md` § Phase 5 にスコープ候補 6 項目を記載済。
-着手前に user が以下を確定する：
+1. 既存 `gas/pipeline.gs` の `extractFromGoiList` セクション（line 402-607）の抽出
+   ロジックを Node 側に移植（DriveApp → fs read に置換）
+2. Goi_List.pdf を Drive からダウンロードして `data/sources/goi_list_raw.pdf` に
+   配置（sensitive でなければ commit。サイズ次第で .gitignore でも可）
+3. 抽出 script `scripts/extract-goi-list.mjs` を新規作成し全レベル（N5/N4/N3/N2/N1）
+   抽出 → `data/sources/goi_list_raw.json` 出力
+   - スキーマ：`{ _meta: { extractedAt, source, totalLevels }, entries: [{ word, reading, jlpt, pos, ... }] }`
+4. 結果を commit → 抽出 script を `archive/scripts_old/extract_goi_list_v1_phase5.mjs`
+   に移管（一度きり実行・再実行不要）
 
-1. **lesson_NN.json の repo 化**：Drive → `data/lessons/lesson_NN.json` に移す
-2. **Goi_List.pdf の repo 取り込み**：PDF を repo に置くか / 抽出結果 JSON を固定化するか
-3. **`extractFromGoiList.gs` の local 化**：PDF→JSON 抽出ロジックを Python or Node に移植
-4. **`importFromLessonJson.gs` の local 化**：Sheet を経由せず registry に直接書く
-5. **Sheet 自体の退役**：Vocabulary / Examples 撤去
-6. **`seedLesson01.gs` の退役**：lesson_01 ハードコードを lesson_01.json + 汎用 importer に統合
+**完了条件**：`data/sources/goi_list_raw.json` が全レベル commit 済・抽出 script 凍結済。
 
-優先順位 / 段階分け / スライス境界の議論が必要。完了条件は「新規課追加が
-ローカルだけで完結する」。
+**規模見積**：1-2 セッション。GAS の `parseGoiList_` ロジックを素直に移植すれば動く想定。
 
-### 議題 B：Phase 4 後 backlog の優先度判断
+**コスト**：$0（local 処理）
 
-詳細は `docs/PHASE_BACKLOG.md` 参照。主な候補：
+---
 
-| 優先度候補 | 項目 | 想定コスト |
-|---|---|---|
-| 🔴 高 | v3.12 マスタープロンプトガイド修正（worktree 担当・**実機で項目 7-9 が nanobanana 未再現確認済 → 項目 1-6 のみ必須対応**で OK） | API 課金なし |
-| 🟡 中 | 残り 436 件の本生成（v3.12 改修後） | ~$17 (nanobanana) |
-| 🟢 低 | lesson_01 既存 41 件 person 画像の再生成（visual continuity・nanobanana で実施） | 数 $ |
-| 🟢 低 | 画像 QC ④⑤ 実装（旧 Phase 4 ④⑤・photo drift 検出に有効と判明） | $0.80 校正 + 実装 |
-| 🟢 低 | `scripts/apply_v5_3_patches.py` archive 移設（dead code 化） | なし |
-| 🟢 低 | `docs/REFERENCE.md` 包括 audit（v7.3 時点で凍結気味） | なし |
-| 🟢 低 | scene-rich テンプレ A2 設計 / OBJECT_SIGNATURES.avoid (M-67) / NAMED_CHARACTER_PROFILES 生成パス (M-16) / M-23 テンプレ J 対義語 / M-48 FAMILY_TEMPLATES / `scripts/build_prompts.py` D/H/J 戦略展開 | プラン依存 |
+## 並行起動可能：Phase 5 ④（worktree） — 例文 master prompt template + build_prompts.py 拡張
 
-着手は user 判断。worktree 担当（プロンプト系）と main 担当（コード系）の振り分けは
-`docs/WORKFLOW.md` 参照。
+main で ① 進行中に user が worktree セッションを別途立てれば並行可能。
+**1 セッション = 1 worktree** の規律は維持（同時に main と worktree を同一セッションで触らない）。
+
+worktree でやること（詳細は `docs/MIGRATION_PLAN.md` § Phase 5 ④）：
+
+- `master_prompt_design_guide_v3_N.py` に `vocabulary_example_sentence` template 新設
+- `build_prompts.py` を catalog 駆動 + 全 vocab_type 対応に拡張
+- 例文 5 件 sample プロンプトを `data/image_prompts_lesson02_v3_N.json` に出力して人間レビュー
+- **v3.12 person 品質修正 1-6 は別作業として PHASE_BACKLOG 残置**（混ぜない）
+
+worktree セッション開始手順は `docs/WORKFLOW.md` 参照。
 
 ---
 
 ## ブロッカー
 
-- なし。user 判断待ちのみ。
+- なし。
 
 ---
 
@@ -75,20 +73,18 @@
 
 ```
 npm run validate                   # invariants A=v7.5 / B=a79e54a29e51 / C=12×4 / D=55/55（3 WARN）PASS
-npm run missing-assets             # 現状 image 441 / audio 108（v3.12 後 backlog で削減予定）
+npm run missing-assets             # 現状 image 441 / audio 108（Phase 5 ⑤ 完了後に減少）
 npm run check-sa                   # Sheets API 疎通
 npm run check-tts-sa               # Cloud TTS API 疎通
 npm run check-ffmpeg               # ffmpeg / ffprobe / filter / encoder 疎通
-npm run check-imagen-key           # AI Studio ListModels（Imagen 4 系の検出）— 直近 PASS
-npm run check-nanobanana-key       # AI Studio ListModels（Nano Banana 3 モデル検出）— 直近 PASS
+npm run check-imagen-key           # AI Studio ListModels（Imagen 4 系）
+npm run check-nanobanana-key       # AI Studio ListModels（Nano Banana）
 npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
 npm run backfill-registries [-- --dry-run | --verbose | --only image|audio]
 npm run generate-audio [-- --dry-run | --limit N | --only word|sentence | --max-chars N | --force | --no-qc]
 npm run generate-images -- --prompts <path> [--print-prompts | --sync-only | --dry-run]
                                   [--backend nanobanana|imagen4]  # 既定 nanobanana
                                   [--limit N] [--max-images N] [--force]
-                                  [--person allow_adult|dont_allow|allow_all]   # imagen4 専用
-                                  [--aspect 1:1] [--size 1K|2K]                 # imagen4 専用
                                   [--out <md>]
 npm run validate-audio
 node scripts/_tts-smoke.mjs
@@ -96,7 +92,7 @@ node scripts/_imagen-smoke.mjs        # 実機 1 枚＝$0.04 (Imagen 4)
 node scripts/_nanobanana-smoke.mjs    # 実機 1 枚＝~$0.0387 (Nano Banana)
 node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
-python scripts/build_prompts.py --lesson 1       # worktree で実行
+python scripts/build_prompts.py --lesson 1       # worktree で実行（Phase 5 ④ で --catalog 追加予定）
 ```
 
-人間タスク：**なし**（Phase 4 完了で 0 件）。Phase 5 着手判断のみ。
+人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
