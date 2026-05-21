@@ -124,6 +124,13 @@ PERSON_NATIONALITY_HINTS = {
             "diverse population including mixed heritage, in which case "
             "skin tone may extend to medium and hair color may vary.",
         "cultural_styling_hint":
+            # v3.12.1: option (c) yukata を削除。yukata は one-piece の伝統衣装
+            # だが、その後の TWO-COLOR RULE が "top and trousers MUST be in
+            # two clearly different colors" を要求するため、Imagen に矛盾シグナル
+            # （one-piece に対して上下対比を求める）を送っていた。両 (a)(b) は
+            # 2-piece (top + trousers / jacket + inner-top + trousers) なので
+            # TWO-COLOR RULE と整合。yukata 系の文化要素は (a) wagara で
+            # 別 garment 形で表現する。
             "The outfit MUST include at least one culturally identifiable "
             "Japanese element. Pick ONE of the following patterns: "
             "(a) a clean contemporary top with a subtle wagara (traditional "
@@ -132,11 +139,7 @@ PERSON_NATIONALITY_HINTS = {
             "trousers; "
             "(b) a modern noragi-inspired light jacket (kimono-cut workwear "
             "silhouette, straight sleeves, wide front overlap with a simple "
-            "tie or button closure) worn over a plain top and trousers; "
-            "(c) an everyday yukata (cotton informal kimono) in a "
-            "daily summer setting (NOT a festival/ceremonial display, "
-            "NOT an indoor/at-home setting — the subject must wear "
-            "outdoor footwear and stand on a daily outdoor surface). "
+            "tie or button closure) worn over a plain top and trousers. "
             # v3.10 二色化必須化（旗色 overlap 回避）:
             "TWO-COLOR RULE: top and trousers MUST be in two clearly "
             "different colors, NOT a single all-over color. Recommended "
@@ -404,15 +407,26 @@ COUNTRY_TO_PROFILE = {
 
 # ROLE_PHENOTYPE_PALETTE (6 entries・人類スペクトラム fair → deep brown)
 #   role nouns (医者・学生・先生 等) と americas_diverse fallback で使用。
-#   sha256(word + 'phenotype') mod 6 で deterministic 選択。
+#   sha256(word + PHENOTYPE_SALT) mod 6 で deterministic 選択。
 #   各 entry は rule_a / rule_b 準拠の 1 文記述。
+#
+# v3.12.1 改訂：初版 (v3.12.0) は skin tone を 6 段階で gradient させたが、
+#   隣接 entry の hair 記述が同一（例 entry[4]/[5] が "tightly coiled black"）
+#   だったため、視覚的に弁別不能なペアが発生。実機検証（lesson_01 の 医者
+#   palette[4] と 先生 palette[5]）で顕在化。本改訂で skin AND hair の両軸で
+#   全 entry が visibly 異なるよう書き直し、5-6 role を 1 課に並べたとき
+#   全員が一目で別人と判別可能にする。
+#   注：palette content の変更で同じ word の phenotype 文字列が変わる
+#       （hash index は不変だが、index の指す文字列が変わる）。本改訂は
+#       v3.12 シリーズ内の minor tuning (v3.12.1) として扱う — guide PART 1.5
+#       rule_e の palette-freeze 精神は次の major-version (v4.0) まで再適用。
 ROLE_PHENOTYPE_PALETTE = [
-    "fair skin with straight dark-brown to black hair",
-    "light-medium skin with wavy dark-brown hair",
-    "olive-tan skin with straight black hair",
-    "light brown skin with curly black hair",
-    "rich brown skin with tightly coiled black hair",
-    "deep brown skin with tightly coiled black hair",
+    "fair skin with short straight light-brown hair",
+    "light-medium skin with shoulder-length wavy dark-brown hair",
+    "olive-tan skin with long straight black hair",
+    "light brown skin with short curly dark-brown hair",
+    "rich brown skin with shoulder-length loosely curly black hair",
+    "deep brown skin with very short tightly coiled black hair",
 ]
 
 # PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE データ
