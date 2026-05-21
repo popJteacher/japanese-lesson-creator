@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（v3.8 完了 / word_新聞 sync 解消 / image QC 下書き完了し PHASE_BACKLOG 退避）
+**最終更新：** 2026-05-21（v3.8 完了 / word_新聞 sync 解消 / image QC 下書き完了し PHASE_BACKLOG 退避 / registry 382 件バックフィル完了）
 
 ---
 
@@ -52,10 +52,13 @@
 
 ### B. main で並行できること（任意・人間検証と独立）
 
-- **registry 未登録 120 件のバックフィル**（`docs/PHASE_BACKLOG.md` 参照）
 - **旧版アーカイブ整理**：`prompts/master_prompt_design_guide_v3_2.py` 〜 `_v3_7.py`、
   `data/image_prompts_lesson01_v3_2.json` 〜 `_v3_7.json` を archive 化（v3_8 で代替）。
   ※ ただしこれは「ガイド系ファイル」なので **worktree でやる**（WORKFLOW.md 準拠）。
+- **Phase 4 ⑥ 退役対象セクションのリストアップ**（実削除は ⑥ 着手時）：
+  `gas/pipeline.gs` の generateImageBatch / testSingleImage / previewPrompts /
+  retryImages / setupImageTriggersX3 / setupImageDailyTrigger と付随ヘルパの
+  line range 特定 + archive 先 `archive/gas_old/generateImages_v5_3_phase4_retired.gs` の枠組み準備。
 
 ### C. worktree（必要になったら別セッションで起動）
 
@@ -85,7 +88,6 @@ npm run validate               # baseline 確認
 - **NAMED_CHARACTER_PROFILES 生成パス実装**（M-16）
 - **M-23 テンプレ J 対義語仕様**（lesson_NN.json スキーマ拡張）
 - **M-48 FAMILY_TEMPLATES 活用**（vocab_type=family 設計）
-- **registry 未登録 120 件のバックフィル**
 - **`scripts/build_prompts.py` の D/H/J 戦略展開ロジック**：vocab_type=concrete_object / action_verb / adjective を実装するタイミングで `{STRATEGY_BLOCK}` 転記を追加（worktree で実装）
 
 ---
@@ -94,12 +96,13 @@ npm run validate               # baseline 確認
 
 ```
 npm run validate             # invariants A=v7.4 / B=477425a647a6 / C=12×7 / D=55/55（3 WARN）PASS
-npm run missing-assets       # image registry 62 件 / audio 0 件
+npm run missing-assets       # image 441 件未生成（registry stub あり） / audio 108 件未生成
 npm run check-sa             # Sheets API 疎通
 npm run check-tts-sa         # Cloud TTS API 疎通
 npm run check-ffmpeg         # ffmpeg / ffprobe / filter / encoder 疎通
 npm run check-imagen-key     # AI Studio ListModels（Imagen 4 系の検出）
 npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
+npm run backfill-registries [-- --dry-run | --verbose | --only image|audio]    # Sheet 未登録 id を空 stub で追加（idempotent）
 npm run generate-audio [-- --dry-run | --limit N | --only word|sentence | --max-chars N | --force | --no-qc]
 npm run generate-images -- --prompts <path> [--print-prompts | --sync-only | --dry-run]
                                   [--limit N] [--max-images N] [--force]

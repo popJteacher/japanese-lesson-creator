@@ -13,6 +13,7 @@
     "check-ffmpeg": "node scripts/check-ffmpeg.mjs",
     "check-imagen-key": "node scripts/check-imagen-key.mjs",
     "sync-registries": "node scripts/sync-registries-local.mjs",
+    "backfill-registries": "node scripts/backfill-registries.mjs",
     "generate-audio": "node scripts/generate-audio-local.mjs",
     "validate-audio": "node scripts/validate-audio.mjs",
     "generate-images": "node scripts/generate-images-local.mjs"

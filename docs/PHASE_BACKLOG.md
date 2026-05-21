@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（word_新聞 sync 漏れ解消・画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加）
 
 ---
 
@@ -30,18 +30,6 @@
 ---
 
 ## Phase 4 で取り出す項目（Phase 3 完了時に退避）
-
-### registry 未登録 120 件のバックフィル
-- 出所：Phase 3 ③ で `npm run generate-audio --dry-run` 実行時に検出。
-  Vocabulary シートに存在するが `master_audio_registry.json` に entry が無い語
-  （`word_十` / `word_遠い` / `word_十日` / `word_どこ` 等 120 件）。
-- 退避理由：Phase 3 は registry-as-canon 規律で「registry に entry が無い id は skip + warning」。
-  音声合成の対象から外れる。バックフィル方針（自動追加 vs 手動追加）は Phase 4 で
-  画像 registry も含めて統一的に決める方が筋（同じ問題が image 側にもある）。
-- 戻し方：Phase 4 active 化時に NEXT_ACTIONS に移す。registry 自動補完スクリプト
-  `scripts/backfill-registries.mjs`（仮）で sheets → registry entry 自動生成。
-  各 id に `audioUrl: null` の空 entry を作って後続の generate-audio で埋められる状態にする。
-  120 件 + image 側不足分を一度に処理。
 
 ### 画像 QC 仕様（Phase 4 ④ 設計下書き）
 - 出所：NEXT_ACTIONS B-4「Phase 4 ④ 設計の下調べ」として 2026-05-21 に main で作成。

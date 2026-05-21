@@ -2,7 +2,7 @@
   "_meta": {
     "version": "2.0",
     "createdAt": "2026-05-10",
-    "lastUpdated": "2026-05-20",
+    "lastUpdated": "2026-05-21",
     "purpose": "全課横断の画像登録簿。同一素材の重複生成を防ぐ SSOT。lesson_NN.json の materialNeeds[].imageRef が参照する。",
     "primaryKeyRules": {
       "auto_generated_vocab": "vocab_{word}  例: vocab_医者",
@@ -24,7 +24,7 @@
       "image://lesson{N}/action/{serial}": "action_L{N}_{serial} を参照",
       "image://lesson{N}/example/{id}": "ex_L{N}_{serial} を参照"
     },
-    "totalEntries": 95,
+    "totalEntries": 485,
     "lastModifiedBy": "handoff_v2_4.md §5 適用（v1.9）",
     "_addingNewEntry": "新エントリ追加手順: (1) primaryKeyRules に従いキー決定 (2) entries に追加 (3) status: pending で開始 (4) GAS 実行後 generated に更新 (5) レビュー後 approved に更新",
     "changes": [
@@ -2007,6 +2007,6324 @@
       "status": "pending",
       "url": null,
       "_note": "p6 例文。どの+N（かばん）。v2.11.10で新規追加。"
+    },
+    "word_挨拶": {
+      "type": "auto_generated_vocab",
+      "word": "挨拶",
+      "reading": "あいさつ",
+      "en": "greeting",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_挨拶_001",
+          "filename": "word_挨拶.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_アイス": {
+      "type": "auto_generated_vocab",
+      "word": "アイス",
+      "reading": "あいす",
+      "en": "ice cream",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_アイス_001",
+          "filename": "word_アイス.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_アイスクリーム": {
+      "type": "auto_generated_vocab",
+      "word": "アイスクリーム",
+      "reading": "あいすくりーむ",
+      "en": "ice cream",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_アイスクリーム_001",
+          "filename": "word_アイスクリーム.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_アイスコーヒー": {
+      "type": "auto_generated_vocab",
+      "word": "アイスコーヒー",
+      "reading": "あいすこーひー",
+      "en": "iced coffee",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_アイスコーヒー_001",
+          "filename": "word_アイスコーヒー.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_会う": {
+      "type": "auto_generated_vocab",
+      "word": "会う",
+      "reading": "あう",
+      "en": "to meet",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_会う_001",
+          "filename": "word_会う.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_青": {
+      "type": "auto_generated_vocab",
+      "word": "青",
+      "reading": "あお",
+      "en": "blue",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_青_001",
+          "filename": "word_青.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_青い": {
+      "type": "auto_generated_vocab",
+      "word": "青い",
+      "reading": "あおい",
+      "en": "blue",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_青い_001",
+          "filename": "word_青い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_赤": {
+      "type": "auto_generated_vocab",
+      "word": "赤",
+      "reading": "あか",
+      "en": "red",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_赤_001",
+          "filename": "word_赤.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_赤い": {
+      "type": "auto_generated_vocab",
+      "word": "赤い",
+      "reading": "あかい",
+      "en": "red",
+      "context": "vocabulary_adjective",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "word_赤い_001",
+          "filename": "word_赤い.png",
+          "imageUrl": "https://drive.google.com/uc?id=1EacBgBKinl3CicMDAUY0RTXo53miO3BP",
+          "generatedAt": "2026-05-21",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_明るい": {
+      "type": "auto_generated_vocab",
+      "word": "明るい",
+      "reading": "あかるい",
+      "en": "bright",
+      "context": "vocabulary_adjective",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "word_明るい_001",
+          "filename": "word_明るい.png",
+          "imageUrl": "https://drive.google.com/uc?id=1Q7Q611jPa1O9s_qEbQrheoZhXamrQNw1",
+          "generatedAt": "2026-05-21",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_秋": {
+      "type": "auto_generated_vocab",
+      "word": "秋",
+      "reading": "あき",
+      "en": "autumn",
+      "context": "vocabulary_abstract_concept",
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "word_秋_001",
+          "filename": "word_秋.png",
+          "imageUrl": "https://drive.google.com/uc?id=1kQoCEfiiMt36KAZSUwT1cQn3fLsj5Uai",
+          "generatedAt": "2026-05-21",
+          "regenerate": false
+        }
+      ]
+    },
+    "word_開ける": {
+      "type": "auto_generated_vocab",
+      "word": "開ける",
+      "reading": "あける",
+      "en": "to open",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_開ける_001",
+          "filename": "word_開ける.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_朝": {
+      "type": "auto_generated_vocab",
+      "word": "朝",
+      "reading": "あさ",
+      "en": "morning",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_朝_001",
+          "filename": "word_朝.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_朝御飯": {
+      "type": "auto_generated_vocab",
+      "word": "朝御飯",
+      "reading": "あさごはん",
+      "en": "breakfast",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_朝御飯_001",
+          "filename": "word_朝御飯.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_あさって": {
+      "type": "auto_generated_vocab",
+      "word": "あさって",
+      "reading": "あさって",
+      "en": "day after tomorrow",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_あさって_001",
+          "filename": "word_あさって.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_足": {
+      "type": "auto_generated_vocab",
+      "word": "足",
+      "reading": "あし",
+      "en": "leg",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_足_001",
+          "filename": "word_足.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_明日": {
+      "type": "auto_generated_vocab",
+      "word": "明日",
+      "reading": "あした",
+      "en": "tomorrow",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_明日_001",
+          "filename": "word_明日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_あそこ": {
+      "type": "auto_generated_vocab",
+      "word": "あそこ",
+      "reading": "あそこ",
+      "en": "over there",
+      "context": "vocabulary_demonstrative",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_あそこ_001",
+          "filename": "word_あそこ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_遊ぶ": {
+      "type": "auto_generated_vocab",
+      "word": "遊ぶ",
+      "reading": "あそぶ",
+      "en": "to play",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_遊ぶ_001",
+          "filename": "word_遊ぶ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_暖かい": {
+      "type": "auto_generated_vocab",
+      "word": "暖かい",
+      "reading": "あたたかい",
+      "en": "warm",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_暖かい_001",
+          "filename": "word_暖かい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_温かい": {
+      "type": "auto_generated_vocab",
+      "word": "温かい",
+      "reading": "あたたかい",
+      "en": "warm",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_温かい_001",
+          "filename": "word_温かい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_頭": {
+      "type": "auto_generated_vocab",
+      "word": "頭",
+      "reading": "あたま",
+      "en": "head",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_頭_001",
+          "filename": "word_頭.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_新しい": {
+      "type": "auto_generated_vocab",
+      "word": "新しい",
+      "reading": "あたらしい",
+      "en": "new",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_新しい_001",
+          "filename": "word_新しい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_暑い": {
+      "type": "auto_generated_vocab",
+      "word": "暑い",
+      "reading": "あつい",
+      "en": "hot",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_暑い_001",
+          "filename": "word_暑い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_熱い": {
+      "type": "auto_generated_vocab",
+      "word": "熱い",
+      "reading": "あつい",
+      "en": "hot",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_熱い_001",
+          "filename": "word_熱い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_厚い": {
+      "type": "auto_generated_vocab",
+      "word": "厚い",
+      "reading": "あつい",
+      "en": "thick",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_厚い_001",
+          "filename": "word_厚い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_後": {
+      "type": "auto_generated_vocab",
+      "word": "後",
+      "reading": "あと",
+      "en": "after",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_後_001",
+          "filename": "word_後.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_あなた": {
+      "type": "auto_generated_vocab",
+      "word": "あなた",
+      "reading": "あなた",
+      "en": "you",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_あなた_001",
+          "filename": "word_あなた.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_兄": {
+      "type": "auto_generated_vocab",
+      "word": "兄",
+      "reading": "あに",
+      "en": "older brother",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_兄_001",
+          "filename": "word_兄.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_姉": {
+      "type": "auto_generated_vocab",
+      "word": "姉",
+      "reading": "あね",
+      "en": "older sister",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_姉_001",
+          "filename": "word_姉.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_アパート": {
+      "type": "auto_generated_vocab",
+      "word": "アパート",
+      "reading": "あぱーと",
+      "en": "apartment",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_アパート_001",
+          "filename": "word_アパート.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_危ない": {
+      "type": "auto_generated_vocab",
+      "word": "危ない",
+      "reading": "あぶない",
+      "en": "dangerous",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_危ない_001",
+          "filename": "word_危ない.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_甘い": {
+      "type": "auto_generated_vocab",
+      "word": "甘い",
+      "reading": "あまい",
+      "en": "sweet",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_甘い_001",
+          "filename": "word_甘い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_雨": {
+      "type": "auto_generated_vocab",
+      "word": "雨",
+      "reading": "あめ",
+      "en": "rain",
+      "context": "vocabulary_weather",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_雨_001",
+          "filename": "word_雨.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_あめ": {
+      "type": "auto_generated_vocab",
+      "word": "あめ",
+      "reading": "あめ",
+      "en": "rain",
+      "context": "vocabulary_weather",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_あめ_001",
+          "filename": "word_あめ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_アメリカ": {
+      "type": "auto_generated_vocab",
+      "word": "アメリカ",
+      "reading": "あめりか",
+      "en": "america",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_アメリカ_001",
+          "filename": "word_アメリカ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ありがとう": {
+      "type": "auto_generated_vocab",
+      "word": "ありがとう",
+      "reading": "ありがとう",
+      "en": "thank you",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ありがとう_001",
+          "filename": "word_ありがとう.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ある": {
+      "type": "auto_generated_vocab",
+      "word": "ある",
+      "reading": "ある",
+      "en": "to be",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ある_001",
+          "filename": "word_ある.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_歩く": {
+      "type": "auto_generated_vocab",
+      "word": "歩く",
+      "reading": "あるく",
+      "en": "to walk",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_歩く_001",
+          "filename": "word_歩く.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_あれ": {
+      "type": "auto_generated_vocab",
+      "word": "あれ",
+      "reading": "あれ",
+      "en": "that",
+      "context": "vocabulary_demonstrative",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_あれ_001",
+          "filename": "word_あれ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_いいえ": {
+      "type": "auto_generated_vocab",
+      "word": "いいえ",
+      "reading": "いいえ",
+      "en": "no",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_いいえ_001",
+          "filename": "word_いいえ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_言う": {
+      "type": "auto_generated_vocab",
+      "word": "言う",
+      "reading": "いう",
+      "en": "to say",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_言う_001",
+          "filename": "word_言う.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_家": {
+      "type": "auto_generated_vocab",
+      "word": "家",
+      "reading": "いえ",
+      "en": "house",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_家_001",
+          "filename": "word_家.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_行く": {
+      "type": "auto_generated_vocab",
+      "word": "行く",
+      "reading": "いく",
+      "en": "to go",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_行く_001",
+          "filename": "word_行く.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_幾つ": {
+      "type": "auto_generated_vocab",
+      "word": "幾つ",
+      "reading": "いくつ",
+      "en": "how many",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_幾つ_001",
+          "filename": "word_幾つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_幾ら": {
+      "type": "auto_generated_vocab",
+      "word": "幾ら",
+      "reading": "いくら",
+      "en": "how much",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_幾ら_001",
+          "filename": "word_幾ら.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_いす": {
+      "type": "auto_generated_vocab",
+      "word": "いす",
+      "reading": "いす",
+      "en": "chair",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_いす_001",
+          "filename": "word_いす.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_忙しい": {
+      "type": "auto_generated_vocab",
+      "word": "忙しい",
+      "reading": "いそがしい",
+      "en": "busy",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_忙しい_001",
+          "filename": "word_忙しい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_痛い": {
+      "type": "auto_generated_vocab",
+      "word": "痛い",
+      "reading": "いたい",
+      "en": "painful",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_痛い_001",
+          "filename": "word_痛い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一": {
+      "type": "auto_generated_vocab",
+      "word": "一",
+      "reading": "いち",
+      "en": "one",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一_001",
+          "filename": "word_一.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一月": {
+      "type": "auto_generated_vocab",
+      "word": "一月",
+      "reading": "いちがつ",
+      "en": "january",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一月_001",
+          "filename": "word_一月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_いちご": {
+      "type": "auto_generated_vocab",
+      "word": "いちご",
+      "reading": "いちご",
+      "en": "strawberry",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_いちご_001",
+          "filename": "word_いちご.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一日": {
+      "type": "auto_generated_vocab",
+      "word": "一日",
+      "reading": "いちにち",
+      "en": "one day",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一日_001",
+          "filename": "word_一日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一年": {
+      "type": "auto_generated_vocab",
+      "word": "一年",
+      "reading": "いちねん",
+      "en": "one year",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一年_001",
+          "filename": "word_一年.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一番": {
+      "type": "auto_generated_vocab",
+      "word": "一番",
+      "reading": "いちばん",
+      "en": "number one",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一番_001",
+          "filename": "word_一番.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一枚": {
+      "type": "auto_generated_vocab",
+      "word": "一枚",
+      "reading": "いちまい",
+      "en": "one sheet",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一枚_001",
+          "filename": "word_一枚.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_いつ": {
+      "type": "auto_generated_vocab",
+      "word": "いつ",
+      "reading": "いつ",
+      "en": "when",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_いつ_001",
+          "filename": "word_いつ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_五日": {
+      "type": "auto_generated_vocab",
+      "word": "五日",
+      "reading": "いつか",
+      "en": "fifth day",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_五日_001",
+          "filename": "word_五日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_五つ": {
+      "type": "auto_generated_vocab",
+      "word": "五つ",
+      "reading": "いつつ",
+      "en": "five",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_五つ_001",
+          "filename": "word_五つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_いつも": {
+      "type": "auto_generated_vocab",
+      "word": "いつも",
+      "reading": "いつも",
+      "en": "always",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_いつも_001",
+          "filename": "word_いつも.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今": {
+      "type": "auto_generated_vocab",
+      "word": "今",
+      "reading": "いま",
+      "en": "now",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今_001",
+          "filename": "word_今.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_意味": {
+      "type": "auto_generated_vocab",
+      "word": "意味",
+      "reading": "いみ",
+      "en": "meaning",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_意味_001",
+          "filename": "word_意味.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_妹": {
+      "type": "auto_generated_vocab",
+      "word": "妹",
+      "reading": "いもうと",
+      "en": "younger sister",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_妹_001",
+          "filename": "word_妹.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_入り口": {
+      "type": "auto_generated_vocab",
+      "word": "入り口",
+      "reading": "いりぐち",
+      "en": "entrance",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_入り口_001",
+          "filename": "word_入り口.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_いる": {
+      "type": "auto_generated_vocab",
+      "word": "いる",
+      "reading": "いる",
+      "en": "to be",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_いる_001",
+          "filename": "word_いる.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_色": {
+      "type": "auto_generated_vocab",
+      "word": "色",
+      "reading": "いろ",
+      "en": "color",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_色_001",
+          "filename": "word_色.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_上": {
+      "type": "auto_generated_vocab",
+      "word": "上",
+      "reading": "うえ",
+      "en": "above",
+      "context": "vocabulary_spatial_relation",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_上_001",
+          "filename": "word_上.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_後ろ": {
+      "type": "auto_generated_vocab",
+      "word": "後ろ",
+      "reading": "うしろ",
+      "en": "behind",
+      "context": "vocabulary_spatial_relation",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_後ろ_001",
+          "filename": "word_後ろ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_歌": {
+      "type": "auto_generated_vocab",
+      "word": "歌",
+      "reading": "うた",
+      "en": "song",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_歌_001",
+          "filename": "word_歌.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_歌う": {
+      "type": "auto_generated_vocab",
+      "word": "歌う",
+      "reading": "うたう",
+      "en": "to sing",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_歌う_001",
+          "filename": "word_歌う.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_海": {
+      "type": "auto_generated_vocab",
+      "word": "海",
+      "reading": "うみ",
+      "en": "sea",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_海_001",
+          "filename": "word_海.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_絵": {
+      "type": "auto_generated_vocab",
+      "word": "絵",
+      "reading": "え",
+      "en": "picture",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_絵_001",
+          "filename": "word_絵.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_映画": {
+      "type": "auto_generated_vocab",
+      "word": "映画",
+      "reading": "えいが",
+      "en": "movie",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_映画_001",
+          "filename": "word_映画.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_英語": {
+      "type": "auto_generated_vocab",
+      "word": "英語",
+      "reading": "えいご",
+      "en": "english",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_英語_001",
+          "filename": "word_英語.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_駅": {
+      "type": "auto_generated_vocab",
+      "word": "駅",
+      "reading": "えき",
+      "en": "station",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_駅_001",
+          "filename": "word_駅.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_円": {
+      "type": "auto_generated_vocab",
+      "word": "円",
+      "reading": "えん",
+      "en": "yen",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_円_001",
+          "filename": "word_円.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おいしい": {
+      "type": "auto_generated_vocab",
+      "word": "おいしい",
+      "reading": "おいしい",
+      "en": "delicious",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おいしい_001",
+          "filename": "word_おいしい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_大きい": {
+      "type": "auto_generated_vocab",
+      "word": "大きい",
+      "reading": "おおきい",
+      "en": "big",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_大きい_001",
+          "filename": "word_大きい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お金": {
+      "type": "auto_generated_vocab",
+      "word": "お金",
+      "reading": "おかね",
+      "en": "money",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お金_001",
+          "filename": "word_お金.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_起きる": {
+      "type": "auto_generated_vocab",
+      "word": "起きる",
+      "reading": "おきる",
+      "en": "to wake up",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_起きる_001",
+          "filename": "word_起きる.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おじいさん": {
+      "type": "auto_generated_vocab",
+      "word": "おじいさん",
+      "reading": "おじいさん",
+      "en": "grandfather",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おじいさん_001",
+          "filename": "word_おじいさん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おじいちゃん": {
+      "type": "auto_generated_vocab",
+      "word": "おじいちゃん",
+      "reading": "おじいちゃん",
+      "en": "grandfather",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おじいちゃん_001",
+          "filename": "word_おじいちゃん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_教える": {
+      "type": "auto_generated_vocab",
+      "word": "教える",
+      "reading": "おしえる",
+      "en": "to teach",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_教える_001",
+          "filename": "word_教える.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お手洗い": {
+      "type": "auto_generated_vocab",
+      "word": "お手洗い",
+      "reading": "おてあらい",
+      "en": "restroom",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お手洗い_001",
+          "filename": "word_お手洗い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お父さん": {
+      "type": "auto_generated_vocab",
+      "word": "お父さん",
+      "reading": "おとうさん",
+      "en": "father",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お父さん_001",
+          "filename": "word_お父さん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_弟": {
+      "type": "auto_generated_vocab",
+      "word": "弟",
+      "reading": "おとうと",
+      "en": "younger brother",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_弟_001",
+          "filename": "word_弟.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_男": {
+      "type": "auto_generated_vocab",
+      "word": "男",
+      "reading": "おとこ",
+      "en": "man",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_男_001",
+          "filename": "word_男.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_男の子": {
+      "type": "auto_generated_vocab",
+      "word": "男の子",
+      "reading": "おとこのこ",
+      "en": "boy",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_男の子_001",
+          "filename": "word_男の子.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_男の人": {
+      "type": "auto_generated_vocab",
+      "word": "男の人",
+      "reading": "おとこのひと",
+      "en": "man",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_男の人_001",
+          "filename": "word_男の人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おととい": {
+      "type": "auto_generated_vocab",
+      "word": "おととい",
+      "reading": "おととい",
+      "en": "day before yesterday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おととい_001",
+          "filename": "word_おととい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_大人": {
+      "type": "auto_generated_vocab",
+      "word": "大人",
+      "reading": "おとな",
+      "en": "adult",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_大人_001",
+          "filename": "word_大人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_同じ": {
+      "type": "auto_generated_vocab",
+      "word": "同じ",
+      "reading": "おなじ",
+      "en": "same",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_同じ_001",
+          "filename": "word_同じ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お兄さん": {
+      "type": "auto_generated_vocab",
+      "word": "お兄さん",
+      "reading": "おにいさん",
+      "en": "older brother",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お兄さん_001",
+          "filename": "word_お兄さん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お姉さん": {
+      "type": "auto_generated_vocab",
+      "word": "お姉さん",
+      "reading": "おねえさん",
+      "en": "older sister",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お姉さん_001",
+          "filename": "word_お姉さん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おねがい": {
+      "type": "auto_generated_vocab",
+      "word": "おねがい",
+      "reading": "おねがい",
+      "en": "request",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おねがい_001",
+          "filename": "word_おねがい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お願いします": {
+      "type": "auto_generated_vocab",
+      "word": "お願いします",
+      "reading": "おねがいします",
+      "en": "please",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お願いします_001",
+          "filename": "word_お願いします.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おばあさん": {
+      "type": "auto_generated_vocab",
+      "word": "おばあさん",
+      "reading": "おばあさん",
+      "en": "grandmother",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おばあさん_001",
+          "filename": "word_おばあさん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_おはよう": {
+      "type": "auto_generated_vocab",
+      "word": "おはよう",
+      "reading": "おはよう",
+      "en": "good morning",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_おはよう_001",
+          "filename": "word_おはよう.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_重い": {
+      "type": "auto_generated_vocab",
+      "word": "重い",
+      "reading": "おもい",
+      "en": "heavy",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_重い_001",
+          "filename": "word_重い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_面白い": {
+      "type": "auto_generated_vocab",
+      "word": "面白い",
+      "reading": "おもしろい",
+      "en": "interesting",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_面白い_001",
+          "filename": "word_面白い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_お休み": {
+      "type": "auto_generated_vocab",
+      "word": "お休み",
+      "reading": "おやすみ",
+      "en": "rest",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_お休み_001",
+          "filename": "word_お休み.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_泳ぐ": {
+      "type": "auto_generated_vocab",
+      "word": "泳ぐ",
+      "reading": "およぐ",
+      "en": "to swim",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_泳ぐ_001",
+          "filename": "word_泳ぐ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_終わる": {
+      "type": "auto_generated_vocab",
+      "word": "終わる",
+      "reading": "おわる",
+      "en": "to end",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_終わる_001",
+          "filename": "word_終わる.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_音楽": {
+      "type": "auto_generated_vocab",
+      "word": "音楽",
+      "reading": "おんがく",
+      "en": "music",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_音楽_001",
+          "filename": "word_音楽.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_女": {
+      "type": "auto_generated_vocab",
+      "word": "女",
+      "reading": "おんな",
+      "en": "woman",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_女_001",
+          "filename": "word_女.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_女の子": {
+      "type": "auto_generated_vocab",
+      "word": "女の子",
+      "reading": "おんなのこ",
+      "en": "girl",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_女の子_001",
+          "filename": "word_女の子.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_女の人": {
+      "type": "auto_generated_vocab",
+      "word": "女の人",
+      "reading": "おんなのひと",
+      "en": "woman",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_女の人_001",
+          "filename": "word_女の人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_課": {
+      "type": "auto_generated_vocab",
+      "word": "課",
+      "reading": "か",
+      "en": "section",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_課_001",
+          "filename": "word_課.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_日": {
+      "type": "auto_generated_vocab",
+      "word": "日",
+      "reading": "か",
+      "en": "day",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_日_001",
+          "filename": "word_日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_カード": {
+      "type": "auto_generated_vocab",
+      "word": "カード",
+      "reading": "かーど",
+      "en": "card",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_カード_001",
+          "filename": "word_カード.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_回": {
+      "type": "auto_generated_vocab",
+      "word": "回",
+      "reading": "かい",
+      "en": "times",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_回_001",
+          "filename": "word_回.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_外国": {
+      "type": "auto_generated_vocab",
+      "word": "外国",
+      "reading": "がいこく",
+      "en": "foreign country",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_外国_001",
+          "filename": "word_外国.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_外国語": {
+      "type": "auto_generated_vocab",
+      "word": "外国語",
+      "reading": "がいこくご",
+      "en": "foreign language",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_外国語_001",
+          "filename": "word_外国語.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_外国人": {
+      "type": "auto_generated_vocab",
+      "word": "外国人",
+      "reading": "がいこくじん",
+      "en": "foreigner",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_外国人_001",
+          "filename": "word_外国人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_会社": {
+      "type": "auto_generated_vocab",
+      "word": "会社",
+      "reading": "かいしゃ",
+      "en": "company",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_会社_001",
+          "filename": "word_会社.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_階段": {
+      "type": "auto_generated_vocab",
+      "word": "階段",
+      "reading": "かいだん",
+      "en": "stairs",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_階段_001",
+          "filename": "word_階段.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_買い物": {
+      "type": "auto_generated_vocab",
+      "word": "買い物",
+      "reading": "かいもの",
+      "en": "shopping",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_買い物_001",
+          "filename": "word_買い物.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_買う": {
+      "type": "auto_generated_vocab",
+      "word": "買う",
+      "reading": "かう",
+      "en": "to buy",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_買う_001",
+          "filename": "word_買う.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_帰る": {
+      "type": "auto_generated_vocab",
+      "word": "帰る",
+      "reading": "かえる",
+      "en": "to return",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_帰る_001",
+          "filename": "word_帰る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_かぎ": {
+      "type": "auto_generated_vocab",
+      "word": "かぎ",
+      "reading": "かぎ",
+      "en": "key",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_かぎ_001",
+          "filename": "word_かぎ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_書く": {
+      "type": "auto_generated_vocab",
+      "word": "書く",
+      "reading": "かく",
+      "en": "to write",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_書く_001",
+          "filename": "word_書く.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_傘": {
+      "type": "auto_generated_vocab",
+      "word": "傘",
+      "reading": "かさ",
+      "en": "umbrella",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_傘_001",
+          "filename": "word_傘.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_菓子": {
+      "type": "auto_generated_vocab",
+      "word": "菓子",
+      "reading": "かし",
+      "en": "sweets",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_菓子_001",
+          "filename": "word_菓子.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_貸す": {
+      "type": "auto_generated_vocab",
+      "word": "貸す",
+      "reading": "かす",
+      "en": "to lend",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_貸す_001",
+          "filename": "word_貸す.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_風邪": {
+      "type": "auto_generated_vocab",
+      "word": "風邪",
+      "reading": "かぜ",
+      "en": "a cold",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_風邪_001",
+          "filename": "word_風邪.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_風": {
+      "type": "auto_generated_vocab",
+      "word": "風",
+      "reading": "かぜ",
+      "en": "wind",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_風_001",
+          "filename": "word_風.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_家族": {
+      "type": "auto_generated_vocab",
+      "word": "家族",
+      "reading": "かぞく",
+      "en": "family",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_家族_001",
+          "filename": "word_家族.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_片仮名": {
+      "type": "auto_generated_vocab",
+      "word": "片仮名",
+      "reading": "かたかな",
+      "en": "katakana",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_片仮名_001",
+          "filename": "word_片仮名.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_月": {
+      "type": "auto_generated_vocab",
+      "word": "月",
+      "reading": "がつ",
+      "en": "month",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_月_001",
+          "filename": "word_月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_カナダ": {
+      "type": "auto_generated_vocab",
+      "word": "カナダ",
+      "reading": "かなだ",
+      "en": "canada",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_カナダ_001",
+          "filename": "word_カナダ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_金": {
+      "type": "auto_generated_vocab",
+      "word": "金",
+      "reading": "かね",
+      "en": "money",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_金_001",
+          "filename": "word_金.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_紙": {
+      "type": "auto_generated_vocab",
+      "word": "紙",
+      "reading": "かみ",
+      "en": "paper",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_紙_001",
+          "filename": "word_紙.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_カメラ": {
+      "type": "auto_generated_vocab",
+      "word": "カメラ",
+      "reading": "かめら",
+      "en": "camera",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_カメラ_001",
+          "filename": "word_カメラ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_火曜": {
+      "type": "auto_generated_vocab",
+      "word": "火曜",
+      "reading": "かよう",
+      "en": "tuesday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_火曜_001",
+          "filename": "word_火曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_火曜日": {
+      "type": "auto_generated_vocab",
+      "word": "火曜日",
+      "reading": "かようび",
+      "en": "tuesday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_火曜日_001",
+          "filename": "word_火曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_辛い": {
+      "type": "auto_generated_vocab",
+      "word": "辛い",
+      "reading": "からい",
+      "en": "spicy",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_辛い_001",
+          "filename": "word_辛い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_カラオケ": {
+      "type": "auto_generated_vocab",
+      "word": "カラオケ",
+      "reading": "からおけ",
+      "en": "karaoke",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_カラオケ_001",
+          "filename": "word_カラオケ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_体": {
+      "type": "auto_generated_vocab",
+      "word": "体",
+      "reading": "からだ",
+      "en": "body",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_体_001",
+          "filename": "word_体.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_軽い": {
+      "type": "auto_generated_vocab",
+      "word": "軽い",
+      "reading": "かるい",
+      "en": "light",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_軽い_001",
+          "filename": "word_軽い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_カレンダー": {
+      "type": "auto_generated_vocab",
+      "word": "カレンダー",
+      "reading": "かれんだー",
+      "en": "calendar",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_カレンダー_001",
+          "filename": "word_カレンダー.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_川": {
+      "type": "auto_generated_vocab",
+      "word": "川",
+      "reading": "かわ",
+      "en": "river",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_川_001",
+          "filename": "word_川.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_かわいい": {
+      "type": "auto_generated_vocab",
+      "word": "かわいい",
+      "reading": "かわいい",
+      "en": "cute",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_かわいい_001",
+          "filename": "word_かわいい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_韓国": {
+      "type": "auto_generated_vocab",
+      "word": "韓国",
+      "reading": "かんこく",
+      "en": "south korea",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_韓国_001",
+          "filename": "word_韓国.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_漢字": {
+      "type": "auto_generated_vocab",
+      "word": "漢字",
+      "reading": "かんじ",
+      "en": "kanji",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_漢字_001",
+          "filename": "word_漢字.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_木": {
+      "type": "auto_generated_vocab",
+      "word": "木",
+      "reading": "き",
+      "en": "tree",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_木_001",
+          "filename": "word_木.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_黄色": {
+      "type": "auto_generated_vocab",
+      "word": "黄色",
+      "reading": "きいろ",
+      "en": "yellow",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_黄色_001",
+          "filename": "word_黄色.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_黄色い": {
+      "type": "auto_generated_vocab",
+      "word": "黄色い",
+      "reading": "きいろい",
+      "en": "yellow",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_黄色い_001",
+          "filename": "word_黄色い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_聞く": {
+      "type": "auto_generated_vocab",
+      "word": "聞く",
+      "reading": "きく",
+      "en": "to listen",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_聞く_001",
+          "filename": "word_聞く.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_北": {
+      "type": "auto_generated_vocab",
+      "word": "北",
+      "reading": "きた",
+      "en": "north",
+      "context": "vocabulary_spatial_relation",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_北_001",
+          "filename": "word_北.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ギター": {
+      "type": "auto_generated_vocab",
+      "word": "ギター",
+      "reading": "ぎたー",
+      "en": "guitar",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ギター_001",
+          "filename": "word_ギター.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_汚い": {
+      "type": "auto_generated_vocab",
+      "word": "汚い",
+      "reading": "きたない",
+      "en": "dirty",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_汚い_001",
+          "filename": "word_汚い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_切手": {
+      "type": "auto_generated_vocab",
+      "word": "切手",
+      "reading": "きって",
+      "en": "stamp",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_切手_001",
+          "filename": "word_切手.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_切符": {
+      "type": "auto_generated_vocab",
+      "word": "切符",
+      "reading": "きっぷ",
+      "en": "ticket",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_切符_001",
+          "filename": "word_切符.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_昨日": {
+      "type": "auto_generated_vocab",
+      "word": "昨日",
+      "reading": "きのう",
+      "en": "yesterday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_昨日_001",
+          "filename": "word_昨日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_九": {
+      "type": "auto_generated_vocab",
+      "word": "九",
+      "reading": "きゅう",
+      "en": "nine",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_九_001",
+          "filename": "word_九.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_牛乳": {
+      "type": "auto_generated_vocab",
+      "word": "牛乳",
+      "reading": "ぎゅうにゅう",
+      "en": "milk",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_牛乳_001",
+          "filename": "word_牛乳.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今日": {
+      "type": "auto_generated_vocab",
+      "word": "今日",
+      "reading": "きょう",
+      "en": "today",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今日_001",
+          "filename": "word_今日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_教科書": {
+      "type": "auto_generated_vocab",
+      "word": "教科書",
+      "reading": "きょうかしょ",
+      "en": "textbook",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_教科書_001",
+          "filename": "word_教科書.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_教室": {
+      "type": "auto_generated_vocab",
+      "word": "教室",
+      "reading": "きょうしつ",
+      "en": "classroom",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_教室_001",
+          "filename": "word_教室.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_兄弟": {
+      "type": "auto_generated_vocab",
+      "word": "兄弟",
+      "reading": "きょうだい",
+      "en": "siblings",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_兄弟_001",
+          "filename": "word_兄弟.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_去年": {
+      "type": "auto_generated_vocab",
+      "word": "去年",
+      "reading": "きょねん",
+      "en": "last year",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_去年_001",
+          "filename": "word_去年.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_嫌い": {
+      "type": "auto_generated_vocab",
+      "word": "嫌い",
+      "reading": "きらい",
+      "en": "dislike",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_嫌い_001",
+          "filename": "word_嫌い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_着る": {
+      "type": "auto_generated_vocab",
+      "word": "着る",
+      "reading": "きる",
+      "en": "to wear",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_着る_001",
+          "filename": "word_着る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_切る": {
+      "type": "auto_generated_vocab",
+      "word": "切る",
+      "reading": "きる",
+      "en": "to cut",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_切る_001",
+          "filename": "word_切る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_きれい": {
+      "type": "auto_generated_vocab",
+      "word": "きれい",
+      "reading": "きれい",
+      "en": "beautiful",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_きれい_001",
+          "filename": "word_きれい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_金曜": {
+      "type": "auto_generated_vocab",
+      "word": "金曜",
+      "reading": "きんよう",
+      "en": "friday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_金曜_001",
+          "filename": "word_金曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_金曜日": {
+      "type": "auto_generated_vocab",
+      "word": "金曜日",
+      "reading": "きんようび",
+      "en": "friday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_金曜日_001",
+          "filename": "word_金曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_九月": {
+      "type": "auto_generated_vocab",
+      "word": "九月",
+      "reading": "くがつ",
+      "en": "september",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_九月_001",
+          "filename": "word_九月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_口": {
+      "type": "auto_generated_vocab",
+      "word": "口",
+      "reading": "くち",
+      "en": "mouth",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_口_001",
+          "filename": "word_口.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_靴": {
+      "type": "auto_generated_vocab",
+      "word": "靴",
+      "reading": "くつ",
+      "en": "shoes",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_靴_001",
+          "filename": "word_靴.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_国": {
+      "type": "auto_generated_vocab",
+      "word": "国",
+      "reading": "くに",
+      "en": "country",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_国_001",
+          "filename": "word_国.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_暗い": {
+      "type": "auto_generated_vocab",
+      "word": "暗い",
+      "reading": "くらい",
+      "en": "dark",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_暗い_001",
+          "filename": "word_暗い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_クラス": {
+      "type": "auto_generated_vocab",
+      "word": "クラス",
+      "reading": "くらす",
+      "en": "class",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_クラス_001",
+          "filename": "word_クラス.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_来る": {
+      "type": "auto_generated_vocab",
+      "word": "来る",
+      "reading": "くる",
+      "en": "to come",
+      "context": "vocabulary_action_verb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_来る_001",
+          "filename": "word_来る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_車": {
+      "type": "auto_generated_vocab",
+      "word": "車",
+      "reading": "くるま",
+      "en": "car",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_車_001",
+          "filename": "word_車.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_黒": {
+      "type": "auto_generated_vocab",
+      "word": "黒",
+      "reading": "くろ",
+      "en": "black",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_黒_001",
+          "filename": "word_黒.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_黒い": {
+      "type": "auto_generated_vocab",
+      "word": "黒い",
+      "reading": "くろい",
+      "en": "black",
+      "context": "vocabulary_adjective",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_黒い_001",
+          "filename": "word_黒い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ケーキ": {
+      "type": "auto_generated_vocab",
+      "word": "ケーキ",
+      "reading": "けーき",
+      "en": "cake",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ケーキ_001",
+          "filename": "word_ケーキ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_月曜": {
+      "type": "auto_generated_vocab",
+      "word": "月曜",
+      "reading": "げつよう",
+      "en": "monday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_月曜_001",
+          "filename": "word_月曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_月曜日": {
+      "type": "auto_generated_vocab",
+      "word": "月曜日",
+      "reading": "げつようび",
+      "en": "monday",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_月曜日_001",
+          "filename": "word_月曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_元気": {
+      "type": "auto_generated_vocab",
+      "word": "元気",
+      "reading": "げんき",
+      "en": "healthy",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_元気_001",
+          "filename": "word_元気.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_個": {
+      "type": "auto_generated_vocab",
+      "word": "個",
+      "reading": "こ",
+      "en": "counter for small objects",
+      "context": "vocabulary_other",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_個_001",
+          "filename": "word_個.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_五": {
+      "type": "auto_generated_vocab",
+      "word": "五",
+      "reading": "ご",
+      "en": "five",
+      "context": "vocabulary_abstract_concept",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_五_001",
+          "filename": "word_五.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_公園": {
+      "type": "auto_generated_vocab",
+      "word": "公園",
+      "reading": "こうえん",
+      "en": "park",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_公園_001",
+          "filename": "word_公園.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_紅茶": {
+      "type": "auto_generated_vocab",
+      "word": "紅茶",
+      "reading": "こうちゃ",
+      "en": "black tea",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_紅茶_001",
+          "filename": "word_紅茶.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_コーヒー": {
+      "type": "auto_generated_vocab",
+      "word": "コーヒー",
+      "reading": "こーひー",
+      "en": "coffee",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_コーヒー_001",
+          "filename": "word_コーヒー.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_五月": {
+      "type": "auto_generated_vocab",
+      "word": "五月",
+      "reading": "ごがつ",
+      "en": "may",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_五月_001",
+          "filename": "word_五月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ここ": {
+      "type": "auto_generated_vocab",
+      "word": "ここ",
+      "reading": "ここ",
+      "en": "here",
+      "context": "vocabulary_demonstrative",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ここ_001",
+          "filename": "word_ここ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_午後": {
+      "type": "auto_generated_vocab",
+      "word": "午後",
+      "reading": "ごご",
+      "en": "afternoon",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_午後_001",
+          "filename": "word_午後.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_午前": {
+      "type": "auto_generated_vocab",
+      "word": "午前",
+      "reading": "ごぜん",
+      "en": "a.m.",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_午前_001",
+          "filename": "word_午前.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今年": {
+      "type": "auto_generated_vocab",
+      "word": "今年",
+      "reading": "ことし",
+      "en": "this year",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今年_001",
+          "filename": "word_今年.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_子供": {
+      "type": "auto_generated_vocab",
+      "word": "子供",
+      "reading": "こども",
+      "en": "child",
+      "context": "vocabulary_person",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_子供_001",
+          "filename": "word_子供.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_この": {
+      "type": "auto_generated_vocab",
+      "word": "この",
+      "reading": "この",
+      "en": "this",
+      "context": "vocabulary_demonstrative",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_この_001",
+          "filename": "word_この.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_御飯": {
+      "type": "auto_generated_vocab",
+      "word": "御飯",
+      "reading": "ごはん",
+      "en": "meal",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_御飯_001",
+          "filename": "word_御飯.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_これ": {
+      "type": "auto_generated_vocab",
+      "word": "これ",
+      "reading": "これ",
+      "en": "this",
+      "context": "vocabulary_demonstrative",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_これ_001",
+          "filename": "word_これ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_これから": {
+      "type": "auto_generated_vocab",
+      "word": "これから",
+      "reading": "これから",
+      "en": "from now on",
+      "context": "vocabulary_adverb",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_これから_001",
+          "filename": "word_これから.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今月": {
+      "type": "auto_generated_vocab",
+      "word": "今月",
+      "reading": "こんげつ",
+      "en": "this month",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今月_001",
+          "filename": "word_今月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今週": {
+      "type": "auto_generated_vocab",
+      "word": "今週",
+      "reading": "こんしゅう",
+      "en": "this week",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今週_001",
+          "filename": "word_今週.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_こんな": {
+      "type": "auto_generated_vocab",
+      "word": "こんな",
+      "reading": "こんな",
+      "en": "this kind of",
+      "context": "vocabulary_demonstrative",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_こんな_001",
+          "filename": "word_こんな.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_こんにちは": {
+      "type": "auto_generated_vocab",
+      "word": "こんにちは",
+      "reading": "こんにちは",
+      "en": "hello",
+      "context": "vocabulary_set_expression",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_こんにちは_001",
+          "filename": "word_こんにちは.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今晩": {
+      "type": "auto_generated_vocab",
+      "word": "今晩",
+      "reading": "こんばん",
+      "en": "tonight",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今晩_001",
+          "filename": "word_今晩.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_こんばんは": {
+      "type": "auto_generated_vocab",
+      "word": "こんばんは",
+      "reading": "こんばんは",
+      "en": "good evening",
+      "context": "vocabulary_set_expression",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_こんばんは_001",
+          "filename": "word_こんばんは.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_コンビニ": {
+      "type": "auto_generated_vocab",
+      "word": "コンビニ",
+      "reading": "こんびに",
+      "en": "convenience store",
+      "context": "vocabulary_building",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_コンビニ_001",
+          "filename": "word_コンビニ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_今夜": {
+      "type": "auto_generated_vocab",
+      "word": "今夜",
+      "reading": "こんや",
+      "en": "tonight",
+      "context": "vocabulary_time",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_今夜_001",
+          "filename": "word_今夜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_歳": {
+      "type": "auto_generated_vocab",
+      "word": "歳",
+      "reading": "さい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_歳_001",
+          "filename": "word_歳.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_魚": {
+      "type": "auto_generated_vocab",
+      "word": "魚",
+      "reading": "さかな",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_魚_001",
+          "filename": "word_魚.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_酒": {
+      "type": "auto_generated_vocab",
+      "word": "酒",
+      "reading": "さけ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_酒_001",
+          "filename": "word_酒.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_サッカー": {
+      "type": "auto_generated_vocab",
+      "word": "サッカー",
+      "reading": "さっかー",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_サッカー_001",
+          "filename": "word_サッカー.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_寒い": {
+      "type": "auto_generated_vocab",
+      "word": "寒い",
+      "reading": "さむい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_寒い_001",
+          "filename": "word_寒い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_さようなら": {
+      "type": "auto_generated_vocab",
+      "word": "さようなら",
+      "reading": "さようなら",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_さようなら_001",
+          "filename": "word_さようなら.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_さよなら": {
+      "type": "auto_generated_vocab",
+      "word": "さよなら",
+      "reading": "さよなら",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_さよなら_001",
+          "filename": "word_さよなら.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_三": {
+      "type": "auto_generated_vocab",
+      "word": "三",
+      "reading": "さん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_三_001",
+          "filename": "word_三.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_さん": {
+      "type": "auto_generated_vocab",
+      "word": "さん",
+      "reading": "さん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_さん_001",
+          "filename": "word_さん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_三月": {
+      "type": "auto_generated_vocab",
+      "word": "三月",
+      "reading": "さんがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_三月_001",
+          "filename": "word_三月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_三時": {
+      "type": "auto_generated_vocab",
+      "word": "三時",
+      "reading": "さんじ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_三時_001",
+          "filename": "word_三時.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_四": {
+      "type": "auto_generated_vocab",
+      "word": "四",
+      "reading": "し",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_四_001",
+          "filename": "word_四.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_時": {
+      "type": "auto_generated_vocab",
+      "word": "時",
+      "reading": "じ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_時_001",
+          "filename": "word_時.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_四月": {
+      "type": "auto_generated_vocab",
+      "word": "四月",
+      "reading": "しがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_四月_001",
+          "filename": "word_四月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_時間": {
+      "type": "auto_generated_vocab",
+      "word": "時間",
+      "reading": "じかん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_時間_001",
+          "filename": "word_時間.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_仕事": {
+      "type": "auto_generated_vocab",
+      "word": "仕事",
+      "reading": "しごと",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_仕事_001",
+          "filename": "word_仕事.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_辞書": {
+      "type": "auto_generated_vocab",
+      "word": "辞書",
+      "reading": "じしょ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_辞書_001",
+          "filename": "word_辞書.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_静か": {
+      "type": "auto_generated_vocab",
+      "word": "静か",
+      "reading": "しずか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_静か_001",
+          "filename": "word_静か.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_七": {
+      "type": "auto_generated_vocab",
+      "word": "七",
+      "reading": "しち",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_七_001",
+          "filename": "word_七.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_七月": {
+      "type": "auto_generated_vocab",
+      "word": "七月",
+      "reading": "しちがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_七月_001",
+          "filename": "word_七月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_自転車": {
+      "type": "auto_generated_vocab",
+      "word": "自転車",
+      "reading": "じてんしゃ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_自転車_001",
+          "filename": "word_自転車.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_自動車": {
+      "type": "auto_generated_vocab",
+      "word": "自動車",
+      "reading": "じどうしゃ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_自動車_001",
+          "filename": "word_自動車.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_十": {
+      "type": "auto_generated_vocab",
+      "word": "十",
+      "reading": "じゅう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_十_001",
+          "filename": "word_十.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_十一月": {
+      "type": "auto_generated_vocab",
+      "word": "十一月",
+      "reading": "じゅういちがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_十一月_001",
+          "filename": "word_十一月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_十月": {
+      "type": "auto_generated_vocab",
+      "word": "十月",
+      "reading": "じゅうがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_十月_001",
+          "filename": "word_十月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_十二月": {
+      "type": "auto_generated_vocab",
+      "word": "十二月",
+      "reading": "じゅうにがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_十二月_001",
+          "filename": "word_十二月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_十六": {
+      "type": "auto_generated_vocab",
+      "word": "十六",
+      "reading": "じゅうろく",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_十六_001",
+          "filename": "word_十六.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_授業": {
+      "type": "auto_generated_vocab",
+      "word": "授業",
+      "reading": "じゅぎょう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_授業_001",
+          "filename": "word_授業.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_宿題": {
+      "type": "auto_generated_vocab",
+      "word": "宿題",
+      "reading": "しゅくだい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_宿題_001",
+          "filename": "word_宿題.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_知る": {
+      "type": "auto_generated_vocab",
+      "word": "知る",
+      "reading": "しる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_知る_001",
+          "filename": "word_知る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_白": {
+      "type": "auto_generated_vocab",
+      "word": "白",
+      "reading": "しろ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_白_001",
+          "filename": "word_白.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_白い": {
+      "type": "auto_generated_vocab",
+      "word": "白い",
+      "reading": "しろい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_白い_001",
+          "filename": "word_白い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_親切": {
+      "type": "auto_generated_vocab",
+      "word": "親切",
+      "reading": "しんせつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_親切_001",
+          "filename": "word_親切.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_水曜": {
+      "type": "auto_generated_vocab",
+      "word": "水曜",
+      "reading": "すいよう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_水曜_001",
+          "filename": "word_水曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_水曜日": {
+      "type": "auto_generated_vocab",
+      "word": "水曜日",
+      "reading": "すいようび",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_水曜日_001",
+          "filename": "word_水曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_好き": {
+      "type": "auto_generated_vocab",
+      "word": "好き",
+      "reading": "すき",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_好き_001",
+          "filename": "word_好き.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_少ない": {
+      "type": "auto_generated_vocab",
+      "word": "少ない",
+      "reading": "すくない",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_少ない_001",
+          "filename": "word_少ない.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_すし": {
+      "type": "auto_generated_vocab",
+      "word": "すし",
+      "reading": "すし",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_すし_001",
+          "filename": "word_すし.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_スポーツ": {
+      "type": "auto_generated_vocab",
+      "word": "スポーツ",
+      "reading": "すぽーつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_スポーツ_001",
+          "filename": "word_スポーツ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_済みません": {
+      "type": "auto_generated_vocab",
+      "word": "済みません",
+      "reading": "すみません",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_済みません_001",
+          "filename": "word_済みません.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_住む": {
+      "type": "auto_generated_vocab",
+      "word": "住む",
+      "reading": "すむ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_住む_001",
+          "filename": "word_住む.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_する": {
+      "type": "auto_generated_vocab",
+      "word": "する",
+      "reading": "する",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_する_001",
+          "filename": "word_する.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ゼロ": {
+      "type": "auto_generated_vocab",
+      "word": "ゼロ",
+      "reading": "ぜろ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ゼロ_001",
+          "filename": "word_ゼロ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_千": {
+      "type": "auto_generated_vocab",
+      "word": "千",
+      "reading": "せん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_千_001",
+          "filename": "word_千.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_先月": {
+      "type": "auto_generated_vocab",
+      "word": "先月",
+      "reading": "せんげつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_先月_001",
+          "filename": "word_先月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_先週": {
+      "type": "auto_generated_vocab",
+      "word": "先週",
+      "reading": "せんしゅう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_先週_001",
+          "filename": "word_先週.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_そこ": {
+      "type": "auto_generated_vocab",
+      "word": "そこ",
+      "reading": "そこ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_そこ_001",
+          "filename": "word_そこ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_その": {
+      "type": "auto_generated_vocab",
+      "word": "その",
+      "reading": "その",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_その_001",
+          "filename": "word_その.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_それ": {
+      "type": "auto_generated_vocab",
+      "word": "それ",
+      "reading": "それ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_それ_001",
+          "filename": "word_それ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_高い": {
+      "type": "auto_generated_vocab",
+      "word": "高い",
+      "reading": "たかい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_高い_001",
+          "filename": "word_高い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_タクシー": {
+      "type": "auto_generated_vocab",
+      "word": "タクシー",
+      "reading": "たくしー",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_タクシー_001",
+          "filename": "word_タクシー.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_楽しい": {
+      "type": "auto_generated_vocab",
+      "word": "楽しい",
+      "reading": "たのしい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_楽しい_001",
+          "filename": "word_楽しい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_タバコ": {
+      "type": "auto_generated_vocab",
+      "word": "タバコ",
+      "reading": "たばこ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_タバコ_001",
+          "filename": "word_タバコ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_食べ物": {
+      "type": "auto_generated_vocab",
+      "word": "食べ物",
+      "reading": "たべもの",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_食べ物_001",
+          "filename": "word_食べ物.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_食べる": {
+      "type": "auto_generated_vocab",
+      "word": "食べる",
+      "reading": "たべる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_食べる_001",
+          "filename": "word_食べる.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_卵": {
+      "type": "auto_generated_vocab",
+      "word": "卵",
+      "reading": "たまご",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_卵_001",
+          "filename": "word_卵.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_誰": {
+      "type": "auto_generated_vocab",
+      "word": "誰",
+      "reading": "だれ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_誰_001",
+          "filename": "word_誰.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_誕生日": {
+      "type": "auto_generated_vocab",
+      "word": "誕生日",
+      "reading": "たんじょうび",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_誕生日_001",
+          "filename": "word_誕生日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_小さい": {
+      "type": "auto_generated_vocab",
+      "word": "小さい",
+      "reading": "ちいさい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_小さい_001",
+          "filename": "word_小さい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_茶": {
+      "type": "auto_generated_vocab",
+      "word": "茶",
+      "reading": "ちゃ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_茶_001",
+          "filename": "word_茶.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_机": {
+      "type": "auto_generated_vocab",
+      "word": "机",
+      "reading": "つくえ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_机_001",
+          "filename": "word_机.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_作る": {
+      "type": "auto_generated_vocab",
+      "word": "作る",
+      "reading": "つくる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_作る_001",
+          "filename": "word_作る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_冷たい": {
+      "type": "auto_generated_vocab",
+      "word": "冷たい",
+      "reading": "つめたい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_冷たい_001",
+          "filename": "word_冷たい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_テーブル": {
+      "type": "auto_generated_vocab",
+      "word": "テーブル",
+      "reading": "てーぶる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_テーブル_001",
+          "filename": "word_テーブル.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_テレビ": {
+      "type": "auto_generated_vocab",
+      "word": "テレビ",
+      "reading": "てれび",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_テレビ_001",
+          "filename": "word_テレビ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_電車": {
+      "type": "auto_generated_vocab",
+      "word": "電車",
+      "reading": "でんしゃ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_電車_001",
+          "filename": "word_電車.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_電話": {
+      "type": "auto_generated_vocab",
+      "word": "電話",
+      "reading": "でんわ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_電話_001",
+          "filename": "word_電話.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_電話番号": {
+      "type": "auto_generated_vocab",
+      "word": "電話番号",
+      "reading": "でんわばんごう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_電話番号_001",
+          "filename": "word_電話番号.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_トイレ": {
+      "type": "auto_generated_vocab",
+      "word": "トイレ",
+      "reading": "といれ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_トイレ_001",
+          "filename": "word_トイレ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_父さん": {
+      "type": "auto_generated_vocab",
+      "word": "父さん",
+      "reading": "とうさん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_父さん_001",
+          "filename": "word_父さん.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_遠い": {
+      "type": "auto_generated_vocab",
+      "word": "遠い",
+      "reading": "とおい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_遠い_001",
+          "filename": "word_遠い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_十日": {
+      "type": "auto_generated_vocab",
+      "word": "十日",
+      "reading": "とおか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_十日_001",
+          "filename": "word_十日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_どこ": {
+      "type": "auto_generated_vocab",
+      "word": "どこ",
+      "reading": "どこ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_どこ_001",
+          "filename": "word_どこ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_とても": {
+      "type": "auto_generated_vocab",
+      "word": "とても",
+      "reading": "とても",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_とても_001",
+          "filename": "word_とても.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_隣": {
+      "type": "auto_generated_vocab",
+      "word": "隣",
+      "reading": "となり",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_隣_001",
+          "filename": "word_隣.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_どの": {
+      "type": "auto_generated_vocab",
+      "word": "どの",
+      "reading": "どの",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_どの_001",
+          "filename": "word_どの.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_友達": {
+      "type": "auto_generated_vocab",
+      "word": "友達",
+      "reading": "ともだち",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_友達_001",
+          "filename": "word_友達.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_土曜": {
+      "type": "auto_generated_vocab",
+      "word": "土曜",
+      "reading": "どよう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_土曜_001",
+          "filename": "word_土曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_土曜日": {
+      "type": "auto_generated_vocab",
+      "word": "土曜日",
+      "reading": "どようび",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_土曜日_001",
+          "filename": "word_土曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_どれ": {
+      "type": "auto_generated_vocab",
+      "word": "どれ",
+      "reading": "どれ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_どれ_001",
+          "filename": "word_どれ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_どんな": {
+      "type": "auto_generated_vocab",
+      "word": "どんな",
+      "reading": "どんな",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_どんな_001",
+          "filename": "word_どんな.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ない": {
+      "type": "auto_generated_vocab",
+      "word": "ない",
+      "reading": "ない",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ない_001",
+          "filename": "word_ない.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_なぜ": {
+      "type": "auto_generated_vocab",
+      "word": "なぜ",
+      "reading": "なぜ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_なぜ_001",
+          "filename": "word_なぜ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_七つ": {
+      "type": "auto_generated_vocab",
+      "word": "七つ",
+      "reading": "ななつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_七つ_001",
+          "filename": "word_七つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_何": {
+      "type": "auto_generated_vocab",
+      "word": "何",
+      "reading": "なに",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_何_001",
+          "filename": "word_何.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_七日": {
+      "type": "auto_generated_vocab",
+      "word": "七日",
+      "reading": "なのか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_七日_001",
+          "filename": "word_七日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_名前": {
+      "type": "auto_generated_vocab",
+      "word": "名前",
+      "reading": "なまえ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_名前_001",
+          "filename": "word_名前.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_何日": {
+      "type": "auto_generated_vocab",
+      "word": "何日",
+      "reading": "なんにち",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_何日_001",
+          "filename": "word_何日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_何人": {
+      "type": "auto_generated_vocab",
+      "word": "何人",
+      "reading": "なんにん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_何人_001",
+          "filename": "word_何人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_何年": {
+      "type": "auto_generated_vocab",
+      "word": "何年",
+      "reading": "なんねん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_何年_001",
+          "filename": "word_何年.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_何分": {
+      "type": "auto_generated_vocab",
+      "word": "何分",
+      "reading": "なんふん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_何分_001",
+          "filename": "word_何分.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二": {
+      "type": "auto_generated_vocab",
+      "word": "二",
+      "reading": "に",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二_001",
+          "filename": "word_二.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二階": {
+      "type": "auto_generated_vocab",
+      "word": "二階",
+      "reading": "にかい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二階_001",
+          "filename": "word_二階.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二月": {
+      "type": "auto_generated_vocab",
+      "word": "二月",
+      "reading": "にがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二月_001",
+          "filename": "word_二月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_肉": {
+      "type": "auto_generated_vocab",
+      "word": "肉",
+      "reading": "にく",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_肉_001",
+          "filename": "word_肉.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二十": {
+      "type": "auto_generated_vocab",
+      "word": "二十",
+      "reading": "にじゅう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二十_001",
+          "filename": "word_二十.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_日曜": {
+      "type": "auto_generated_vocab",
+      "word": "日曜",
+      "reading": "にちよう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_日曜_001",
+          "filename": "word_日曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_日曜日": {
+      "type": "auto_generated_vocab",
+      "word": "日曜日",
+      "reading": "にちようび",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_日曜日_001",
+          "filename": "word_日曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_日本": {
+      "type": "auto_generated_vocab",
+      "word": "日本",
+      "reading": "にっぽん",
+      "en": "",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_日本_001",
+          "filename": "word_日本.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_日本語": {
+      "type": "auto_generated_vocab",
+      "word": "日本語",
+      "reading": "にほんご",
+      "en": "",
+      "context": "vocabulary_concrete_object",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_日本語_001",
+          "filename": "word_日本語.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_猫": {
+      "type": "auto_generated_vocab",
+      "word": "猫",
+      "reading": "ねこ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_猫_001",
+          "filename": "word_猫.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_寝る": {
+      "type": "auto_generated_vocab",
+      "word": "寝る",
+      "reading": "ねる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_寝る_001",
+          "filename": "word_寝る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_年": {
+      "type": "auto_generated_vocab",
+      "word": "年",
+      "reading": "ねん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_年_001",
+          "filename": "word_年.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ノート": {
+      "type": "auto_generated_vocab",
+      "word": "ノート",
+      "reading": "のーと",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ノート_001",
+          "filename": "word_ノート.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_飲む": {
+      "type": "auto_generated_vocab",
+      "word": "飲む",
+      "reading": "のむ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_飲む_001",
+          "filename": "word_飲む.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_はい": {
+      "type": "auto_generated_vocab",
+      "word": "はい",
+      "reading": "はい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_はい_001",
+          "filename": "word_はい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_初めまして": {
+      "type": "auto_generated_vocab",
+      "word": "初めまして",
+      "reading": "はじめまして",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_初めまして_001",
+          "filename": "word_初めまして.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二十歳": {
+      "type": "auto_generated_vocab",
+      "word": "二十歳",
+      "reading": "はたち",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二十歳_001",
+          "filename": "word_二十歳.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_八": {
+      "type": "auto_generated_vocab",
+      "word": "八",
+      "reading": "はち",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_八_001",
+          "filename": "word_八.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_八月": {
+      "type": "auto_generated_vocab",
+      "word": "八月",
+      "reading": "はちがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_八月_001",
+          "filename": "word_八月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_八十": {
+      "type": "auto_generated_vocab",
+      "word": "八十",
+      "reading": "はちじゅう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_八十_001",
+          "filename": "word_八十.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二十日": {
+      "type": "auto_generated_vocab",
+      "word": "二十日",
+      "reading": "はつか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二十日_001",
+          "filename": "word_二十日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_バナナ": {
+      "type": "auto_generated_vocab",
+      "word": "バナナ",
+      "reading": "ばなな",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_バナナ_001",
+          "filename": "word_バナナ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_母": {
+      "type": "auto_generated_vocab",
+      "word": "母",
+      "reading": "はは",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_母_001",
+          "filename": "word_母.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_早い": {
+      "type": "auto_generated_vocab",
+      "word": "早い",
+      "reading": "はやい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_早い_001",
+          "filename": "word_早い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_㏿い": {
+      "type": "auto_generated_vocab",
+      "word": "㏿い",
+      "reading": "はやい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_㏿い_001",
+          "filename": "word_㏿い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_番": {
+      "type": "auto_generated_vocab",
+      "word": "番",
+      "reading": "ばん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_番_001",
+          "filename": "word_番.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_晩": {
+      "type": "auto_generated_vocab",
+      "word": "晩",
+      "reading": "ばん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_晩_001",
+          "filename": "word_晩.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_パン": {
+      "type": "auto_generated_vocab",
+      "word": "パン",
+      "reading": "ぱん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_パン_001",
+          "filename": "word_パン.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_晩御飯": {
+      "type": "auto_generated_vocab",
+      "word": "晩御飯",
+      "reading": "ばんごはん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_晩御飯_001",
+          "filename": "word_晩御飯.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_低い": {
+      "type": "auto_generated_vocab",
+      "word": "低い",
+      "reading": "ひくい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_低い_001",
+          "filename": "word_低い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_飛行機": {
+      "type": "auto_generated_vocab",
+      "word": "飛行機",
+      "reading": "ひこうき",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_飛行機_001",
+          "filename": "word_飛行機.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_左": {
+      "type": "auto_generated_vocab",
+      "word": "左",
+      "reading": "ひだり",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_左_001",
+          "filename": "word_左.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一つ": {
+      "type": "auto_generated_vocab",
+      "word": "一つ",
+      "reading": "ひとつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一つ_001",
+          "filename": "word_一つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_一人": {
+      "type": "auto_generated_vocab",
+      "word": "一人",
+      "reading": "ひとり",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_一人_001",
+          "filename": "word_一人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_百": {
+      "type": "auto_generated_vocab",
+      "word": "百",
+      "reading": "ひゃく",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_百_001",
+          "filename": "word_百.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_平仮名": {
+      "type": "auto_generated_vocab",
+      "word": "平仮名",
+      "reading": "ひらがな",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_平仮名_001",
+          "filename": "word_平仮名.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_昼": {
+      "type": "auto_generated_vocab",
+      "word": "昼",
+      "reading": "ひる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_昼_001",
+          "filename": "word_昼.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_昼御飯": {
+      "type": "auto_generated_vocab",
+      "word": "昼御飯",
+      "reading": "ひるごはん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_昼御飯_001",
+          "filename": "word_昼御飯.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二つ": {
+      "type": "auto_generated_vocab",
+      "word": "二つ",
+      "reading": "ふたつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二つ_001",
+          "filename": "word_二つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二人": {
+      "type": "auto_generated_vocab",
+      "word": "二人",
+      "reading": "ふたり",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二人_001",
+          "filename": "word_二人.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_二日": {
+      "type": "auto_generated_vocab",
+      "word": "二日",
+      "reading": "ふつか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_二日_001",
+          "filename": "word_二日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_古い": {
+      "type": "auto_generated_vocab",
+      "word": "古い",
+      "reading": "ふるい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_古い_001",
+          "filename": "word_古い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_分": {
+      "type": "auto_generated_vocab",
+      "word": "分",
+      "reading": "ふん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_分_001",
+          "filename": "word_分.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ページ": {
+      "type": "auto_generated_vocab",
+      "word": "ページ",
+      "reading": "ぺーじ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ページ_001",
+          "filename": "word_ページ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ペット": {
+      "type": "auto_generated_vocab",
+      "word": "ペット",
+      "reading": "ぺっと",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ペット_001",
+          "filename": "word_ペット.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_部屋": {
+      "type": "auto_generated_vocab",
+      "word": "部屋",
+      "reading": "へや",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_部屋_001",
+          "filename": "word_部屋.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_勉強": {
+      "type": "auto_generated_vocab",
+      "word": "勉強",
+      "reading": "べんきょう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_勉強_001",
+          "filename": "word_勉強.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_便利": {
+      "type": "auto_generated_vocab",
+      "word": "便利",
+      "reading": "べんり",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_便利_001",
+          "filename": "word_便利.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ボールペン": {
+      "type": "auto_generated_vocab",
+      "word": "ボールペン",
+      "reading": "ぼーるぺん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ボールペン_001",
+          "filename": "word_ボールペン.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_ポスト": {
+      "type": "auto_generated_vocab",
+      "word": "ポスト",
+      "reading": "ぽすと",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_ポスト_001",
+          "filename": "word_ポスト.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_枚": {
+      "type": "auto_generated_vocab",
+      "word": "枚",
+      "reading": "まい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_枚_001",
+          "filename": "word_枚.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_毎日": {
+      "type": "auto_generated_vocab",
+      "word": "毎日",
+      "reading": "まいにち",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_毎日_001",
+          "filename": "word_毎日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_待つ": {
+      "type": "auto_generated_vocab",
+      "word": "待つ",
+      "reading": "まつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_待つ_001",
+          "filename": "word_待つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_万": {
+      "type": "auto_generated_vocab",
+      "word": "万",
+      "reading": "まん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_万_001",
+          "filename": "word_万.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_右": {
+      "type": "auto_generated_vocab",
+      "word": "右",
+      "reading": "みぎ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_右_001",
+          "filename": "word_右.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_三日": {
+      "type": "auto_generated_vocab",
+      "word": "三日",
+      "reading": "みっか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_三日_001",
+          "filename": "word_三日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_三つ": {
+      "type": "auto_generated_vocab",
+      "word": "三つ",
+      "reading": "みっつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_三つ_001",
+          "filename": "word_三つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_見る": {
+      "type": "auto_generated_vocab",
+      "word": "見る",
+      "reading": "みる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_見る_001",
+          "filename": "word_見る.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_六日": {
+      "type": "auto_generated_vocab",
+      "word": "六日",
+      "reading": "むいか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_六日_001",
+          "filename": "word_六日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_難しい": {
+      "type": "auto_generated_vocab",
+      "word": "難しい",
+      "reading": "むずかしい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_難しい_001",
+          "filename": "word_難しい.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_六つ": {
+      "type": "auto_generated_vocab",
+      "word": "六つ",
+      "reading": "むっつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_六つ_001",
+          "filename": "word_六つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_もう": {
+      "type": "auto_generated_vocab",
+      "word": "もう",
+      "reading": "もう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_もう_001",
+          "filename": "word_もう.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_木曜": {
+      "type": "auto_generated_vocab",
+      "word": "木曜",
+      "reading": "もくよう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_木曜_001",
+          "filename": "word_木曜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_木曜日": {
+      "type": "auto_generated_vocab",
+      "word": "木曜日",
+      "reading": "もくようび",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_木曜日_001",
+          "filename": "word_木曜日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_安い": {
+      "type": "auto_generated_vocab",
+      "word": "安い",
+      "reading": "やすい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_安い_001",
+          "filename": "word_安い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_休み": {
+      "type": "auto_generated_vocab",
+      "word": "休み",
+      "reading": "やすみ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_休み_001",
+          "filename": "word_休み.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_休む": {
+      "type": "auto_generated_vocab",
+      "word": "休む",
+      "reading": "やすむ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_休む_001",
+          "filename": "word_休む.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_八つ": {
+      "type": "auto_generated_vocab",
+      "word": "八つ",
+      "reading": "やっつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_八つ_001",
+          "filename": "word_八つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_郵便局": {
+      "type": "auto_generated_vocab",
+      "word": "郵便局",
+      "reading": "ゆうびんきょく",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_郵便局_001",
+          "filename": "word_郵便局.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_有名": {
+      "type": "auto_generated_vocab",
+      "word": "有名",
+      "reading": "ゆうめい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_有名_001",
+          "filename": "word_有名.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_雪": {
+      "type": "auto_generated_vocab",
+      "word": "雪",
+      "reading": "ゆき",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_雪_001",
+          "filename": "word_雪.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_八日": {
+      "type": "auto_generated_vocab",
+      "word": "八日",
+      "reading": "ようか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_八日_001",
+          "filename": "word_八日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_四日": {
+      "type": "auto_generated_vocab",
+      "word": "四日",
+      "reading": "よっか",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_四日_001",
+          "filename": "word_四日.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_四つ": {
+      "type": "auto_generated_vocab",
+      "word": "四つ",
+      "reading": "よっつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_四つ_001",
+          "filename": "word_四つ.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_読む": {
+      "type": "auto_generated_vocab",
+      "word": "読む",
+      "reading": "よむ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_読む_001",
+          "filename": "word_読む.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_夜": {
+      "type": "auto_generated_vocab",
+      "word": "夜",
+      "reading": "よる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_夜_001",
+          "filename": "word_夜.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_来月": {
+      "type": "auto_generated_vocab",
+      "word": "来月",
+      "reading": "らいげつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_来月_001",
+          "filename": "word_来月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_来週": {
+      "type": "auto_generated_vocab",
+      "word": "来週",
+      "reading": "らいしゅう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_来週_001",
+          "filename": "word_来週.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_来年": {
+      "type": "auto_generated_vocab",
+      "word": "来年",
+      "reading": "らいねん",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_来年_001",
+          "filename": "word_来年.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_りんご": {
+      "type": "auto_generated_vocab",
+      "word": "りんご",
+      "reading": "りんご",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_りんご_001",
+          "filename": "word_りんご.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_六": {
+      "type": "auto_generated_vocab",
+      "word": "六",
+      "reading": "ろく",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_六_001",
+          "filename": "word_六.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_六月": {
+      "type": "auto_generated_vocab",
+      "word": "六月",
+      "reading": "ろくがつ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_六月_001",
+          "filename": "word_六月.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_六時": {
+      "type": "auto_generated_vocab",
+      "word": "六時",
+      "reading": "ろくじ",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_六時_001",
+          "filename": "word_六時.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_六十": {
+      "type": "auto_generated_vocab",
+      "word": "六十",
+      "reading": "ろくじゅう",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_六十_001",
+          "filename": "word_六十.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_分かる": {
+      "type": "auto_generated_vocab",
+      "word": "分かる",
+      "reading": "わかる",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_分かる_001",
+          "filename": "word_分かる.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_私": {
+      "type": "auto_generated_vocab",
+      "word": "私",
+      "reading": "わたし",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_私_001",
+          "filename": "word_私.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "word_悪い": {
+      "type": "auto_generated_vocab",
+      "word": "悪い",
+      "reading": "わるい",
+      "en": "",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "word_悪い_001",
+          "filename": "word_悪い.png",
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
     }
   }
 }
