@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.11.1 主経路・TEMPORARY Gemini fallback）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.12 主経路 / nanobanana 固定運用）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -19,6 +19,21 @@
   flag_shape_and_colors と cultural_styling_hint は PERSON_NATIONALITY_HINTS
   (v3.7 で旧 PERSON_FLAG_LOOKUP から改名・拡張) で word→各情報 を解決。
   これらは現状スクリプト内 config。Sheets / lesson_NN.json に格上げ予定（NEXT_ACTIONS）。
+
+v3.12 (2026-05-21): 3 universal rules を実装。
+  - PART 1.5 PHENOTYPE_SPECIFICATION_RULE: phenotype_for(word) が
+    COUNTRY_TO_PROFILE → PHENOTYPE_PROFILES (rule_c) または
+    ROLE_PHENOTYPE_PALETTE の deterministic 選択 (rule_d) で単一 concrete
+    記述を返す。enumerate 表現は廃止。
+  - PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE: pattern_for(word) が
+    TRADITIONAL_DRESS_PATTERN_LOOKUP から country 用 textile element を返し、
+    cultural_styling_hint の末尾に append される。lookup に entry が無い
+    country では何も append しない（rule_e modern_styles_exempt）。
+  - PART 1.7 FLAG_PLACEMENT_RULE: flag_placement_for(word) が
+    FLAG_PLACEMENT_OPTIONS から sha256(word+'flag-placement') mod 4 で位置を
+    選び、subject_block_pattern の {FLAG_PLACEMENT} に注入する。
+  - 共通: _deterministic_pick(word, options, salt) ヘルパーで sha256 ベース
+    選択を集約。
 """
 
 import argparse
@@ -31,15 +46,14 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# v3.11.1 TEMPORARY: AI Studio が一時不可のため Gemini fallback で
-# inline ASPECT RATIO directive を含む v3.11.1 ガイドを使用。
-# AI Studio 復活後は 'master_prompt_design_guide_v3_11.py' に戻す
-# （prompts/master_prompt_design_guide_v3_11_1.py の rollback 手順参照）。
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_11_1.py")
+# v3.12 主経路（nanobanana 固定運用）。
+# v3.11.1 のロールバックは prompts/master_prompt_design_guide_v3_11_1.py
+# 末尾の rollback 手順参照。
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_12.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_11_1", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_12", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -348,37 +362,183 @@ def classify_person(word):
 
 
 # ─────────────────────────────────────────────────────────────
+# v3.12 universal rule data tables（プロンプトガイド PART 1.5/1.6/1.7 参照）
+# ─────────────────────────────────────────────────────────────
+
+# PART 1.5 PHENOTYPE_SPECIFICATION_RULE データ群
+#
+# PHENOTYPE_PROFILES (7 entries・各 1 文の concrete 記述)
+#   rule_b 準拠で skin tone / hair に隣接 2 段階までの range を含めて良い。
+#   rule_a 準拠で 'OR' や 'pick one from' は使わない。
+#   americas_diverse は特例：rule_c で多民族国家として ROLE_PHENOTYPE_PALETTE
+#   にフォールバックする marker としてのみ存在し、本辞書の文字列は使わない。
+PHENOTYPE_PROFILES = {
+    "east_asian":
+        "fair to light-medium skin with straight black to dark-brown hair",
+    "southeast_asian":
+        "light-medium to medium olive-toned skin with straight black hair",
+    "mediterranean_eu":
+        "light-medium to olive-tan skin with wavy dark-brown to black hair",
+    "northern_eu":
+        "fair skin with straight to wavy light-brown or blond hair",
+    "west_african":
+        "deep brown skin with tightly coiled black hair",
+    "east_african":
+        "rich brown to deep brown skin with tightly coiled black hair",
+    "americas_diverse":
+        # SENTINEL: rule_c special case — country routes here means use
+        # ROLE_PHENOTYPE_PALETTE deterministic pick instead of this string.
+        "FALLBACK_TO_ROLE_PALETTE",
+}
+
+# COUNTRY_TO_PROFILE: lesson_01 の 7 国籍をカバー。将来国追加は 1 行追加だけ。
+COUNTRY_TO_PROFILE = {
+    "日本人":     "east_asian",
+    "中国人":     "east_asian",
+    "韓国人":     "east_asian",
+    "ベトナム人": "southeast_asian",
+    "スペイン人": "mediterranean_eu",
+    "アメリカ人": "americas_diverse",
+    "ブラジル人": "americas_diverse",
+}
+
+# ROLE_PHENOTYPE_PALETTE (6 entries・人類スペクトラム fair → deep brown)
+#   role nouns (医者・学生・先生 等) と americas_diverse fallback で使用。
+#   sha256(word + 'phenotype') mod 6 で deterministic 選択。
+#   各 entry は rule_a / rule_b 準拠の 1 文記述。
+ROLE_PHENOTYPE_PALETTE = [
+    "fair skin with straight dark-brown to black hair",
+    "light-medium skin with wavy dark-brown hair",
+    "olive-tan skin with straight black hair",
+    "light brown skin with curly black hair",
+    "rich brown skin with tightly coiled black hair",
+    "deep brown skin with tightly coiled black hair",
+]
+
+# PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE データ
+#
+# TRADITIONAL_DRESS_PATTERN_LOOKUP (country → 1 つの concrete English pattern)
+#   rule_c (English motif names only) 準拠：kanji / hangul / 非ラテン文字を含めない。
+#   rule_e (modern_styles_exempt) 準拠：modern 衣装中心の country は entry 不要。
+#   v3.12 では 4 Asian countries のみ entry を持つ（cultural silhouette が
+#   plain solid color に倒れやすい順）。残り 3 国は cultural_styling_hint 自体に
+#   modern pattern が組み込まれているため exempt。
+TRADITIONAL_DRESS_PATTERN_LOOKUP = {
+    "日本人":
+        "a subtle wagara textile pattern (asanoha hemp-leaf or seigaiha "
+        "wave motif, woven in a tone-on-tone contrast)",
+    "韓国人":
+        "fine traditional Korean embroidery — a crane or pine-branch "
+        "motif worked in a single contrasting thread color along the "
+        "collar edge or cuff",
+    "中国人":
+        "a small traditional Chinese embroidered motif (peony or "
+        "plum-blossom) worked at the chest or shoulder of the garment",
+    "ベトナム人":
+        "a thin contrasting embroidered border running along the collar, "
+        "cuff, and side-slit hem of the garment",
+}
+
+# PART 1.7 FLAG_PLACEMENT_RULE データ
+#
+# FLAG_PLACEMENT_OPTIONS (4 entries・既存衣服に乗る選択肢のみ)
+#   rule_a (garment_only) 準拠：hat / bag / book / shoe は含まない。
+#   選択：sha256(word + 'flag-placement') mod 4。
+#   各 entry は subject_block_pattern の {FLAG_PLACEMENT} に直挿し可能な
+#   完結した前置詞句として書く（"is positioned {FLAG_PLACEMENT} as a ..."）。
+FLAG_PLACEMENT_OPTIONS = [
+    "as a circular pin on the left chest of the outer garment",
+    "as a circular pin on the right chest near the collar",
+    "as a small rectangular cloth patch on the right upper sleeve",
+    "as a small rectangular cloth patch on the left upper sleeve near the shoulder",
+]
+
+
+# ─────────────────────────────────────────────────────────────
+# v3.12 deterministic-pick ヘルパー
+# ─────────────────────────────────────────────────────────────
+def _deterministic_pick(word, options, salt):
+    """sha256(word + salt) を 16 進整数化し len(options) で剰余を取って
+    options[idx] を返す。同じ (word, salt, options) で常に同じ結果。
+
+    PHENOTYPE_SPECIFICATION_RULE rule_d / FLAG_PLACEMENT_RULE rule_b で使用。
+    """
+    if not options:
+        raise ValueError("_deterministic_pick: options must not be empty")
+    h = hashlib.sha256((word + salt).encode("utf-8")).hexdigest()
+    idx = int(h, 16) % len(options)
+    return options[idx]
+
+
+# v3.12 salt 文字列：lesson_01 の 5 role + 2 americas_diverse (アメリカ人/ブラジル人)
+# 計 7 word を ROLE_PHENOTYPE_PALETTE の 6 buckets に分散させた際の skew が
+# 最小（skew=1, 理論最小値）になる salt を実機で選定した結果 'palette-pick'。
+# 候補 'phenotype' は skew=3、'role-pick' は skew=1 (但し 5 role 内で同一 palette
+# entry に 2 件衝突)、'palette-pick' は skew=1 かつ 5 role 全員が distinct entry。
+# salt を変更すると同じ word の phenotype hash が変わるため、v3.12 freeze 後の
+# 変更は major-version migration 扱い（PART 1.5 rule_e palette-freeze 同様）。
+PHENOTYPE_SALT = "palette-pick"
+
+
+def phenotype_for(word):
+    """PART 1.5 PHENOTYPE_SPECIFICATION_RULE 準拠で word に対応する 1 文の
+    concrete phenotype 記述を返す。
+
+    rule_c: nationality nouns (word が COUNTRY_TO_PROFILE にある) は
+            COUNTRY_TO_PROFILE → PHENOTYPE_PROFILES で profile 解決。
+            americas_diverse は rule_c 特例で ROLE_PHENOTYPE_PALETTE に
+            フォールバック (rule_d 同様の deterministic pick)。
+    rule_d: role nouns (word が COUNTRY_TO_PROFILE に無い) は
+            ROLE_PHENOTYPE_PALETTE から sha256 ベースで 1 entry 選択。
+    """
+    if word in COUNTRY_TO_PROFILE:
+        profile_key = COUNTRY_TO_PROFILE[word]
+        profile = PHENOTYPE_PROFILES[profile_key]
+        if profile == "FALLBACK_TO_ROLE_PALETTE":
+            # americas_diverse: 多民族国家として ROLE_PHENOTYPE_PALETTE で
+            # deterministic 選択 (rule_c 特例)。
+            return _deterministic_pick(word, ROLE_PHENOTYPE_PALETTE, PHENOTYPE_SALT)
+        return profile
+    # role nouns: ROLE_PHENOTYPE_PALETTE から deterministic pick (rule_d)。
+    return _deterministic_pick(word, ROLE_PHENOTYPE_PALETTE, PHENOTYPE_SALT)
+
+
+def pattern_for(word):
+    """PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE 準拠で word に対応する
+    textile pattern 文字列を返す。lookup に entry が無ければ None
+    (rule_e modern_styles_exempt)。
+    """
+    return TRADITIONAL_DRESS_PATTERN_LOOKUP.get(word)
+
+
+def flag_placement_for(word):
+    """PART 1.7 FLAG_PLACEMENT_RULE 準拠で word に対応する flag 位置記述を返す。
+    必ず FLAG_PLACEMENT_OPTIONS から 1 つ選ぶ (sha256 mod 4)。
+    """
+    return _deterministic_pick(word, FLAG_PLACEMENT_OPTIONS, "flag-placement")
+
+
+# ─────────────────────────────────────────────────────────────
 # 合成関数
 # ─────────────────────────────────────────────────────────────
-def compose_role_subject(g, role_key):
-    """v3.8: skin tone / hair を enumerate 化。
-    v3.7 までの "naturally diverse skin tone (multicultural variation) and
-    naturally varied dark hair (dark brown to black)" は単一画像生成では
-    Imagen が中央値（medium-darker brown + dark hair）に収束し、結果
-    全 role が同じ phenotype に。enumerate 化により discrete な選択を強制。
+def compose_role_subject(g, role_key, word):
+    """v3.12: phenotype は PART 1.5 PHENOTYPE_SPECIFICATION_RULE rule_d 準拠で
+    phenotype_for(word) が返す単一 concrete 記述に切替。v3.8〜v3.11.1 の
+    enumerate ("Pick ONE from: A / B / C") は中央値収束を起こすため廃止。
 
-    v3.9: prop が outfit と同色相に埋没する事象（teacher: light-blue cardigan
-    + light-blue marker pen 等）を構造修正。palette-aware prop contrast rule
-    を追加。
-
-    v3.10: 上記 prop contrast rule を STYLE_BIBLE.visual_contrast_principle
-    （v3.10 で新設された普遍ルール）から derive される形にリファクタ。プロンプト
-    に流れる文字列はほぼ同じだが、文頭で principle 出所を明示し、将来 vocab_type
-    実装で同じ principle を再利用しやすくする。本ルールは role-based subject_block
-    にのみ適用。nationality 系には適用しない（compose_nationality_subject 経由・
-    別 subject_block_pattern）。
+    PROP CONTRAST RULE は v3.10 から継続（STYLE_BIBLE.visual_contrast_principle.
+    sub_rules_by_situation.person_prop_contrast から derive）。本ルールは
+    role-based subject_block にのみ適用、nationality 系には適用しない。
     """
     role = g.ROLE_BASED_GENERIC_PROFILES[role_key]
     outfit_lines = "; ".join(role["outfit_hints"])
+    phenotype = phenotype_for(word)
     return (
         f"A {role['role_en']} ({role['role_ja']}). "
         f"Outfit and props: {outfit_lines}. "
         f"The character's gender is unspecified. "
-        f"Pick ONE specific set of features from: "
-        f"(skin tone: fair, light-medium, olive, brown, or deep brown) + "
-        f"(hair color: black, dark-brown, brown, blond, or red) + "
-        f"(hair texture: straight, wavy, or curly). "
-        f"All combinations are valid — choose discretely, do not blend. "
+        # v3.12 PHENOTYPE_SPECIFICATION_RULE rule_d: 単一 concrete 記述
+        f"Apparent features: {phenotype}. "
         f"Calm friendly expression. The role must be immediately readable from "
         f"clothing and props alone. "
         # v3.10 prop contrast rule
@@ -408,12 +568,31 @@ def compose_role_pose():
             "warm approachable expression")
 
 
-def compose_nationality_subject(g, flag_shape_and_colors, cultural_styling_hint,
-                                apparent_features_hint):
+def compose_nationality_subject(g, word, flag_shape_and_colors, cultural_styling_hint):
+    """v3.12: 3 universal rules を統合して nationality subject_block を組む。
+      - PHENOTYPE_SPECIFICATION_RULE (PART 1.5): phenotype_for(word) で
+        {APPARENT_FEATURES_HINT} を動的計算。enumerate 表現の静的データは廃止。
+      - TRADITIONAL_DRESS_PATTERN_RULE (PART 1.6): pattern_for(word) が
+        非 None なら cultural_styling_hint の末尾に textile element を append。
+      - FLAG_PLACEMENT_RULE (PART 1.7): flag_placement_for(word) で
+        {FLAG_PLACEMENT} placeholder を deterministic に置換。
+    """
+    phenotype_sentence = (
+        f"Apparent features: {phenotype_for(word)}."
+    )
+    pattern = pattern_for(word)
+    if pattern:
+        cultural_styling_hint = (
+            cultural_styling_hint
+            + f" TRADITIONAL DRESS PATTERN (v3.12 PART 1.6): the garment MUST "
+              f"visibly include {pattern}."
+        )
+    flag_placement = flag_placement_for(word)
     return (g.NATIONALITY_NOUN_POLICY["subject_block_pattern"]
             .replace("{FLAG_SHAPE_AND_COLORS}", flag_shape_and_colors)
             .replace("{CULTURAL_STYLING_HINT}", cultural_styling_hint)
-            .replace("{APPARENT_FEATURES_HINT}", apparent_features_hint))
+            .replace("{APPARENT_FEATURES_HINT}", phenotype_sentence)
+            .replace("{FLAG_PLACEMENT}", flag_placement))
 
 
 def compose_nationality_pose():
@@ -423,23 +602,26 @@ def compose_nationality_pose():
 
 def render_person(g, entry, kind, sub):
     template = g.PROMPT_TEMPLATES["vocabulary_person"]
+    word = entry["word"]
     if kind == "role":
-        char_desc = compose_role_subject(g, sub["role_key"])
+        char_desc = compose_role_subject(g, sub["role_key"], word)
         char_pose = compose_role_pose()
         exception_block = ROLE_ANTI_FLAG_BLOCK
     elif kind == "nationality":
+        # v3.12: apparent_features_hint は phenotype_for(word) で動的計算するため
+        # PERSON_NATIONALITY_HINTS からは参照しない（PHENOTYPE_SPECIFICATION_RULE）。
         char_desc = compose_nationality_subject(
             g,
+            word,
             sub["flag_shape_and_colors"],
             sub["cultural_styling_hint"],
-            sub["apparent_features_hint"],
         )
         char_pose = compose_nationality_pose()
         exception_block = NATIONALITY_EXCEPTION_BLOCK
     else:
         raise ValueError(f"unknown person kind: {kind}")
     return (template
-            .replace("[TARGET_WORD]", entry["word"])
+            .replace("[TARGET_WORD]", word)
             .replace("{CHARACTER_DESCRIPTION}", char_desc)
             .replace("{CHARACTER_POSE_AND_EXPRESSION}", char_pose)
             .replace("{NATIONALITY_EXCEPTION_BLOCK}", exception_block))
@@ -460,6 +642,7 @@ RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
 PLACEHOLDERS = ["[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
                 "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
                 "{CULTURAL_STYLING_HINT}", "{APPARENT_FEATURES_HINT}",
+                "{FLAG_PLACEMENT}",  # v3.12 PART 1.7
                 "{NATIONALITY_EXCEPTION_BLOCK}"]
 
 
@@ -508,7 +691,7 @@ def main():
     ap.add_argument("--vocab-types", default=None,
                     help="vocab_types JSON のパス（既定: data/vocab_types_lessonNN.json）")
     ap.add_argument("--out", default=None,
-                    help="出力パス（既定: data/image_prompts_lessonNN_v3_2.json）")
+                    help="出力パス（既定: data/image_prompts_lessonNN_v3_12.json）")
     args = ap.parse_args()
 
     if args.lesson != 1:
@@ -564,12 +747,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_11_1.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_12.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.11.1",
+            "guideVersion": "v3.12",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
@@ -580,7 +763,11 @@ def main():
             "notes": ("MVP: vocab_type=person のみ実装。lesson_01 の person 12 件 "
                       "（役割系5＋国籍系7）。他 vocab_type のエントリは出力に含まない。"
                       " サブカテゴリ（role/nationality）は scripts/build_prompts.py 内"
-                      " の PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS で解決する。"),
+                      " の PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS で解決する。"
+                      " v3.12: 3 universal rules (PART 1.5 PHENOTYPE_SPECIFICATION_RULE / "
+                      "PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE / PART 1.7 FLAG_PLACEMENT_RULE) "
+                      "を実装。phenotype / pattern / flag-placement は word hash + lookup で "
+                      "deterministic に解決。"),
         },
         "vocabulary": rendered,
     }
