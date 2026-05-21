@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（**Phase 5 ② 完了** / `data/vocab_catalog.json` 確立 17,508 unique entries・lesson coverage 35/35・classify-and-translate catalog 駆動化 / **Phase 5 ③ に着手**）
+**最終更新：** 2026-05-21（**Phase 5 ③ 完了** / `scripts/import-lesson.mjs` 新設・lesson_01/02 で冪等同値検証 PASS / **main 次タスクは Phase 5 ⑤、ただし worktree の ④ 完了待ち**）
 
 ---
 
@@ -13,9 +13,11 @@
 
 - **Phase 0／1／2／3／4：完了。** ✅
 - **Phase 5 ①：完了** ✅ — Goi_List 全レベル抽出済（17,908 entries・UNKNOWN 0）
-- **Phase 5 ②：完了** ✅ — `data/vocab_catalog.json` 確立（17,508 unique・goi_list_raw 17,908 / lesson_01 17 / lesson_02 18 統合・lesson coverage 35/35）。`scripts/classify-and-translate.mjs` を catalog 駆動に切替（catalog 不在時は lesson_NN 直読フォールバック）
-- **Phase 5 ③：着手中（active）** — `scripts/import-lesson.mjs` の vocab 配線
-- **Phase 5 ④〜⑥**：未着手（順序依存・MIGRATION_PLAN § Phase 5 参照）
+- **Phase 5 ②：完了** ✅ — `data/vocab_catalog.json` 確立（17,508 unique）／`classify-and-translate.mjs` を catalog 駆動化
+- **Phase 5 ③：完了** ✅ — `scripts/import-lesson.mjs` 新規（GAS `seedLesson01.gs` vocab 部のローカル等価実装）。`npm run import-lesson -- --lesson 01` および `02` で **catalog + image + audio registries** に対し **totalDelta=0**（書き出しスキップ・冪等保証）。合成 lesson_99 で新規 entry 作成パスも動作確認済（成立 / 削除済）。例文配線は ⑤ で行う。
+- **Phase 5 ④：worktree active（並行起動可能）** — `master_prompt_design_guide_v3_N.py` 例文 template + `build_prompts.py` catalog 駆動拡張
+- **Phase 5 ⑤：main 次タスク（④ 完了待ち）** — 例文配線 + smoke 生成
+- **Phase 5 ⑥：未着手** — GAS 入力系 3 系統 + Sheet/Drive 退役（⑤ 完了後）
 - **Phase 4 後 backlog**：着手保留（v3.12 person 品質修正 1-6 + 残り 436 件本生成）
 - **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
@@ -25,33 +27,24 @@
 
 ---
 
-## active：Phase 5 ③ — `scripts/import-lesson.mjs` の vocab 配線
+## active：main 側
 
-**担当**：main 専属・プラン非依存
-**依存**：Phase 5 ② 完了済 ✅
+**主タスクなし。** Phase 5 ⑤ は worktree の ④ 完了待ちで blocked。
 
-**やること：**
+main 側で実行可能な選択肢（user 判断・優先度低）：
 
-1. `scripts/import-lesson.mjs` 新規作成（GAS `seedLesson01.gs` のローカル移植）
-   - 入力：`data/lesson_NN.json`（既存配置のまま・`data/lessons/` への移動は不要と判定）
-   - 動作：lesson_NN.json の vocabulary を catalog に追記（既存 entry には `lessonRefs` / `bySource.lesson_NN` のみ追加）+ registry に pending 行を追加
-   - **vocab のみ**（例文配線は Phase 5 ⑤ で行う）
-2. `npm run import-lesson -- --lesson NN` を package.json に追加
-3. lesson_01 / lesson_02 で同値検証（既存 catalog/registry と差分なしを確認）
-4. `npm run validate` PASS
+- **A.** Phase 4 後 backlog（v3.12 person 品質修正 1-6）に着手 — `docs/PHASE_BACKLOG.md` 参照
+- **B.** Phase 3 後 backlog（音声自然さチェック・Gemini 2.5 audio path）に着手
+- **C.** Phase 5 ⑤ の事前準備（要件再確認・データ構造下調べのみ・実装は ④ 完了後）
 
-**完了条件**：`npm run import-lesson -- --lesson 01` が `seedLesson01` 同等動作で完走・既存 catalog/registry に対して冪等。
-
-**規模見積**：1 セッション。
-
-**コスト**：$0（local 処理）
+A/B/C いずれも user に確認してから着手すること（active タスクとして固定はしない）。
 
 ---
 
-## 並行起動可能：Phase 5 ④（worktree） — 例文 master prompt template + build_prompts.py 拡張
+## 並行起動可能：Phase 5 ④（worktree）
 
-main で ③ 進行中に user が worktree セッションを別途立てれば並行可能。
-**1 セッション = 1 worktree** の規律は維持（同時に main と worktree を同一セッションで触らない）。
+main の ③ が完了したので、user が worktree セッションを別途立てれば独立に進行可能。
+**1 セッション = 1 worktree** の規律は維持。
 
 worktree でやること（詳細は `docs/MIGRATION_PLAN.md` § Phase 5 ④）：
 
@@ -66,7 +59,7 @@ worktree セッション開始手順は `docs/WORKFLOW.md` 参照。
 
 ## ブロッカー
 
-- なし。
+- Phase 5 ⑤ は ④ 完了に blocked（worktree 側の進捗待ち）。
 
 ---
 
@@ -95,7 +88,10 @@ node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
                                   # Phase 5 ② で catalog 駆動化（vocab_catalog.json を参照）
 node scripts/build-catalog.mjs [--dry-run | --verbose]
-                                  # Phase 5 ② で新設。catalog を再構築する時のみ
+                                  # catalog を再構築する時のみ
+npm run import-lesson -- --lesson NN [--dry-run | --verbose]
+                                  # Phase 5 ③ で新設。lesson_NN.json → catalog + registry 配線（vocab のみ）
+                                  # 既存 entry に対しては totalDelta=0 で書き出しスキップ（冪等）
 python scripts/build_prompts.py --lesson 1       # worktree で実行（Phase 5 ④ で --catalog 追加予定）
 ```
 
@@ -103,5 +99,6 @@ python scripts/build_prompts.py --lesson 1       # worktree で実行（Phase 5 
 - Phase 5 ① 抽出 script：`archive/scripts_old/extract_goi_list_v1_phase5.mjs`
 - raw source：`data/sources/goi_list_raw.pdf`（1.58 MB）/ `data/sources/goi_list_raw.json`（5.44 MB・17,908 entries）
 - Phase 5 ② catalog：`data/vocab_catalog.json`（9.85 MB・17,508 unique entries・schemaVersion 1.0）
+- Phase 5 ③ importer：`scripts/import-lesson.mjs`（GAS `seedLesson01.gs` vocab 部の冪等ローカル実装）
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
