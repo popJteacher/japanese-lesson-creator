@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-// classify-and-translate.mjs — Phase 1 ②
+// classify-and-translate.mjs — Phase 1 ② → Phase 5 ② で catalog 駆動に切替
 // GAS classifyAndTranslate.gs (pipeline.gs v1.1) のローカル移植。
 // 入出力契約・モデル・generationConfig・vocab_type 24 種・"other" フォールバックは GAS と一致させる。
 //
-// 入力ソース: data/lesson_NN.json の vocabulary.byPattern[*].words[*]（imageId/word/reading）
+// 入力ソース: data/vocab_catalog.json から lessonRefs.includes(`lesson_${NN}`) でフィルタ
+//             （bySource.lesson_NN[0].imageId を採用）。
+//             catalog 不在時は data/lesson_NN.json 直読にフォールバックする。
 // 出力先   : data/vocab_types_lessonNN.json（exportVocabTypes の出力先と同一）
 // 既存出力は cache として扱い、再分類スキップ。--force で無視。
 //
@@ -113,6 +115,46 @@ function printHelp() {
 // 入力ハーベスト & キャッシュ
 // ────────────────────────────────────────────────────────────
 async function harvestLessonVocab(lessonNN) {
+  const lessonId = `lesson_${lessonNN}`;
+  const catalogPath = resolve(ROOT, 'data/vocab_catalog.json');
+  let catalog = null;
+  try {
+    catalog = JSON.parse(await readFile(catalogPath, 'utf8'));
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e;
+  }
+
+  if (catalog) {
+    // 順序源は lesson_NN.json の vocabulary.byPattern[*].words[*]
+    // メタ（imageId）は catalog の bySource.<lessonId>[0] から引く
+    const path = resolve(ROOT, `data/lesson_${lessonNN}.json`);
+    const json = JSON.parse(await readFile(path, 'utf8'));
+    const byKey = new Map();
+    for (const e of catalog.entries) byKey.set(e.key, e);
+    const byPattern = json?.vocabulary?.byPattern || {};
+    const seen = new Set();
+    const out = [];
+    for (const pat of Object.values(byPattern)) {
+      for (const w of (pat?.words || [])) {
+        const key = `${w.word}|${w.reading || ''}`;
+        const ce = byKey.get(key);
+        if (!ce) continue;
+        const meta = (ce.bySource[lessonId] || [])[0];
+        if (!meta?.imageId || seen.has(meta.imageId)) continue;
+        seen.add(meta.imageId);
+        out.push({
+          imageId: meta.imageId,
+          word: ce.word,
+          reading: ce.reading || '',
+          pos: DEFAULT_POS,
+          lessonRef: lessonId,
+        });
+      }
+    }
+    return out;
+  }
+
+  // フォールバック: catalog 不在時は lesson_NN.json 直読（旧挙動）
   const path = resolve(ROOT, `data/lesson_${lessonNN}.json`);
   const json = JSON.parse(await readFile(path, 'utf8'));
   const byPattern = json?.vocabulary?.byPattern || {};
@@ -127,7 +169,7 @@ async function harvestLessonVocab(lessonNN) {
         word: w.word,
         reading: w.reading || '',
         pos: DEFAULT_POS,
-        lessonRef: `lesson_${lessonNN}`,
+        lessonRef: lessonId,
       });
     }
   }
@@ -418,7 +460,7 @@ async function main() {
       lessonNo: parseInt(lessonNN, 10),
       generatedAt: today,
       generator: 'scripts/classify-and-translate.mjs',
-      source: `data/lesson_${lessonNN}.json (local classify; exportVocabTypes 引退)`,
+      source: `data/vocab_catalog.json (lessonRefs=lesson_${lessonNN}) + data/lesson_${lessonNN}.json (順序源)`,
       rowCount: vocabulary.length,
     },
     vocabulary,

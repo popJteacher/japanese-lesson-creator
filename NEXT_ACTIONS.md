@@ -5,16 +5,17 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（**Phase 5 ① 完了** / `data/sources/goi_list_raw.json` 全 17,908 entries 凍結 / 抽出 script は archive 移管 / **Phase 5 ② に着手**）
+**最終更新：** 2026-05-21（**Phase 5 ② 完了** / `data/vocab_catalog.json` 確立 17,508 unique entries・lesson coverage 35/35・classify-and-translate catalog 駆動化 / **Phase 5 ③ に着手**）
 
 ---
 
 ## 現在地
 
 - **Phase 0／1／2／3／4：完了。** ✅
-- **Phase 5 ①：完了** ✅ — Goi_List 全レベル抽出済（N5 422 / N4 788 / N3 2286 / N2 12754 / N1 1548 = 17,908 entries・UNKNOWN 0）
-- **Phase 5 ②：着手中（active）** — `vocab_catalog.json` の確立
-- **Phase 5 ③〜⑥**：未着手（順序依存・MIGRATION_PLAN § Phase 5 参照）
+- **Phase 5 ①：完了** ✅ — Goi_List 全レベル抽出済（17,908 entries・UNKNOWN 0）
+- **Phase 5 ②：完了** ✅ — `data/vocab_catalog.json` 確立（17,508 unique・goi_list_raw 17,908 / lesson_01 17 / lesson_02 18 統合・lesson coverage 35/35）。`scripts/classify-and-translate.mjs` を catalog 駆動に切替（catalog 不在時は lesson_NN 直読フォールバック）
+- **Phase 5 ③：着手中（active）** — `scripts/import-lesson.mjs` の vocab 配線
+- **Phase 5 ④〜⑥**：未着手（順序依存・MIGRATION_PLAN § Phase 5 参照）
 - **Phase 4 後 backlog**：着手保留（v3.12 person 品質修正 1-6 + 残り 436 件本生成）
 - **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
@@ -24,23 +25,24 @@
 
 ---
 
-## active：Phase 5 ② — `vocab_catalog.json` の確立
+## active：Phase 5 ③ — `scripts/import-lesson.mjs` の vocab 配線
 
 **担当**：main 専属・プラン非依存
-**依存**：Phase 5 ① 完了済 ✅
+**依存**：Phase 5 ② 完了済 ✅
 
 **やること：**
 
-1. `scripts/build-catalog.mjs` 新規作成
-   - 入力：`data/sources/goi_list_raw.json`（① 出力）＋ 既存 `data/lessons/lesson_01.json` / `lesson_02.json` の `vocabulary` 配列
-   - スキーマ：source-agnostic（dedup キー = `word + reading`、`sourceIds[]` で複数ソース受入、`lessonRefs[]` で参照課を保持）
-   - 出力：`data/vocab_catalog.json`
-2. `scripts/classify-and-translate.mjs` を catalog 入力に切替（現状は何を入力にしているか先に grep して確認）
-3. `npm run validate` で invariants が壊れていないこと確認
+1. `scripts/import-lesson.mjs` 新規作成（GAS `seedLesson01.gs` のローカル移植）
+   - 入力：`data/lesson_NN.json`（既存配置のまま・`data/lessons/` への移動は不要と判定）
+   - 動作：lesson_NN.json の vocabulary を catalog に追記（既存 entry には `lessonRefs` / `bySource.lesson_NN` のみ追加）+ registry に pending 行を追加
+   - **vocab のみ**（例文配線は Phase 5 ⑤ で行う）
+2. `npm run import-lesson -- --lesson NN` を package.json に追加
+3. lesson_01 / lesson_02 で同値検証（既存 catalog/registry と差分なしを確認）
+4. `npm run validate` PASS
 
-**完了条件**：`data/vocab_catalog.json` が SSOT 化・既存 lesson_NN.json と矛盾しない・`npm run validate` PASS。
+**完了条件**：`npm run import-lesson -- --lesson 01` が `seedLesson01` 同等動作で完走・既存 catalog/registry に対して冪等。
 
-**規模見積**：1-2 セッション。
+**規模見積**：1 セッション。
 
 **コスト**：$0（local 処理）
 
@@ -48,7 +50,7 @@
 
 ## 並行起動可能：Phase 5 ④（worktree） — 例文 master prompt template + build_prompts.py 拡張
 
-main で ② 進行中に user が worktree セッションを別途立てれば並行可能。
+main で ③ 進行中に user が worktree セッションを別途立てれば並行可能。
 **1 セッション = 1 worktree** の規律は維持（同時に main と worktree を同一セッションで触らない）。
 
 worktree でやること（詳細は `docs/MIGRATION_PLAN.md` § Phase 5 ④）：
@@ -91,11 +93,15 @@ node scripts/_imagen-smoke.mjs        # 実機 1 枚＝$0.04 (Imagen 4)
 node scripts/_nanobanana-smoke.mjs    # 実機 1 枚＝~$0.0387 (Nano Banana)
 node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
+                                  # Phase 5 ② で catalog 駆動化（vocab_catalog.json を参照）
+node scripts/build-catalog.mjs [--dry-run | --verbose]
+                                  # Phase 5 ② で新設。catalog を再構築する時のみ
 python scripts/build_prompts.py --lesson 1       # worktree で実行（Phase 5 ④ で --catalog 追加予定）
 ```
 
-参考（Phase 5 ① は完了・再実行不要）：
-- 抽出 script は `archive/scripts_old/extract_goi_list_v1_phase5.mjs` に凍結済
+参考（再実行不要）：
+- Phase 5 ① 抽出 script：`archive/scripts_old/extract_goi_list_v1_phase5.mjs`
 - raw source：`data/sources/goi_list_raw.pdf`（1.58 MB）/ `data/sources/goi_list_raw.json`（5.44 MB・17,908 entries）
+- Phase 5 ② catalog：`data/vocab_catalog.json`（9.85 MB・17,508 unique entries・schemaVersion 1.0）
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
