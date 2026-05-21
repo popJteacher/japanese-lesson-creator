@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（worktree v3.9〜v3.11.1 + 旧版 archive 退避 取り込み完了 / Imagen API 疎通再確認済 / Phase 4 ③ 本番投入準備中）
+**最終更新：** 2026-05-21（worktree v3.9〜v3.11.1 + 旧版 archive 退避 取り込み完了 / Imagen API 疎通再確認済 / Phase 4 ⑥ preparation 完了 / Phase 4 ③ 本番投入準備中）
 
 ---
 
@@ -33,7 +33,11 @@
     inline ASPECT RATIO 1:1 directive（v3.11.1, nanobanana 用）。
   - **③** `scripts/generate-images-local.mjs`：コード完了（3 モード）。**v3.11.1 プロンプトでの人間再検証が未**。
   - **④** image QC：設計下書きを `docs/PHASE_BACKLOG.md` に退避。校正手順（Step 1〜4・$0.80 / 20 枚）から実装。
-  - **⑤⑥** 未着手。
+  - **⑤** 未着手。
+  - **⑥** preparation 完了。`archive/gas_old/generateImages_v5_3_phase4_retired.gs`
+    に退役対象 line range（750-2552 / 約 1803 行）と ⑥ 着手手順 10 ステップを
+    manifest として記載。**実コード切り出しは ⑥ 着手時**（前提：人間検証 § A
+    OK / ④⑤ 完了 / missing-assets null_imageUrl ≈ 0）。
 - 旧版 v3.2〜v3.8 は `archive/prompts/` `archive/data_old/` に退避済（worktree 1791a43）。
 - 作業分担：`docs/WORKFLOW.md` 参照。
 
@@ -60,10 +64,8 @@
 
 ### B. main で並行可能（任意・人間検証と独立）
 
-- **Phase 4 ⑥ 退役対象セクションのリストアップ**（実削除は ⑥ 着手時）：
-  `gas/pipeline.gs` の generateImageBatch / testSingleImage / previewPrompts /
-  retryImages / setupImageTriggersX3 / setupImageDailyTrigger と付随ヘルパの
-  line range 特定 + archive 先 `archive/gas_old/generateImages_v5_3_phase4_retired.gs` の枠組み準備。
+- **なし**（⑥ preparation は完了済。次の main 作業は Phase 4 ④ 着手で、これは
+  § A 検証 OK が前提）。
 
 ### C. worktree（必要になったら別セッションで起動）
 
