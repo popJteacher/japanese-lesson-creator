@@ -5,71 +5,48 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（v3.11.1 人間検証完了 / Phase 4 完了条件を ③⑥ 最小に再定義 / ④⑤ を Phase 4 後 backlog に移管 / v3.12 修正候補を PHASE_BACKLOG に退避 / ③ を 5 件 smoke 最小化 = $0.20 で完了、残り全件は v3.12 後に持ち越し）
-
----
-
-## Phase 4 完了条件の再定義（2026-05-21）
-
-- **Phase 4 完了 = ③ + ⑥**（GAS 完全消滅で達成）
-- ④⑤（画像 QC / invariants[E]）は **Phase 4 後 backlog に移管**
-  （`docs/PHASE_BACKLOG.md` § Phase 4 後 backlog）
-- 理由：v3.11.1 人間検証で **④⑤ の機械検証は教育的・芸術的質の判定には役立たない**
-  ことが判明。registry-as-canon 規律で画像は `--force` で後から差し替え可能なため、
-  Phase 4 後に v3.12+ プロンプト改修と併せて iterative 改善する方が費用対効果が良い
+**最終更新：** 2026-05-21（Phase 4 ③ smoke 5 件完走 = $0.20 / 技術 QC A1–A4 全件 PASS / 人間目視で品質 3 課題発見＝v3.12 backlog に追記済 / 残作業は ⑥ のみ）
 
 ---
 
 ## 現在地
 
 - **Phase 0／1／2／3：完了。**
-- **Phase 4：着手中（残作業：③ 本番 → ⑥ 退役）。**
+- **Phase 4：着手中（残作業：⑥ 退役のみ）。**
   - **①** Imagen API 疎通：完了。
   - **②** Imagen client + smoke：完了。
   - **マスタープロンプトガイド**：v3.11.1 active（hash `a79e54a29e51`）。
-    v3.11.1 = v3.11 + nanobanana 用 inline ASPECT RATIO 1:1 directive。
-    Imagen 4 API 経由でも害なし。
-  - **③** `scripts/generate-images-local.mjs`：コード完了。**v3.11.1 で 7 件人間検証完了
-    （アスペクト比 / footwear / lanyard / 国旗 isolation 等の構造要件は OK / 教育的質
-    の細部問題 6 件は v3.12 候補として PHASE_BACKLOG に退避）。本番投入待ち**。
-  - **④⑤** **Phase 4 後 backlog に移管**（`docs/PHASE_BACKLOG.md` 参照）。
+  - **③** **完了（2026-05-21）。** `npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --limit 5` で
+    5 件全 PASS（成功率 5/5・$0.20・PNG A1〜A4 全 PASS・registry が GAS Drive URL → `data/images/word_*.png` ローカルパスに置換）。
+    人間目視で品質 3 課題（線スタイル不一致 / 学生テキスト焼き込み / 会社員 photoreal drift）発見＝v3.12 修正候補
+    として `docs/PHASE_BACKLOG.md` § Imagen 4 経由 5 件 smoke 追加発見 に保全済。これら品質問題は **GAS 完全消滅という Phase 4 のコア目的とは独立**
+    のため Phase 4 完了を妨げない（registry-as-canon 規律で `--force` 再生成可能）。
+  - **④⑤** Phase 4 後 backlog に移管済（`docs/PHASE_BACKLOG.md`）。
   - **⑥** preparation 完了。`archive/gas_old/generateImages_v5_3_phase4_retired.gs` に
-    line range 750-2552 と 10 ステップ手順を manifest 記載。実コード切り出しは ⑥ 着手時。
+    line range 750-2552 と 10 ステップ手順を manifest 記載。**実コード切り出しはこれから**。
 
 - 旧版 v3.2〜v3.8 は `archive/prompts/` `archive/data_old/` に退避済。
 - 作業分担：`docs/WORKFLOW.md` 参照。
 
-生存中の GAS トリガー：`generateImageBatch` × 3 件（9 / 13 / 17 時）— ⑥ で引退対象。
+生存中の GAS トリガー：`generateImageBatch` × 3 件（9 / 13 / 17 時）— ⑥ 完了後に人間が削除。
+
+未コミットの変更（③ 完走の成果物）：
+- `data/master_image_registry.json`：word_医者 / 会社員 / 学生 / 大学生 / 先生 の 5 entry を Drive URL → local path に更新、`status: approved → generated`（word_大学生 のみ既に generated）、`_meta.lastModified: 2026-05-21` 付与
+- `data/_meta/imagen_usage.json`：今日 5 枚 $0.20 を記録
+- `data/images/word_医者.png` 他 4 件（新規・各 1024×1024 PNG）
 
 ---
 
 ## 今やること（順序固定）
 
-### A. Phase 4 ③ 完了（5 件 smoke のみ・$0.20）
-
-**v3.12 ガイド未完成 + v3.11.1 で構造的問題 6 件露呈のため、全件生成は v3.12 後に
-持ち越し。③ は「ローカル化稼働の同値検証」最小スコープで完了とする。**
+### A. Phase 4 ③ commit（先に）
 
 ```
-npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --limit 5
+git add data/master_image_registry.json data/_meta/imagen_usage.json data/images/word_医者.png data/images/word_会社員.png data/images/word_学生.png data/images/word_大学生.png data/images/word_先生.png
+git commit -m "feat(phase4): ③ smoke 5 件完走 — Imagen 4 経由 vocab_person 5 件を local 化"
 ```
 
-期待動作（完了条件）：
-- 5 件の PNG が `data/images/` に出力される（A1〜A4 PASS：PNG signature / 1024×1024 / bit depth 8）
-- `data/master_image_registry.json` の該当 5 entry が `imageUrl` で更新される（local path）
-- `npm run missing-assets` の image missing 件数が `441 → 436` に減少
-- エラーログなし
-
-完了確認後の処理：
-- 5 枚を人間目視で「明らかな技術不良がない」確認（教育的・芸術的質は v3.12 後に対応するので妥協）
-- 技術不良があれば該当 imageId を `status=pending` に戻して `--force` 再生成、または
-  `generate-images-local.mjs` の bug 修正
-- 5 件すべて PASS なら ③ 完了 → B（⑥ 本番）に進む
-
-**残り 436 件の生成は Phase 4 完了後の backlog**（v3.12 マスタープロンプト修正後に
-段階的実施）。registry-as-canon 規律で imageId は不変、後から `--force` で差し替え可能。
-
-### B. Phase 4 ⑥ 本番着手（③ 完走後）
+### B. Phase 4 ⑥ 本番着手
 
 `archive/gas_old/generateImages_v5_3_phase4_retired.gs` に記載済の 10 ステップ手順に従う：
 
@@ -94,7 +71,7 @@ npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --
 
 ## ブロッカー
 
-- なし。③ → ⑥ → Phase 4 完了の一直線で進行可能。
+- なし。⑥ → Phase 4 完了の一直線で進行可能。
 
 ---
 
@@ -102,13 +79,13 @@ npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --
 
 詳細は `docs/PHASE_BACKLOG.md` 参照。優先度はユーザー判断。
 
-- **v3.12 マスタープロンプトガイド修正**（worktree 担当・6 項目）
-  - 🔴 学生 2 アングルバグ / 🔴 肌色中央値収束 /
-  - 🟡 アジア国別 pattern allowance / 🟡 アメリカ人正面 view /
-  - 🟢 国旗 placement variation / 🟢 表情・姿勢 variation
+- **v3.12 マスタープロンプトガイド修正**（worktree 担当・**9 項目**＝nanobanana 由来 6 ＋ **Imagen 4 由来 3〔今回追加〕**）
+  - nanobanana 6: 🔴 学生 2 アングル / 🔴 肌色中央値収束 / 🟡 アジア国別 pattern / 🟡 アメリカ人正面 view / 🟢 国旗 placement / 🟢 表情・姿勢 variation
+  - Imagen 4 3 (新): 🔴 line weight 不一致 / 🔴 vocabulary text bake-in / 🔴 photoreal style drift
 - **残り 436 件の本生成**（③ 持ち越し分・v3.12 改修後に段階的実施・$17.4）
+- **③ で生成した 5 件の `--force` 再生成**（v3.12 適用後に品質改善確認・$0.20）
 - **lesson_01 既存 41 件 person 画像の再生成**（visual continuity）
-- **画像 QC ④⑤ 実装**（旧 Phase 4 ④⑤・$0.80 校正 + 実装）
+- **画像 QC ④⑤ 実装**（旧 Phase 4 ④⑤・$0.80 校正 + 実装・photo drift 検出に有効と判明）
 - **scene-rich テンプレ A2 設計**
 - **OBJECT_SIGNATURES.avoid 取り込み**（M-67）
 - **NAMED_CHARACTER_PROFILES 生成パス実装**（M-16）
@@ -121,7 +98,7 @@ npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --
 
 ```
 npm run validate             # invariants A=v7.4 / B=a79e54a29e51 (v3.11.1) / C=12×4 / D=55/55（3 WARN）PASS
-npm run missing-assets       # 現状 image 441 / audio 108 件未生成（③ 完走で image が 0 付近に）
+npm run missing-assets       # 現状 image 441 / audio 108（5 件 smoke は元から approved だったため count 不変）
 npm run check-sa             # Sheets API 疎通
 npm run check-tts-sa         # Cloud TTS API 疎通
 npm run check-ffmpeg         # ffmpeg / ffprobe / filter / encoder 疎通

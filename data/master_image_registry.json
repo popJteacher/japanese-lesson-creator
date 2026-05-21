@@ -36,7 +36,8 @@
       "v1.7 (2026-05-14): lesson_01 v2.10 同期 + 画像生成27件 URL 反映。(1) 新規追加: vocab_大学生 + 国籍7語(日本人/中国人/アメリカ人/韓国人/ブラジル人/ベトナム人/スペイン人)。(2) 新規追加: char_鈴木/リン/ケリー/キム/タノム (type: named_character_card・prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES 参照)。(3) vocab_病院: firstLesson 2->1, usedInLessons [2]->[1,2], status pending->generated。(4) ex_L01_001〜015 の sentence/patternId/slot を lesson_01.json v2.10 に整合化。ex_L01_001〜005 は outdated→generated に復活(_outdated_* メタ削除)、URL は char_鈴木/リン/キム imageRef からコピー。(5) 27エントリ全て status: generated, imageUrl 入力済み。promptRef は既存値維持。(6) ex_L01_010, ex_L01_014 は変更なし(指示通り)。totalEntries: 57 -> 70。",
       "v1.8 (2026-05-17): lesson_02.json v2.11.3 同期。L02 語彙 15件追加 (word_病院は L01 既存のためスキップ)。totalEntries: 71 -> 86 (world_map の static_asset を含む実態カウントに修正)。",
       "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。"
-    ]
+    ],
+    "lastModified": "2026-05-21"
   },
   "entries": {
     "word_医者": {
@@ -49,14 +50,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_医者_001",
-          "filename": "vocab_医者.png",
-          "imageUrl": "https://drive.google.com/uc?id=1npKmP84F3KAWLt5NbjVhcczcLccevyzE",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_医者",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_医者_001",
+          "filename": "word_医者.png",
+          "imageUrl": "data/images/word_医者.png",
+          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_医者",
+          "generatedAt": "2026-05-21",
           "regenerate": false
         }
       ]
@@ -137,14 +138,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_会社員_001",
-          "filename": "vocab_会社員.png",
-          "imageUrl": "https://drive.google.com/uc?id=1OmF47cb2wT44vORQwtf6-m1Ch-W-XV9g",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_会社員",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_会社員_001",
+          "filename": "word_会社員.png",
+          "imageUrl": "data/images/word_会社員.png",
+          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_会社員",
+          "generatedAt": "2026-05-21",
           "regenerate": false
         }
       ]
@@ -159,14 +160,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_学生_001",
-          "filename": "vocab_学生.png",
-          "imageUrl": "https://drive.google.com/uc?id=1TZK2T7Y2L_2XQCLGxI6hi8Fkpm1TmanO",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_学生",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_学生_001",
+          "filename": "word_学生.png",
+          "imageUrl": "data/images/word_学生.png",
+          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_学生",
+          "generatedAt": "2026-05-21",
           "regenerate": false
         }
       ]
@@ -181,14 +182,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_先生_001",
-          "filename": "vocab_先生.png",
-          "imageUrl": "https://drive.google.com/uc?id=1U2b4MS0N1Vc4U5bXiOguLxbcUVRUN5M5",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_先生",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_先生_001",
+          "filename": "word_先生.png",
+          "imageUrl": "data/images/word_先生.png",
+          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_先生",
+          "generatedAt": "2026-05-21",
           "regenerate": false
         }
       ]
@@ -1249,11 +1250,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_大学生_001",
-          "filename": "vocab_大学生.png",
-          "imageUrl": "https://drive.google.com/uc?id=1b_h-9LVUbvqvVK6iHxmLVxa0vEwQEqzb",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_大学生",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_大学生_001",
+          "filename": "word_大学生.png",
+          "imageUrl": "data/images/word_大学生.png",
+          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_大学生",
+          "generatedAt": "2026-05-21",
           "regenerate": false
         }
       ]

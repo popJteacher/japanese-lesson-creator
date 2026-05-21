@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記）
 
 ---
 
@@ -291,6 +291,68 @@ stats.json + 決定したしきい値を `image-qc.mjs` 内の `CALIBRATION` con
 
 - **未検証**：外国人 signature（phrasebook + crossbody bag）が student と
   区別可能か。7 件サンプルに外国人未含。v3.12 検証時に必ず外国人を入れる。
+
+#### Imagen 4 経由 5 件 smoke で 2026-05-21 に追加発見（v3.11.1 同一プロンプト・モデル差）
+
+上記 6 項目は **nanobanana 7 件**由来。以下は同じ v3.11.1 プロンプトを
+**Imagen 4 API**（`imagen-4.0-generate-001`）経由で 5 件（word_医者 / 会社員 /
+学生 / 大学生 / 先生）生成し人間レビューで発見した、**Imagen 4 特有の構造的問題**。
+nanobanana サンプルでは発生しなかった事象であり、Imagen 4 ⇄ nanobanana の
+bias 差を意味する。v3.12 ではどちらのモデルでも安全に動くプロンプトに改修要。
+
+7. **🔴 line weight / illustration style の語彙間不一致**（同一
+   `vocabulary_person` テンプレで、医者は線が極めて細い or 線なし flat、
+   先生は明らかに太線、学生・大学生は中間と、線の太さ・有無が語彙ごとにバラバラ）
+   - 修正候補：vocabulary_person template に LINE_STYLE_LOCK 句を追加。
+     例：「Clean vector-style illustration with consistent 2-3px medium-weight
+     outline on all major shapes. NEVER render line-less flat shapes or
+     heavy 5px+ bold outlines.」全 person 系で同一指定。
+   - 参考：v3.11 で footwear-mandatory rule が動いたのと同じ規律（モデル
+     依存の揺れを inline directive で潰す）。
+
+8. **🔴 vocabulary text bake-in（学生に「学生」漢字焼き込み）**
+   （word_学生 で画像左上に黒字の「学生」漢字が描画された。
+   `PROMPT_LITERALIZATION_AVOIDANCE_RULE.rule_a` は placeholder 防止だが、
+   **vocabulary word 自体の漢字テキスト出力を明示禁止していない**ことが露呈）
+   - 修正候補：マスタールールに `NO_RENDERED_TEXT_RULE` を新設。
+     「The image MUST NEVER contain any rendered text, letters, numbers,
+     kanji, hiragana, katakana, watermarks, captions, or labels. Subject
+     must be communicated by visual depiction alone. This includes any
+     text on signs, badges, books, or clothing visible to the viewer.」
+   - 副作用注意：会社員の ID badge は **blank rectangular plate** で OK
+     （v3.11 lanyard rule と整合）、医者の白衣 / 学生のノートも文字なし。
+     国旗の図像は text ではないので NATIONAL_SYMBOL_ISOLATION_RULE と
+     衝突しない。
+   - Imagen 4 は nanobanana より text generation が活発な傾向（一般的
+     既知 bias）。明示禁止が必須。
+
+9. **🔴 photorealistic style drift（会社員サンプルが illustration から
+   完全に photoreal な被写体に崩壊）**
+   （word_会社員 のみ filesize 1.6MB と他語彙の 2.5〜3 倍、画像内容も
+   illustration ではなく photographic style。v3.11.1 プロンプトに
+   `flat illustration` 等の style anchor は含まれているが Imagen 4 で
+   しばしば無視される）
+   - 修正候補：vocabulary_person template の冒頭 PART 0 相当に
+     MEDIUM_LOCK 句を inline 配置：「MEDIUM: flat 2D vector illustration.
+     NEVER photographic, photorealistic, 3D rendered, painterly, or
+     sketch style. Output MUST resemble a clean educational textbook
+     illustration with solid-fill shapes.」
+   - 検出補助：将来 `image-qc.mjs` の D 検査（distinct color 数）が
+     実装されたら photo drift は distinct color の急増で検出可能
+     （illustration ≈ 50 色 vs photo ≈ 数千色）。**Phase 4 後 backlog の
+     画像 QC ④⑤ 仕様（本ファイル上部）が photo drift 検出に有効である
+     証拠** — ④⑤ 着手時の優先度判断材料に。
+
+- **モデル差の重要観察（worktree への引き継ぎメモ）：**
+  - v3.11.1 は当初「nanobanana 用 inline ASPECT RATIO 1:1 directive 追加 /
+    Imagen 4 経由でも害なし」と判定したが、**害なしと品質同等は別物**。
+    Imagen 4 経由では line weight / text / medium style の 3 軸で
+    nanobanana より制御が弱い。
+  - v3.12 はどちらか一方ではなく **両モデルで安全**を設計指針とする。
+  - 一方で nanobanana で発見した 6 項目（特に 🔴 学生 2 アングル /
+    🔴 肌色中央値収束）は Imagen 4 5 件サンプルでは未確認（学生 1 件のみ）。
+    nanobanana 特有の可能性もあるため、worktree v3.12 検証時に Imagen 4 +
+    nanobanana 両モデルで cross-check すること。
 
 ---
 
