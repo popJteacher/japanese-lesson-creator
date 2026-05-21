@@ -109,8 +109,13 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   ＋バッチ＋日次 RPD カウンタ＋上限ガード＋ registry 連携（`status=pending` /
   `null` のみ拾う・`master_image_registry.json` を local path で更新）。
   プロンプトビルドは取り込んだ master prompt guide 版を使う（GAS の v2.9.1
-  相当 STYLE_RECIPE をローカルに移設）。完了＝ pending エントリの生成が一周し、
-  `npm run missing-assets` の `no_images_array` 件数が減る。QC は未組込みでよい。
+  相当 STYLE_RECIPE をローカルに移設）。完了条件（**2026-05-21 最小化版**）＝
+  **`--limit 5` で 5 件 smoke 生成して PNG 出力 / registry 更新 / missing-assets
+  件数 -5 を同値検証 PASS**（コスト $0.20）。残り全件生成は v3.12 マスタープロンプト
+  ガイド修正後に Phase 4 後 backlog として段階的実施する。QC は未組込みでよい。
+  **理由**：v3.11.1 で 6 件の構造的問題が露呈しており、全件生成すると v3.12 後の
+  `--force` 再生成と二重コスト（$35 vs $18）。Phase 4 のコア目的は「GAS 完全消滅」
+  でこれは ⑥ で達成されるため、③ は「ローカル化稼働の同値検証」最小で十分。
 - **④ ＜Phase 4 後 backlog 移管・2026-05-21＞** 画像 QC パイプライン
   （`scripts/lib/image-qc.mjs`）。プラン側で確定したスタイル不変条件
   （サイズ／フォーマット／透過／余白／カラーチェック等）を機械検証として

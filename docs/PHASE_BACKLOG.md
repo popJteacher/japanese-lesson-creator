@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加）
 
 ---
 
@@ -291,6 +291,32 @@ stats.json + 決定したしきい値を `image-qc.mjs` 内の `CALIBRATION` con
 
 - **未検証**：外国人 signature（phrasebook + crossbody bag）が student と
   区別可能か。7 件サンプルに外国人未含。v3.12 検証時に必ず外国人を入れる。
+
+---
+
+### Phase 4 ③ 持ち越し分 436 件の本生成（v3.12 改修後に段階的実施）
+- 出所：Phase 4 ③ を「5 件 smoke で同値検証 PASS」最小スコープで完了させた
+  ため、残り 436 件は本 backlog 行き（2026-05-21 決定）。
+- 退避理由：v3.11.1 で 6 件の構造的問題（前項「v3.12 マスタープロンプトガイド
+  修正候補」参照）が露呈しており、v3.11.1 で全件生成すると v3.12 後の
+  `--force` 再生成と二重コスト（$35 vs $18）。v3.12 完成後に生成する方が
+  費用対効果が良い。
+- 戻し方：v3.12 マスタープロンプトガイドが完成し worktree → main に merge された
+  後、段階的に実施：
+  ```
+  # Step A: 50 件 medium（コスト $2 / sample 確認）
+  npm run generate-images -- --prompts data/image_prompts_lesson01_v3_12.json --limit 50
+  # Step B: 残り全件（コスト $15+ / 完走を見届ける）
+  npm run generate-images -- --prompts data/image_prompts_lesson01_v3_12.json
+  ```
+  各 Step 後に人間目視 sample + `npm run missing-assets` で進捗確認。
+  既に Phase 4 ③ で生成された 5 件は v3.11.1 由来のため、v3.12 で品質改善した
+  い場合は `--force` で再生成（追加 $0.20）。
+- 想定コスト合計：$17.4（最初の 5 件は ③ で計上済）+ v3.12 改修で
+  品質改善を確認した imageId のみ `--force` で再生成（10-20 件想定で $0.4-0.8）。
+- 完了基準：`npm run missing-assets` の image missing 件数が
+  「未生成 examples」「未生成 named characters」等の構造的残件のみになる
+  （目安：50 件以下）。
 
 ---
 

@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（v3.11.1 人間検証完了 / Phase 4 完了条件を ③⑥ 最小に再定義 / ④⑤ を Phase 4 後 backlog に移管 / v3.12 修正候補を PHASE_BACKLOG に退避 / Phase 4 ③ 本番投入準備完了）
+**最終更新：** 2026-05-21（v3.11.1 人間検証完了 / Phase 4 完了条件を ③⑥ 最小に再定義 / ④⑤ を Phase 4 後 backlog に移管 / v3.12 修正候補を PHASE_BACKLOG に退避 / ③ を 5 件 smoke 最小化 = $0.20 で完了、残り全件は v3.12 後に持ち越し）
 
 ---
 
@@ -45,29 +45,29 @@
 
 ## 今やること（順序固定）
 
-### A. Phase 4 ③ 本番投入（段階的）
+### A. Phase 4 ③ 完了（5 件 smoke のみ・$0.20）
 
-`v3_11_1.json` で 441 件を段階的に生成。コスト試算：Standard $0.04 × 441 ≒ **$17.64**。
+**v3.12 ガイド未完成 + v3.11.1 で構造的問題 6 件露呈のため、全件生成は v3.12 後に
+持ち越し。③ は「ローカル化稼働の同値検証」最小スコープで完了とする。**
 
 ```
-# Step 1: 5 件 smoke（コスト $0.20 / 人間目視で技術不良なし確認）
 npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --limit 5
-
-# Step 2: 50 件中規模（コスト $2 / sample 確認）
-npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --limit 50
-
-# Step 3: 全件（コスト $15+ / 完走を見届ける）
-npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json
-
-# 完走確認
-npm run validate
-npm run missing-assets         # null_imageUrl が 0 件付近まで減少していること
 ```
 
-各 Step 後に：
-- ローカル `data/images/` で目視 sample（10-20 枚）
-- registry 更新確認
-- 明らかな技術不良があれば該当 imageId を `status=pending` に戻して `--force` 再生成
+期待動作（完了条件）：
+- 5 件の PNG が `data/images/` に出力される（A1〜A4 PASS：PNG signature / 1024×1024 / bit depth 8）
+- `data/master_image_registry.json` の該当 5 entry が `imageUrl` で更新される（local path）
+- `npm run missing-assets` の image missing 件数が `441 → 436` に減少
+- エラーログなし
+
+完了確認後の処理：
+- 5 枚を人間目視で「明らかな技術不良がない」確認（教育的・芸術的質は v3.12 後に対応するので妥協）
+- 技術不良があれば該当 imageId を `status=pending` に戻して `--force` 再生成、または
+  `generate-images-local.mjs` の bug 修正
+- 5 件すべて PASS なら ③ 完了 → B（⑥ 本番）に進む
+
+**残り 436 件の生成は Phase 4 完了後の backlog**（v3.12 マスタープロンプト修正後に
+段階的実施）。registry-as-canon 規律で imageId は不変、後から `--force` で差し替え可能。
 
 ### B. Phase 4 ⑥ 本番着手（③ 完走後）
 
@@ -106,6 +106,7 @@ npm run missing-assets         # null_imageUrl が 0 件付近まで減少して
   - 🔴 学生 2 アングルバグ / 🔴 肌色中央値収束 /
   - 🟡 アジア国別 pattern allowance / 🟡 アメリカ人正面 view /
   - 🟢 国旗 placement variation / 🟢 表情・姿勢 variation
+- **残り 436 件の本生成**（③ 持ち越し分・v3.12 改修後に段階的実施・$17.4）
 - **lesson_01 既存 41 件 person 画像の再生成**（visual continuity）
 - **画像 QC ④⑤ 実装**（旧 Phase 4 ④⑤・$0.80 校正 + 実装）
 - **scene-rich テンプレ A2 設計**
