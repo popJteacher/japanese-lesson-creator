@@ -15,23 +15,22 @@
 - **GAS は1ファイル**。GAS プロジェクト側は monolith として運用されている（分割すると動かない）。
 - ルートに散らかっていた `setupSpreadsheet.gs` / `generateAudio.gs` / `generateImages.gs` / `classifyAndTranslate.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` / `syncRegistries.gs` / `seedLesson01.gs` は **monolith 内のコメント区切りセクション名**であって独立ファイルではない（一致するファイル名が存在するのは旧スタンドアロン版＝archive 行き）。
 - デプロイ＝`gas/pipeline.gs` を丸ごと GAS スクリプトエディタに貼る。
-- **monolith は分割しない**。特に `loadJsonFromDrive_` と `loadJsonFromDriveById`、`getExistingKeys` と `getExistingWords_` は **名前が似ているが署名・挙動が別物**。**「重複だから統合」を絶対にしない。**
+- **monolith は分割しない**。特に `getExistingKeys` と `getExistingWords_` は **名前が似ているが署名・挙動が別物**。**「重複だから統合」を絶対にしない。**
+  （※ `loadJsonFromDriveById` は Phase 4 ⑥ で `importExamplesFromLesson02` と同時退役。`loadJsonFromDrive_` のみが live。）
 
 ### 1-1. ヘッダー版とセクション版（実ファイル `gas/pipeline.gs` より）
 
 | 部位 | バージョン表記 | 注記 |
 |---|---|---|
-| ファイル先頭ヘッダー | `v7.3`（2026-05-20） | line 4。Phase 2 ⑥ で syncRegistries 退役 |
-| `setupSpreadsheet` セクション | （無記） | line 28 |
-| `seedLesson01` セクション | `v1.1` | line 179 |
-| `extractFromGoiList` セクション | `v1.0` | line 361 |
-| `importFromLessonJson` セクション | `v1.0` | line 569 |
-| `generateImages` セクション | `v5.3`（2026-05-19） | line 986・最新パッチ＝`failed_N` リトライ＋`skipped_no_prompt` |
-| `generateAudio` セクション | コメント `v2.0` | line 2766・**コメントは古いが実装は Cloud TTS WaveNet（Neural2）**。コメントと実装が乖離している点に注意 |
-| `loadJsonFromDriveById`（保留ユーティリティ） | （無記） | line 2820 周辺。`importExamplesFromLesson02` 依存のため syncRegistries 撤去後も残置 |
+| ファイル先頭ヘッダー | `v7.5`（2026-05-21） | line 4。Phase 4 ⑥ で generateImages + Sheet 操作 utility 群退役 |
+| `setupSpreadsheet` セクション | （無記） | （line 番号は退役後再振りされたため `Grep` で参照） |
+| `seedLesson01` セクション | `v1.1` | （同上） |
+| `extractFromGoiList` セクション | `v1.0` | （同上） |
+| `importFromLessonJson` セクション | `v1.0` | （同上） |
 
 > **ヘッダー版とセクション版のドリフトは仕様**（実害は今のところ無し）。`npm run validate` で検出するチェックを入れている。
-> 退役済セクション：`classifyAndTranslate` / `exportVocabTypes`（v7.2・Phase 1 ④）、`syncRegistries`（v7.3・Phase 2 ⑥）。すべて `archive/gas_old/` に保全。
+> 退役済セクション：`classifyAndTranslate` / `exportVocabTypes`（v7.2・Phase 1 ④）、`syncRegistries`（v7.3・Phase 2 ⑥）、`generateAudio`（v7.4・Phase 3 ⑥）、`generateImages` + 関連 Sheet 操作 utility 群（v7.5・Phase 4 ⑥）。すべて `archive/gas_old/` に保全。
+> **本ファイル全体に staleness が残る**（line 番号 / AUDIO_SETTINGS 詳細 等）。Phase 5 設計時に包括 audit 予定。
 
 ---
 

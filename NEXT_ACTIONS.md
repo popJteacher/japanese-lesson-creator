@@ -5,100 +5,105 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（Phase 4 ③ smoke 5 件完走 = $0.20 / 技術 QC A1–A4 全件 PASS / 人間目視で品質 3 課題発見＝v3.12 backlog に追記済 / 残作業は ⑥ のみ）
+**最終更新：** 2026-05-21（Phase 4 ⑥ Option C コード完了 / gas/pipeline.gs 2815→799 行 / Sheet 操作 utility 9 件 + loadJsonFromDriveById も同時退役 / validate ERROR 0 + GAS ヘッダー v7.5 検出 / **残作業：人間タスク = GAS Triggers 削除 → Phase 4 完了宣言**）
 
 ---
 
 ## 現在地
 
 - **Phase 0／1／2／3：完了。**
-- **Phase 4：着手中（残作業：⑥ 退役のみ）。**
-  - **①** Imagen API 疎通：完了。
-  - **②** Imagen client + smoke：完了。
-  - **マスタープロンプトガイド**：v3.11.1 active（hash `a79e54a29e51`）。
-  - **③** **完了（2026-05-21）。** `npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --limit 5` で
-    5 件全 PASS（成功率 5/5・$0.20・PNG A1〜A4 全 PASS・registry が GAS Drive URL → `data/images/word_*.png` ローカルパスに置換）。
-    人間目視で品質 3 課題（線スタイル不一致 / 学生テキスト焼き込み / 会社員 photoreal drift）発見＝v3.12 修正候補
-    として `docs/PHASE_BACKLOG.md` § Imagen 4 経由 5 件 smoke 追加発見 に保全済。これら品質問題は **GAS 完全消滅という Phase 4 のコア目的とは独立**
-    のため Phase 4 完了を妨げない（registry-as-canon 規律で `--force` 再生成可能）。
-  - **④⑤** Phase 4 後 backlog に移管済（`docs/PHASE_BACKLOG.md`）。
-  - **⑥** preparation 完了。`archive/gas_old/generateImages_v5_3_phase4_retired.gs` に
-    line range 750-2552 と 10 ステップ手順を manifest 記載。**実コード切り出しはこれから**。
+- **Phase 4：着手中（残作業：人間タスク + 完了宣言のみ）。**
+  - **①〜⑤**：完了（③ は smoke 5 件で同値検証 PASS、④⑤ は Phase 4 後 backlog 移管）
+  - **⑥ コード**：**完了（2026-05-21）。**
+    - `gas/pipeline.gs`：v7.4 → **v7.5**（2815→799 行・-2016 行）
+    - Cut 範囲（Option C）：
+      - **Range A**（line 750-2528）：generateImages.gs 主要 6 関数 + build*Prompt_ × 19 + その他 helper = 1779 行
+      - **Range B**（line 2545-2803）：loadJsonFromDriveById + 9 Sheet 操作 utility = 259 行
+    - 保全：`archive/gas_old/generateImages_v5_3_phase4_retired.gs`（171 → 2222 行）
+    - 検証：`npm run validate` ERROR 0 / invariants[A] から `generateImages.gs v5.3` 行が自動消失 / `npm run check-imagen-key` PASS
 
-- 旧版 v3.2〜v3.8 は `archive/prompts/` `archive/data_old/` に退避済。
-- 作業分担：`docs/WORKFLOW.md` 参照。
-
-生存中の GAS トリガー：`generateImageBatch` × 3 件（9 / 13 / 17 時）— ⑥ 完了後に人間が削除。
-
-未コミットの変更（③ 完走の成果物）：
-- `data/master_image_registry.json`：word_医者 / 会社員 / 学生 / 大学生 / 先生 の 5 entry を Drive URL → local path に更新、`status: approved → generated`（word_大学生 のみ既に generated）、`_meta.lastModified: 2026-05-21` 付与
-- `data/_meta/imagen_usage.json`：今日 5 枚 $0.20 を記録
-- `data/images/word_医者.png` 他 4 件（新規・各 1024×1024 PNG）
+生存中の GAS トリガー：`generateImageBatch` × 3 件（9 / 13 / 17 時）— **人間タスク：削除待ち**。
 
 ---
 
-## 今やること（順序固定）
+## 今やること
 
-### A. Phase 4 ③ commit（先に）
+### A. ⑥ コミット（即実行）
 
-```
-git add data/master_image_registry.json data/_meta/imagen_usage.json data/images/word_医者.png data/images/word_会社員.png data/images/word_学生.png data/images/word_大学生.png data/images/word_先生.png
-git commit -m "feat(phase4): ③ smoke 5 件完走 — Imagen 4 経由 vocab_person 5 件を local 化"
-```
+`gas/pipeline.gs` / `archive/gas_old/generateImages_v5_3_phase4_retired.gs` / `docs/REFERENCE.md` / `NEXT_ACTIONS.md` を 1 commit。
 
-### B. Phase 4 ⑥ 本番着手
+### B. 人間タスク（Claude Code 実行不可）
 
-`archive/gas_old/generateImages_v5_3_phase4_retired.gs` に記載済の 10 ステップ手順に従う：
+GAS エディタを開き、Triggers パネルから以下 3 件を削除：
 
 ```
-1. archive ファイルに gas/pipeline.gs line 750-2552 を切り出してコピー
-2. line 2553 以降の utility 群（loadJsonFromDriveById 等）が IMAGE_SETTINGS /
-   PERSON_PROFILES 等の定数を参照していないか grep で確認
-3. gas/pipeline.gs から line 750-2552 を削除
-4. npm run validate / npm run check-imagen-key で残余整合性確認
-5. scripts/invariants.mjs の CANONICAL.gas から generateImages.gs を削除
-6. commit
-7. 人間タスク：GAS Triggers から generateImageBatch × 3 件削除
+generateImageBatch  09:00 daily
+generateImageBatch  13:00 daily
+generateImageBatch  17:00 daily
 ```
 
-### C. Phase 4 完了宣言
+削除後、Triggers パネルの一覧に `generateImageBatch` が含まれないことを目視確認
+（`feedback_verify_gas_triggers.md` memory：文書を信用せず必ず実視）。
+削除確認できたらこのファイルに「人間タスク完了」と一言コメントしてください。
 
-- 人間が GAS Triggers 削除を完了
+### C. Phase 4 完了宣言（人間タスク完了後）
+
 - `docs/MIGRATION_PLAN.md` Phase 4 セクションに完了マーク
-- `NEXT_ACTIONS.md` を「Phase 4 後 backlog の優先度判断」に書き直し
+- `NEXT_ACTIONS.md` を「Phase 5 設計議論 / Phase 4 後 backlog 優先度判断」に書き直し
+
+---
+
+## Phase 4 完了後の重要議題
+
+### Phase 5 設計（仮称：入力系のローカル化）
+
+2026-05-21 user 確認で **「完全ローカル」想定との gap** が判明。Phase 4 完了後も
+以下が GAS/Drive/Sheets 依存のまま残る：
+
+| 依存先 | 何が残るか |
+|---|---|
+| **GAS（手動実行）** | `seedLesson01.gs` / `extractFromGoiList.gs` / `importFromLessonJson.gs` の 3 系統 |
+| **Google Drive** | Goi_List.pdf（N5 語彙原典）/ lesson_NN.json（課マスター） |
+| **Google Sheets** | Vocabulary / Examples シート（registry の入力源） |
+
+`docs/MIGRATION_PLAN.md` 冒頭の「GAS・Google Sheets・Google Drive はランタイムから引退」は長期 vision として書かれていたが、Phase 1〜4 にはこの作業が割り当てられていない（横断要件として line 137-138 に書かれているのみ）。
+
+**Phase 5（仮）として議論すべき項目：**
+1. lesson_NN.json を Drive → repo 直置きに移行
+2. Goi_List.pdf を repo 取り込み or 抽出結果 JSON 固定化
+3. `extractFromGoiList.gs` の local 化
+4. `importFromLessonJson.gs` の local 化（Sheet 経由を撤廃し registry に直接書く）
+5. Sheet 自体の退役
+6. `seedLesson01.gs` の退役（lesson_01.json + 汎用 importer に統合）
+
+着手は Phase 4 完了宣言後に user 判断。
+
+### Phase 4 後 backlog（既存）
+
+詳細は `docs/PHASE_BACKLOG.md` 参照。優先度は user 判断。
+
+- **v3.12 マスタープロンプトガイド修正**（worktree 担当・9 項目）
+- **残り 436 件の本生成**（③ 持ち越し分・v3.12 改修後・$17.4）
+- **③ で生成した 5 件の `--force` 再生成**（v3.12 適用後・$0.20）
+- **lesson_01 既存 41 件 person 画像の再生成**
+- **画像 QC ④⑤ 実装**（旧 Phase 4 ④⑤・$0.80 校正 + 実装）
+- **`scripts/apply_v5_3_patches.py` archive 移設**（今回 cut で dead code 化した one-shot patcher）
+- **`docs/REFERENCE.md` 包括 audit**（v7.3 時点で凍結気味・line 番号 / AUDIO_SETTINGS 詳細 等が drift）
+- その他：scene-rich テンプレ A2 設計 / OBJECT_SIGNATURES.avoid 取り込み (M-67) / NAMED_CHARACTER_PROFILES 生成パス実装 (M-16) / M-23 テンプレ J 対義語 / M-48 FAMILY_TEMPLATES / `scripts/build_prompts.py` D/H/J 戦略展開
 
 ---
 
 ## ブロッカー
 
-- なし。⑥ → Phase 4 完了の一直線で進行可能。
-
----
-
-## Phase 4 完了後 backlog（優先度未確定）
-
-詳細は `docs/PHASE_BACKLOG.md` 参照。優先度はユーザー判断。
-
-- **v3.12 マスタープロンプトガイド修正**（worktree 担当・**9 項目**＝nanobanana 由来 6 ＋ **Imagen 4 由来 3〔今回追加〕**）
-  - nanobanana 6: 🔴 学生 2 アングル / 🔴 肌色中央値収束 / 🟡 アジア国別 pattern / 🟡 アメリカ人正面 view / 🟢 国旗 placement / 🟢 表情・姿勢 variation
-  - Imagen 4 3 (新): 🔴 line weight 不一致 / 🔴 vocabulary text bake-in / 🔴 photoreal style drift
-- **残り 436 件の本生成**（③ 持ち越し分・v3.12 改修後に段階的実施・$17.4）
-- **③ で生成した 5 件の `--force` 再生成**（v3.12 適用後に品質改善確認・$0.20）
-- **lesson_01 既存 41 件 person 画像の再生成**（visual continuity）
-- **画像 QC ④⑤ 実装**（旧 Phase 4 ④⑤・$0.80 校正 + 実装・photo drift 検出に有効と判明）
-- **scene-rich テンプレ A2 設計**
-- **OBJECT_SIGNATURES.avoid 取り込み**（M-67）
-- **NAMED_CHARACTER_PROFILES 生成パス実装**（M-16）
-- **M-23 テンプレ J 対義語仕様** / **M-48 FAMILY_TEMPLATES 活用**
-- **`scripts/build_prompts.py` の D/H/J 戦略展開ロジック**
+- なし。⑥ コード commit → 人間タスク → 完了宣言 の一直線。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate             # invariants A=v7.4 / B=a79e54a29e51 (v3.11.1) / C=12×4 / D=55/55（3 WARN）PASS
-npm run missing-assets       # 現状 image 441 / audio 108（5 件 smoke は元から approved だったため count 不変）
+npm run validate             # invariants A=v7.5 / B=a79e54a29e51 / C=12×4 / D=55/55（3 WARN）PASS
+npm run missing-assets       # 現状 image 441 / audio 108（v3.12 後 backlog で削減予定）
 npm run check-sa             # Sheets API 疎通
 npm run check-tts-sa         # Cloud TTS API 疎通
 npm run check-ffmpeg         # ffmpeg / ffprobe / filter / encoder 疎通
@@ -118,12 +123,15 @@ npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 python scripts/build_prompts.py --lesson 1       # worktree で実行
 ```
 
-人間側（Claude Code 実行不可・⑥ 完了時に必要）：
+人間側（Claude Code 実行不可）：
 
 ```
 # 退役対象 GAS トリガー（Phase 4 ⑥ commit 完了後に GAS Triggers パネルから削除）
-generateImageBatch × 3 件   # 9 / 13 / 17 時
+generateImageBatch  09:00 daily
+generateImageBatch  13:00 daily
+generateImageBatch  17:00 daily
 
-# 削除後の確認（CLAUDE.md memory: GAS トリガーは文書を信用しない）
+# 削除後の確認
 GAS エディタ → Triggers パネル → 一覧が generateImageBatch を含まないことを目視
+（memory: GAS トリガーは文書を信用しない）
 ```
