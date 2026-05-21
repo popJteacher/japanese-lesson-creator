@@ -64,6 +64,20 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
 Imagen 呼び出しをローカルへ。これで GAS は完全消滅。明示保留（移行を止めない
 下流決定）：有料 Imagen 継続 か 自前 Stable Diffusion か は GAS 消滅"後"に別決定。
 
+**Phase 4 完了条件の再定義（2026-05-21）：**
+
+当初のスライス ④⑤（image QC パイプライン + invariants[E]）は Phase 3 と同じ
+「移設でなく獲得」枠で、当初は Phase 4 完了の必須項目として位置付けていた。
+しかし v3.11.1 人間検証（2026-05-21）で **④⑤ の機械検証は教育的・芸術的
+質の判定には役立たない**ことが判明（学生 2 アングル / 肌色収束 / 柄不足 /
+正面 view 再現 等は ④⑤ では検出できない・防げない）。Phase 4 のコア目的は
+「GAS 完全消滅」であり、これは ③ と ⑥ で達成可能。
+
+→ **Phase 4 完了 = ③ + ⑥ で達成。④⑤ は `docs/PHASE_BACKLOG.md` の
+Phase 4 後 backlog に明示移管。** registry-as-canon 規律により画像は後から
+`--force` 再生成で差し替え可能なので、Phase 4 後の iterative 改善で
+v3.12+ プロンプトガイドと併せて品質向上を追求する。
+
 **着手結果（2026-05-20 着手 / 進行中）**：
 - ① ② 完了（2026-05-20）。`scripts/check-imagen-key.mjs` PASS（全 3 モデル検出）、
   `scripts/_imagen-smoke.mjs` PASS（Standard 1 件 PNG 663,677 bytes / 27 秒 / $0.04 課金成立で
@@ -97,15 +111,15 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   プロンプトビルドは取り込んだ master prompt guide 版を使う（GAS の v2.9.1
   相当 STYLE_RECIPE をローカルに移設）。完了＝ pending エントリの生成が一周し、
   `npm run missing-assets` の `no_images_array` 件数が減る。QC は未組込みでよい。
-- **④ ＜プラン弱依存＞** 画像 QC パイプライン（`scripts/lib/image-qc.mjs`）。
-  プラン側で確定したスタイル不変条件（サイズ／フォーマット／透過／余白／
-  カラーチェック等）を機械検証として組み込み、③ の出力を QC 通過版に置換。
-  「移設でなく獲得」枠（Phase 3 の ffmpeg と同様、GAS には不可能だった検証）。
-  完了＝ 全 PNG が QC 通過版・QC ログが出力される。
-- **⑤ ＜プラン弱依存＞** 画像 QC スペック検証スクリプト（`npm run validate-images`
-  系）＋ `invariants[E]` を `npm run validate` 出力に追加。LUFS 相当として
-  画像のサイズ／パレット適合／余白比率を検査。完了＝ `invariants[E]` 行が
-  `npm run validate` 出力に出て PASS する。
+- **④ ＜Phase 4 後 backlog 移管・2026-05-21＞** 画像 QC パイプライン
+  （`scripts/lib/image-qc.mjs`）。プラン側で確定したスタイル不変条件
+  （サイズ／フォーマット／透過／余白／カラーチェック等）を機械検証として
+  組み込む「移設でなく獲得」枠。設計下書きは `docs/PHASE_BACKLOG.md` に退避済。
+  Phase 4 完了後に個別着手。
+- **⑤ ＜Phase 4 後 backlog 移管・2026-05-21＞** 画像 QC スペック検証スクリプト
+  （`npm run validate-images` 系）＋ `invariants[E]` を `npm run validate`
+  出力に追加。LUFS 相当として画像のサイズ／パレット適合／余白比率を検査。
+  Phase 4 完了後に個別着手。
 - **⑥** GAS `generateImageBatch` 退役。コードを
   `archive/gas_old/generateImages_v5_3_phase4_retired.gs` に保全し、
   `gas/pipeline.gs` から該当セクション（generateImageBatch / testSingleImage /

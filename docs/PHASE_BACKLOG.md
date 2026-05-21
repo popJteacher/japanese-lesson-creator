@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映）
 
 ---
 
@@ -29,18 +29,26 @@
 
 ---
 
-## Phase 4 で取り出す項目（Phase 3 完了時に退避）
+## Phase 4 後 backlog（Phase 4 完了後に個別着手）
 
-### 画像 QC 仕様（Phase 4 ④ 設計下書き）
+### 画像 QC 仕様（旧 Phase 4 ④⑤ 設計下書き）
+- **位置付け変更（2026-05-21）：** 当初 Phase 4 ④⑤ の設計下書きとして退避していたが、
+  v3.11.1 人間検証で **④⑤ の機械検証は教育的・芸術的質の判定には役立たない**ことが
+  判明（学生 2 アングル / 肌色収束 / 柄不足 等は ④⑤ では検出不能）。Phase 4 のコア
+  目的「GAS 完全消滅」とは独立のため、`docs/MIGRATION_PLAN.md` Phase 4 完了条件
+  を「③⑥ のみ」に再定義し、本項目は **Phase 4 後 backlog** に移管。
 - 出所：NEXT_ACTIONS B-4「Phase 4 ④ 設計の下調べ」として 2026-05-21 に main で作成。
   当初 `docs/REFERENCE.md` §3-4 に置いたが、REFERENCE は「実ファイルから転記された
   確定値」を置く文書であり DRAFT は規律違反のためここに退避。
-- 退避理由：実装（`scripts/lib/image-qc.mjs`）がまだ存在しない。Phase 4 ④ active 化
-  までは「設計案」であり、しきい値（ΔE / distinct color / 余白率）はすべて未校正。
-- 戻し方：Phase 4 ④ 着手時に `_image-qc-calibrate.mjs`（後述 Step 1〜4）を実行して
-  実機値で校正 → `image-qc.mjs` 内 `CALIBRATION` constant に転記 → 本セクションの
-  確定値部分を `docs/REFERENCE.md` §3-4 に新規記載（DRAFT 昇格ではなく新規執筆）。
-  本セクションは Phase 4 ④ 完了時に削除する。
+- 退避理由：実装（`scripts/lib/image-qc.mjs`）がまだ存在しない。しきい値（ΔE /
+  distinct color / 余白率）はすべて未校正。④⑤ 着手は教育的質の改善（v3.12+ ガイド
+  修正、後述「v3.12 マスタープロンプトガイド修正候補」）よりも優先度が下がる。
+- 戻し方：Phase 4 完了後の任意のタイミングで `_image-qc-calibrate.mjs`（後述
+  Step 1〜4・$0.80 / 20 枚）を実行して実機値で校正 → `image-qc.mjs` 内
+  `CALIBRATION` constant に転記 → 本セクションの確定値部分を `docs/REFERENCE.md`
+  §3-4 に新規記載（DRAFT 昇格ではなく新規執筆）。完了時に本セクションを削除する。
+- 期待される効果：Imagen が技術的に壊れた画像を返した時の検出・再生成トリガー。
+  教育的・芸術的質の改善には寄与しない（その役割は v3.12+ プロンプトガイド修正）。
 
 #### 設計（パイプライン位置）
 
@@ -198,6 +206,93 @@ stats.json + 決定したしきい値を `image-qc.mjs` 内の `CALIBRATION` con
 ---
 
 ## Phase 4 完了後の content backlog
+
+### v3.12 マスタープロンプトガイド修正候補（worktree 担当・v3.11.1 人間検証 2026-05-21 で発見）
+- 出所：main セッション（2026-05-21）が v3.11.1 で nanobanana で生成した
+  7 件サンプル画像（学生 / スペイン / ベトナム / ブラジル / アメリカ / 日本 / 先生）
+  をユーザーと目視レビューして発見。Phase 4 を「③⑥」最小スコープで完了させる
+  方針に切替えたため、v3.12+ 修正は Phase 4 完了後の worktree 担当作業として退避。
+- 退避理由：構造修正にプロンプトガイド本体の改修が必要で、worktree 専属領域。
+  main 側からは触らない（WORKFLOW.md §「worktree でやってよいこと」1-2 番）。
+- 戻し方：Phase 4 完了後の任意のタイミングで worktree セッション
+  （`.claude/worktrees/image-prompt-plan`）を起こし、`git merge --ff-only main` で
+  本記載を取り込んでから優先度順に着手。
+- 主要候補（**優先度順**）：
+
+  1. **🔴 学生の同一人物 2 アングル問題**（**バグ**。1 件のプロンプトから
+     Imagen/nanobanana が「character reference sheet」風の 2 view 画像を生成した）
+     - 検証手段：`.tmp_verify/prompts_image_prompts_lesson01_v3_11_1.md` の
+       student 該当プロンプト本文を grep。"view" / "angle" / "two" / "multiple"
+       / "from different" 等の意図しない多視点示唆語を audit。
+     - 修正候補：vocabulary_person template SCENE 句に
+       「SINGLE subject only. NEVER render two or more views or poses of the
+       same person in one frame.」を inline 追加。
+     - 注意：nanobanana 特有の癖（reference sheet を好む）かどうかは Imagen API
+       経由でも同じ問題が出るか別途検証要。
+
+  2. **🔴 肌色の中央値収束問題**（v3.8 で導入した skin tone enumerate / 国別
+     phenotype が **Imagen/nanobanana の bias で中央値 medium-warm tan に収束**。
+     7 件全件で肌色が同一に見える）
+     - 検証手段：v3.11.1 + v3.8 由来 PERSON_NATIONALITY_HINTS の skin tone
+       enumerate 句が「Pick ONE from: fair / olive / medium / darker」のような
+       選択肢方式かどうか確認。
+     - 修正候補：enumerate 方式を廃止し、**国別 / role 別に explicit single tone
+       を指定する方式**へ切替。例：`PERSON_NATIONALITY_HINTS["日本人"].skin_tone
+       = "fair to medium fair"`、`["ブラジル人"].skin_tone = "warm medium-darker
+       to deep olive"` 等の固定指定。enumerate は Imagen が安全側に倒すため効果
+       なしと判明。
+     - PROMPT_LITERALIZATION_AVOIDANCE_RULE.rule_a と整合（enumerate も
+       placeholder の一種でモデルが literalize する）。
+
+  3. **🟡 アジア国別 pattern allowance**（v3.10 で「アジア 4 か国二色化必須」を
+     入れたが、ベトナム áo dài / 韓国 jeogori / 中国 qipao が flat solid color
+     のみで柄なし。日本 wagara のみ柄あり）
+     - 修正候補：`PERSON_NATIONALITY_HINTS` の韓国 / 中国 / ベトナムに以下を追加：
+       - 韓国 jeogori：細密 embroidery（鶴・松・梅花文等の小型刺繍）を MUST 1 件
+       - 中国 qipao / Tang suit：floral 紋様（牡丹 / 梅花 / 雲紋）を MUST 1 件
+       - ベトナム áo dài：袖口・襟元に細い embroidery 線を MUST 1 件
+     - TWO_COLOR_RULE との整合：柄入りは「主体色 + 柄色」で自動的に two-color
+       条件を満たす（主体色を解除する必要なし）。
+
+  4. **🟡 アメリカ人正面 view 再現問題**（v3.10 で発見された「アメリカ人だけ
+     0 度正面 view」が v3.11.1 でも再現。確率揺れではなく **構造的問題**確定）
+     - 修正候補：vocabulary_person template SCENE 句に普遍 VIEW_ANGLE RULE
+       追加：「Subject MUST be rendered in 3/4 view (approx. 30-45 degrees off
+       frontal). Pure 0-degree frontal view is NEVER permitted for vocabulary
+       cards.」全 person 系プロンプトに自動適用。
+     - PROMPT_LITERALIZATION_AVOIDANCE_RULE.rule_c と整合（MUST/NEVER）。
+
+  5. **🟢 国旗パッチ placement の variation**（全 7 件で「左胸・同サイズ」に
+     placement が画一化。NATIONAL_SYMBOL_ISOLATION_RULE は守られているが
+     position が固定）
+     - 修正候補：NATIONALITY_NOUN_POLICY に
+       `FLAG_PLACEMENT_VARIATION_RULE` 追加：「Pick ONE: left chest pin /
+       right sleeve patch / hat emblem / bag tag / phrasebook cover detail」
+       のように 4-5 オプションから rotate。
+     - 注意：rule_b（examples_only_when_literal）の正用例＝literal に描かせる
+       のでこの形式で問題なし。
+
+  6. **🟢 表情・姿勢の variation**（全 7 件で「mild smile + standing-facing-
+     forward」に収束。髪型は curly/straight/wavy/short と差があるが表情と姿勢
+     のみ画一）
+     - 修正候補：`ROLE_BASED_GENERIC_PROFILES` の各 role に
+       `pose_options` 2-3 件を追加（teacher: gesturing toward implied board /
+       holding open book / pointing / etc.）。
+     - expression_options も同様に role 別に 2-3 件指定。
+
+- 補助メモ（main セッションで観察した v3.11.1 の **成功項目**。v3.12 で
+  regression させないこと）：
+  - ✓ アスペクト比 1:1 全件達成（v3.11.1 inline ASPECT RATIO directive 動作確認）
+  - ✓ footwear 全員着用（v3.11 footwear-mandatory rule 動作確認）
+  - ✓ 先生 lanyard が rectangular blank ID badge（鉛筆マーク消失・
+    v3.11 PROMPT_LITERALIZATION_AVOIDANCE_RULE rule_a 動作確認）
+  - ✓ NATIONAL_SYMBOL_ISOLATION_RULE：衣服内 flag print の事故ゼロ
+  - ✓ アジア 4 か国の two-color 区別（v3.10 動作確認・パターン未充足は別件）
+
+- **未検証**：外国人 signature（phrasebook + crossbody bag）が student と
+  区別可能か。7 件サンプルに外国人未含。v3.12 検証時に必ず外国人を入れる。
+
+---
 
 ### 画像 asset coverage 62 件未充足
 - 出所：旧 NEXT_ACTIONS ①。active 103 件中 62 missing
