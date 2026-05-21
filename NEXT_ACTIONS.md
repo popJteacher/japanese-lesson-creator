@@ -52,10 +52,9 @@
 
 | 優先度候補 | 項目 | 想定コスト |
 |---|---|---|
-| 🔴 高 | v3.12 マスタープロンプトガイド修正（worktree 担当・9 項目） | API 課金なし |
-| 🟡 中 | 残り 436 件の本生成（v3.12 改修後） | $17.4 |
-| 🟡 中 | ③ で生成した 5 件の `--force` 再生成（v3.12 適用後） | $0.20 |
-| 🟢 低 | lesson_01 既存 41 件 person 画像の再生成 | 数 $ |
+| 🔴 高 | v3.12 マスタープロンプトガイド修正（worktree 担当・**実機で項目 7-9 が nanobanana 未再現確認済 → 項目 1-6 のみ必須対応**で OK） | API 課金なし |
+| 🟡 中 | 残り 436 件の本生成（v3.12 改修後） | ~$17 (nanobanana) |
+| 🟢 低 | lesson_01 既存 41 件 person 画像の再生成（visual continuity・nanobanana で実施） | 数 $ |
 | 🟢 低 | 画像 QC ④⑤ 実装（旧 Phase 4 ④⑤・photo drift 検出に有効と判明） | $0.80 校正 + 実装 |
 | 🟢 低 | `scripts/apply_v5_3_patches.py` archive 移設（dead code 化） | なし |
 | 🟢 低 | `docs/REFERENCE.md` 包括 audit（v7.3 時点で凍結気味） | なし |

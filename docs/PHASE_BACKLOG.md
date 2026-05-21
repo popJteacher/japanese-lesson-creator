@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記 / **方針転換：nanobanana 一本化** = v3.12 主指針を「nanobanana 安全」に変更、Imagen 4 由来 3 項目の優先度↓）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記 / **方針転換：nanobanana 一本化** = v3.12 主指針を「nanobanana 安全」に変更、Imagen 4 由来 3 項目の優先度↓ / nanobanana で 5 件 --force 再生成 human review で項目 7-9 が未再現を実機確認、v3.12 では項目 1-6 のみ必須対応で OK）
 
 ---
 
@@ -359,6 +359,18 @@ bias 差を意味する。v3.12 ではどちらのモデルでも安全に動く
       = Imagen 4 fallback 使用時の品質保証として実装するが優先度↓
   - cross-check 推奨は維持（v3.12 検証時に nanobanana + Imagen 4 の両方で
     1-2 件サンプルを生成し、structural regression がないか確認）。
+  - **2026-05-21 実機確認：項目 7-9 は nanobanana では未再現**。
+    nanobanana 一本化直後に同じ v3.11.1 プロンプトで 5 件再生成（word_医者 /
+    会社員 / 学生 / 大学生 / 先生・$0.1935）し human review した結果：
+    - 7（線スタイル不一致）: nanobanana では出現せず（線重みが 5 件で統一）
+    - 8（学生テキスト焼き込み）: nanobanana では出現せず（画像内 text なし）
+    - 9（会社員 photoreal drift）: nanobanana では出現せず（5 件全件 illustration 統一・
+      filesize も 944KB〜1009KB に収束、Imagen 4 時の 542KB-1606KB outlier 解消）
+    → 項目 7-9 は **Imagen 4 モデル特性に起因する bias**であり、プロンプト
+    側の必須対応ではなく Imagen 4 fallback の品質保証として後回しで OK。
+    nanobanana では prompt の `flat illustration` style anchor が効くため
+    MEDIUM_LOCK 句や NO_RENDERED_TEXT_RULE は **必須ではない**（あれば
+    防御力↑）。v3.12 では項目 1-6 のみに集中して構わない。
 
 ---
 

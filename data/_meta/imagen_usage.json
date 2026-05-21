@@ -4,9 +4,10 @@
   },
   "days": {
     "2026-05-21": {
-      "count": 5,
-      "cost_usd": 0.2,
-      "lastUpdated": "2026-05-21T08:04:42.603Z"
+      "count": 10,
+      "cost_usd": 0.3935,
+      "lastUpdated": "2026-05-21T11:12:58.700Z",
+      "lastBackend": "nanobanana"
     }
   }
 }
