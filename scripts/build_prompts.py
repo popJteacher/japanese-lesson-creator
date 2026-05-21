@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.10 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.11 主経路）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -31,11 +31,11 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_10.py")
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_11.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_10", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_11", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -116,7 +116,9 @@ PERSON_NATIONALITY_HINTS = {
             "silhouette, straight sleeves, wide front overlap with a simple "
             "tie or button closure) worn over a plain top and trousers; "
             "(c) an everyday yukata (cotton informal kimono) in a "
-            "summer-at-home context, NOT a festival/ceremonial display. "
+            "daily summer setting (NOT a festival/ceremonial display, "
+            "NOT an indoor/at-home setting — the subject must wear "
+            "outdoor footwear and stand on a daily outdoor surface). "
             # v3.10 二色化必須化（旗色 overlap 回避）:
             "TWO-COLOR RULE: top and trousers MUST be in two clearly "
             "different colors, NOT a single all-over color. Recommended "
@@ -558,12 +560,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_10.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_11.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.10",
+            "guideVersion": "v3.11",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
