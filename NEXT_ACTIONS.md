@@ -5,14 +5,16 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（**Phase 5 着手・スコープ確定** / スライス ①〜⑥ 確定 / 設計判断 6 項目を MIGRATION_PLAN に追記 / 音声自然さチェックを Phase 3 後 backlog に記録）
+**最終更新：** 2026-05-21（**Phase 5 ① 完了** / `data/sources/goi_list_raw.json` 全 17,908 entries 凍結 / 抽出 script は archive 移管 / **Phase 5 ② に着手**）
 
 ---
 
 ## 現在地
 
 - **Phase 0／1／2／3／4：完了。** ✅
-- **Phase 5：着手中（① active）** — スライス ①〜⑥ 確定（`docs/MIGRATION_PLAN.md` § Phase 5 参照）
+- **Phase 5 ①：完了** ✅ — Goi_List 全レベル抽出済（N5 422 / N4 788 / N3 2286 / N2 12754 / N1 1548 = 17,908 entries・UNKNOWN 0）
+- **Phase 5 ②：着手中（active）** — `vocab_catalog.json` の確立
+- **Phase 5 ③〜⑥**：未着手（順序依存・MIGRATION_PLAN § Phase 5 参照）
 - **Phase 4 後 backlog**：着手保留（v3.12 person 品質修正 1-6 + 残り 436 件本生成）
 - **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
@@ -22,26 +24,23 @@
 
 ---
 
-## active：Phase 5 ① — Goi_List 全レベル抽出 + raw source 凍結
+## active：Phase 5 ② — `vocab_catalog.json` の確立
 
 **担当**：main 専属・プラン非依存
-**並行**：worktree セッションで ④ を別途立ち上げて並行起動可（後述）
+**依存**：Phase 5 ① 完了済 ✅
 
 **やること：**
 
-1. 既存 `gas/pipeline.gs` の `extractFromGoiList` セクション（line 402-607）の抽出
-   ロジックを Node 側に移植（DriveApp → fs read に置換）
-2. Goi_List.pdf を Drive からダウンロードして `data/sources/goi_list_raw.pdf` に
-   配置（sensitive でなければ commit。サイズ次第で .gitignore でも可）
-3. 抽出 script `scripts/extract-goi-list.mjs` を新規作成し全レベル（N5/N4/N3/N2/N1）
-   抽出 → `data/sources/goi_list_raw.json` 出力
-   - スキーマ：`{ _meta: { extractedAt, source, totalLevels }, entries: [{ word, reading, jlpt, pos, ... }] }`
-4. 結果を commit → 抽出 script を `archive/scripts_old/extract_goi_list_v1_phase5.mjs`
-   に移管（一度きり実行・再実行不要）
+1. `scripts/build-catalog.mjs` 新規作成
+   - 入力：`data/sources/goi_list_raw.json`（① 出力）＋ 既存 `data/lessons/lesson_01.json` / `lesson_02.json` の `vocabulary` 配列
+   - スキーマ：source-agnostic（dedup キー = `word + reading`、`sourceIds[]` で複数ソース受入、`lessonRefs[]` で参照課を保持）
+   - 出力：`data/vocab_catalog.json`
+2. `scripts/classify-and-translate.mjs` を catalog 入力に切替（現状は何を入力にしているか先に grep して確認）
+3. `npm run validate` で invariants が壊れていないこと確認
 
-**完了条件**：`data/sources/goi_list_raw.json` が全レベル commit 済・抽出 script 凍結済。
+**完了条件**：`data/vocab_catalog.json` が SSOT 化・既存 lesson_NN.json と矛盾しない・`npm run validate` PASS。
 
-**規模見積**：1-2 セッション。GAS の `parseGoiList_` ロジックを素直に移植すれば動く想定。
+**規模見積**：1-2 セッション。
 
 **コスト**：$0（local 処理）
 
@@ -49,7 +48,7 @@
 
 ## 並行起動可能：Phase 5 ④（worktree） — 例文 master prompt template + build_prompts.py 拡張
 
-main で ① 進行中に user が worktree セッションを別途立てれば並行可能。
+main で ② 進行中に user が worktree セッションを別途立てれば並行可能。
 **1 セッション = 1 worktree** の規律は維持（同時に main と worktree を同一セッションで触らない）。
 
 worktree でやること（詳細は `docs/MIGRATION_PLAN.md` § Phase 5 ④）：
@@ -94,5 +93,9 @@ node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 python scripts/build_prompts.py --lesson 1       # worktree で実行（Phase 5 ④ で --catalog 追加予定）
 ```
+
+参考（Phase 5 ① は完了・再実行不要）：
+- 抽出 script は `archive/scripts_old/extract_goi_list_v1_phase5.mjs` に凍結済
+- raw source：`data/sources/goi_list_raw.pdf`（1.58 MB）/ `data/sources/goi_list_raw.json`（5.44 MB・17,908 entries）
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
