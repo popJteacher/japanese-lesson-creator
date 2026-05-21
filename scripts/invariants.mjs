@@ -27,11 +27,13 @@ const ROOT = resolve(__dirname, '..');
 // apply_v3_3.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
-  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_8.py'),
-  promptGuideExpectedHashPrefix: '477425a647a6', // v3.8 LF 正規化後 SHA256 先頭 12 桁
+  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_11_1.py'),
+  promptGuideExpectedHashPrefix: 'a79e54a29e51', // v3.11.1 TEMPORARY (Gemini fallback) LF 正規化後 SHA256 先頭 12 桁
   // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
-  sColumnPattern: /^image_prompts_lesson\d{2}_v3_\d+\.json$/,
+  // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
+  // (_\d+)? を追加。従来の _v3_11.json 等も引き続き match する。
+  sColumnPattern: /^image_prompts_lesson\d{2}_v3_\d+(_\d+)?\.json$/,
 };
 
 // 6 不変条件の文字列定数
