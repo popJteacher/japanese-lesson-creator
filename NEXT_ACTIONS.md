@@ -5,7 +5,26 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（v3.11 まで完了 / main = Phase 4 ランタイムに集中 / worktree = v3.11 の人間再検証待ち）
+**最終更新：** 2026-05-21（v3.11.1 TEMPORARY 適用中 / main = Phase 4 ランタイムに集中 / worktree = v3.11.1 の人間再検証待ち）
+
+---
+
+## ⚠️ TEMPORARY: Gemini fallback 適用中
+
+AI Studio が一時的に使用不可のため、画像生成を Gemini (consumer chat) に切り替え。
+Gemini は API パラメータでアスペクト比指定できないため、プロンプト本文に inline で
+ASPECT RATIO 1:1 directive を持つ **v3.11.1 ガイド**（`master_prompt_design_guide_v3_11_1.py`）
+を一時使用中。**設計の本体は v3.11**。
+
+**AI Studio 復活後の rollback 手順：**
+```
+1. scripts/build_prompts.py の GUIDE_PATH を 'prompts/master_prompt_design_guide_v3_11.py' に戻す
+2. scripts/invariants.mjs の promptGuide / promptGuideExpectedHashPrefix を
+   v3.11 の値 (29407f70fc19) に戻す
+3. python scripts/build_prompts.py --lesson 1 で v3_11.json 再生成
+4. npm run validate で B=29407f70fc19 PASS 確認
+5. v3.11.1 ファイルは保持（将来 Gemini fallback 再発時に再利用）
+```
 
 ---
 
@@ -15,17 +34,18 @@
 - **Phase 4：着手中。**
   - **①** Imagen API 疎通：完了。
   - **②** Imagen client + smoke：完了。
-  - **マスタープロンプトガイド**：**v3.11 まで完了**（hash `29407f70fc19`）。
+  - **マスタープロンプトガイド**：**v3.11 完了 + v3.11.1 TEMPORARY 適用中**
+    （現在 hash `a79e54a29e51` = v3.11.1）。
     主な変更：EXCEPTION 句 placeholder 化（v3.6）→ ISOLATION_SAFE_PROPS_RULE +
     cultural_styling_hint（v3.7）→ skin tone enumerate / 国別 phenotype /
     現代化伝統衣装許容（v3.8）→ NATIONAL_SYMBOL_ISOLATION_RULE 普遍化 +
     cultural_styling_hint 必須要素方式（v3.9）→ ROLE_VISUAL_IDENTITY_RULE 普遍化 +
     VISUAL_CONTRAST_PRINCIPLE 普遍化 + アジア 4 か国 二色化（v3.10）→
-    **PROMPT_LITERALIZATION_AVOIDANCE_RULE 普遍化 + footwear-mandatory rule +
+    PROMPT_LITERALIZATION_AVOIDANCE_RULE 普遍化 + footwear-mandatory rule +
     teacher lanyard 修正 + 日本人 yukata at-home 削除 + TWO-COLOR rationale
-    明文化（v3.11）**。
+    明文化（v3.11）→ **inline ASPECT RATIO 1:1（v3.11.1 TEMPORARY）**。
   - **③** `scripts/generate-images-local.mjs`：コード完了（3 モード）。
-    v3.7 → v3.8 → v3.9 → v3.10 で人間検証実施 → **v3.11 プロンプトでの再検証が未**。
+    v3.7 → v3.8 → v3.9 → v3.10 で人間検証実施 → **v3.11.1 プロンプトでの再検証が未**。
   - **④⑤⑥** 未着手。
 
 - **作業分担：** `docs/WORKFLOW.md` 参照。
@@ -40,10 +60,13 @@
 
 ## 今やること
 
-### A. 人間（main・worktree 両方に共通）：v3.11 で 5-7 件再検証
+### A. 人間（main・worktree 両方に共通）：v3.11.1 で 5-7 件再検証（Gemini で）
 
-`.tmp_verify/prompts_image_prompts_lesson01_v3_11.md` を使い、以下を重点確認：
+`.tmp_verify/prompts_image_prompts_lesson01_v3_11_1.md` を使い、以下を重点確認：
 
+- **アスペクト比（v3.11.1 新規）**：全件が **1:1 SQUARE** で出力されるか
+  （16:9 / 4:3 などのワイド出力が無いか）。Gemini が ASPECT RATIO directive
+  を尊重しているか
 - **先生（最重要）**：lanyard ID badge が **rectangular blank**（鉛筆マーク無し）
   になったか。circular medallion pendant に誤解されていないか
 - **日本人（最重要）**：**裸足ではなく footwear を履いているか**。yukata 選択時
@@ -111,7 +134,7 @@ npm run validate               # baseline 確認
 ## 直近の確定コマンド
 
 ```
-npm run validate             # invariants A=v7.4 / B=29407f70fc19 / C=12×10 / D=55/55（3 WARN）PASS
+npm run validate             # invariants A=v7.4 / B=a79e54a29e51 (v3.11.1 TEMPORARY) / C=12×11 / D=55/55（3 WARN）PASS
 npm run missing-assets       # image registry 62 件 / audio 1 件（word_新聞）
 npm run check-sa             # Sheets API 疎通
 npm run check-tts-sa         # Cloud TTS API 疎通
@@ -137,8 +160,9 @@ python scripts/build_prompts.py --lesson 1       # worktree で実行
 # 残る生存 GAS トリガー（Phase 4 ⑥ で引退対象）
 generateImageBatch × 3 件   # 9/13/17 時
 
-# v3.11 検証：Gemini / AI Studio で .tmp_verify/prompts_image_prompts_lesson01_v3_11.md
-# のプロンプトを試す。特に：
+# v3.11.1 検証（AI Studio 不可のため Gemini で）：
+# .tmp_verify/prompts_image_prompts_lesson01_v3_11_1.md のプロンプトを Gemini に貼る。
+#   - 出力が 1:1 SQUARE か（v3.11.1 inline ASPECT RATIO directive 動作確認）
 #   - 先生：lanyard が rectangular blank ID badge か（鉛筆マーク無し）
 #   - 日本人：footwear 着用か（裸足が解消したか）
 #   - 外国人：v3.10 で未検証 → phrasebook + crossbody bag が visible か

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.11 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.11.1 主経路・TEMPORARY Gemini fallback）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -31,11 +31,15 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_11.py")
+# v3.11.1 TEMPORARY: AI Studio が一時不可のため Gemini fallback で
+# inline ASPECT RATIO directive を含む v3.11.1 ガイドを使用。
+# AI Studio 復活後は 'master_prompt_design_guide_v3_11.py' に戻す
+# （prompts/master_prompt_design_guide_v3_11_1.py の rollback 手順参照）。
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_11_1.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_11", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_11_1", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -560,12 +564,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_11.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_11_1.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.11",
+            "guideVersion": "v3.11.1",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
