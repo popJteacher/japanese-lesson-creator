@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.6 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.7 主経路）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -16,7 +16,8 @@
   vocab_type=person のうち、word が "人" で終わるものは国籍名詞
   （NATIONALITY_NOUN_POLICY）として扱う。それ以外は役割系（ROLE_BASED_GENERIC_PROFILES）
   で、role_key は PERSON_ROLE_LOOKUP で word→role_key を解決。
-  flag_shape_and_colors は PERSON_FLAG_LOOKUP で word→flag を解決。
+  flag_shape_and_colors と cultural_styling_hint は PERSON_NATIONALITY_HINTS
+  (v3.7 で旧 PERSON_FLAG_LOOKUP から改名・拡張) で word→各情報 を解決。
   これらは現状スクリプト内 config。Sheets / lesson_NN.json に格上げ予定（NEXT_ACTIONS）。
 """
 
@@ -30,11 +31,11 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_6.py")
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_7.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_6", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_7", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -75,15 +76,66 @@ PERSON_ROLE_LOOKUP = {
     "外国人":   "foreigner",
 }
 
-PERSON_FLAG_LOOKUP = {
-    # word → flag_shape_and_colors（NATIONALITY_NOUN_POLICY.flag_shape_and_colors_hint 準拠）
-    "日本人":     "white field with a single red circle in the center",
-    "中国人":     "red field with a large yellow star and four smaller yellow stars in the upper-left corner",
-    "アメリカ人": "red and white horizontal stripes with a small blue corner of white star shapes",
-    "韓国人":     "white field with a red-and-blue circle and black trigram marks",
-    "ブラジル人": "green field with a yellow diamond and a small blue circle in the center",
-    "ベトナム人": "red field with a single large yellow star in the center",
-    "スペイン人": "red and yellow horizontal stripes with the yellow band twice as wide as each red band",
+PERSON_NATIONALITY_HINTS = {
+    # v3.7: PERSON_FLAG_LOOKUP を改名・拡張。flag に加え cultural_styling_hint を持つ。
+    # cultural_styling_hint は contemporary cultural styling のみ（伝統民族衣装・観光土産的小道具は不可）。
+    # 各 hint は NATIONALITY_NOUN_POLICY.subject_block_pattern の {CULTURAL_STYLING_HINT} に代入される。
+    "日本人": {
+        "flag_shape_and_colors":
+            "white field with a single red circle in the center",
+        "cultural_styling_hint":
+            "modern Japanese minimalist casual fashion — clean lines, muted "
+            "neutrals (white, gray, navy, or beige), may include a single "
+            "subtle red accent on a scarf, button, or shoe stripe",
+    },
+    "中国人": {
+        "flag_shape_and_colors":
+            "red field with a large yellow star and four smaller yellow stars in the upper-left corner",
+        "cultural_styling_hint":
+            "modern Chinese contemporary urban casual fashion — a layered "
+            "casual style typical of present-day China, may include a subtle "
+            "warm red or yellow accent in a single small element",
+    },
+    "アメリカ人": {
+        "flag_shape_and_colors":
+            "red and white horizontal stripes with a small blue corner of white star shapes",
+        "cultural_styling_hint":
+            "modern American casual fashion — jeans, a t-shirt, hoodie, or "
+            "sneakers; relaxed everyday street style typical of today's "
+            "United States",
+    },
+    "韓国人": {
+        "flag_shape_and_colors":
+            "white field with a red-and-blue circle and black trigram marks",
+        "cultural_styling_hint":
+            "modern Korean contemporary fashion — sleek and fashion-forward "
+            "casual; perhaps a slightly oversized jacket, modern sneakers, "
+            "and a tidy minimalist palette",
+    },
+    "ブラジル人": {
+        "flag_shape_and_colors":
+            "green field with a yellow diamond and a small blue circle in the center",
+        "cultural_styling_hint":
+            "modern Brazilian casual fashion — bright but tasteful warm-"
+            "weather casual; may include a subtle green or yellow accent in "
+            "a single small element such as a cap, shoes, or trim",
+    },
+    "ベトナム人": {
+        "flag_shape_and_colors":
+            "red field with a single large yellow star in the center",
+        "cultural_styling_hint":
+            "modern Vietnamese casual fashion — light, breathable casual "
+            "wear suited to a warm climate, such as a cotton or linen top "
+            "with simple trousers",
+    },
+    "スペイン人": {
+        "flag_shape_and_colors":
+            "red and yellow horizontal stripes with the yellow band twice as wide as each red band",
+        "cultural_styling_hint":
+            "modern Spanish casual fashion — Mediterranean casual; may "
+            "include a subtle warm red or gold accent in a single small "
+            "element; elegant relaxed style",
+    },
 }
 
 
@@ -92,8 +144,8 @@ def classify_person(word):
     末尾が「人」(person suffix) → nationality。それ以外で ROLE_LOOKUP に該当 → role。
     どちらにも該当しなければ None（呼び出し側でエラー）。
     """
-    if word.endswith("人") and word in PERSON_FLAG_LOOKUP:
-        return ("nationality", {"flag_shape_and_colors": PERSON_FLAG_LOOKUP[word]})
+    if word.endswith("人") and word in PERSON_NATIONALITY_HINTS:
+        return ("nationality", PERSON_NATIONALITY_HINTS[word])
     if word in PERSON_ROLE_LOOKUP:
         return ("role", {"role_key": PERSON_ROLE_LOOKUP[word]})
     return (None, None)
@@ -123,10 +175,10 @@ def compose_role_pose():
             "warm approachable expression")
 
 
-def compose_nationality_subject(g, flag_shape_and_colors):
-    return g.NATIONALITY_NOUN_POLICY["subject_block_pattern"].replace(
-        "{FLAG_SHAPE_AND_COLORS}", flag_shape_and_colors
-    )
+def compose_nationality_subject(g, flag_shape_and_colors, cultural_styling_hint):
+    return (g.NATIONALITY_NOUN_POLICY["subject_block_pattern"]
+            .replace("{FLAG_SHAPE_AND_COLORS}", flag_shape_and_colors)
+            .replace("{CULTURAL_STYLING_HINT}", cultural_styling_hint))
 
 
 def compose_nationality_pose():
@@ -141,7 +193,9 @@ def render_person(g, entry, kind, sub):
         char_pose = compose_role_pose()
         exception_block = ROLE_ANTI_FLAG_BLOCK
     elif kind == "nationality":
-        char_desc = compose_nationality_subject(g, sub["flag_shape_and_colors"])
+        char_desc = compose_nationality_subject(
+            g, sub["flag_shape_and_colors"], sub["cultural_styling_hint"]
+        )
         char_pose = compose_nationality_pose()
         exception_block = NATIONALITY_EXCEPTION_BLOCK
     else:
@@ -167,7 +221,7 @@ RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
 
 PLACEHOLDERS = ["[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
                 "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
-                "{NATIONALITY_EXCEPTION_BLOCK}"]
+                "{CULTURAL_STYLING_HINT}", "{NATIONALITY_EXCEPTION_BLOCK}"]
 
 
 def preflight(text, vocab_type, word):
@@ -260,7 +314,7 @@ def main():
 
     if unclassified:
         for w in unclassified:
-            print(f"  未分類: {w}（PERSON_ROLE_LOOKUP / PERSON_FLAG_LOOKUP に追加が必要）",
+            print(f"  未分類: {w}（PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS に追加が必要）",
                   file=sys.stderr)
         sys.exit(f"ABORT: {len(unclassified)} 件の person が役割/国籍に分類できない。")
 
@@ -271,12 +325,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_6.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_7.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.6",
+            "guideVersion": "v3.7",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
@@ -287,7 +341,7 @@ def main():
             "notes": ("MVP: vocab_type=person のみ実装。lesson_01 の person 12 件 "
                       "（役割系5＋国籍系7）。他 vocab_type のエントリは出力に含まない。"
                       " サブカテゴリ（role/nationality）は scripts/build_prompts.py 内"
-                      " の PERSON_ROLE_LOOKUP / PERSON_FLAG_LOOKUP で解決する。"),
+                      " の PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS で解決する。"),
         },
         "vocabulary": rendered,
     }
