@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記）
+最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記 / **方針転換：nanobanana 一本化** = v3.12 主指針を「nanobanana 安全」に変更、Imagen 4 由来 3 項目の優先度↓）
 
 ---
 
@@ -348,11 +348,17 @@ bias 差を意味する。v3.12 ではどちらのモデルでも安全に動く
     Imagen 4 経由でも害なし」と判定したが、**害なしと品質同等は別物**。
     Imagen 4 経由では line weight / text / medium style の 3 軸で
     nanobanana より制御が弱い。
-  - v3.12 はどちらか一方ではなく **両モデルで安全**を設計指針とする。
-  - 一方で nanobanana で発見した 6 項目（特に 🔴 学生 2 アングル /
-    🔴 肌色中央値収束）は Imagen 4 5 件サンプルでは未確認（学生 1 件のみ）。
-    nanobanana 特有の可能性もあるため、worktree v3.12 検証時に Imagen 4 +
-    nanobanana 両モデルで cross-check すること。
+  - **2026-05-21 方針転換：nanobanana 一本化**。Google AI Studio UI が
+    nanobanana のみ提供 + user の手動検証も nanobanana で実施しているため、
+    本番自動 flow も nanobanana に統一（`scripts/generate-images-local.mjs`
+    既定 backend = nanobanana。Imagen 4 は `--backend imagen4` で opt-in 残存）。
+  - **v3.12 の設計指針は「nanobanana 安全」を主、「Imagen 4 安全」を従**に変更。
+    具体的には：
+    - 上記項目 1-6（nanobanana 由来）= **必須対応**
+    - 項目 7-9（Imagen 4 由来：line weight / text bake-in / photoreal drift）
+      = Imagen 4 fallback 使用時の品質保証として実装するが優先度↓
+  - cross-check 推奨は維持（v3.12 検証時に nanobanana + Imagen 4 の両方で
+    1-2 件サンプルを生成し、structural regression がないか確認）。
 
 ---
 

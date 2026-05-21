@@ -1,13 +1,21 @@
 #!/usr/bin/env node
 // scripts/generate-images-local.mjs
-// Phase 4 ③：Imagen 4 でローカルバッチ生成 + registry 連携 + 日次 RPD カウンタ。
+// Phase 4 ③ + Phase 4 後 nanobanana 化：
+// Nano Banana（既定）または Imagen 4 でローカルバッチ生成 + registry 連携 + 日次カウンタ。
 // gas/pipeline.gs generateImageBatch の置き換え。出力先は data/images/{imageId}.png。
 //
 // 3 モード（auto がデフォルト）：
 //   --print-prompts  : API 不要。プロンプトを Markdown に書き出し、Gemini 等で手生成
 //                      → data/images/{imageId}.png に保存 → sync-only で registry 反映。
 //   --sync-only      : API 不要。data/images/ を scan して registry を更新（手動 import）。
-//   (default = auto) : Imagen 4 で生成 → PNG 書き出し → registry 更新。1 枚 $0.04。
+//   (default = auto) : 生成 → PNG 書き出し → registry 更新。
+//
+// バックエンド：
+//   --backend nanobanana  （既定）gemini-2.5-flash-image / ~$0.0387/枚（output tokens ベース）
+//                          aspect ratio / size / person generation は API 非対応。
+//                          → プロンプト inline directive で制御（v3.11.1 以降）。
+//   --backend imagen4     imagen-4.0-generate-001 / $0.04/枚固定。
+//                          aspect ratio / size / personGeneration を API 経由で指定可能。
 //
 // 規律（generate-audio-local 流儀）：
 //   - registry の entries に key (= imageId) が無いなら警告して skip。
@@ -21,14 +29,15 @@
 //        status = 'generated'   （旧 'approved' も含めて常に下げる：v3.5 で見た目が変わるため再 review）
 //
 // 使い方:
-//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_5.json --print-prompts
-//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_5.json --sync-only
-//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_5.json --dry-run
-//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_5.json --limit 1
-//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_5.json
-//   npm run generate-images -- --prompts ... --max-images 50      # 日次上限
-//   npm run generate-images -- --prompts ... --force              # 既存 PNG も上書き
-//   npm run generate-images -- --prompts ... --person dont_allow  # 人物生成設定
+//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --print-prompts
+//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --sync-only
+//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --dry-run
+//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json --limit 1
+//   npm run generate-images -- --prompts data/image_prompts_lesson01_v3_11_1.json     # 既定 nanobanana
+//   npm run generate-images -- --prompts ... --backend imagen4                         # Imagen 4 切替
+//   npm run generate-images -- --prompts ... --max-images 50                           # 日次上限
+//   npm run generate-images -- --prompts ... --force                                   # 既存 PNG も上書き
+//   npm run generate-images -- --prompts ... --backend imagen4 --person dont_allow     # Imagen 4 専用 option
 
 import { readFile, writeFile, mkdir, rename, stat } from 'node:fs/promises';
 import { resolve, dirname, basename, relative } from 'node:path';
@@ -39,6 +48,12 @@ import {
   DEFAULT_IMAGEN_MODEL,
   IMAGEN_PRICE_USD,
 } from './lib/imagen-client.mjs';
+import {
+  generateNanobananaImage,
+  DEFAULT_NANOBANANA_MODEL,
+  NANOBANANA_PRICE_PER_M_OUTPUT_TOKENS,
+  NANOBANANA_IMAGE_TOKEN_ESTIMATE,
+} from './lib/nanobanana-client.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const IMAGE_REGISTRY = resolve(ROOT, 'data/master_image_registry.json');
@@ -105,11 +120,14 @@ function applyRegistryUpdate(registry, imageId, promptRef) {
 // ────────────────────────────────────────────────────────────
 const MODES = new Set(['auto', 'print-prompts', 'sync-only']);
 const PERSON_OPTS = new Set(['allow_adult', 'dont_allow', 'allow_all']);
+const BACKENDS = new Set(['nanobanana', 'imagen4']);
+const DEFAULT_BACKEND = 'nanobanana';
 
 function parseArgs(argv) {
   const args = {
     prompts: null,
     mode: 'auto',
+    backend: DEFAULT_BACKEND,
     dryRun: false,
     limit: null,
     maxImages: DEFAULT_MAX_IMAGES_DAY,
@@ -124,7 +142,11 @@ function parseArgs(argv) {
     if (a === '--prompts') args.prompts = argv[++i];
     else if (a === '--print-prompts') args.mode = 'print-prompts';
     else if (a === '--sync-only') args.mode = 'sync-only';
-    else if (a === '--dry-run') args.dryRun = true;
+    else if (a === '--backend') {
+      const v = argv[++i];
+      if (!BACKENDS.has(v)) die(`--backend must be one of ${[...BACKENDS].join(',')}`);
+      args.backend = v;
+    } else if (a === '--dry-run') args.dryRun = true;
     else if (a === '--force') args.force = true;
     else if (a === '--limit') {
       const v = parseInt(argv[++i], 10);
@@ -161,9 +183,13 @@ function printHelp() {
     'Usage: node scripts/generate-images-local.mjs --prompts <path> [mode] [options]',
     '',
     'Modes:',
-    '  (default)         Imagen 4 で生成 + 書き出し + registry 更新（$0.04/枚）',
+    '  (default)         生成 + 書き出し + registry 更新',
     '  --print-prompts   プロンプトを Markdown に書き出し（API 不要・$0）',
     '  --sync-only       data/images/ を scan して registry を更新（API 不要・$0）',
+    '',
+    'Backends:',
+    '  --backend nanobanana  （既定）gemini-2.5-flash-image・~$0.0387/枚（token ベース）',
+    '  --backend imagen4     imagen-4.0-generate-001・$0.04/枚固定',
     '',
     'Options:',
     '  --prompts <path>     prompt JSON（image_prompts_lessonNN_vX_Y.json）',
@@ -171,9 +197,11 @@ function printHelp() {
     '  --limit N            この実行で N 件まで',
     '  --max-images N       日次上限（default ' + DEFAULT_MAX_IMAGES_DAY + '）',
     '  --force              既存 data/images/{id}.png も上書き',
-    '  --person <opt>       allow_adult | dont_allow | allow_all（default allow_adult）',
-    '  --aspect <ratio>     1:1 / 3:4 / 4:3 / 9:16 / 16:9（default 1:1）',
-    '  --size <res>         1K | 2K（default 1K）',
+    '  --person <opt>       (imagen4 専用) allow_adult | dont_allow | allow_all（default allow_adult）',
+    '  --aspect <ratio>     (imagen4 専用) 1:1 / 3:4 / 4:3 / 9:16 / 16:9（default 1:1）',
+    '  --size <res>         (imagen4 専用) 1K | 2K（default 1K）',
+    '                       ※ nanobanana では --person / --aspect / --size は API 非対応のため無視される',
+    '                          （aspect ratio はプロンプト inline directive で制御）',
     '  --out <path>         --print-prompts の出力先 .md パス',
   ].join('\n'));
 }
@@ -306,18 +334,54 @@ async function runSyncOnly({ json, promptBasename, args }) {
   }
 }
 
+// バックエンドごとの 1 件生成呼び出し
+async function callBackend(backend, prompt, args, onRetry) {
+  if (backend === 'imagen4') {
+    return await generateImage({
+      prompt,
+      aspectRatio: args.aspect,
+      imageSize: args.size,
+      personGeneration: args.person,
+      sampleCount: 1,
+      onRetry,
+    });
+  }
+  // nanobanana（既定）
+  return await generateNanobananaImage({
+    prompt,
+    model: DEFAULT_NANOBANANA_MODEL,
+    onRetry,
+  });
+}
+
 async function runAuto({ json, promptBasename, args }) {
   const registry = await readJson(IMAGE_REGISTRY);
   const usage = await readJson(USAGE_FILE, {
-    _meta: { description: 'Imagen 4 daily image count (Phase 4 ③)' },
+    _meta: { description: 'Image gen daily count (Phase 4 ③ + 後 nanobanana 化)' },
     days: {},
   });
   const day = todayISO();
   const dayUsed = usage.days[day]?.count ?? 0;
+
+  const modelLabel = args.backend === 'imagen4'
+    ? `${DEFAULT_IMAGEN_MODEL} ($${IMAGEN_PRICE_USD[DEFAULT_IMAGEN_MODEL]}/img fixed)`
+    : `${DEFAULT_NANOBANANA_MODEL} (~$${(30 / 1_000_000 * NANOBANANA_IMAGE_TOKEN_ESTIMATE).toFixed(4)}/img · token ベース)`;
+  const fallbackUnitCost = args.backend === 'imagen4'
+    ? (IMAGEN_PRICE_USD[DEFAULT_IMAGEN_MODEL] ?? 0)
+    : ((NANOBANANA_PRICE_PER_M_OUTPUT_TOKENS[DEFAULT_NANOBANANA_MODEL] ?? 0) / 1_000_000 * NANOBANANA_IMAGE_TOKEN_ESTIMATE);
+
   console.log('===== generate-images-local (auto) =====');
   console.log(`  prompts:    ${promptBasename}`);
-  console.log(`  model:      ${DEFAULT_IMAGEN_MODEL} ($${IMAGEN_PRICE_USD[DEFAULT_IMAGEN_MODEL]}/img)`);
-  console.log(`  aspect:     ${args.aspect}  size: ${args.size}  person: ${args.person}`);
+  console.log(`  backend:    ${args.backend}`);
+  console.log(`  model:      ${modelLabel}`);
+  if (args.backend === 'imagen4') {
+    console.log(`  aspect:     ${args.aspect}  size: ${args.size}  person: ${args.person}`);
+  } else {
+    console.log(`  aspect/size/person: API 非対応のためプロンプト inline directive に委ねる`);
+    if (args.aspect !== '1:1' || args.size !== '1K' || args.person !== 'allow_adult') {
+      console.warn(`  ⚠ --aspect / --size / --person 指定は nanobanana では無視されます`);
+    }
+  }
   console.log(`  daily used: ${dayUsed} / cap ${args.maxImages}  (today=${day})`);
   if (args.dryRun) console.log(`  mode:       --dry-run`);
   if (args.limit) console.log(`  --limit:    ${args.limit}`);
@@ -374,15 +438,8 @@ async function runAuto({ json, promptBasename, args }) {
     const t = limited[i];
     const pngPath = resolve(IMAGES_DIR, `${t.id}.png`);
     try {
-      const result = await generateImage({
-        prompt: t.prompt,
-        aspectRatio: args.aspect,
-        imageSize: args.size,
-        personGeneration: args.person,
-        sampleCount: 1,
-        onRetry: ({ attempt, status, delayMs }) => {
-          console.warn(`     ⚠ HTTP ${status} retry attempt ${attempt} in ${delayMs} ms`);
-        },
+      const result = await callBackend(args.backend, t.prompt, args, ({ attempt, status, delayMs }) => {
+        console.warn(`     ⚠ HTTP ${status} retry attempt ${attempt} in ${delayMs} ms`);
       });
       if (!isPng(result.bytes)) {
         throw new Error('response is not a PNG (signature mismatch)');
@@ -390,7 +447,7 @@ async function runAuto({ json, promptBasename, args }) {
       await writeFile(pngPath, result.bytes);
       applyRegistryUpdate(registry, t.id, `${promptBasename}#${t.id}`);
       okCount++;
-      costThisRun += (result.costUsd ?? IMAGEN_PRICE_USD[DEFAULT_IMAGEN_MODEL] ?? 0);
+      costThisRun += (result.costUsd ?? fallbackUnitCost);
       console.log(`  ✓ [${i + 1}/${limited.length}] ${t.id}  ${result.bytes.length}B  ${result.durationMs}ms  $${(result.costUsd ?? 0).toFixed(4)}`);
     } catch (e) {
       errCount++;
@@ -403,6 +460,7 @@ async function runAuto({ json, promptBasename, args }) {
     count: dayUsed + okCount,
     cost_usd: Number(((usage.days[day]?.cost_usd ?? 0) + costThisRun).toFixed(4)),
     lastUpdated: nowISO(),
+    lastBackend: args.backend,
   };
   await writeJsonAtomic(USAGE_FILE, usage);
 
@@ -411,7 +469,7 @@ async function runAuto({ json, promptBasename, args }) {
   await writeJsonAtomic(IMAGE_REGISTRY, registry);
 
   console.log('\n===== generate-images-local (auto) 完了 =====');
-  console.log(`  成功: ${okCount} / エラー: ${errCount}`);
+  console.log(`  backend: ${args.backend} / 成功: ${okCount} / エラー: ${errCount}`);
   console.log(`  本実行コスト: $${costThisRun.toFixed(4)} / 当日累計: ${usage.days[day].count} 枚  $${usage.days[day].cost_usd}`);
   console.log(`  registry:  ${relative(ROOT, IMAGE_REGISTRY)}`);
   console.log(`  usage:     ${relative(ROOT, USAGE_FILE)}`);

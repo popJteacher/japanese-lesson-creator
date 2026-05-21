@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（**Phase 4 完了宣言** / GAS Triggers `generateImageBatch` × 3 件削除を人間検証済 / 生存中 GAS 自動 trigger = 0 件 / 次は Phase 5 設計議論 + Phase 4 後 backlog 優先度判断）
+**最終更新：** 2026-05-21（**Phase 4 完了宣言** + **nanobanana 化実装完了** / GAS Triggers `generateImageBatch` × 3 件削除を人間検証済 / 生存中 GAS 自動 trigger = 0 件 / `generate-images-local.mjs` 既定 backend = nanobanana (Imagen 4 は `--backend imagen4` で opt-in) / 次は Phase 5 設計議論）
 
 ---
 
@@ -14,9 +14,16 @@
 - **Phase 0／1／2／3／4：完了。** ✅
 - **Phase 5：未着手・設計待ち** — user が優先度を確定したら NEXT_ACTIONS に降ろす
 - **Phase 4 後 backlog：着手待ち** — `docs/PHASE_BACKLOG.md` に各項目の出所 / 退避理由 / 戻し方を記載済
+- **nanobanana 化：完了（2026-05-21）** — `generate-images-local.mjs` 既定 backend が nanobanana に。Imagen 4 は `--backend imagen4` で fallback 残存
 
 生存中の GAS 自動 trigger：**0 件**（CLAUDE.md memory: GAS トリガーは文書を信用しない → 2026-05-21 人間が Triggers パネルで実視確認済）。
 残存している GAS：手動実行用 `seedLesson01` / `extractFromGoiList` / `importFromLessonJson` の 3 系統のみ（自動実行されない）。
+
+**画像生成 backend 状況：**
+- 既定 = `gemini-2.5-flash-image` (Nano Banana) / ~$0.0387/img (output tokens ベース・実機 $0.0387 確認済)
+- opt-in = `imagen-4.0-generate-001` (Imagen 4 Standard) / $0.04/img 固定
+- check：`npm run check-nanobanana-key` PASS（3 モデル全検出）/ `npm run check-imagen-key` PASS（3 モデル全検出）
+- smoke：`node scripts/_nanobanana-smoke.mjs` PASS（1024×1024 PNG / cost $0.0387）
 
 ---
 
@@ -68,22 +75,26 @@
 ## 直近の確定コマンド
 
 ```
-npm run validate             # invariants A=v7.5 / B=a79e54a29e51 / C=12×4 / D=55/55（3 WARN）PASS
-npm run missing-assets       # 現状 image 441 / audio 108（v3.12 後 backlog で削減予定）
-npm run check-sa             # Sheets API 疎通
-npm run check-tts-sa         # Cloud TTS API 疎通
-npm run check-ffmpeg         # ffmpeg / ffprobe / filter / encoder 疎通
-npm run check-imagen-key     # AI Studio ListModels（Imagen 4 系の検出）— 直近 PASS
+npm run validate                   # invariants A=v7.5 / B=a79e54a29e51 / C=12×4 / D=55/55（3 WARN）PASS
+npm run missing-assets             # 現状 image 441 / audio 108（v3.12 後 backlog で削減予定）
+npm run check-sa                   # Sheets API 疎通
+npm run check-tts-sa               # Cloud TTS API 疎通
+npm run check-ffmpeg               # ffmpeg / ffprobe / filter / encoder 疎通
+npm run check-imagen-key           # AI Studio ListModels（Imagen 4 系の検出）— 直近 PASS
+npm run check-nanobanana-key       # AI Studio ListModels（Nano Banana 3 モデル検出）— 直近 PASS
 npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
 npm run backfill-registries [-- --dry-run | --verbose | --only image|audio]
 npm run generate-audio [-- --dry-run | --limit N | --only word|sentence | --max-chars N | --force | --no-qc]
 npm run generate-images -- --prompts <path> [--print-prompts | --sync-only | --dry-run]
+                                  [--backend nanobanana|imagen4]  # 既定 nanobanana
                                   [--limit N] [--max-images N] [--force]
-                                  [--person allow_adult|dont_allow|allow_all]
-                                  [--aspect 1:1] [--size 1K|2K] [--out <md>]
+                                  [--person allow_adult|dont_allow|allow_all]   # imagen4 専用
+                                  [--aspect 1:1] [--size 1K|2K]                 # imagen4 専用
+                                  [--out <md>]
 npm run validate-audio
 node scripts/_tts-smoke.mjs
-node scripts/_imagen-smoke.mjs    # 実機 1 枚＝$0.04
+node scripts/_imagen-smoke.mjs        # 実機 1 枚＝$0.04 (Imagen 4)
+node scripts/_nanobanana-smoke.mjs    # 実機 1 枚＝~$0.0387 (Nano Banana)
 node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 python scripts/build_prompts.py --lesson 1       # worktree で実行
