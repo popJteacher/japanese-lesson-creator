@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.7 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.8 主経路）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -31,11 +31,11 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_7.py")
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_8.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_7", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_8", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -77,64 +77,154 @@ PERSON_ROLE_LOOKUP = {
 }
 
 PERSON_NATIONALITY_HINTS = {
-    # v3.7: PERSON_FLAG_LOOKUP を改名・拡張。flag に加え cultural_styling_hint を持つ。
-    # cultural_styling_hint は contemporary cultural styling のみ（伝統民族衣装・観光土産的小道具は不可）。
-    # 各 hint は NATIONALITY_NOUN_POLICY.subject_block_pattern の {CULTURAL_STYLING_HINT} に代入される。
+    # v3.8 全面改訂：
+    #   - apparent_features_hint（phenotype 範囲・enumerate 化）を追加
+    #     → 単一画像 diversity 問題（"naturally diverse" が中央値に収束）の構造的修正
+    #   - cultural_styling_hint を garment-type レベルで分化
+    #     → 「modern X casual fashion」共通形からの脱却。各国に 2-3 個の concrete 例を渡し
+    #       Imagen が discrete に選ぶようにする。modernized cultural dress / 日常文脈の
+    #       伝統衣装も option として含む（caricature / 祭礼 / tourist cliché は禁止）。
     "日本人": {
         "flag_shape_and_colors":
             "white field with a single red circle in the center",
+        "apparent_features_hint":
+            "East Asian phenotype is most common in Japan. Pick ONE specific "
+            "set of features from: (skin tone: fair OR light-medium) + "
+            "(hair: dark straight black, OR dark straight dark-brown, OR "
+            "slightly wavy black). The character may also reflect Japan's "
+            "diverse population including mixed heritage, in which case "
+            "skin tone may extend to medium and hair color may vary.",
         "cultural_styling_hint":
-            "modern Japanese minimalist casual fashion — clean lines, muted "
-            "neutrals (white, gray, navy, or beige), may include a single "
-            "subtle red accent on a scarf, button, or shoe stripe",
+            "Pick ONE of the following outfit patterns: "
+            "(a) modern Japanese street fashion — high-waisted loose "
+            "trousers with a layered loose-fit top, oversized cardigan, "
+            "or a modern indigo-dyed denim jacket; "
+            "(b) a clean contemporary outfit incorporating subtle Japanese "
+            "design elements — a top with a simple wagara (traditional "
+            "geometric/floral) pattern, or a modern noragi-inspired light "
+            "jacket worn over simple trousers; "
+            "(c) an everyday yukata in a non-festival summer-at-home context. "
+            "A single subtle red accent (button, shoe stripe, scarf) is "
+            "acceptable but optional.",
     },
     "中国人": {
         "flag_shape_and_colors":
             "red field with a large yellow star and four smaller yellow stars in the upper-left corner",
+        "apparent_features_hint":
+            "East Asian phenotype is most common in China. Pick ONE specific "
+            "set of features from: (skin tone: fair OR light-medium) + "
+            "(hair: dark straight black, OR dark straight dark-brown). "
+            "China's population spans many regions and ethnic groups, so "
+            "subtle facial variation is appropriate.",
         "cultural_styling_hint":
-            "modern Chinese contemporary urban casual fashion — a layered "
-            "casual style typical of present-day China, may include a subtle "
-            "warm red or yellow accent in a single small element",
+            "Pick ONE of the following outfit patterns: "
+            "(a) modern Chinese urban athleisure — a relaxed sweatshirt "
+            "with jogger pants and sneakers; "
+            "(b) modern Chinese smart-casual — a structured jacket over a "
+            "simple t-shirt with neat trousers; "
+            "(c) a modernized cheongsam/qipao-inspired top (NOT a full "
+            "formal qipao — a contemporary blouse with subtle frog-button "
+            "or mandarin-collar details) worn with simple modern trousers. "
+            "A subtle warm red or yellow accent in one small element is "
+            "acceptable but optional.",
     },
     "アメリカ人": {
         "flag_shape_and_colors":
             "red and white horizontal stripes with a small blue corner of white star shapes",
+        "apparent_features_hint":
+            "The United States population is highly diverse. Pick ONE "
+            "specific set of features from: (skin tone: fair, light-medium, "
+            "olive, brown, or deep brown) + (hair color: black, dark-brown, "
+            "brown, blond, or red) + (hair texture: straight, wavy, or "
+            "curly). All combinations are valid.",
         "cultural_styling_hint":
-            "modern American casual fashion — jeans, a t-shirt, hoodie, or "
-            "sneakers; relaxed everyday street style typical of today's "
-            "United States",
+            "Pick ONE of the following outfit patterns: "
+            "(a) classic American casual — jeans with a graphic t-shirt and "
+            "sneakers, optionally with a baseball cap; "
+            "(b) American athleisure — a hoodie with jogger pants and "
+            "athletic sneakers; "
+            "(c) American smart-casual — a plaid button-up shirt over a "
+            "tee with chinos, OR chinos with a polo shirt.",
     },
     "韓国人": {
         "flag_shape_and_colors":
             "white field with a red-and-blue circle and black trigram marks",
+        "apparent_features_hint":
+            "East Asian phenotype is most common in Korea. Pick ONE specific "
+            "set of features from: (skin tone: fair OR light) + "
+            "(hair: dark straight black, OR dark straight dark-brown, often "
+            "styled neatly).",
         "cultural_styling_hint":
-            "modern Korean contemporary fashion — sleek and fashion-forward "
-            "casual; perhaps a slightly oversized jacket, modern sneakers, "
-            "and a tidy minimalist palette",
+            "Pick ONE of the following outfit patterns: "
+            "(a) contemporary K-fashion oversized layering — an oversized "
+            "t-shirt or sweater with wide-leg trousers and modern sneakers; "
+            "(b) contemporary K-fashion structured outerwear — a structured "
+            "trench-style coat or modern blazer over a simple top with "
+            "neat trousers; "
+            "(c) a hanbok-inspired modern top (high empire-waist line, "
+            "soft pleating, in a non-festival modern color palette) worn "
+            "with simple trousers — a daily-wear modernization, NOT a "
+            "ceremonial hanbok.",
     },
     "ブラジル人": {
         "flag_shape_and_colors":
             "green field with a yellow diamond and a small blue circle in the center",
+        "apparent_features_hint":
+            "Brazil's population is highly diverse, reflecting European, "
+            "African, Indigenous, and Asian heritage. Pick ONE specific set "
+            "of features from: (skin tone: fair, light-medium, olive, "
+            "brown, or deep brown) + (hair color: black or brown) + "
+            "(hair texture: straight, wavy, curly, or tightly coiled).",
         "cultural_styling_hint":
-            "modern Brazilian casual fashion — bright but tasteful warm-"
-            "weather casual; may include a subtle green or yellow accent in "
-            "a single small element such as a cap, shoes, or trim",
+            "Pick ONE of the following outfit patterns: "
+            "(a) Brazilian warm-weather casual — a light short-sleeve "
+            "cotton top with shorts or light trousers and sandals or light "
+            "sneakers; "
+            "(b) Brazilian beach-town casual — a linen short-sleeve shirt "
+            "over a tank top with light trousers; "
+            "(c) a casual everyday top in green or yellow (football-supporter "
+            "color palette) — NOT a full national-team uniform, just a "
+            "casual top in green/yellow worn as everyday clothing.",
     },
     "ベトナム人": {
         "flag_shape_and_colors":
             "red field with a single large yellow star in the center",
+        "apparent_features_hint":
+            "Southeast Asian phenotype is most common in Vietnam. Pick ONE "
+            "specific set of features from: (skin tone: light-medium OR "
+            "medium OR olive) + (hair: straight black, OR straight "
+            "dark-brown).",
         "cultural_styling_hint":
-            "modern Vietnamese casual fashion — light, breathable casual "
-            "wear suited to a warm climate, such as a cotton or linen top "
-            "with simple trousers",
+            "Pick ONE of the following outfit patterns: "
+            "(a) Vietnamese light-fabric casual — a cotton or linen "
+            "short-sleeve shirt with simple light trousers, light sandals "
+            "or canvas shoes; "
+            "(b) Vietnamese casual blouse-and-skirt — a light cotton "
+            "blouse with a flowing mid-length skirt; "
+            "(c) a modern everyday áo dài (Vietnamese long tunic, a daily "
+            "garment in many cities) in a simple solid color worn over "
+            "simple trousers — modernized for daily wear, NOT a "
+            "ceremonial / festival áo dài.",
     },
     "スペイン人": {
         "flag_shape_and_colors":
             "red and yellow horizontal stripes with the yellow band twice as wide as each red band",
+        "apparent_features_hint":
+            "Mediterranean European phenotype is most common in Spain. "
+            "Pick ONE specific set of features from: (skin tone: fair, "
+            "light-medium, or olive-tan) + (hair color: black, dark-brown, "
+            "or occasionally lighter brown) + (hair texture: straight or "
+            "wavy).",
         "cultural_styling_hint":
-            "modern Spanish casual fashion — Mediterranean casual; may "
-            "include a subtle warm red or gold accent in a single small "
-            "element; elegant relaxed style",
+            "Pick ONE of the following outfit patterns: "
+            "(a) Spanish Mediterranean smart-casual — a tailored linen "
+            "shirt with chinos and leather loafers; "
+            "(b) Spanish casual layered — a light blazer over a simple "
+            "t-shirt with jeans and clean sneakers; "
+            "(c) Spanish elegant casual — a draped top with wide trousers "
+            "and minimalist sandals or loafers. "
+            "A subtle warm red or gold accent in one small element is "
+            "acceptable but optional.",
     },
 }
 
@@ -155,16 +245,24 @@ def classify_person(word):
 # 合成関数
 # ─────────────────────────────────────────────────────────────
 def compose_role_subject(g, role_key):
-    """v3.3 (M-47 wave): skin tone NOT specified / hair varied dark で多文化配慮対応。"""
+    """v3.8: skin tone / hair を enumerate 化。
+    v3.7 までの "naturally diverse skin tone (multicultural variation) and
+    naturally varied dark hair (dark brown to black)" は単一画像生成では
+    Imagen が中央値（medium-darker brown + dark hair）に収束し、結果
+    全 role が同じ phenotype に。enumerate 化により discrete な選択を強制。
+    """
     role = g.ROLE_BASED_GENERIC_PROFILES[role_key]
     outfit_lines = "; ".join(role["outfit_hints"])
     return (
         f"A {role['role_en']} ({role['role_ja']}). "
         f"Outfit and props: {outfit_lines}. "
-        f"The character's gender is unspecified — use a generic adult appearance with "
-        f"naturally diverse skin tone (multicultural variation) and "
-        f"naturally varied dark hair (dark brown to black), "
-        f"and a calm friendly expression. The role must be immediately readable from "
+        f"The character's gender is unspecified. "
+        f"Pick ONE specific set of features from: "
+        f"(skin tone: fair, light-medium, olive, brown, or deep brown) + "
+        f"(hair color: black, dark-brown, brown, blond, or red) + "
+        f"(hair texture: straight, wavy, or curly). "
+        f"All combinations are valid — choose discretely, do not blend. "
+        f"Calm friendly expression. The role must be immediately readable from "
         f"clothing and props alone."
     )
 
@@ -175,10 +273,12 @@ def compose_role_pose():
             "warm approachable expression")
 
 
-def compose_nationality_subject(g, flag_shape_and_colors, cultural_styling_hint):
+def compose_nationality_subject(g, flag_shape_and_colors, cultural_styling_hint,
+                                apparent_features_hint):
     return (g.NATIONALITY_NOUN_POLICY["subject_block_pattern"]
             .replace("{FLAG_SHAPE_AND_COLORS}", flag_shape_and_colors)
-            .replace("{CULTURAL_STYLING_HINT}", cultural_styling_hint))
+            .replace("{CULTURAL_STYLING_HINT}", cultural_styling_hint)
+            .replace("{APPARENT_FEATURES_HINT}", apparent_features_hint))
 
 
 def compose_nationality_pose():
@@ -194,7 +294,10 @@ def render_person(g, entry, kind, sub):
         exception_block = ROLE_ANTI_FLAG_BLOCK
     elif kind == "nationality":
         char_desc = compose_nationality_subject(
-            g, sub["flag_shape_and_colors"], sub["cultural_styling_hint"]
+            g,
+            sub["flag_shape_and_colors"],
+            sub["cultural_styling_hint"],
+            sub["apparent_features_hint"],
         )
         char_pose = compose_nationality_pose()
         exception_block = NATIONALITY_EXCEPTION_BLOCK
@@ -221,7 +324,8 @@ RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
 
 PLACEHOLDERS = ["[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
                 "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
-                "{CULTURAL_STYLING_HINT}", "{NATIONALITY_EXCEPTION_BLOCK}"]
+                "{CULTURAL_STYLING_HINT}", "{APPARENT_FEATURES_HINT}",
+                "{NATIONALITY_EXCEPTION_BLOCK}"]
 
 
 def preflight(text, vocab_type, word):
@@ -325,12 +429,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_7.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_8.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.7",
+            "guideVersion": "v3.8",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",

@@ -27,8 +27,8 @@ const ROOT = resolve(__dirname, '..');
 // apply_v3_3.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
-  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_7.py'),
-  promptGuideExpectedHashPrefix: '4ff5e82982d6', // v3.7 LF 正規化後 SHA256 先頭 12 桁
+  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_8.py'),
+  promptGuideExpectedHashPrefix: '477425a647a6', // v3.8 LF 正規化後 SHA256 先頭 12 桁
   // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
   sColumnPattern: /^image_prompts_lesson\d{2}_v3_\d+\.json$/,

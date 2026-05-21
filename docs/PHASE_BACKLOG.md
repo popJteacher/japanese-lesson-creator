@@ -68,6 +68,25 @@
 - 参考：`failed_final` を `pending` に戻すリセット関数は `gas/pipeline.gs` line 3340 周辺
   （Phase 4 で GAS が消えるまでは GAS 側の暫定運用も可）。
 
+### ROLE_BASED_GENERIC_PROFILES.scene_hints の未使用 / scene-rich テンプレ A2 設計
+- 出所：v3.8 監査（2026-05-21）で発見。`ROLE_BASED_GENERIC_PROFILES`
+  各 role に定義された `scene_hints`（教室・診察室・オフィス等の背景例）が
+  `scripts/build_prompts.py` から **一切参照されていない**（grep で 0 hit）。
+  約 50 行のデッドデータ。
+- 退避理由：テンプレート A (vocabulary_person) の [SCENE & ACTION] が
+  「Solid soft cream off-white background. No other characters or objects
+  in the frame」を強制するため、`scene_hints` を使う設計が現状では成立しない。
+  これと PART 1.2 ISOLATION_SAFE_PROPS_RULE（v3.7 で導入）により、role の
+  視覚識別性は outfit_hints の prop 単体だけに依存する状態。
+  解決路としては「scene-rich なテンプレ A2 を新設し、最小限の背景要素
+  （teacher 後ろのホワイトボード輪郭、doctor の診察台の縁等）を許容する」
+  だが、テンプレート全体の再設計が必要で v3.8 では膨らみすぎる。
+- 戻し方：(a) v3.9 以降で「テンプレ A2 = vocabulary_person_scene_rich」を新設し、
+  role 用に optionally 切り替え可能にする、もしくは (b) `scene_hints` 自体を
+  削除して責務を outfit_hints + 単体 prop に完全集約する、のどちらかを選択。
+  選択時の参考：v3.8 段階で role の outfit_hints だけで医者/会社員/学生/先生は
+  十分弁別可能か実機検証（lesson_01 12 件を v3.8 で並列生成して判断）。
+
 ---
 
 ## 運用ルール
