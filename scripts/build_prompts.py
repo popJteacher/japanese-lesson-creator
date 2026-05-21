@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.9 主経路）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v3.10 主経路）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
@@ -31,11 +31,11 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_9.py")
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_10.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_9", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v3_10", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -116,7 +116,17 @@ PERSON_NATIONALITY_HINTS = {
             "silhouette, straight sleeves, wide front overlap with a simple "
             "tie or button closure) worn over a plain top and trousers; "
             "(c) an everyday yukata (cotton informal kimono) in a "
-            "summer-at-home context, NOT a festival/ceremonial display.",
+            "summer-at-home context, NOT a festival/ceremonial display. "
+            # v3.10 二色化必須化（旗色 overlap 回避）:
+            "TWO-COLOR RULE: top and trousers MUST be in two clearly "
+            "different colors, NOT a single all-over color. Recommended "
+            "combinations: muted indigo top + cream trousers / sage green "
+            "top + charcoal trousers / soft beige top + muted indigo "
+            "trousers / charcoal noragi + cream inner-top + indigo trousers. "
+            "AVOID flag-like combinations: NEVER white top + solid red "
+            "trousers, NEVER solid red top + white trousers, NEVER a "
+            "large red circle motif centered on a white garment. The flag "
+            "pin already carries the white+red signal.",
     },
     "中国人": {
         "flag_shape_and_colors":
@@ -143,7 +153,15 @@ PERSON_NATIONALITY_HINTS = {
             "and trousers. "
             "Color note: AVOID a red+yellow color combination on the outfit "
             "(the flag pin already carries that signal). Prefer muted "
-            "earth tones, cream, indigo, cool blue, or soft jade.",
+            "earth tones, cream, indigo, cool blue, or soft jade. "
+            # v3.10 二色化必須化:
+            "TWO-COLOR RULE: top and trousers MUST be in two clearly "
+            "different colors (NOT all-over a single color). Recommended "
+            "combinations: soft jade top + cream trousers / indigo top + "
+            "warm sand trousers / cream blouse with indigo frog buttons + "
+            "charcoal trousers / muted dusty rose top + indigo trousers. "
+            "If choosing pattern (c), the silk scarf provides a third "
+            "accent color drawn from cool/earth palette (NOT red+yellow).",
     },
     "アメリカ人": {
         "flag_shape_and_colors":
@@ -198,7 +216,19 @@ PERSON_NATIONALITY_HINTS = {
             "(c) a modern outfit incorporating a clearly hanbok-inspired "
             "accent — a wrap-front blouse with a single fabric ribbon-tie "
             "(otgoreum-inspired) at the chest in a contrasting muted color, "
-            "worn with simple trousers.",
+            "worn with simple trousers. "
+            # v3.10 二色化必須化:
+            "TWO-COLOR RULE: top and trousers MUST be in two clearly "
+            "different colors (NOT all-over a single color). For pattern "
+            "(a), the jeogori top should be one color and the trousers "
+            "another — recommended: soft sage jeogori + cream trousers / "
+            "muted dusty rose jeogori + charcoal trousers / pale indigo "
+            "jeogori + warm sand trousers. For pattern (c), the otgoreum "
+            "ribbon-tie should be in a clearly contrasting third color "
+            "(e.g., cream blouse + indigo ribbon + charcoal trousers). "
+            "For pattern (b), the trench/blazer and the trousers underneath "
+            "should differ in value (e.g., cream coat + charcoal trousers, "
+            "or indigo coat + warm sand trousers).",
     },
     "ブラジル人": {
         "flag_shape_and_colors":
@@ -243,8 +273,7 @@ PERSON_NATIONALITY_HINTS = {
             "Vietnamese element. Pick ONE of the following patterns: "
             "(a) a modern everyday áo dài — a long-tunic top reaching "
             "mid-thigh to knee with a mandarin (stand) collar and side "
-            "slits, in a simple solid muted color, worn over loose "
-            "matching or contrasting trousers as daily wear (NOT a "
+            "slits, worn over loose trousers as daily wear (NOT a "
             "ceremonial / festival áo dài, NOT with elaborate embroidery); "
             "(b) a modernized áo bà ba-inspired outfit — a simple "
             "lightweight cotton tunic with side splits over loose drawstring "
@@ -255,7 +284,16 @@ PERSON_NATIONALITY_HINTS = {
             "object, NOT a tourist nón lá conical hat) worn over a simple "
             "linen blouse with light trousers. "
             "Color note: AVOID a red top with a single yellow ornament "
-            "centered on the chest (that reads as the Vietnamese flag).",
+            "centered on the chest (that reads as the Vietnamese flag). "
+            # v3.10 二色化必須化（áo dài は伝統的に body と trousers が別色）:
+            "TWO-COLOR RULE: the áo dài or áo bà ba body and the trousers "
+            "underneath MUST be in two clearly different colors — this is "
+            "traditional and authentic (a single all-over color reads as "
+            "uniform, not daily wear). Recommended combinations: soft "
+            "jade áo dài + cream trousers / pale indigo áo dài + warm sand "
+            "trousers / muted dusty rose áo dài + cream trousers / cream "
+            "áo bà ba + indigo trousers. AVOID red áo dài + yellow trousers "
+            "(flag-like).",
     },
     "スペイン人": {
         "flag_shape_and_colors":
@@ -315,12 +353,14 @@ def compose_role_subject(g, role_key):
 
     v3.9: prop が outfit と同色相に埋没する事象（teacher: light-blue cardigan
     + light-blue marker pen 等）を構造修正。palette-aware prop contrast rule
-    を追加。STYLE_BIBLE.color_palette の限定パレット (main_color=muted warm
-    blue / accent=warm amber gold / sub_color=cool slate gray) 内で「服装の
-    支配色と異なる hue family AND/OR value」を強制し、かつ accent (amber gold)
-    への一括収束も防ぐため main_color とのオルタネーションを明示する。
-    本ルールは role-based subject_block にのみ適用。nationality 系には
-    適用しない（compose_nationality_subject 経由・別 subject_block_pattern）。
+    を追加。
+
+    v3.10: 上記 prop contrast rule を STYLE_BIBLE.visual_contrast_principle
+    （v3.10 で新設された普遍ルール）から derive される形にリファクタ。プロンプト
+    に流れる文字列はほぼ同じだが、文頭で principle 出所を明示し、将来 vocab_type
+    実装で同じ principle を再利用しやすくする。本ルールは role-based subject_block
+    にのみ適用。nationality 系には適用しない（compose_nationality_subject 経由・
+    別 subject_block_pattern）。
     """
     role = g.ROLE_BASED_GENERIC_PROFILES[role_key]
     outfit_lines = "; ".join(role["outfit_hints"])
@@ -335,20 +375,24 @@ def compose_role_subject(g, role_key):
         f"All combinations are valid — choose discretely, do not blend. "
         f"Calm friendly expression. The role must be immediately readable from "
         f"clothing and props alone. "
-        # v3.9 prop contrast rule (palette-aware):
-        f"PROP CONTRAST RULE: Any prop held in the hand (book, marker, pen, "
-        f"clipboard, stethoscope, briefcase, laptop bag, notebook, folder, "
-        f"etc.) MUST use a color drawn from STYLE_BIBLE.color_palette that "
-        f"visibly differs in hue family AND/OR value from the outfit's "
-        f"dominant color, so the prop is immediately legible against the "
-        f"clothing. Concretely: if the outfit is muted warm blue, the prop "
-        f"should be warm amber gold or cool slate gray; if the outfit is "
-        f"cream/beige/white (e.g., a white doctor's coat), the prop should "
-        f"be cool slate gray or muted warm blue; if the outfit is cool slate "
-        f"gray, the prop should be warm amber gold or muted warm blue. "
-        f"Do NOT default to warm amber gold for every prop — alternate "
-        f"between accent and main_color depending on outfit so that 12 "
-        f"role cards do not all converge on the same prop color."
+        # v3.10 prop contrast rule
+        # (derived from STYLE_BIBLE.visual_contrast_principle.sub_rules_by_situation.person_prop_contrast):
+        f"PROP CONTRAST RULE (derived from STYLE_BIBLE."
+        f"visual_contrast_principle.person_prop_contrast): Any prop held in "
+        f"the hand or worn against the body (book, marker, pen, clipboard, "
+        f"stethoscope, briefcase, laptop bag, notebook, folder, lanyard "
+        f"name badge, crossbody bag, etc.) MUST use a color drawn from "
+        f"STYLE_BIBLE.color_palette that visibly differs in hue family "
+        f"AND/OR value from the outfit's dominant color, so the prop is "
+        f"immediately legible against the clothing. Concretely: if the "
+        f"outfit is muted warm blue, the prop should be warm amber gold or "
+        f"cool slate gray; if the outfit is cream/beige/white (e.g., a "
+        f"white doctor's coat), the prop should be cool slate gray or "
+        f"muted warm blue; if the outfit is cool slate gray, the prop "
+        f"should be warm amber gold or muted warm blue. Do NOT default to "
+        f"warm amber gold for every prop — alternate between accent and "
+        f"main_color depending on outfit so that 12 role cards within a "
+        f"single lesson do not converge on the same prop color."
     )
 
 
@@ -514,12 +558,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_9.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_10.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.9",
+            "guideVersion": "v3.10",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
