@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（v3.8 まで完了 / main = Phase 4 ランタイムに集中 / worktree = v3.9 以降のガイド進化）
+**最終更新：** 2026-05-21（v3.8 完了 / word_新聞 sync 解消 / image QC 下書き完了し PHASE_BACKLOG 退避）
 
 ---
 
@@ -21,7 +21,9 @@
     現代化伝統衣装許容（v3.8）。
   - **③** `scripts/generate-images-local.mjs`：コード完了（3 モード）。
     v3.7 で 4 件手動検証 → v3.8 で構造修正。**v3.8 プロンプトでの再検証が未。**
-  - **④⑤⑥** 未着手。
+  - **④** image QC：設計下書き完了し `docs/PHASE_BACKLOG.md` に退避。
+    Phase 4 ④ active 化時に校正手順（Step 1〜4・$0.80 / 20 枚）を実行して実装に入る。
+  - **⑤⑥** 未着手。
 
 - **作業分担（2026-05-21 から）：** `docs/WORKFLOW.md` 参照。
   - **main**：Phase 4 ③④⑤⑥ ランタイム本体（generate-images-local.mjs / image QC /
@@ -45,18 +47,15 @@
 - 役割 1-2 件（医者 / 先生）で enumerate された多様性が出るか
 
 結果に応じて：
-- **OK** → main で Phase 4 ④（image QC）の設計に進む
+- **OK** → main で Phase 4 ④（image QC）の校正・実装に進む（`docs/PHASE_BACKLOG.md`「画像 QC 仕様」の Step 1〜4）
 - **NG**（特定の国だけ不適切 等）→ **worktree セッションを起こして v3.9 で微調整**
 
 ### B. main で並行できること（任意・人間検証と独立）
 
 - **registry 未登録 120 件のバックフィル**（`docs/PHASE_BACKLOG.md` 参照）
-- **`word_新聞` audio sync 漏れ**：`npm run sync-registries` 1 発で解消見込み（未検証）
 - **旧版アーカイブ整理**：`prompts/master_prompt_design_guide_v3_2.py` 〜 `_v3_7.py`、
   `data/image_prompts_lesson01_v3_2.json` 〜 `_v3_7.json` を archive 化（v3_8 で代替）。
   ※ ただしこれは「ガイド系ファイル」なので **worktree でやる**（WORKFLOW.md 準拠）。
-- **Phase 4 ④ 設計の下調べ**：image QC 仕様（PNG サイズ / 透過 / パレット適合 /
-  余白比率 等の機械検証）を `docs/REFERENCE.md` に下書き → 実装は ④ 着手時。
 
 ### C. worktree（必要になったら別セッションで起動）
 
@@ -66,7 +65,7 @@
 worktree セッション開始手順（`docs/WORKFLOW.md` §「セッション開始 / 終了チェックリスト」）：
 ```
 cd .claude/worktrees/image-prompt-plan
-git merge --ff-only main       # main の進捗を取り込む（現状 4b6b1a0 同期済み）
+git merge --ff-only main       # main の進捗を取り込む
 npm run validate               # baseline 確認
 ```
 
@@ -95,7 +94,7 @@ npm run validate               # baseline 確認
 
 ```
 npm run validate             # invariants A=v7.4 / B=477425a647a6 / C=12×7 / D=55/55（3 WARN）PASS
-npm run missing-assets       # image registry 62 件 / audio 1 件（word_新聞）
+npm run missing-assets       # image registry 62 件 / audio 0 件
 npm run check-sa             # Sheets API 疎通
 npm run check-tts-sa         # Cloud TTS API 疎通
 npm run check-ffmpeg         # ffmpeg / ffprobe / filter / encoder 疎通

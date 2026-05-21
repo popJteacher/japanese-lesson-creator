@@ -3,7 +3,7 @@
     "version": "1.2",
     "description": "音声資産レジストリ。word_* は語彙音声、sentence_* は例文音声。audioUrl は音声生成後に設定する。",
     "createdAt": "2026-05-15",
-    "lastModified": "2026-05-20",
+    "lastModified": "2026-05-21",
     "changes": [
       "v1.0 (2026-05-15): 初版。L01 語彙17件 + 例文15件 = 32件登録。",
       "v1.1 (2026-05-17): L02 語彙15件 (word_病院はL01既存のため上書き更新のみ) + 例文28件 = 実質43件新規追加。totalEntries: 32 -> 75。",
@@ -130,7 +130,7 @@
       "audioUrl": "https://drive.google.com/uc?id=1K3I3C_cs_FVmCt9C-86cyXvjVLLMPjpd"
     },
     "word_新聞": {
-      "audioUrl": null
+      "audioUrl": "https://drive.google.com/uc?id=1L9iYDEHsDdjEj3AChiwkncklTxSsOzXv"
     },
     "word_かばん": {
       "audioUrl": "https://drive.google.com/uc?id=1_xJv5MoCbFk9UCebO2bVeuCt8D7sTy75"
