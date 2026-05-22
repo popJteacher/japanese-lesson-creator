@@ -37,7 +37,7 @@
       "v1.8 (2026-05-17): lesson_02.json v2.11.3 同期。L02 語彙 15件追加 (word_病院は L01 既存のためスキップ)。totalEntries: 71 -> 86 (world_map の static_asset を含む実態カウントに修正)。",
       "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。"
     ],
-    "lastModified": "2026-05-21"
+    "lastModified": "2026-05-22"
   },
   "entries": {
     "word_医者": {
@@ -56,8 +56,8 @@
           "imageId": "word_医者_001",
           "filename": "word_医者.png",
           "imageUrl": "data/images/word_医者.png",
-          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_医者",
-          "generatedAt": "2026-05-21",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_医者",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -144,8 +144,8 @@
           "imageId": "word_会社員_001",
           "filename": "word_会社員.png",
           "imageUrl": "data/images/word_会社員.png",
-          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_会社員",
-          "generatedAt": "2026-05-21",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_会社員",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -166,8 +166,8 @@
           "imageId": "word_学生_001",
           "filename": "word_学生.png",
           "imageUrl": "data/images/word_学生.png",
-          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_学生",
-          "generatedAt": "2026-05-21",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_学生",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -188,8 +188,8 @@
           "imageId": "word_先生_001",
           "filename": "word_先生.png",
           "imageUrl": "data/images/word_先生.png",
-          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_先生",
-          "generatedAt": "2026-05-21",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_先生",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1253,8 +1253,8 @@
           "imageId": "word_大学生_001",
           "filename": "word_大学生.png",
           "imageUrl": "data/images/word_大学生.png",
-          "promptRef": "image_prompts_lesson01_v3_11_1.json#word_大学生",
-          "generatedAt": "2026-05-21",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_大学生",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1272,11 +1272,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_日本人_001",
-          "filename": "vocab_日本人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1tGH05xMGl06oX5sFPL5gS33Loa7OH5ov",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_日本人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_日本人_001",
+          "filename": "word_日本人.png",
+          "imageUrl": "data/images/word_日本人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_日本人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1294,11 +1294,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_中国人_001",
-          "filename": "vocab_中国人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1V3aJCC5wNKBT3D4lxsxtSC49EfB_Yamf",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_中国人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_中国人_001",
+          "filename": "word_中国人.png",
+          "imageUrl": "data/images/word_中国人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_中国人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1316,11 +1316,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_アメリカ人_001",
-          "filename": "vocab_アメリカ人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1f1-Nis7guQk43XiCgqm72sUeUdrSJ5Q5",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_アメリカ人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_アメリカ人_001",
+          "filename": "word_アメリカ人.png",
+          "imageUrl": "data/images/word_アメリカ人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_アメリカ人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1338,11 +1338,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_韓国人_001",
-          "filename": "vocab_韓国人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1KvVtWpIekeub-bilPOQhoqcKRWR1Yv8K",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_韓国人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_韓国人_001",
+          "filename": "word_韓国人.png",
+          "imageUrl": "data/images/word_韓国人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_韓国人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1360,11 +1360,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_ブラジル人_001",
-          "filename": "vocab_ブラジル人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1es0i0GVzFZ2Gg_cNW9rjWdEYdxRKCq2c",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_ブラジル人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_ブラジル人_001",
+          "filename": "word_ブラジル人.png",
+          "imageUrl": "data/images/word_ブラジル人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_ブラジル人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1382,11 +1382,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_ベトナム人_001",
-          "filename": "vocab_ベトナム人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1YM-KJVmdDz5cvQi7jnHTvxpyuiF5ckO2",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_ベトナム人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_ベトナム人_001",
+          "filename": "word_ベトナム人.png",
+          "imageUrl": "data/images/word_ベトナム人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_ベトナム人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]
@@ -1404,11 +1404,11 @@
       "status": "generated",
       "images": [
         {
-          "imageId": "vocab_スペイン人_001",
-          "filename": "vocab_スペイン人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1SMwUxwd9Y9cd79dHkK1HJNWZF2CnYjnM",
-          "promptRef": "image_prompts_lesson1_v8.json#vocab_スペイン人",
-          "generatedAt": "2026-05-14",
+          "imageId": "word_スペイン人_001",
+          "filename": "word_スペイン人.png",
+          "imageUrl": "data/images/word_スペイン人.png",
+          "promptRef": "image_prompts_lesson01_v4_0.json#word_スペイン人",
+          "generatedAt": "2026-05-22",
           "regenerate": false
         }
       ]

@@ -27,13 +27,17 @@ const ROOT = resolve(__dirname, '..');
 // apply_v3_3.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
-  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v3_12.py'),
-  promptGuideExpectedHashPrefix: '2137a8e885ae', // v3.12 (3 universal rules) LF 正規化後 SHA256 先頭 12 桁
+  promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v4_0.py'),
+  promptGuideExpectedHashPrefix: '5338c98aab5d', // v4.0 (modern wear + hand-held flag + PART 1.8 FACIAL_FEATURES + PART 1.9 FLAG_SHAPE_DETAIL [invoke 3-layer 方針] + PART 1.10 HEAD_BODY_PROPORTION + 単一 flag staff 対称 grip + 7 国 flag invoke 化) LF 正規化後 SHA256 先頭 12 桁
   // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
   // (_\d+)? を追加。従来の _v3_11.json 等も引き続き match する。
-  sColumnPattern: /^image_prompts_lesson\d{2}_v3_\d+(_\d+)?\.json$/,
+  // v4.0 (2026-05-22): major-version pivot により _v4_0.json も match させる
+  // 必要が生じたため `v(3|4)_` に拡張。WORKFLOW.md「main 専属領域」の例外として
+  // worktree で 1 行修正（B hash 更新と同じ scope の major-version migration
+  // 必須変更のため）。commit message で明示。
+  sColumnPattern: /^image_prompts_lesson\d{2}_v(3|4)_\d+(_\d+)?\.json$/,
 };
 
 // 6 不変条件の文字列定数

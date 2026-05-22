@@ -1,39 +1,53 @@
 # -*- coding: utf-8 -*-
-"""決定論 S列生成スクリプト（v3.12 主経路 / nanobanana 固定運用）— MVP: vocab_type=person のみ
+"""決定論 S列生成スクリプト（v4.0 主経路 / nanobanana 固定運用）— MVP: vocab_type=person のみ
 
 入出力契約は docs/generator_contract.md を参照。
 このスクリプトの設計原則:
-  - v3.5 ガイドを Python モジュールとして直接 import する（文字列パース不可）。
-  - vocab_type の真実源は data/vocab_types_lessonNN.json（GAS Vocabulary
-    シートからの export 経由・現状はブートストラップ済）。archive 参照しない。
-  - GAS の build*Prompt_ は副経路フォールバックで v3.2 invariants を満たさないため
-    参考にしない。
+  - ガイドを Python モジュールとして直接 import する（文字列パース不可）。
+  - vocab_type の真実源は data/vocab_types_lessonNN.json。archive 参照しない。
   - 出力 JSON は書き出し前に invariants C 相当の pre-flight 検査を通す。
     1 件でも違反があれば exit 非ゼロ・ファイルを書き出さない。
   - 出力 _meta に provenance（guideHash・vocabTypesSource・script）を記録する。
 
 サブカテゴリ（role / nationality）の決定:
   vocab_type=person のうち、word が "人" で終わるものは国籍名詞
-  （NATIONALITY_NOUN_POLICY）として扱う。それ以外は役割系（ROLE_BASED_GENERIC_PROFILES）
-  で、role_key は PERSON_ROLE_LOOKUP で word→role_key を解決。
-  flag_shape_and_colors と cultural_styling_hint は PERSON_NATIONALITY_HINTS
-  (v3.7 で旧 PERSON_FLAG_LOOKUP から改名・拡張) で word→各情報 を解決。
-  これらは現状スクリプト内 config。Sheets / lesson_NN.json に格上げ予定（NEXT_ACTIONS）。
+  （NATIONALITY_NOUN_POLICY）として扱う。それ以外は役割系
+  （ROLE_BASED_GENERIC_PROFILES）で、role_key は PERSON_ROLE_LOOKUP で
+  word→role_key を解決。flag_shape_and_colors と cultural_styling_hint は
+  PERSON_NATIONALITY_HINTS で word→各情報 を解決。
 
-v3.12 (2026-05-21): 3 universal rules を実装。
-  - PART 1.5 PHENOTYPE_SPECIFICATION_RULE: phenotype_for(word) が
-    COUNTRY_TO_PROFILE → PHENOTYPE_PROFILES (rule_c) または
-    ROLE_PHENOTYPE_PALETTE の deterministic 選択 (rule_d) で単一 concrete
-    記述を返す。enumerate 表現は廃止。
-  - PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE: pattern_for(word) が
-    TRADITIONAL_DRESS_PATTERN_LOOKUP から country 用 textile element を返し、
-    cultural_styling_hint の末尾に append される。lookup に entry が無い
-    country では何も append しない（rule_e modern_styles_exempt）。
-  - PART 1.7 FLAG_PLACEMENT_RULE: flag_placement_for(word) が
-    FLAG_PLACEMENT_OPTIONS から sha256(word+'flag-placement') mod 4 で位置を
-    選び、subject_block_pattern の {FLAG_PLACEMENT} に注入する。
-  - 共通: _deterministic_pick(word, options, salt) ヘルパーで sha256 ベース
-    選択を集約。
+v4.0.1 (2026-05-22): 実機検証フィードバック反映。
+  - PERSON_NATIONALITY_HINTS の flag_shape_and_colors を米西伯中 4 国で
+    詳細化（FLAG_SHAPE_DETAIL_RULE - PART 1.9 準拠）。日韓越は既に十分。
+  - FACIAL_FEATURES_RULE (PART 1.8) はガイド本体の PROMPT_TEMPLATES
+    ["vocabulary_person"] に inline directive として組み込み済。
+    build_prompts.py 側の compose 関数は変更不要（template 経由で自動適用）。
+
+v4.0 (2026-05-22): 全国共通 modern daily casual wear + 国旗両手持ち pivot。
+  - PERSON_NATIONALITY_HINTS の cultural_styling_hint を全 7 国とも
+    B-rich modern wear 形式に書き換え（silhouette / fit / palette tendency /
+    footwear / optional non-hand accessory）。各国 hint には silhouette の
+    positive 記述のみ書き、伝統 silhouette 禁止は universal
+    NO_TRADITIONAL_SILHOUETTE_RULE (ガイド PART 1.1 hard_constraints) に集約。
+  - PERSON_NATIONALITY_HINTS の apparent_features_hint dead field を削除
+    （v3.12 以降は phenotype_for(word) が動的計算するため未参照）。
+  - TRADITIONAL_DRESS_PATTERN_LOOKUP / pattern_for() を削除
+    （ガイド PART 1.6 退役に伴い）。
+  - FLAG_PLACEMENT_OPTIONS を 1 entry の定数 list に縮約。
+    flag_placement_for() は word に依らず定数文字列を返す
+    （ガイド PART 1.7 簡素化に伴い）。
+  - NATIONALITY_EXCEPTION_BLOCK を hand-held flag 形式に書き換え
+    （5-6% pin → 12-15% hand-held flag）。
+  - compose_nationality_subject() から pattern_for(word) append 処理を削除。
+  - compose_nationality_pose() を「arms holding the flag in front of the chest」
+    形式に書き換え。
+
+v3.12 から維持されているもの:
+  - phenotype_for(word) / PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE /
+    ROLE_PHENOTYPE_PALETTE / PHENOTYPE_SALT（PART 1.5 rule_e palette_freeze 継続）
+  - _deterministic_pick() helper（phenotype 選択に引き続き使用）
+  - preflight 検査（背景文字列 / NOT トークン / full-body / 国旗強表現 / placeholder 残存）
+  - ROLE_ANTI_FLAG_BLOCK（role cards は flag を持たない・引き続き有効）
 """
 
 import argparse
@@ -46,14 +60,14 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# v3.12 主経路（nanobanana 固定運用）。
-# v3.11.1 のロールバックは prompts/master_prompt_design_guide_v3_11_1.py
-# 末尾の rollback 手順参照。
-GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v3_12.py")
+# v4.0 主経路（nanobanana 固定運用）。
+# Rollback to v3.12: GUIDE_PATH を 'master_prompt_design_guide_v3_12.py' に戻し、
+# scripts/invariants.mjs の promptGuideExpectedHashPrefix を v3.12 の 2137a8e885ae に戻す。
+GUIDE_PATH = os.path.join(ROOT, "prompts", "master_prompt_design_guide_v4_0.py")
 
 
 def load_guide():
-    spec = importlib.util.spec_from_file_location("guide_v3_12", GUIDE_PATH)
+    spec = importlib.util.spec_from_file_location("guide_v4_0", GUIDE_PATH)
     g = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(g)
     return g
@@ -74,8 +88,10 @@ ROLE_ANTI_FLAG_BLOCK = (
     "card, not a nationality card."
 )
 NATIONALITY_EXCEPTION_BLOCK = (
-    "EXCEPTION (NATIONALITY_NOUN_POLICY): a small national-flag pin/patch is "
-    "permitted as a subtle nationality cue, at most about 4% of the image area. "
+    "EXCEPTION (NATIONALITY_NOUN_POLICY v4.0): a hand-held flag held in "
+    "both hands in front of the chest is permitted as a clear nationality "
+    "cue, occupying about 12-15% of the image area. The flag is a fabric "
+    "panel with no pole or staff, face squarely toward the viewer. "
     "Absolutely no text, letters, or numbers on the flag itself."
 )
 
@@ -95,259 +111,240 @@ PERSON_ROLE_LOOKUP = {
 }
 
 PERSON_NATIONALITY_HINTS = {
-    # v3.9 全面改訂（v3.8 実機検証フィードバック反映）：
-    #   - v3.8 で「3 option pick ONE（うち option (a) modern X casual）」構造を採ったが、
-    #     Imagen は常に最 safe な (a) を選び、5/7 か国（米・韓・中・スペイン・一部
-    #     ブラジル）が「t-shirt + casual pants + 旗ピン」の同型に収束。文化要素が
-    #     option (b)/(c) にしか無い国（日: wagara/yukata、ベトナム: áo dài）だけ
-    #     成功した。3 option 並列構造そのものが収束の原因。
-    #   - v3.9 で全国「modern X casual」option を撤廃し、必須要素方式に再構成：
-    #     全 option が culturally identifiable element を必ず含む。Imagen は文化
-    #     要素を必ず持つ 1 つを discrete に選ぶ。
-    #   - アメリカ人 "graphic t-shirt" → Imagen が国旗プリント化した実機事故を受け
-    #     "plain solid-color OR non-flag/non-team patterned" に書き換え。
-    #   - ブラジル人 green/yellow football-supporter palette → 旗類似/CBF クレスト
-    #     混入の高リスクを受け option ごと撤去、botanical/linen/woven-craft で再構成。
-    #   - 中国人 / スペイン人 "subtle warm red or yellow accent" → 旗ピン (red+yellow)
-    #     と合わさり旗類似化するため撤去。「avoid red+yellow combination」明示。
-    #   - 普遍 hard_constraint = NATIONAL_SYMBOL_ISOLATION_RULE は
-    #     prompts/master_prompt_design_guide_v3_9.py PART 1.1 に追加済み。
-    #     本辞書はそのルール準拠で書く。
+    # v4.0 (2026-05-22) 全面改訂：
+    #   旧 v3.8〜v3.12 の cultural_styling_hint は (a)/(b)/(c) で modernized
+    #   cultural dress / 伝統 silhouette を主軸としていたが、これがアジア／
+    #   西洋アシンメトリ問題（日中韓越のみ伝統 silhouette / 米伯西は modern
+    #   garment + regional craft accent）を生んでいた。v4.0 では全 7 国とも
+    #   "modern daily casual wear" に統一し、国別 subtle 弁別は silhouette /
+    #   fit / palette tendency / footwear / optional non-hand accessory で行う。
+    #
+    # 伝統 silhouette 禁止（hanbok / qipao / áo dài / yukata / wagara-cut /
+    #   noragi / cheongsam / jeogori / etc.）は universal NO_TRADITIONAL_
+    #   SILHOUETTE_RULE（ガイド PART 1.1 hard_constraints）で集約管理。
+    #   各国 hint には silhouette の positive 記述のみ書く。
+    #
+    # 国旗は両手で胸前で持つ hand-held flag pose で表示されるため、
+    #   accessory は「手以外」（shoulder-strap bag / cap / scarf / wristwatch）
+    #   に限定。各国 hint 末尾で「NO hand-held bag / no hand-held prop」を明示。
+    #
+    # PART 1.4 PROMPT_LITERALIZATION_AVOIDANCE_RULE 準拠：
+    #   palette は「Pick ONE color combination from: ...」(rule_b 適合) で書き、
+    #   「preferred / tendency / may carry」は使わない（modal verbs は omit 信号）。
+    #   garment は MUST で固定し、accessory のみ「Optional non-hand accessory」と
+    #   uppercase MAY 概念で書く（rule_c rule (3) 準拠）。
+    #
+    # apparent_features_hint field は v3.12 で dead code 化（phenotype_for が
+    # 動的計算）→ v4.0 で完全削除。
     "日本人": {
         "flag_shape_and_colors":
-            "white field with a single red circle in the center",
-        "apparent_features_hint":
-            "East Asian phenotype is most common in Japan. Pick ONE specific "
-            "set of features from: (skin tone: fair OR light-medium) + "
-            "(hair: dark straight black, OR dark straight dark-brown, OR "
-            "slightly wavy black). The character may also reflect Japan's "
-            "diverse population including mixed heritage, in which case "
-            "skin tone may extend to medium and hair color may vary.",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            "the actual flag of Japan (Hinomaru): a white rectangular "
+            "field with a single solid red disc/circle centered in the "
+            "middle. ABSOLUTELY no text, letters, numbers, or words "
+            "anywhere on the flag",
         "cultural_styling_hint":
-            # v3.12.1: option (c) yukata を削除。yukata は one-piece の伝統衣装
-            # だが、その後の TWO-COLOR RULE が "top and trousers MUST be in
-            # two clearly different colors" を要求するため、Imagen に矛盾シグナル
-            # （one-piece に対して上下対比を求める）を送っていた。両 (a)(b) は
-            # 2-piece (top + trousers / jacket + inner-top + trousers) なので
-            # TWO-COLOR RULE と整合。yukata 系の文化要素は (a) wagara で
-            # 別 garment 形で表現する。
-            "The outfit MUST include at least one culturally identifiable "
-            "Japanese element. Pick ONE of the following patterns: "
-            "(a) a clean contemporary top with a subtle wagara (traditional "
-            "Japanese geometric or floral) pattern — e.g., asanoha (hemp-leaf), "
-            "seigaiha (wave), shippō (overlapping circles) — worn over simple "
-            "trousers; "
-            "(b) a modern noragi-inspired light jacket (kimono-cut workwear "
-            "silhouette, straight sleeves, wide front overlap with a simple "
-            "tie or button closure) worn over a plain top and trousers. "
-            # v3.10 二色化必須化（旗色 overlap 回避）:
-            "TWO-COLOR RULE: top and trousers MUST be in two clearly "
-            "different colors, NOT a single all-over color. Recommended "
-            "combinations: muted indigo top + cream trousers / sage green "
-            "top + charcoal trousers / soft beige top + muted indigo "
-            "trousers / charcoal noragi + cream inner-top + indigo trousers. "
-            "AVOID flag-like combinations: NEVER white top + solid red "
-            "trousers, NEVER solid red top + white trousers, NEVER a "
-            "large red circle motif centered on a white garment. The flag "
-            "pin already carries the white+red signal.",
+            "The outfit MUST be modern daily casual wear typical of "
+            "contemporary Japan: a plain solid-color slightly oversized "
+            "crew-neck t-shirt OR a plain solid-color button-up shirt, "
+            "layered optionally over a simple plain knit pullover, paired "
+            "with neat tailored trousers or dark jeans. "
+            "Footwear MUST be simple low-profile white or off-white "
+            "canvas sneakers OR plain dark leather loafers. "
+            "Palette: Pick ONE color combination from: muted indigo top + "
+            "cream trousers / charcoal top + warm sand trousers / cream "
+            "top + muted indigo trousers / sage green top + charcoal "
+            "trousers. "
+            "AVOID white top + solid red trousers, AVOID solid red top + "
+            "white trousers, AVOID any large red circle motif centered on "
+            "a white garment (these read as Japanese flag imagery on the "
+            "body — the hand-held flag already carries that signal). "
+            "Optional non-hand accessory: a plain canvas tote bag slung "
+            "by its strap over one shoulder OR a simple wristwatch. NO "
+            "hand-held bag, NO hand-held book, NO hand-held prop of any "
+            "kind (both hands hold the flag).",
     },
     "中国人": {
         "flag_shape_and_colors":
-            "red field with a large yellow star and four smaller yellow stars in the upper-left corner",
-        "apparent_features_hint":
-            "East Asian phenotype is most common in China. Pick ONE specific "
-            "set of features from: (skin tone: fair OR light-medium) + "
-            "(hair: dark straight black, OR dark straight dark-brown). "
-            "China's population spans many regions and ethnic groups, so "
-            "subtle facial variation is appropriate.",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            "the actual flag of the People's Republic of China "
+            "(Five-star Red Flag): a red field with one large yellow "
+            "five-pointed star and four smaller yellow stars in the "
+            "upper-left corner. ABSOLUTELY no text, letters, numbers, "
+            "or words anywhere on the flag",
         "cultural_styling_hint":
-            "The outfit MUST include at least one culturally identifiable "
-            "Chinese element. Pick ONE of the following patterns: "
-            "(a) a modernized cheongsam/qipao-inspired top — a contemporary "
-            "blouse with subtle frog-button closures and a mandarin (stand) "
-            "collar, NOT a full formal qipao — worn with simple modern "
-            "trousers; "
-            "(b) a Tang-jacket-inspired short jacket (stand collar, "
-            "straight-cut front, frog-button or knot closures) over a "
-            "plain top with neat trousers; "
-            "(c) a modern outfit with a clearly Chinese silk-print scarf "
-            "(traditional motif such as cloud, peony, or phoenix in muted "
-            "modern colors) as the cultural accent, worn over a plain blouse "
-            "and trousers. "
-            "Color note: AVOID a red+yellow color combination on the outfit "
-            "(the flag pin already carries that signal). Prefer muted "
-            "earth tones, cream, indigo, cool blue, or soft jade. "
-            # v3.10 二色化必須化:
-            "TWO-COLOR RULE: top and trousers MUST be in two clearly "
-            "different colors (NOT all-over a single color). Recommended "
-            "combinations: soft jade top + cream trousers / indigo top + "
-            "warm sand trousers / cream blouse with indigo frog buttons + "
-            "charcoal trousers / muted dusty rose top + indigo trousers. "
-            "If choosing pattern (c), the silk scarf provides a third "
-            "accent color drawn from cool/earth palette (NOT red+yellow).",
+            "The outfit MUST be modern daily casual wear typical of "
+            "contemporary China: a plain solid-color regular crew-neck "
+            "top OR a plain solid-color button-up shirt with a regular "
+            "(non-mandarin) collar, paired with neat tailored trousers. "
+            "Footwear MUST be simple plain leather loafers OR low-profile "
+            "canvas or leather sneakers. "
+            "Palette: Pick ONE color combination from: soft jade top + "
+            "cream trousers / muted indigo top + warm sand trousers / "
+            "cream top + charcoal trousers / muted dusty rose top + "
+            "indigo trousers. "
+            "AVOID any red + yellow color combination on the outfit "
+            "(the Chinese flag uses red + yellow — the hand-held flag "
+            "already carries that signal). "
+            "Optional non-hand accessory: a thin minimalist wristwatch "
+            "OR a small plain leather messenger bag slung by its strap "
+            "over one shoulder. NO hand-held bag, NO hand-held prop of "
+            "any kind (both hands hold the flag).",
     },
     "アメリカ人": {
         "flag_shape_and_colors":
-            "red and white horizontal stripes with a small blue corner of white star shapes",
-        "apparent_features_hint":
-            "The United States population is highly diverse. Pick ONE "
-            "specific set of features from: (skin tone: fair, light-medium, "
-            "olive, brown, or deep brown) + (hair color: black, dark-brown, "
-            "brown, blond, or red) + (hair texture: straight, wavy, or "
-            "curly). All combinations are valid.",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            "the actual flag of the United States of America (Stars "
+            "and Stripes): alternating red and white horizontal "
+            "stripes covering the full flag, with a blue rectangular "
+            "canton in the upper-left corner containing white five-"
+            "pointed stars arranged in rows. ABSOLUTELY no text, "
+            "letters, numbers, or words anywhere on the flag",
         "cultural_styling_hint":
-            "The outfit MUST include at least one culturally identifiable "
-            "American element drawn from American daily-wear heritage. "
-            "Pick ONE of the following patterns: "
-            "(a) American workwear-heritage casual — a denim or canvas chore "
-            "coat (work jacket with patch pockets) over a plain crew-neck "
-            "t-shirt with straight-leg jeans and work-style boots or "
-            "sneakers; "
-            "(b) American flannel-shirt casual — a plaid or check flannel "
-            "button-up shirt (a non-national, non-team check pattern) worn "
-            "open over a plain solid-color t-shirt, with jeans or chinos; "
-            "(c) American varsity/collegiate casual — a varsity-cut letterman-"
-            "style jacket (NO team logo, NO letter on the chest, NO flag "
-            "motif; just the silhouette: wool body, contrast leather sleeves, "
-            "ribbed collar/cuffs/hem) over a plain t-shirt with jeans. "
-            "T-shirt rule: any t-shirt MUST be a plain solid color OR have "
-            "a small abstract / botanical / geometric print that is "
-            "explicitly NOT a flag, NOT a national symbol, and NOT a team "
-            "logo (per NATIONAL_SYMBOL_ISOLATION_RULE).",
+            "The outfit MUST be modern daily casual wear typical of "
+            "the contemporary United States: a plain solid-color crew-"
+            "neck t-shirt under an unbuttoned chore coat (work jacket "
+            "with patch pockets) OR a plaid / check button-up flannel "
+            "shirt worn open over a plain solid-color t-shirt, paired "
+            "with straight-leg jeans or chinos. "
+            "Any plaid / check MUST be a non-flag, non-team check "
+            "pattern in muted earth tones. The t-shirt MUST be a plain "
+            "solid color with NO graphic, NO logo, NO print (per "
+            "NATIONAL_SYMBOL_ISOLATION_RULE). "
+            "Footwear MUST be simple canvas sneakers OR plain work-"
+            "style leather boots. "
+            "Palette: Pick ONE color combination from: cream tee + muted "
+            "indigo coat + charcoal jeans / muted sand flannel + plain "
+            "white tee + dark jeans / muted olive chore coat + cream tee "
+            "+ charcoal chinos. "
+            "Optional non-hand accessory: a plain solid-color baseball-"
+            "style cap with NO logo, NO team emblem, NO flag motif OR a "
+            "simple wristwatch. NO hand-held bag, NO hand-held prop of "
+            "any kind (both hands hold the flag).",
     },
     "韓国人": {
         "flag_shape_and_colors":
-            "white field with a red-and-blue circle and black trigram marks",
-        "apparent_features_hint":
-            "East Asian phenotype is most common in Korea. Pick ONE specific "
-            "set of features from: (skin tone: fair OR light) + "
-            "(hair: dark straight black, OR dark straight dark-brown, often "
-            "styled neatly).",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            "the actual flag of South Korea (Taegukgi): a white "
+            "rectangular field with the red-and-blue Taegeuk circle "
+            "centered in the middle, and four black trigrams (one in "
+            "each corner of the flag). ABSOLUTELY no text, letters, "
+            "numbers, or words anywhere on the flag",
         "cultural_styling_hint":
-            "The outfit MUST include at least one culturally identifiable "
-            "Korean element. Pick ONE of the following patterns: "
-            "(a) a hanbok-inspired modern top — a soft empire-waist line "
-            "with a high cropped jeogori-style bodice and gently flowing "
-            "lower hem, in a non-festival modern muted color palette — "
-            "worn with simple modern trousers as daily wear (NOT a "
-            "ceremonial hanbok); "
-            "(b) contemporary K-fashion structured outerwear with a "
-            "distinctly Korean silhouette — a long oversized minimalist "
-            "trench-style coat or a clean-line modern blazer with sharp "
-            "shoulders, over a plain top with neat trousers and clean "
-            "modern sneakers or loafers; "
-            "(c) a modern outfit incorporating a clearly hanbok-inspired "
-            "accent — a wrap-front blouse with a single fabric ribbon-tie "
-            "(otgoreum-inspired) at the chest in a contrasting muted color, "
-            "worn with simple trousers. "
-            # v3.10 二色化必須化:
-            "TWO-COLOR RULE: top and trousers MUST be in two clearly "
-            "different colors (NOT all-over a single color). For pattern "
-            "(a), the jeogori top should be one color and the trousers "
-            "another — recommended: soft sage jeogori + cream trousers / "
-            "muted dusty rose jeogori + charcoal trousers / pale indigo "
-            "jeogori + warm sand trousers. For pattern (c), the otgoreum "
-            "ribbon-tie should be in a clearly contrasting third color "
-            "(e.g., cream blouse + indigo ribbon + charcoal trousers). "
-            "For pattern (b), the trench/blazer and the trousers underneath "
-            "should differ in value (e.g., cream coat + charcoal trousers, "
-            "or indigo coat + warm sand trousers).",
+            "The outfit MUST be modern daily casual wear typical of "
+            "contemporary K-fashion: a clean minimalist oversized trench-"
+            "style coat OR a sharp-shouldered modern blazer worn open "
+            "over a plain solid-color crew-neck top, paired with neat "
+            "straight-leg trousers. "
+            "Footwear MUST be clean low-profile leather sneakers OR "
+            "plain dark leather loafers. "
+            "Palette: Pick ONE color combination from: cream coat + "
+            "charcoal top + dark trousers / muted dusty rose blazer + "
+            "cream top + charcoal trousers / pale indigo coat + warm "
+            "sand top + charcoal trousers / muted olive coat + cream "
+            "top + warm sand trousers. "
+            "Optional non-hand accessory: a small structured plain "
+            "leather crossbody bag slung by its strap over one shoulder "
+            "OR a minimalist wristwatch. NO hand-held bag, NO hand-held "
+            "prop of any kind (both hands hold the flag).",
     },
     "ブラジル人": {
         "flag_shape_and_colors":
-            "green field with a yellow diamond and a small blue circle in the center",
-        "apparent_features_hint":
-            "Brazil's population is highly diverse, reflecting European, "
-            "African, Indigenous, and Asian heritage. Pick ONE specific set "
-            "of features from: (skin tone: fair, light-medium, olive, "
-            "brown, or deep brown) + (hair color: black or brown) + "
-            "(hair texture: straight, wavy, curly, or tightly coiled).",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            # NO_TEXT 強制で "Ordem e Progresso" 帯のテキスト描画を回避。
+            "the actual flag of Brazil (Bandeira do Brasil): a green "
+            "field with a large yellow rhombus/diamond in the center, "
+            "containing a blue celestial sphere with white stars and "
+            "a horizontal curved white band across the middle of the "
+            "blue circle. ABSOLUTELY no text, letters, numbers, or "
+            "words anywhere on the flag — even though the actual "
+            "Brazilian flag contains the motto 'Ordem e Progresso' on "
+            "the white band, render the band as completely blank "
+            "white with no text on it",
         "cultural_styling_hint":
-            "The outfit MUST include at least one culturally identifiable "
-            "Brazilian element drawn from daily life (NOT football/team "
-            "colors). Pick ONE of the following patterns: "
-            "(a) a Brazilian botanical-print short-sleeve top — a relaxed-fit "
-            "shirt or blouse with a tropical leaf/palm/floral print in "
-            "earthy natural tones (terracotta, sand, sage, muted indigo — "
-            "EXPLICITLY NOT green-and-yellow national-team colors) — worn "
-            "with light trousers and casual sandals or canvas sneakers; "
-            "(b) Brazilian beach-town linen layering — a loose breathable "
-            "linen camp-collar shirt worn open over a plain tank top with "
-            "light drawstring trousers and havaianas-style flat sandals; "
-            "(c) a modern everyday outfit accented with Brazilian artisan "
-            "craft — a plain solid-color top and trousers paired with a "
-            "small visible braided/woven cord bracelet or beaded accessory "
-            "(fita-do-bonfim-inspired wish-ribbon style, in muted earth "
-            "tones, NOT national flag colors) as the cultural accent. "
-            "Color note: AVOID green + yellow as the dominant garment "
-            "palette (the flag pin already carries that signal and the "
-            "combination reads as a national-team uniform).",
+            "The outfit MUST be modern daily casual wear typical of "
+            "contemporary Brazil: a relaxed-fit lightweight linen camp-"
+            "collar button-up shirt worn open over a plain solid-color "
+            "tank top or short-sleeve t-shirt OR a relaxed short-sleeve "
+            "top with a small subtle botanical print (tropical leaf or "
+            "palm or floral in muted earth tones), paired with light "
+            "cotton or linen trousers. "
+            "Footwear MUST be simple canvas sneakers OR plain flat "
+            "leather sandals. "
+            "Palette: Pick ONE color combination from: terracotta tee + "
+            "cream linen shirt + muted indigo trousers / sand-colored "
+            "botanical-print top + cream trousers / muted sage linen "
+            "shirt + cream tee + warm sand trousers. "
+            "AVOID any green + yellow color combination on the outfit "
+            "(the Brazilian flag uses green + yellow — the hand-held "
+            "flag already carries that signal, and the combination "
+            "reads as national-team uniform). "
+            "Optional non-hand accessory: a small woven cord or bead "
+            "bracelet in muted earth tones (NEVER in flag colors). NO "
+            "hand-held bag, NO hand-held prop of any kind (both hands "
+            "hold the flag).",
     },
     "ベトナム人": {
         "flag_shape_and_colors":
-            "red field with a single large yellow star in the center",
-        "apparent_features_hint":
-            "Southeast Asian phenotype is most common in Vietnam. Pick ONE "
-            "specific set of features from: (skin tone: light-medium OR "
-            "medium OR olive) + (hair: straight black, OR straight "
-            "dark-brown).",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            "the actual flag of Vietnam (Cờ đỏ sao vàng): a red "
+            "rectangular field with a single large yellow five-pointed "
+            "star centered in the middle. ABSOLUTELY no text, letters, "
+            "numbers, or words anywhere on the flag",
         "cultural_styling_hint":
-            "The outfit MUST include at least one culturally identifiable "
-            "Vietnamese element. Pick ONE of the following patterns: "
-            "(a) a modern everyday áo dài — a long-tunic top reaching "
-            "mid-thigh to knee with a mandarin (stand) collar and side "
-            "slits, worn over loose trousers as daily wear (NOT a "
-            "ceremonial / festival áo dài, NOT with elaborate embroidery); "
-            "(b) a modernized áo bà ba-inspired outfit — a simple "
-            "lightweight cotton tunic with side splits over loose drawstring "
-            "trousers, traditionally Southern Vietnamese daily wear "
-            "modernized for contemporary urban use; "
-            "(c) a modern outfit accented with a Vietnamese non-conical "
-            "woven straw or rattan crossbody bag (clearly Vietnamese craft "
-            "object, NOT a tourist nón lá conical hat) worn over a simple "
-            "linen blouse with light trousers. "
-            "Color note: AVOID a red top with a single yellow ornament "
-            "centered on the chest (that reads as the Vietnamese flag). "
-            # v3.10 二色化必須化（áo dài は伝統的に body と trousers が別色）:
-            "TWO-COLOR RULE: the áo dài or áo bà ba body and the trousers "
-            "underneath MUST be in two clearly different colors — this is "
-            "traditional and authentic (a single all-over color reads as "
-            "uniform, not daily wear). Recommended combinations: soft "
-            "jade áo dài + cream trousers / pale indigo áo dài + warm sand "
-            "trousers / muted dusty rose áo dài + cream trousers / cream "
-            "áo bà ba + indigo trousers. AVOID red áo dài + yellow trousers "
-            "(flag-like).",
+            "The outfit MUST be modern daily casual wear typical of "
+            "contemporary Vietnam: a plain solid-color short-sleeve "
+            "crew-neck t-shirt OR a simple lightweight short-sleeve "
+            "button-up blouse with a regular (non-mandarin) collar, "
+            "paired with neat lightweight trousers. "
+            "Footwear MUST be simple canvas sneakers OR plain flat "
+            "leather sandals. "
+            "Palette: Pick ONE color combination from: soft jade top + "
+            "cream trousers / pale indigo top + warm sand trousers / "
+            "cream blouse + muted indigo trousers / muted dusty rose "
+            "top + cream trousers. "
+            "AVOID red top with any single yellow ornament centered on "
+            "the chest (that reads as Vietnamese flag imagery on the "
+            "body — the hand-held flag already carries that signal). "
+            "Optional non-hand accessory: a small woven rattan or "
+            "lightweight canvas crossbody bag slung by its strap over "
+            "one shoulder OR a simple wristwatch. NO tourist nón lá "
+            "conical hat. NO hand-held bag, NO hand-held prop of any "
+            "kind (both hands hold the flag).",
     },
     "スペイン人": {
         "flag_shape_and_colors":
-            "red and yellow horizontal stripes with the yellow band twice as wide as each red band",
-        "apparent_features_hint":
-            "Mediterranean European phenotype is most common in Spain. "
-            "Pick ONE specific set of features from: (skin tone: fair, "
-            "light-medium, or olive-tan) + (hair color: black, dark-brown, "
-            "or occasionally lighter brown) + (hair texture: straight or "
-            "wavy).",
+            # v4.0.3 (FLAG_SHAPE_DETAIL_RULE 3-layer invoke 方針・2026-05-22):
+            # v4.0.2 の exhaustive geometric specification（escutcheon shape +
+            # vertical division line 等）が nanobanana-suboptimal だったため、
+            # invoke 方式に変更。1:2:1 比率は load-bearing なので明示維持。
+            "the actual flag of Spain (Bandera de España): three "
+            "horizontal bands red-yellow-red with the middle yellow "
+            "band twice as tall as each red band (1:2:1 proportion), "
+            "and the Spanish coat-of-arms positioned on the yellow "
+            "band toward the left side. ABSOLUTELY no text, letters, "
+            "numbers, or words anywhere on the flag",
         "cultural_styling_hint":
-            "The outfit MUST include at least one culturally identifiable "
-            "Spanish/Iberian element. Pick ONE of the following patterns: "
-            "(a) Spanish summer espadrille casual — a loose-fit linen "
-            "button-up shirt with rolled sleeves over a plain tee with "
-            "light chinos and visible woven jute-soled espadrilles (clearly "
-            "espadrilles, the iconic Spanish/Catalan footwear) — the "
-            "espadrille is the cultural anchor; "
-            "(b) Andalusian-inspired draped casual — a draped flowing top "
-            "with subtle geometric Moorish-inspired trim/edging (small "
-            "tile-pattern accent at the hem or sleeve, in muted earthy "
-            "tones), worn with wide trousers and minimalist leather "
-            "sandals; "
-            "(c) a modern outfit accented with a clearly Spanish manton-"
-            "inspired fringed shawl or scarf draped over one shoulder "
-            "(traditional Spanish embroidered shawl silhouette modernized "
-            "in solid muted color with a single visible fringed edge), "
-            "worn over a plain top and trousers. "
-            "Color note: AVOID a red+yellow color combination on the "
-            "outfit (the flag pin already carries that signal). Prefer "
-            "muted earth tones, terracotta, cream, indigo, or cool blue.",
+            "The outfit MUST be modern daily casual wear typical of "
+            "contemporary Spain: a relaxed-fit lightweight linen or "
+            "cotton button-up shirt with rolled sleeves worn open over "
+            "a plain solid-color t-shirt, paired with light chinos. "
+            "Footwear MUST be simple plain canvas flat sneakers OR plain "
+            "leather low-profile loafers. (NO woven jute-rope traditional "
+            "espadrille sole, NO traditional regional footwear of any "
+            "country.) "
+            "Palette: Pick ONE color combination from: cream tee + muted "
+            "indigo linen shirt + warm sand chinos / terracotta tee + "
+            "cream linen shirt + charcoal chinos / muted sage linen "
+            "shirt + cream tee + warm sand chinos. "
+            "AVOID any red + yellow color combination on the outfit "
+            "(the Spanish flag uses red + yellow — the hand-held flag "
+            "already carries that signal). "
+            "Optional non-hand accessory: sunglasses pushed up on top "
+            "of the head OR a thin lightweight modern scarf draped over "
+            "the neck (NOT a manton-style traditional fringed shawl). "
+            "NO hand-held bag, NO hand-held prop of any kind (both "
+            "hands hold the flag).",
     },
 }
 
@@ -365,10 +362,15 @@ def classify_person(word):
 
 
 # ─────────────────────────────────────────────────────────────
-# v3.12 universal rule data tables（プロンプトガイド PART 1.5/1.6/1.7 参照）
+# universal rule data tables（プロンプトガイド PART 1.5/1.6/1.7 参照）
+# v3.12 (3 universal rules 導入) → v4.0 (PART 1.6 退役・PART 1.7 簡素化)
 # ─────────────────────────────────────────────────────────────
 
 # PART 1.5 PHENOTYPE_SPECIFICATION_RULE データ群
+# v4.0 (2026-05-22): PART 1.5 rule_e palette_freeze を継続。major-version
+# migration の機会だったが、phenotype 変更の必然性が無いため
+# PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE / ROLE_PHENOTYPE_PALETTE /
+# PHENOTYPE_SALT すべて v3.12 から不変。reproducibility 維持。
 #
 # PHENOTYPE_PROFILES (7 entries・各 1 文の concrete 記述)
 #   rule_b 準拠で skin tone / hair に隣接 2 段階までの range を含めて良い。
@@ -431,40 +433,24 @@ ROLE_PHENOTYPE_PALETTE = [
 
 # PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE データ
 #
-# TRADITIONAL_DRESS_PATTERN_LOOKUP (country → 1 つの concrete English pattern)
-#   rule_c (English motif names only) 準拠：kanji / hangul / 非ラテン文字を含めない。
-#   rule_e (modern_styles_exempt) 準拠：modern 衣装中心の country は entry 不要。
-#   v3.12 では 4 Asian countries のみ entry を持つ（cultural silhouette が
-#   plain solid color に倒れやすい順）。残り 3 国は cultural_styling_hint 自体に
-#   modern pattern が組み込まれているため exempt。
-TRADITIONAL_DRESS_PATTERN_LOOKUP = {
-    "日本人":
-        "a subtle wagara textile pattern (asanoha hemp-leaf or seigaiha "
-        "wave motif, woven in a tone-on-tone contrast)",
-    "韓国人":
-        "fine traditional Korean embroidery — a crane or pine-branch "
-        "motif worked in a single contrasting thread color along the "
-        "collar edge or cuff",
-    "中国人":
-        "a small traditional Chinese embroidered motif (peony or "
-        "plum-blossom) worked at the chest or shoulder of the garment",
-    "ベトナム人":
-        "a thin contrasting embroidered border running along the collar, "
-        "cuff, and side-slit hem of the garment",
-}
+# v4.0 (2026-05-22) で退役。v3.12 では 4 Asian countries の伝統 silhouette に
+# 1 つの visible textile pattern を MUST 含める rule を実装していたが、v4.0 で
+# 伝統 silhouette 自体が NO_TRADITIONAL_SILHOUETTE_RULE で禁止されたため、
+# lookup が適用される situation が原理的に消滅。
+# TRADITIONAL_DRESS_PATTERN_LOOKUP / pattern_for(word) は削除。
+# 旧データは archive/prompts/master_prompt_design_guide_v3_12.py / 旧
+# build_prompts.py git history 参照。
 
 # PART 1.7 FLAG_PLACEMENT_RULE データ
 #
-# FLAG_PLACEMENT_OPTIONS (4 entries・既存衣服に乗る選択肢のみ)
-#   rule_a (garment_only) 準拠：hat / bag / book / shoe は含まない。
-#   選択：sha256(word + 'flag-placement') mod 4。
-#   各 entry は subject_block_pattern の {FLAG_PLACEMENT} に直挿し可能な
-#   完結した前置詞句として書く（"is positioned {FLAG_PLACEMENT} as a ..."）。
+# v4.0 (2026-05-22) で簡素化。v3.12 では 4 entry × sha256 mod 4 の deterministic
+# 選択だったが、v4.0 では全員固定 pose（hand-held flag in both hands in front of
+# the chest）になり、placement 選択肢が原理的に 1 つに収束。
+# FLAG_PLACEMENT_OPTIONS は 1 entry の list として保持（_deterministic_pick の API
+# 互換性のため）。flag_placement_for(word) は word に依らず同じ文字列を返す。
 FLAG_PLACEMENT_OPTIONS = [
-    "as a circular pin on the left chest of the outer garment",
-    "as a circular pin on the right chest near the collar",
-    "as a small rectangular cloth patch on the right upper sleeve",
-    "as a small rectangular cloth patch on the left upper sleeve near the shoulder",
+    "in both hands in front of the chest, at about chest-to-upper-waist "
+    "height, both arms bent at the elbows",
 ]
 
 
@@ -517,17 +503,13 @@ def phenotype_for(word):
     return _deterministic_pick(word, ROLE_PHENOTYPE_PALETTE, PHENOTYPE_SALT)
 
 
-def pattern_for(word):
-    """PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE 準拠で word に対応する
-    textile pattern 文字列を返す。lookup に entry が無ければ None
-    (rule_e modern_styles_exempt)。
-    """
-    return TRADITIONAL_DRESS_PATTERN_LOOKUP.get(word)
-
-
 def flag_placement_for(word):
-    """PART 1.7 FLAG_PLACEMENT_RULE 準拠で word に対応する flag 位置記述を返す。
-    必ず FLAG_PLACEMENT_OPTIONS から 1 つ選ぶ (sha256 mod 4)。
+    """PART 1.7 FLAG_PLACEMENT_RULE (v4.0 簡素化版) 準拠で word に対応する
+    flag 位置記述を返す。v4.0 では全員固定 pose（hand-held flag in both hands
+    in front of the chest）のため、word に依らず FLAG_PLACEMENT_OPTIONS[0] を
+    返す。_deterministic_pick 経由で呼び出すことで v3.12 と同じ API
+    signature を維持（FLAG_PLACEMENT_OPTIONS が 1 entry の場合 index 0 が必ず
+    選択される）。
     """
     return _deterministic_pick(word, FLAG_PLACEMENT_OPTIONS, "flag-placement")
 
@@ -594,13 +576,10 @@ def compose_nationality_subject(g, word, flag_shape_and_colors, cultural_styling
     phenotype_sentence = (
         f"Apparent features: {phenotype_for(word)}."
     )
-    pattern = pattern_for(word)
-    if pattern:
-        cultural_styling_hint = (
-            cultural_styling_hint
-            + f" TRADITIONAL DRESS PATTERN (v3.12 PART 1.6): the garment MUST "
-              f"visibly include {pattern}."
-        )
+    # v4.0 (2026-05-22): pattern_for(word) append 処理を削除（PART 1.6 退役）。
+    # 旧 v3.12 では伝統 silhouette を持つアジア 4 か国に textile pattern を
+    # cultural_styling_hint 末尾に append していたが、v4.0 で伝統 silhouette
+    # が全国禁止されたため不要。
     flag_placement = flag_placement_for(word)
     return (g.NATIONALITY_NOUN_POLICY["subject_block_pattern"]
             .replace("{FLAG_SHAPE_AND_COLORS}", flag_shape_and_colors)
@@ -610,8 +589,11 @@ def compose_nationality_subject(g, word, flag_shape_and_colors, cultural_styling
 
 
 def compose_nationality_pose():
-    return ("Neutral approachable expression, relaxed standing pose with both feet flat "
-            "on the ground, arms naturally at the sides")
+    # v4.0 (2026-05-22): 両手で flag を胸前で持つ pose へ書き換え。
+    # 旧 v3.12: "arms naturally at the sides" → v4.0 と直接矛盾。
+    return ("Neutral approachable expression, standing pose with both "
+            "feet flat on the ground, both arms bent at the elbows "
+            "holding a hand-held flag in front of the chest")
 
 
 def render_person(g, entry, kind, sub):
@@ -761,12 +743,12 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v3_12.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v4_0.json"
     )
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v3.12",
+            "guideVersion": "v4.0",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
@@ -778,10 +760,13 @@ def main():
                       "（役割系5＋国籍系7）。他 vocab_type のエントリは出力に含まない。"
                       " サブカテゴリ（role/nationality）は scripts/build_prompts.py 内"
                       " の PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS で解決する。"
-                      " v3.12: 3 universal rules (PART 1.5 PHENOTYPE_SPECIFICATION_RULE / "
-                      "PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE / PART 1.7 FLAG_PLACEMENT_RULE) "
-                      "を実装。phenotype / pattern / flag-placement は word hash + lookup で "
-                      "deterministic に解決。"),
+                      " v4.0 (2026-05-22) major-version pivot: 全国共通 modern daily "
+                      "casual wear + 国旗両手持ち（hand-held flag in both hands in front "
+                      "of the chest）。PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE は退役、"
+                      "PART 1.7 FLAG_PLACEMENT_RULE は簡素化（全員固定 pose）、伝統 "
+                      "silhouette 禁止は universal NO_TRADITIONAL_SILHOUETTE_RULE "
+                      "（ガイド PART 1.1 hard_constraints）で集約。phenotype は引き続き "
+                      "PART 1.5 PHENOTYPE_SPECIFICATION_RULE 経由で word hash deterministic 解決。"),
         },
         "vocabulary": rendered,
     }
