@@ -39,16 +39,29 @@
 
 ### スコープ（`docs/MIGRATION_PLAN.md` § Phase 5 ④' 改訂版を SSOT として参照）
 
-1. **ガイド reorganize**：`prompts/master_prompt_design_guide_v4_X.py` を以下 5 部構成に再編
-   - PART 1: Universal Rules（不変規律・既存 PART 1.1〜1.10 をそのまま）
-   - PART 2: STYLE_BIBLE
-   - PART 3: PROMPT_TEMPLATES（既存 10 種・骨格）
-   - PART 4: **Vocabulary Reference Appendix（新セクション）** ← 既存の
-     PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP / ROLE_BASED_GENERIC_PROFILES /
-     BUILDING_CUES / OBJECT_SIGNATURES / ABSTRACT_METAPHORS / PHENOTYPE_PROFILES /
-     COUNTRY_TO_PROFILE / ROLE_PHENOTYPE_PALETTE 等を **Python 辞書から Markdown 風
-     reference として転記**。中身（実機検証で得た知識）は完全保全
-   - PART 5: Output Instructions（LLM への出力指示・preflight 制約等）
+1. **ガイド reorganize**：`prompts/master_prompt_design_guide_v4_X.py` を以下 **6 部構成**に再編（user 提案 2026-05-22）
+   - PART 1: **Universal Rules**（全 vocab_type 共通の不変規律）
+     - 既存 PART 1.1 NO_TRADITIONAL_SILHOUETTE / 1.5 PHENOTYPE_SPECIFICATION /
+       1.8 FACIAL_FEATURES / 1.10 HEAD_BODY_PROPORTION / FOOTWEAR_RULE はそのまま
+     - **NATIONAL_SYMBOL_ISOLATION_RULE を新規追加**（旧 PERSON_NATIONALITY_HINTS の
+       「服に国旗色を再現しない」原則を vocab_type 横断ルールとして抽出）
+   - PART 2: **STYLE_BIBLE**（色 / 線 / 質感）
+   - PART 3: **vocab_type 別ルール（新セクション）** ← user 提案の核心
+     - 3.person / 3.building / 3.object_concrete / 3.action_verb / 3.adjective /
+       3.abstract_concept / 3.demonstrative_kosoado / 3.spatial_relation /
+       3.example_sentence
+     - 各 vocab_type 固有のルール（aspect ratio / camera / pose / strategy 選択基準 等）
+       を独立セクション化。今 PROMPT_TEMPLATES の自然文に inline 埋め込みされている
+       ルールを抽出して整理
+   - PART 4: **PROMPT_TEMPLATES**（骨格・placeholder のみ）
+     - 詳細ルールを inline 化せず、PART 1+2+3 を参照する形に簡素化
+   - PART 5: **Vocabulary Reference Appendix（新セクション）**
+     - 既存の PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP /
+       ROLE_BASED_GENERIC_PROFILES / BUILDING_CUES / OBJECT_SIGNATURES /
+       ABSTRACT_METAPHORS / PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE /
+       ROLE_PHENOTYPE_PALETTE 等を **Python 辞書から Markdown 風 reference として転記**
+     - 中身（実機検証で得た word 固有の知識）は完全保全
+   - PART 6: **Output Instructions**（LLM への出力指示・preflight 制約等）
 
 2. **Claude Code スキル定義**：`.claude/skills/generate-image-prompt.md` 新規作成
    - 入力：words（単数 or 複数）/ mode（daily-pull / explicit / chain）/ limit

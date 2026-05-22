@@ -405,20 +405,41 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   - 累積：20 件/日 × 365 = 7,200 件/年 + chain 分 → 1-2 年で ~17,000 件カバー想定
 
   **worktree (Phase 5 ④' 専用 fresh worktree) スコープ：**
-  - ガイドを 5 部構成に reorganize：PART 1 Universal Rules / PART 2 STYLE_BIBLE /
-    PART 3 PROMPT_TEMPLATES / **PART 4 Vocabulary Reference Appendix（新規）** /
-    PART 5 Output Instructions
-  - PART 4 = 既存 PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP /
-    ROLE_BASED_GENERIC_PROFILES / BUILDING_CUES / OBJECT_SIGNATURES /
-    ABSTRACT_METAPHORS / PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE /
-    ROLE_PHENOTYPE_PALETTE 等を **Python 辞書から Markdown 風 reference として転記**
-    （中身は完全保全 — 何時間も実機検証で得た知識を無駄にしない）
+  - ガイドを **6 部構成**に reorganize（user 提案 2026-05-22）：
+    - PART 1: Universal Rules（全 vocab_type 共通）
+      - 既存 PART 1.1〜1.10 + FOOTWEAR
+      - **NATIONAL_SYMBOL_ISOLATION_RULE 新規追加**（旧 PERSON_NATIONALITY_HINTS
+        の「服に国旗色を再現しない」原則を抽出して universal 化）
+    - PART 2: STYLE_BIBLE
+    - PART 3: **vocab_type 別ルール（新規セクション）** ← user 提案の核心
+      - 3.person / 3.building / 3.object_concrete / 3.action_verb / 3.adjective /
+        3.abstract_concept / 3.demonstrative_kosoado / 3.spatial_relation /
+        3.example_sentence の独立サブセクション
+      - 各 vocab_type 固有のルール（aspect ratio / camera / pose / strategy
+        選択基準 等）を、今 PROMPT_TEMPLATES の自然文に inline 埋め込みされて
+        いるものから抽出して整理
+    - PART 4: PROMPT_TEMPLATES（骨格・placeholder のみ・rule 詳細は PART 1+2+3 から参照）
+    - PART 5: **Vocabulary Reference Appendix（新規セクション）**
+      - 既存 PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP /
+        ROLE_BASED_GENERIC_PROFILES / BUILDING_CUES / OBJECT_SIGNATURES /
+        ABSTRACT_METAPHORS / PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE /
+        ROLE_PHENOTYPE_PALETTE 等を **Python 辞書から Markdown 風 reference として転記**
+      - 中身は完全保全（実機検証で得た知識を無駄にしない）
+    - PART 6: Output Instructions（LLM 用出力指示 + preflight 制約）
   - `.claude/skills/generate-image-prompt.md` スキル定義新規作成
   - preflight 関数群を `scripts/lib/prompt-preflight.py` に切り出して skill から bash 経由で呼べる構造化
   - chain mode：スキル内で `npm run generate-images` を bash 起動して Gemini 画像生成と連結
   - lesson_01 で skill を手動 invoke して 17 件 + 例文 15 件の prompt 生成 →
     決定論版出力との品質比較
   - `invariants.mjs` の B hash を新ガイド hash に更新
+
+  **PART 1-6 構造の目的：**
+  - 現状は vocab_type 固有ルールが PROMPT_TEMPLATES の自然文に inline 埋め込み
+    → Claude (skill) が機械的に解釈しづらい / ルール変更時に template grep が必要
+  - vocab_type 別独立セクション化で：Claude が階層的に読める / ルール変更が局所化 /
+    新 vocab_type 追加 hurdle 低減
+  - Python 辞書から Markdown 風 reference への形式変更：Claude が直接 Read できる /
+    更新が容易 / 知識（中身）は完全保全
 
   **完了条件：**
   - `.claude/skills/generate-image-prompt.md` invoke 可能
