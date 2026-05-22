@@ -5,9 +5,11 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-22（**Phase 5 ④ B 部分実装・RPD 10K 枯渇で日跨ぎ pause**：
-`--classify` mode 実装完了・smoke 100 件 PASS・production 9,242 件まで分類済。
-残り 8,149 件は Tier 1 RPD 10K リセット待ち→翌日同コマンドで自動 resume）
+**最終更新：** 2026-05-22（**Phase 5 ④ A pivot + B partial 統合 merge**：worktree
+phase5-example-prompts を main へ merge。worktree A は Q1A/Q2A 保全・Q3B は dead
+code 化・**Phase 5 ④' = `/generate-image-prompt` skill 方式へ pivot**。main B は
+本セッションで `--classify` 実装 + 9,342 件 typed まで進行・残 8,149 件は RPD リセット
+後 resume。両 track は独立並行で進む）
 
 ---
 
@@ -15,116 +17,127 @@
 
 - **Phase 0／1／2／3／4：完了** ✅
 - **Phase 5 ①／②／③：完了** ✅
-- **v4.0 マスタープロンプトガイド：実装・取り込み完了** ✅
-  - B hash `5338c98aab5d` / commit `1a42cd4`+`dcf76d5` / nationality 7 + role 5 PNG 生成済
-  - `word_ベトナム人.png` のみ flag size 異常で手動再生成・差し替え済（`763a6d5`）
-- **Phase 5 ④：並行スコープ確定（2026-05-22）** — worktree + 別 main 2 セッション並行
-  - **B（main / Gemini 分類）：53% 完了** 🆕 — `--classify` mode 実装済・catalog に
-    9,342 件 vocab_type 付与済（high 8,522 / medium 809 / low 11）・残り 8,149 件は
-    Tier 1 RPD 10K 枯渇で日跨ぎ resume（翌日同コマンドで自動再開）
-  - **A（worktree / 例文 template）：未着手**（user が起動）
-- **Phase 5 ⑤／⑥：未着手** — ④ 完了後
-- **Phase 4 後 backlog**：v3.12 修正候補 1-6 / flag size 均一化 retire 済。残り 436 件本生成 / 画像 QC 仕様 / scene-rich テンプレ A2 設計 等は残置
-- **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
+- **v4.0 → v4.1 マスタープロンプトガイド：取り込み完了** ✅
+  - B hash `891b73f5ae2d`（v4.1 = v4.0 + example_sentence template に FACIAL_FEATURES
+    / HEAD_BODY_PROPORTION / FOOTWEAR_RULE inline 追加）
+- **Phase 5 ④ worktree A：完了 + 部分 deprecate** ✅⚠️
+  - Q1 A（example_sentence inline）/ Q2 A（`scripts/transcribe-lesson-vocab-types.mjs`）
+    / preflight ロジック / v4.1 hash：**保全**
+  - Q3 B（`build_prompts.py` の全 vocab_type dispatch / render_*）：**dead code 化**
+    （④' skill 方式に置換予定・git 履歴として残置）
+- **Phase 5 ④ main B：53% 完了** 🆕
+  - `--classify` mode 実装済（commit `0830fd1`）
+  - catalog に **9,359 件 vocab_type 付与**（lesson_01 17 件 worktree A 由来 +
+    9,342 件 Gemini 由来）・残り 8,149 件は **RPD 10K リセット待ち**
+  - 信頼度：high 8,539 / medium 809 / low 11 / WARN 336（all classified_as_other）
+- **Phase 5 ④' = アーキテクチャ pivot 後の本格実装：未着手** 🆕
+- **Phase 5 ⑤／⑥：未着手** — ④（A 完了済）+ ④' + B 全完了後
+- **Phase 4 後 backlog**：残置
+- **Phase 3 後 backlog**：着手保留
 
-生存中の GAS 自動 trigger：**0 件**（Phase 4 完了時点・人間検証済 2026-05-21）。
-残存 GAS は手動実行用 `seedLesson01` / `extractFromGoiList` / `importFromLessonJson`
-の 3 系統のみ（Phase 5 ⑥ で退役予定）。
+生存中の GAS 自動 trigger：**0 件**。残存 GAS は手動実行用 3 系統のみ。
 
 ---
 
-## active（並行 2 系統）
+## active（独立並行 2 track）
 
-### A. worktree (example-prompts) — 配線 + 例文 template v4.0 化
+### Track 1：main session — B 残 8,149 件 resume
 
-**担当**：`.claude/worktrees/example-prompts` 内 別 Claude Code セッション
-**ブランチ**：`phase5-example-prompts`
+**着手タイミング**：Tier 1 RPD 10K リセット後（PT 0:00 = JST 17:00 リセット）。
 
-スコープ（`docs/MIGRATION_PLAN.md` §Phase 5 ④ 改訂版を SSOT として参照）：
-
-1. **Q1 A**: 既存 `PROMPT_TEMPLATES["example_sentence"]` template に v4.0 universal
-   rules（PART 1.8 FACIAL_FEATURES / PART 1.10 HEAD_BODY_PROPORTION / FOOTWEAR
-   等）を inline 追加して v4.0 標準化
-2. **Q3 B**: `scripts/build_prompts.py` を **全 vocab_type 一気拡張**
-   - 9 個の未配線 template を配線：`vocabulary_building` / `vocabulary_object_concrete`
-     / `vocabulary_variant_grid` / `spatial_relation` / `demonstrative_kosoado`
-     / `action_verb` / `abstract_concept` / `vocabulary_adjective` / `example_sentence`
-   - 各 template の render 関数 + dispatch elif 追加
-   - `--lesson NN` 入力（既存）+ `--catalog` モード（追加）両対応
-3. **Q2 A**: lesson 参照済 catalog 転写
-   - **`data/vocab_types_lesson02.json` は不在**（要新規作成は main の Q2 B 側）
-   - worktree 側は **lesson_01 17 件のみ転写**（`data/vocab_types_lesson01.json` →
-     `data/vocab_catalog.json` の該当 entries に vocab_type 書き込み）
-   - 推奨：新規 `scripts/transcribe-lesson-vocab-types.mjs`（決定論・API 不要）
-4. **invariants 更新**：`scripts/invariants.mjs` の B hash 行 + sColumnPattern（必要なら）
-   を v4.0 例文 inline 反映後の hash に更新
-
-完了条件：
-- `python scripts/build_prompts.py --lesson 1` で lesson_01 全 17 件（person 12 + building 5）の prompt が `data/image_prompts_lesson01_v4_0.json` に出力される
-- `npm run validate` PASS（B hash 更新済）
-- 9 templates の dispatch + render 関数 完成
-- catalog の lesson_01 17 件に vocab_type が書き込まれている
-
-### B. main セッション — Gemini 分類 + Phase 5 ④ catalog 完成
-
-**現状**：B scope 17,491 件中 **9,342 件 typed・8,149 件 remaining**。
-script 実装は完了済、`--classify` mode で resume 可能。
-
-**翌日 resume コマンド（quota リセット後）**：
+**コマンド**：
 ```
 node scripts/classify-and-translate.mjs --classify
+# typed 済 entry は自動 skip。残り 8,149 件のみ処理。
 ```
-（既に typed の entry は skip するため、引数なしで自動的に残り 8,149 件のみ処理する）
 
-**所要見込み（翌日）**：
-- 8,149 件 × ~1ms/entry @ 5/s ≈ 30 分
-- コスト：~$1.50（implicit cache 発火次第減少の可能性）
-- ただし Tier 1 RPD 10K は明日の分も意識（今日 9,775 件消費・10K まで 225 件しか余裕なし → 翌々日に持ち越し可能性）
-  - 回避策：`--concurrency 4` で慎重に進める / Gemini 2.5 Flash-Lite 切替検討 / 等
+所要見込み：~30 分・~$1.50（implicit cache 発火次第減少）。
+本日 9,775 件消費済のため、リセット日翌日でも今日の続きを足すと再度 RPD 抵触可能性。
+`--concurrency 4` で慎重に進める / 2 日跨ぎ前提とする / Flash-Lite 切替検討も可。
 
 **完了条件**：
-- `data/vocab_catalog.json` の全 17,508 件に vocab_type 付与（うち lesson_01 17 件は worktree A 由来・lesson_02 18 件含む残り 17,491 件は Gemini 由来）
-- WARN（"other"・low confidence）件数を `data/_meta/vocab_type_warnings.json` に出力
-- `python scripts/build_prompts.py --lesson 2` で lesson_02 vocab + 例文 28 件の prompt が出力可能になる
+- catalog 全 17,508 件に vocab_type 付与
+- WARN 件数を `data/_meta/vocab_type_warnings.json` に出力済
+- `npm run validate` PASS
 
-**現時点の中間集計（2026-05-22 13:25 UTC 時点）**：
-- typed 9,342 件 / 信頼度 high 8,522 / medium 809 / low 11
-- 主要 vocab_type 分布：abstract_concept 3,448 / concrete_object 1,867 / action_verb 1,129 / adjective 656 / adverb 592 / person 408 / other 336
-- WARN 336 件（すべて classified_as_other・transient api_error は剥がし済）
-- 専用カテゴリ判断（動物・自然物・国名 等）：**全分類完了後に別セッションで議論**（user 確認済 2026-05-22）
+**専用カテゴリ判断（動物・自然物・国名 等）**：全分類完了後に別セッションで議論
+（user 確認済 2026-05-22）。
+
+### Track 2：新規 fresh worktree session — Phase 5 ④' skill 実装
+
+**着手タイミング**：いつでも可（Track 1 と独立）。
+
+**起動手順**：
+```
+cd c:/Users/kohn0/Desktop/japanese-lesson-creator-main
+git worktree add .claude/worktrees/skill-implementation -b phase5-skill-implementation main
+cd .claude/worktrees/skill-implementation
+claude
+```
+
+**スコープ**（`docs/MIGRATION_PLAN.md` § Phase 5 ④' を SSOT として参照）：
+1. ガイドを 5 部構成に reorganize：PART 1 Universal Rules / PART 2 STYLE_BIBLE /
+   PART 3 PROMPT_TEMPLATES / PART 4 **Vocabulary Reference Appendix（新規）** /
+   PART 5 Output Instructions
+   - PART 4 = PERSON_NATIONALITY_HINTS / BUILDING_CUES / OBJECT_SIGNATURES /
+     ABSTRACT_METAPHORS 等を Python 辞書から Markdown 風 reference へ転記（中身保全）
+2. `.claude/skills/generate-image-prompt.md` スキル定義新規作成
+   - 入力：words / mode（daily-pull / explicit / chain）/ limit
+   - 手順：ガイド読込 → vocab_type 解決 → template 選択 → 普遍ルール適用 →
+     Reference Appendix 参照 → preflight 検証 → 違反時自己修正 → JSON 追記
+3. preflight 関数群を `scripts/lib/prompt-preflight.py` に独立化（skill から bash 経由）
+4. chain mode：skill 内で `npm run generate-images` を bash 起動
+5. lesson_01 で skill invoke → 既存決定論版（`image_prompts_lesson01_v4_0.json`）と
+   品質比較
+
+**完了条件**：
+- `.claude/skills/generate-image-prompt.md` invoke 可能
+- ガイド PART 1-5 構造で reorganize 済・B hash 更新
+- lesson_01 17 件 + 例文の prompt を skill 経由で生成し preflight 全 PASS
+- `npm run validate` invariants A/B/C PASS
 
 ---
 
-## 並行終了後の統合（Phase 5 ④ 全体完了）
+## 両 track 完了後
 
-A + B 両方が ff-merge されて main tip に合流した時点で Phase 5 ④ 完了。完了確認：
+両 track 完了後、Phase 5 ④ 全体完了。
 
 ```
-python scripts/build_prompts.py --lesson 1     # 17 件 PASS
-python scripts/build_prompts.py --lesson 2     # vocab + 例文 28 件 PASS
-npm run validate                                # invariants 全 PASS
+npm run validate                          # B hash 新ガイド版 PASS / C PASS
+node scripts/classify-and-translate.mjs --classify --dry-run  # 残 0 件確認
+# skill 経由で lesson_01 / lesson_02 prompt 生成 PASS
 ```
 
 その後：
-- **Phase 5 ⑤ 着手可**：lesson_01 building 5 件 + lesson_02 全件を nanobanana で実機生成（コスト ~$1.32）
-- **Phase 5 ⑥ 着手可**：GAS 入力系退役
+- **Phase 5 ⑤ 着手可**：日次 20 件運用開始（`/schedule` で skill 自動起動）+
+  lesson_02 全件生成
+- **Phase 5 ⑥ 着手可**：GAS 入力系 3 系統退役
 
 ---
 
 ## ブロッカー
 
-- worktree A 着手：blocker なし（user が新規 Claude Code セッション起動するだけ）
-- main B resume：**Tier 1 RPD 10K リセット待ち**（PT 0:00 = JST 17:00 リセット）
-- Phase 5 ⑤：Phase 5 ④（A + B 両方）完了に blocked
+- Track 1（main B resume）：**Tier 1 RPD 10K リセット待ち**（PT 0:00 = JST 17:00）
+- Track 2（④' skill）：blocker なし（user が新規 worktree session 起動するだけ）
+- Phase 5 ⑤：Track 1 + Track 2 両方完了に blocked
 - Phase 5 ⑥：Phase 5 ⑤ 完了に blocked
+
+---
+
+## 将来規律（user 確認済 2026-05-22）
+
+- **新規 word list からの語彙追加時の vocab_type 分類**：将来別書籍 / 別ソースから
+  catalog に語彙追加するときは Gemini API ではなく `/classify-vocab-type` skill
+  方式に切替（今回の 17,491 件一括は bounded one-shot として API 継続）。
+  詳細は memory `feedback-skill-vs-api-for-classification`。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate                   # invariants A=v7.5 / B=5338c98aab5d(v4.0) / C / D PASS
-npm run missing-assets             # 現状 image 441 / audio 108（Phase 5 ⑤ 完了後に減少）
+npm run validate                   # invariants A=v7.5 / B=891b73f5ae2d(v4.1) / C / D PASS
+npm run missing-assets             # 現状 image 441 / audio 108
 npm run check-sa                   # Sheets API 疎通
 npm run check-tts-sa               # Cloud TTS API 疎通
 npm run check-ffmpeg               # ffmpeg / ffprobe / filter / encoder 疎通
@@ -134,7 +147,7 @@ npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
 npm run backfill-registries [-- --dry-run | --verbose | --only image|audio]
 npm run generate-audio [-- --dry-run | --limit N | --only word|sentence | --max-chars N | --force | --no-qc]
 npm run generate-images -- --prompts <path> [--print-prompts | --sync-only | --dry-run]
-                                  [--backend nanobanana|imagen4]  # 既定 nanobanana
+                                  [--backend nanobanana|imagen4]
                                   [--limit N] [--max-images N] [--force]
                                   [--out <md>]
 npm run validate-audio
@@ -142,20 +155,29 @@ node scripts/_tts-smoke.mjs
 node scripts/_imagen-smoke.mjs        # 実機 1 枚＝$0.04 (Imagen 4)
 node scripts/_nanobanana-smoke.mjs    # 実機 1 枚＝~$0.0387 (Nano Banana)
 node scripts/diff-registries.mjs <a.json> <b.json>
-npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
+npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]         # 既存 Gemma lesson-driven
+node scripts/classify-and-translate.mjs --classify [--smoke|--limit N|--force|--concurrency N|--dry-run]  # Phase 5 ④ B catalog-driven Gemini 2.5 Flash
 node scripts/build-catalog.mjs [--dry-run | --verbose]
+node scripts/transcribe-lesson-vocab-types.mjs [--dry-run | --verbose]   # worktree A 由来
 npm run import-lesson -- --lesson NN [--dry-run | --verbose]
-python scripts/build_prompts.py --lesson 1     # v4.0 ガイド経由（Phase 5 ④ で全 vocab_type 対応 + --catalog 追加予定）
+
+# ↓ 以下は ④' pivot 後 deprecated（skill 方式に置換予定・dead code）
+python scripts/build_prompts.py --lesson NN          # 決定論版 dispatch（dead code 化予定）
+python scripts/build_prompts.py --catalog            # 決定論版 catalog mode（dead code 化予定）
+
+# ↓ Phase 5 ④' 着手後の新コマンド（未実装）
+# /generate-image-prompt mode=daily-pull limit=20    # Claude Code スキル invoke
+# /generate-image-prompt words=医者,会社員 chain=true  # chain mode
+# /schedule で daily cron セットアップ
 ```
 
 参考（再実行不要）：
-- v4.0 アーカイブ：`archive/prompts/master_prompt_design_guide_v3_12.py` +
-  `archive/prompts/image_prompts_lesson01_v3_12.json`
-- worktree path：`c:/Users/kohn0/Desktop/japanese-lesson-creator-main/.claude/worktrees/example-prompts`
-- Phase 5 ④ 設計議論ログ：main session 2026-05-22
+- 決定論版 lesson_01 出力：`data/image_prompts_lesson01_v4_0.json`（32 件・skill 品質比較用）
+- v4.0 アーカイブ：`archive/prompts/master_prompt_design_guide_v3_12.py`
+- 旧 worktree path：`c:/Users/kohn0/Desktop/japanese-lesson-creator-main/.claude/worktrees/example-prompts`（役目終了・新規 ④' は別 worktree）
+- Phase 5 ④ pivot 議論：本セッション 2026-05-22 / worktree memory `project_phase5_pivot_to_claude_code_skill.md`
 
 人間タスク：
-- **次セッション起動**（並行可・順不同）：
-  1. worktree A：`cd .claude/worktrees/example-prompts && claude` で着手
-  2. main B：新規 main session 起動で着手
+- 新規 worktree session を立てて Phase 5 ④' に着手（任意のタイミング）
+- 明日 RPD リセット後に main session で B resume コマンド実行
 - Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現

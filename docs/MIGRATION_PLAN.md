@@ -372,7 +372,81 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   注：v3.12 person 品質修正 1-6 は v4.0 で全国 modern wear に置換されるため
   退避項目自体が消える（PHASE_BACKLOG retire 済）。
 
-- **⑤** 例文配線 + smoke 生成。**main 専属・プラン依存（③ + ④ 完了後）**。
+- **④' ＜2026-05-22 アーキテクチャ pivot：Claude Code スキル方式＞**
+
+  Phase 5 ④ worktree A 進行中の user との対話で、build_prompts.py 決定論方式が
+  本来の設計意図と乖離していることが判明し、Claude Code スキル方式へ pivot。
+
+  **pivot 理由：**
+  - 当初設計：ガイドの普遍ルールに従って AI（チャット越し Claude）が prompt 書く →
+    GAS 時代の実運用はこの形だった（`importImagePrompts()` で Claude 生成 JSON を
+    S 列に投入する流れ）
+  - v3.x → v4.0 ローカル化過程で `build_prompts.py` が「決定論 S列生成」と
+    自己定義されてしまい、Python が手書き辞書を引いて穴埋めする形に変質
+  - lesson_01 では辞書が整備されているため 17 件は動くが、Goi_List 17,508 件への
+    自動展開には原理的に到達不可能
+  - 当初 Claude API（Sonnet）案を検討したが、user 指示で **Claude Code スキル方式**
+    に確定（API 課金 0・サブスクリプション内・GAS 時代の流れを取り戻す）
+
+  **新アーキテクチャ：**
+
+  | 役割 | 担当 | API 課金 |
+  |---|---|---|
+  | プロンプト生成（普遍ルール適用） | **Claude Code スキル `/generate-image-prompt`** | 0 |
+  | プロンプト検証 | Python preflight（既存ロジック再利用） | 0 |
+  | vocab_type 分類 | Gemini（既存 classify-and-translate.mjs） | 微小 |
+  | 画像生成 | nanobanana / Imagen | 件単価 |
+  | スケジューリング | Claude Code `/schedule` skill で daily 自動実行 | 0 |
+
+  **運用モデル：**
+  - メイン：毎日朝 X 時に Claude Code が自動起動 → 未着手 word を 20 件 pick →
+    スキルで prompt 生成 → JSON 蓄積 → user が日中に手動で nanobanana 画像生成
+  - chain mode：user 任意 trigger で Claude prompt + Gemini 画像 を 1 ショット連結
+  - 累積：20 件/日 × 365 = 7,200 件/年 + chain 分 → 1-2 年で ~17,000 件カバー想定
+
+  **worktree (Phase 5 ④' 専用 fresh worktree) スコープ：**
+  - ガイドを 5 部構成に reorganize：PART 1 Universal Rules / PART 2 STYLE_BIBLE /
+    PART 3 PROMPT_TEMPLATES / **PART 4 Vocabulary Reference Appendix（新規）** /
+    PART 5 Output Instructions
+  - PART 4 = 既存 PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP /
+    ROLE_BASED_GENERIC_PROFILES / BUILDING_CUES / OBJECT_SIGNATURES /
+    ABSTRACT_METAPHORS / PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE /
+    ROLE_PHENOTYPE_PALETTE 等を **Python 辞書から Markdown 風 reference として転記**
+    （中身は完全保全 — 何時間も実機検証で得た知識を無駄にしない）
+  - `.claude/skills/generate-image-prompt.md` スキル定義新規作成
+  - preflight 関数群を `scripts/lib/prompt-preflight.py` に切り出して skill から bash 経由で呼べる構造化
+  - chain mode：スキル内で `npm run generate-images` を bash 起動して Gemini 画像生成と連結
+  - lesson_01 で skill を手動 invoke して 17 件 + 例文 15 件の prompt 生成 →
+    決定論版出力との品質比較
+  - `invariants.mjs` の B hash を新ガイド hash に更新
+
+  **完了条件：**
+  - `.claude/skills/generate-image-prompt.md` invoke 可能
+  - ガイド PART 1-5 構造で reorganize 済（中身保全・hash 更新）
+  - lesson_01 17 件 + 例文の prompt を skill 経由で生成し preflight 全 PASS
+  - `npm run validate` invariants A/B/C PASS
+
+  **deprecated 範囲（worktree A の Q3 B 由来の Python コード）：**
+  - `build_prompts.py` の `render_person` / `render_building` /
+    `render_object_concrete` / `render_abstract_concept` /
+    `render_action_verb` / `render_adjective` / `render_demonstrative_kosoado` /
+    `render_variant_grid` / `render_spatial_relation` /
+    `render_example_sentence` / `render_vocab_entry` dispatch / `compose_*` /
+    `classify_person` / `phenotype_for` / `flag_placement_for` 等
+  - これらは git history としては残るが、新アーキテクチャでは dead code 化
+  - **Q1 A の example_sentence template inline 化（v4.1）は活きる**
+  - **Q2 A の `scripts/transcribe-lesson-vocab-types.mjs` は活きる**
+  - **preflight 関数群は新スキルの検証ゲートとして主役級に格上げ**
+
+  **main B との関係：**
+  - main B（Gemini で 17,473 件 vocab_type 分類）は依然必要（vocab_type は
+    skill の入力）
+  - ただし着手順序が変更：先に Phase 5 ④' 完了でスキルが動くことを確認 →
+    後で main B で vocab_type を全件付与
+  - main B も skill 方式に統一する余地あり（`/classify-vocab-type` スキル新規）—
+    user 確認待ち
+
+- **⑤** 例文配線 + smoke 生成。**main 専属・プラン依存（③ + ④' 完了後）**。
   ③ の `import-lesson.mjs` を ④ の builder に接続（vocab + 例文両方の prompt が
   registry に乗る）。lesson_02 例文 5 件 smoke 生成（nanobanana・~$0.20）で
   同値検証。完了＝lesson_02 例文 5 件が pending→ready まで通り、

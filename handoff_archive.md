@@ -171,3 +171,20 @@
   worktree で `--force` 再生成 → main に手動コピー反映（hash
   `298b98de2a77` → `971f22c6285d`）。PHASE_BACKLOG「flag size 均一化」項目は
   retire。今後 lesson 拡張で新規 outlier が出た場合は per-image 対応。
+
+- **2026-05-22 Phase 5 ④ アーキテクチャ pivot：決定論 → Claude Code スキル方式**：
+  worktree example-prompts で Phase 5 ④ worktree A の Q1A / Q2A / Q3B を実装中、
+  user との対話で **build_prompts.py 決定論方式は本来の設計意図と乖離**している
+  ことが判明（GAS 時代の実運用は「Claude-in-chat が普遍ルール従って prompt 書く →
+  importImagePrompts で S 列投入」だった）。Goi_List 17,508 件への自動展開には
+  決定論 + 手書き辞書では原理的に不可能。Claude API（Sonnet）案も検討したが
+  user 指示で **Claude Code スキル `/generate-image-prompt` 方式**に確定（API
+  課金 0・サブスク内・GAS 時代の流れを取り戻す）。worktree A の Q1A
+  （example_sentence inline）/ Q2A（transcribe スクリプト）/ preflight 関数群 /
+  v4.1 hash は保全。Q3B の Python dispatch / render_* / compose_* / classify_person
+  等は dead code 化（v4.1 commit `a830c95` は履歴として保持）。実機検証で得た
+  PERSON_NATIONALITY_HINTS / BUILDING_CUES / OBJECT_SIGNATURES 等の知識は
+  ガイド PART 4 Reference Appendix として転記して保全。Phase 5 ④' = pivot 後の
+  本格実装は新規 fresh worktree session で着手予定。関連 memory：
+  `project_phase5_pivot_to_claude_code_skill.md` /
+  `feedback_skill_over_api_for_prompt_gen.md`。

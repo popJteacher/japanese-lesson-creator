@@ -2875,7 +2875,13 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 
   ## ─────────────────────────────────────────────
   ## テンプレートC: 例文画像（16:9）
-  ## 変更なし
+  ## v4.1 (2026-05-22): Phase 5 ④ Q1 A — v4.0 universal rules
+  ##   （PART 1.8 FACIAL_FEATURES / PART 1.10 HEAD_BODY_PROPORTION /
+  ##    FOOTWEAR_RULE）を vocabulary_person 同様に inline 追加。
+  ##   旧版は `archive/prompts/master_prompt_design_guide_v3_12.py`
+  ##   ベース v2.x 由来で character_descriptions placeholder への注入のみに
+  ##   頼っていたが、render 関数の defaults を信用せず template 自体に規律を
+  ##   焼き込む方式に統一（v4.0 vocabulary_person と挙動を揃える）。
   ## ─────────────────────────────────────────────
   "example_sentence": """
 [PURPOSE]
@@ -2885,6 +2891,32 @@ The image must clearly convey the grammatical relationship in the sentence:
 
 [SUBJECT]
 {CHARACTER_DESCRIPTIONS}
+FACIAL FEATURES RULE (v4.0 PART 1.8): Every character figure in the image MUST
+clearly show all four primary facial features — eyes (with visible pupils, not
+blank circles), eyebrows (simple curved or angled lines above the eyes), nose
+(a simple line or dot or small shape), and mouth (a simple line or curve or
+small shape). NEVER omit any of these four features. A faceless silhouette,
+blank face, partially-rendered face, or 'stylized stock illustration without
+facial detail' is NOT permitted, even when the outfit (business suit, doctor
+coat, uniform, etc.) is the dominant role signature. Facial features must be
+drawn in the same flat illustration style as the rest of the body — minimal
+but visibly present.
+HEAD-BODY PROPORTION RULE (v4.0 PART 1.10): Every adult character figure MUST
+be rendered with approximately 7-head-height proportion (head height =
+approximately 1/7 of total body height). NEVER render adult roles with shorter
+5-6 head proportions which read as childlike or cartoonish. This is especially
+important for figures with childhood-bias triggers — business suit + briefcase,
+school-style casual + backpack, uniforms — where nanobanana tends to default
+to anime salaryman/student cliché short proportions. Adult characters
+(approximately 20s-50s) must read as working-age adults by body proportion
+alone. Exception: explicit child NAMED_CHARACTERs with documented child
+age_range follow their own fixed_features.
+FOOTWEAR RULE (v3.11 / preserved in v4.0): Every character figure MUST visibly
+wear footwear on both feet (shoes, sandals, sneakers, loafers, work boots, or
+similar) whenever both feet are inside the frame. Barefoot is NOT permitted in
+example-sentence illustrations — even when the cultural styling implies an
+at-home or indoor context. If the composition crops feet out of frame
+(waist-up shots etc.), this rule does not apply to the cropped figures.
 
 [SCENE & ACTION]
 {SCENE_DESCRIPTION}

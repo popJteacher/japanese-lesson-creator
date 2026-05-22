@@ -28,7 +28,7 @@ const ROOT = resolve(__dirname, '..');
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
   promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v4_0.py'),
-  promptGuideExpectedHashPrefix: '5338c98aab5d', // v4.0 (modern wear + hand-held flag + PART 1.8 FACIAL_FEATURES + PART 1.9 FLAG_SHAPE_DETAIL [invoke 3-layer 方針] + PART 1.10 HEAD_BODY_PROPORTION + 単一 flag staff 対称 grip + 7 国 flag invoke 化) LF 正規化後 SHA256 先頭 12 桁
+  promptGuideExpectedHashPrefix: '891b73f5ae2d', // v4.1 = v4.0 + Phase 5 ④ Q1 A: example_sentence template に FACIAL_FEATURES (PART 1.8) / HEAD_BODY_PROPORTION (PART 1.10) / FOOTWEAR_RULE を vocabulary_person 同様に inline 追加。LF 正規化後 SHA256 先頭 12 桁
   // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
