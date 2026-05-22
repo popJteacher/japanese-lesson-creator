@@ -76,11 +76,23 @@ claude
 ```
 
 **スコープ**（`docs/MIGRATION_PLAN.md` § Phase 5 ④' を SSOT として参照）：
-1. ガイドを 5 部構成に reorganize：PART 1 Universal Rules / PART 2 STYLE_BIBLE /
-   PART 3 PROMPT_TEMPLATES / PART 4 **Vocabulary Reference Appendix（新規）** /
-   PART 5 Output Instructions
-   - PART 4 = PERSON_NATIONALITY_HINTS / BUILDING_CUES / OBJECT_SIGNATURES /
-     ABSTRACT_METAPHORS 等を Python 辞書から Markdown 風 reference へ転記（中身保全）
+1. ガイドを **6 部構成**に reorganize（user 提案 2026-05-22）：
+   - PART 1: Universal Rules（全 vocab_type 共通）— 既存 PART 1.1〜1.10 +
+     **NATIONAL_SYMBOL_ISOLATION_RULE 新規追加**（旧 PERSON_NATIONALITY_HINTS の
+     「服に国旗色を再現しない」原則を universal 化）
+   - PART 2: STYLE_BIBLE
+   - PART 3: **vocab_type 別ルール（新セクション・user 提案の核心）** — 3.person /
+     3.building / 3.object_concrete / 3.action_verb / 3.adjective /
+     3.abstract_concept / 3.demonstrative_kosoado / 3.spatial_relation /
+     3.example_sentence の独立サブセクション。aspect ratio / camera / pose /
+     strategy 選択基準等を PROMPT_TEMPLATES の自然文から抽出して整理
+   - PART 4: PROMPT_TEMPLATES（骨格・placeholder のみ・rule 詳細は PART 1+2+3 参照）
+   - PART 5: **Vocabulary Reference Appendix（新セクション）** —
+     PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP / ROLE_BASED_GENERIC_PROFILES /
+     BUILDING_CUES / OBJECT_SIGNATURES / ABSTRACT_METAPHORS / PHENOTYPE_PROFILES /
+     COUNTRY_TO_PROFILE / ROLE_PHENOTYPE_PALETTE 等を Python 辞書から
+     Markdown 風 reference へ転記（中身保全）
+   - PART 6: Output Instructions（LLM 用出力指示 + preflight 制約）
 2. `.claude/skills/generate-image-prompt.md` スキル定義新規作成
    - 入力：words / mode（daily-pull / explicit / chain）/ limit
    - 手順：ガイド読込 → vocab_type 解決 → template 選択 → 普遍ルール適用 →
@@ -92,7 +104,7 @@ claude
 
 **完了条件**：
 - `.claude/skills/generate-image-prompt.md` invoke 可能
-- ガイド PART 1-5 構造で reorganize 済・B hash 更新
+- ガイド PART 1-6 構造で reorganize 済・B hash 更新
 - lesson_01 17 件 + 例文の prompt を skill 経由で生成し preflight 全 PASS
 - `npm run validate` invariants A/B/C PASS
 
