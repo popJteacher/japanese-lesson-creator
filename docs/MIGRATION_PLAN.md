@@ -324,17 +324,53 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   に切替。**例文配線は ⑤ で行う**（④ worktree 作業を待たずに main 側を進める分離）。
   完了＝`npm run import-lesson -- --lesson 01` が `seedLesson01` 同等動作で完走。
 
-- **④ ＜プラン強依存・worktree 専属・v4.0 完了が prerequisite＞** 例文 master
-  prompt template 新設 + build_prompts.py 拡張。**v4.0 完了 → main ff-merge
-  後に着手**（v3.13 → v4.0 pivot で「並行可能」条件は変化・2026-05-22）。
-  `master_prompt_design_guide_v4_N.py` に `vocabulary_example_sentence`
-  template 新設（STYLE_BIBLE / 不変条件を vocabulary_person から継承）。
-  `build_prompts.py` を catalog 駆動 + 全 vocab_type（person /
-  concrete_object / building / action_verb / adjective / etc.）+ 例文に
-  スコープ拡張。**v3.12 person 品質修正 1-6 は v4.0 で全国 modern wear に
-  置換されるため退避項目自体が消える見込み**。
-  完了＝`python scripts/build_prompts.py --catalog` で vocab 全タイプ + 例文の
-  prompt JSON 出力・`invariants[C]` PASS。
+- **④ ＜並行 2 セッション・2026-05-22 設計確定＞** v4.0 完了済 →
+  example-prompts worktree + 別 fresh main session の **並行スコープ**で進める。
+  worktree report で 9 templates 未配線 / `vocab_catalog.json` の
+  vocab_type 未付与 / `vocab_types_lesson02.json` 不在 / lesson_02 例文 28 件
+  （NEXT_ACTIONS の「22 件」は誤記）が判明し、当初計画を 3 軸（Template scope
+  / vocab_type fill / Builder scope）で再設計。
+
+  **Q1 確定（A: v4.0 規律 inline 追加）：** v4.0 ガイドに既存の `example_sentence`
+  template に PART 1.8 FACIAL_FEATURES / PART 1.10 HEAD_BODY_PROPORTION /
+  FOOTWEAR 等の v4.0 universal rules を inline 追加して v4.0 標準化。
+  「新設」は文言誤りで実態は **v4.0 規律適用**。
+
+  **Q2 確定（A+B 並行）：** lesson 参照済 catalog 転写（A・決定論・worktree 担当）
+  + Gemini 2.5 Flash で残り 17,473 件分類（B・main session 担当）。コスト
+  ~$0.40-1.00。`vocab_types_lesson02.json` 不在のため、B の smoke 100 件は
+  **lesson_02 18 件 + N5/N4 高頻度 82 件**で構成して lesson_02 vocab_type も
+  smoke 段階で確定する設計。
+
+  **Q3 確定（B: 例文 + 全 vocab_type 一気拡張）：** `build_prompts.py` を
+  catalog 駆動 + 全 vocab_type（person / building / concrete_object /
+  action_verb / adjective / abstract_concept / variant_grid / spatial_relation
+  / demonstrative_kosoado）+ 例文 にスコープ拡張。9 templates + 例文を配線。
+
+  **worktree (example-prompts) スコープ：**
+  - Q1 A: `example_sentence` template v4.0 universal rules inline
+  - Q3 B: `scripts/build_prompts.py` の dispatch + render 関数を 9 種類 + 例文に拡張
+  - Q2 A 一部: `data/vocab_types_lesson01.json` の 17 件のみ catalog 転写
+    （新規 `scripts/transcribe-lesson-vocab-types.mjs` 推奨）
+  - `scripts/invariants.mjs` B hash 更新（v4.0 例文 inline 反映後）
+  - 完了条件：`python scripts/build_prompts.py --lesson 1` で lesson_01 全 17 件
+    （person 12 + building 5）の prompt JSON 出力・`invariants[C]` PASS
+
+  **main 別セッションスコープ（fresh start）：**
+  - Q2 B: `scripts/classify-and-translate.mjs` 拡張で Gemini 2.5 Flash classifier
+    実装（`--classify` モード追加）
+  - Smoke 100 件 = lesson_02 18 件 + N5/N4 高頻度 82 件
+  - user 品質レビュー → 本番 17,473 件分類
+  - `data/vocab_catalog.json` に vocab_type 書き戻し
+  - WARN（confidence 低）件数を `data/_meta/vocab_type_warnings.json` に
+  - 完了条件：catalog 全 17,508 件に vocab_type 付与・`python scripts/build_prompts.py
+    --lesson 2` で lesson_02 全件（vocab + 例文 28 件）prompt JSON 出力可能になる
+
+  **Phase 5 ④ 全体完了条件：** A + B 両方 ff-merge 後、`--lesson 1` / `--lesson 2`
+  両方で prompt JSON 出力 + `npm run validate` PASS。
+
+  注：v3.12 person 品質修正 1-6 は v4.0 で全国 modern wear に置換されるため
+  退避項目自体が消える（PHASE_BACKLOG retire 済）。
 
 - **⑤** 例文配線 + smoke 生成。**main 専属・プラン依存（③ + ④ 完了後）**。
   ③ の `import-lesson.mjs` を ④ の builder に接続（vocab + 例文両方の prompt が
