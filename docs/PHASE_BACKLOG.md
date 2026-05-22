@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-22（v3.12 worktree merge を main 取り込み完了 → `docs/PROMPT_GUIDE_v3_12.md` 末尾 handoff の v3.13 BACKLOG 4 件 (#1〜#4) を新セクション「v3.13 マスタープロンプトガイド修正候補」として migrate）
+最終更新：2026-05-22（**v3.13 → v4.0 pivot 反映**：v3.13-#1/#3 を retire、#2 を「v4.0 で副次的に解消見込み」に位置づけ変更、#4 のみ独立 backlog として保持。v4.0 phase は `docs/MIGRATION_PLAN.md` に新設）
 
 ---
 
@@ -406,95 +406,71 @@ bias 差を意味する。v3.12 ではどちらのモデルでも安全に動く
 
 ---
 
-### v3.13 マスタープロンプトガイド修正候補（worktree 担当・v3.12 取り込み 2026-05-22 で migrate）
+### v3.13 マスタープロンプトガイド修正候補（**v4.0 pivot 反映済 2026-05-22**）
 - 出所：`docs/PROMPT_GUIDE_v3_12.md` 末尾 v3.13 BACKLOG handoff（worktree
   → main fast-forward merge 経由の引き継ぎ機構）。v3.12 シリーズ実装中／
   実機検証中に発見した次バージョン候補で、main session が migrate 完了印
   として handoff 元のセクションを削除する規約。
-- 退避理由：v3.12 はガイド本体改修・実機検証・lesson_01 再生成まで完了
-  しており、これ以上のガイド改修は v3.13 として独立 worktree session で
-  着手する。Phase 5 ④（例文 template 新設）とは焦点が異なる
-  （v3.13 は単語レベル改善・Phase 5 ④ は例文構造拡張）ため別作業として
-  独立する（Phase 4 完了後 backlog の v3.12 セクションと同じ分離方針）。
-- 戻し方：worktree セッション（`.claude/worktrees/image-prompt-plan`）で
-  `git merge --ff-only main` 後、優先度順（#1 → #4）で着手。#1 は v3.12
-  実機検証で既に再現観測されているため最優先。
-- 想定コスト：実装はガイド本体改修と build_prompts.py の lookup 追加が
-  中心で API コストは低い（再生成 smoke 5-10 件で $0.20-0.40）。
+- **2026-05-22 pivot 反映**：worktree image-prompt-plan セッションで v3.13
+  着手前にアジア／西洋アシンメトリ問題が論点化し、`docs/MIGRATION_PLAN.md`
+  § v4.0 マスタープロンプトガイド major-version 改修 として「全国 modern
+  daily casual wear + 国旗視認性強化」への pivot が確定。これに伴い
+  v3.13-#1/#3 は v4.0 で原理的に解消されるため retire、#2 は v4.0 で
+  副次的に解消見込みとして位置づけ変更、#4 のみ v4.0 とは独立した
+  backlog として保持する。詳細は各項目を参照。
+- 戻し方：#4 のみ将来 worktree セッションで着手可能（着手 timing は
+  Phase 5 ⑥ 実装方針確定後）。#1/#2/#3 は retire のため戻さない。
 
-#### v3.13-#1: GARMENT_REGISTER_CONSISTENCY_RULE（新規普遍ルール）
-- **背景**：v3.12 実機検証（韓国男性カード）で hanbok 風 jeogori トップ
-  + modern gray trousers + 白スリップオン という「上=伝統 / 下=モダン /
-  靴=モダン抜けすぎ」のレジスター不揃いが確認された。現在の v3.12 には
-  衣服の register（伝統度／格式）を上下で揃えるルールが存在しない：
-  `FOOTWEAR RULE`（両足に靴を履け・register 不問）/ `TWO-COLOR RULE`
-  （上下で色を分けろ・register 不問）/ `TRADITIONAL_DRESS_PATTERN_RULE`
-  （伝統 silhouette のとき pattern を入れろ・trousers と footwear は不問）。
-- **提案**：PART 1.8 として GARMENT_REGISTER_CONSISTENCY_RULE を新設。
-  ```
-  原則: 上半身の register に trousers と footwear を揃える。
-    rule_a: 上半身が伝統 silhouette のとき、trousers と footwear は
-      (a) 同じ伝統 register（hanbok bottoms / 伝統低靴 等）OR
-      (b) "muted modern neutral"（無装飾の cream/charcoal/indigo trousers
-          + 無装飾の dark slip-on or simple flat = visually quiet 下半身）
-      のいずれか。白スリップオン等の「新しすぎる」要素は (b) outlier として禁止。
-    rule_b: 上半身が modern silhouette のとき、bottoms と footwear は modern。
-  ```
-- **スコープ**：日本人 (a) wagara top / (b) noragi、韓国 (a)(c) hanbok 系、
-  中国 (a)(b) 中国服系、ベトナム (a)(b) áo dài 系 — すべての伝統 silhouette
-  option に影響。FOOTWEAR RULE の許可リストから「visually loud」アイテムを
-  register 別に切り分ける形になる。
-- **実装難易度**：中。ガイド本体に rule 追記 + cultural_styling_hint の
-  footwear 記述を整合。lesson_01 の現在の出力で 韓国・日本・ベトナム を
-  再生成して効果検証。
-- **優先度**：高（v3.12 実機で再現観測済 → v3.13 で最優先着手）。
+#### v3.13-#1: GARMENT_REGISTER_CONSISTENCY_RULE（**v4.0 pivot で retire 2026-05-22**）
+- **当初提案（参考保全）**：v3.12 実機検証（韓国男性カード）で hanbok 風
+  jeogori トップ + modern gray trousers + 白スリップオン という「上=伝統 /
+  下=モダン / 靴=モダン抜けすぎ」のレジスター不揃いが確認されたため、
+  PART 1.8 として上下 register を揃えるルールを新設する案。
+- **retire 理由**：v4.0 pivot で全国共通 modern daily casual wear に統一
+  されるため、「伝統 silhouette と modern bottoms のレジスター不一致」
+  問題自体が原理的に発生しなくなる。register-consistency を保証する
+  rule_a / rule_b は v4.0 の世界では出番がない。
+- **代替方針**：v4.0 で全国 modern wear に統一 → register 二分そのものを
+  消去（`docs/MIGRATION_PLAN.md` § v4.0 参照）。
 
-#### v3.13-#2: role cards の plain-solid 明文化
+#### v3.13-#2: role cards の plain-solid 明文化（**v4.0 で副次的に解消見込み・2026-05-22**）
 - **背景**：`NATIONAL_SYMBOL_ISOLATION_RULE.(d)` は "graphic / printed /
   logo / patterned" garment や "unspecified print contents" を禁じているが、
   これは nationality cards 向けの規律。role cards (医者・先生・学生 等) には
   対応する明示的な plain-solid 規律が無く、nanobanana が生成的に小さな
   stripes / dots / texture を出す可能性が残る。
 - **現状の実害**：未観測。lesson_01 の 5 role 画像（医者・先生・学生・
-  大学生・会社員）は plain solid で出ている。ただし将来 lesson 数や role
-  種類が増えたとき再発リスクあり。
-- **提案**：`ROLE_BASED_GENERIC_PROFILES.[role].outfit_hints` の各エントリに
-  "plain solid color (no stripes, no dots, no print, no pattern)" を追記、
-  OR PART 2.2 注記として一括規律を明文化。
+  大学生・会社員）は plain solid で出ている。
+- **v4.0 での扱い**：v4.0 で nationality と role の両方が modern wear に
+  統一されると、plain-solid 規律が全 person 系で自然に成立しやすくなる
+  （差別化が outfit pattern ではなく国旗・小道具に移るため、衣服自体は
+  uniformly plain に倒れやすい）。v4.0 完了後に再評価し、実害が
+  観測されなければ retire、観測されれば role 別 outfit_hints に
+  "plain solid color (no stripes, no dots, no print, no pattern)" を
+  追記する案を再検討する。
+- **提案（v4.0 後に再評価）**：`ROLE_BASED_GENERIC_PROFILES.[role].outfit_hints`
+  の各エントリに "plain solid color (no stripes, no dots, no print,
+  no pattern)" を追記、OR PART 2.2 注記として一括規律を明文化。
 - **実装難易度**：低。テキスト追記のみ。
-- **優先度**：低（実害観測されてから対応で十分）。
+- **優先度**：低（v4.0 後に実害観測されてから対応で十分）。
 
-#### v3.13-#3: 伝統服が薄い／無い国の signature 多軸化
-- **背景**：v3.12 の `TRADITIONAL_DRESS_PATTERN_RULE` は rule_e
-  modern_styles_exempt で「伝統服がない国は entry 不要」を許容しているが、
-  代替の signature 軸を提供していない。将来 ドイツ・フランス・カナダ・
-  オーストラリア・オランダ 等が課に追加されたとき、cultural_styling_hint だけ
-  で差別化するには記述コストが高く、Imagen の収束に再び負ける可能性がある。
-- **提案**：v4.0（major-version）で `signature_for(word)` を cascading 構造化：
-  ```python
-  def signature_for(word):
-      # 以下を順次試して最初に hit したものを返す
-      return (
-          TRADITIONAL_DRESS_PATTERN_LOOKUP.get(word) or
-          MODERN_FASHION_ARCHETYPE_LOOKUP.get(word) or
-          REGIONAL_CRAFT_ACCENT_LOOKUP.get(word) or
-          FOOTWEAR_SIGNATURE_LOOKUP.get(word) or
-          COLOR_PALETTE_SIGNATURE_LOOKUP.get(word) or
-          None
-      )
-  ```
-  各 lookup の例：
-  | 軸 | 例 |
-  |---|---|
-  | modern fashion archetype | ドイツ = "minimalist Bauhaus-clean tailored coat" / フランス = "tailored navy blazer + silk scarf" / オーストラリア = "Akubra-style brimmed hat + rugged work jacket" |
-  | regional craft accent | カナダ = "Cowichan-style chunky knit sweater" / メキシコ = "small huichol-bead bracelet" / アルゼンチン = "facón-belt detail" |
-  | footwear signature | オランダ = "klompen-inspired wooden clog accent" / 英国 = "Wellington-style boots" / モロッコ = "babouche-style pointed slippers" |
-  | color palette | スカンジナビア = "muted blue + cream" / 地中海 = "terracotta + olive + cream" |
-- **実装難易度**：高（major-version 扱い）。v3.13 では設計検討のみ、実装は v4.0
-  リリース時。lesson 拡張で新国追加が現実化する時期に着手。
-- **優先度**：中（v4.0 候補・lesson 数 expansion 時に着手）。
+#### v3.13-#3: 伝統服が薄い／無い国の signature 多軸化（**v4.0 pivot で retire 2026-05-22**）
+- **当初提案（参考保全）**：将来 ドイツ・フランス・カナダ・オーストラリア・
+  オランダ 等が課に追加されたとき、伝統服 lookup が薄い／無い国の
+  cultural_styling_hint だけでは差別化困難なため、`signature_for(word)`
+  を `TRADITIONAL_DRESS_PATTERN_LOOKUP` →
+  `MODERN_FASHION_ARCHETYPE_LOOKUP` → `REGIONAL_CRAFT_ACCENT_LOOKUP` →
+  `FOOTWEAR_SIGNATURE_LOOKUP` → `COLOR_PALETTE_SIGNATURE_LOOKUP` の
+  cascading 構造で多軸化する案。
+- **retire 理由**：v4.0 pivot は **逆方向の simplification**（多軸 lookup
+  拡張ではなく、全国共通 modern wear + 国旗強化に統一して差別化を
+  garment ではなく flag に集約）。signature の弁別性問題は国旗視認性
+  強化（PART 1.7 再設計）で解決される。多軸 lookup 自体が不要に。
+- **代替方針**：v4.0 で `TRADITIONAL_DRESS_PATTERN_LOOKUP` を退役 →
+  全国共通 modern wear + 国旗（d 手持ち優先・c 背景 banner フォールバック）
+  で弁別性を担保（`docs/MIGRATION_PLAN.md` § v4.0 参照）。
 
-#### v3.13-#4: 新語彙の自動分類サポート (vocab_subtype)
+#### v3.13-#4: 新語彙の自動分類サポート (vocab_subtype)（**v4.0 とは独立・2026-05-22 確認**）
 - **背景**：現在 `classify_person` は lookup miss すると build abort する設計
   で、新国籍・新役割は人間が必ず手動で `PERSON_NATIONALITY_HINTS` /
   `PERSON_ROLE_LOOKUP` 等に追加する必要がある。lesson 数増加に伴い、この

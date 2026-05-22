@@ -139,3 +139,19 @@
 ## archive/screenshots/（3 ファイル）
 
 `screencapture-file-C-Users-kohn0-Downloads-studentB-S002-html-*.png`（Stage 1 動作確認時のスクリーンショット・約 11 MB）。
+
+---
+
+## 方針転換ログ（時系列・特定の過去判断を調べる用）
+
+- **2026-05-22 v3.13 → v4.0 pivot**：worktree image-prompt-plan で v3.13 #1
+  (GARMENT_REGISTER_CONSISTENCY_RULE) 着手前にアジア／西洋アシンメトリ問題
+  （日中韓越のみ伝統 silhouette・米伯西は modern + craft accent → 構造的
+  exoticization リスク + modern reality との乖離）が論点化。逆方向の
+  simplification として **v4.0 = 全国 modern daily casual wear + 国旗視認性
+  強化（d 手持ち優先・c 背景 banner フォールバック）** へ pivot 確定。
+  PHASE_BACKLOG v3.13-#1 (register 一致)・#3 (signature 多軸化) は v4.0
+  採用により原理的に不要化・retire。#2 (role plain-solid) は modern wear
+  統一で副次的に解消見込み。#4 (vocab_subtype) のみ独立 backlog として保持。
+  関連 memory：worktree 側 `project_v4_0_pivot.md` /
+  main 側 `project_v4_0_pivot.md`（同名・worktree 起源情報を main 視点で保持）。

@@ -137,6 +137,119 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   削除し、削除確認を docs 反映。完了＝ 生存中の GAS トリガー 0 件・GAS 完全消滅・
   `NEXT_ACTIONS.md` の人間タスク欄が空。
 
+# v4.0 マスタープロンプトガイド major-version 改修（worktree 専属・2026-05-22 pivot 決定）
+
+> 本セクションは **Phase 5 ④ の prerequisite**。Phase 体系（GAS 依存を 1 つずつ
+> 殺す）とは独立した、画像品質ラインの方針転換。worktree session
+> （`.claude/worktrees/image-prompt-plan`）で着手し、main へ ff-merge する
+> 既存 worktree フローに従う。
+
+## 背景（pivot 経緯）
+
+worktree image-prompt-plan セッション（2026-05-22）で v3.13-#1
+GARMENT_REGISTER_CONSISTENCY_RULE 着手前の現状調査中、`PERSON_NATIONALITY_HINTS`
+の構造的アシンメトリが論点化：
+
+- **アジア 4 か国（日中韓越）**：伝統 silhouette（hanbok / qipao / áo dài /
+  wagara）骨格 + 二色化 + 伝統 pattern が default
+- **西洋・南米 3 か国（米伯西）**：modern garment + 地域 craft accent が default
+
+ユーザー指摘：「アジア＝伝統服 / その他＝現代服」の暗黙の二分は
+(1) **exoticization リスク**（実際の現地人は日常的に伝統服を着ない）
+(2) **modern reality との乖離**（教科書 nationality 挿絵としても不自然）
+を孕み、構造的修正が必要。v3.13-#3 は cascading 多軸 signature で拡張する
+方向だったが、ユーザー提案により **逆方向の simplification = 全国共通
+modern wear への統一** が採用された。
+
+教育学的根拠：『みんなの日本語』『げんき』など主要教科書の nationality
+挿絵は伝統服を使わず modern wear + 国旗 / 名札で機能している。確立された
+方式に揃える方向。
+
+## v4.0 設計核心
+
+| 項目 | v3.12 | v4.0 |
+|---|---|---|
+| `PERSON_NATIONALITY_HINTS` | 国別に伝統 silhouette / craft accent / palette を持つ | 全国共通 "modern daily casual wear" 1 種類 |
+| PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE | アジア 4 か国に MUST 適用 | **退役** |
+| `TRADITIONAL_DRESS_PATTERN_LOOKUP` | 12+ entries | **退役**（lookup 自体不要） |
+| TWO-COLOR RULE | アジア限定の asymmetric 適用 | **退役**（全国 modern で不要） |
+| PART 1.7 FLAG_PLACEMENT_RULE | 5-6% ピン（左胸・袖等 4 options から hash 選択） | **再設計**：国旗視認性強化方式へ |
+| PART 1.8 GARMENT_REGISTER_CONSISTENCY_RULE | v3.13-#1 提案 | **不要化**（伝統 register が消えるので一致問題が原理的に発生しない） |
+
+## 国旗視認性方針
+
+east_asian phenotype を共有する日中韓 3 か国の弁別は国旗依存になるため、
+国旗視認性は **v4.0 の必須前提**。
+
+- **第一試行：d（subject が手で国旗を持つ pose）** — 弁別性最大・教科書
+  挿絵の慣用に最も近い
+- **フォールバック：c（背景 banner / 後景に国旗）** — d で構図が崩れる
+  ／視認性不足のときに切替
+
+実機検証フェーズで d/c を判断する（事前確定しない）。
+
+## v4.0 完了条件
+
+```
+全国 modern daily casual + 国旗視認性強化（d/c 方式確定）で
+  lesson_01 person 全 12 件を v4.0 ガイド経由で再生成
++ 人間目視で日中韓 3 か国が国旗で一目区別可能
++ 7 国籍カードで exoticization なし（全員 modern wear）
++ npm run validate PASS（invariants B hash が v4.0 のものに更新）
++ archive/prompts/ に v3.12 系を退避済
+```
+
+## Phase 5 ④ との順序関係
+
+**v4.0 が先**：Phase 5 ④（例文 master prompt template 新設 + build_prompts.py
+catalog 駆動拡張）は v4.0 ガイド上で動くため、v4.0 完了後でないと着手できない。
+
+順序：
+```
+[現在] → v4.0 worktree session → main ff-merge → Phase 5 ④ worktree session
+       → main ff-merge → Phase 5 ⑤ → Phase 5 ⑥
+```
+
+v4.0 と Phase 5 ④ を同 worktree session で混ぜることは技術的に可能だが、
+スライス境界が崩れるため分離（v4.0 完了 → main へ ff-merge → 別 worktree
+session で Phase 5 ④ 着手）が原則。user 判断で混ぜることは妨げない。
+
+## worktree 側 実装スコープ
+
+- `prompts/master_prompt_design_guide_v4_0.py` 新規作成（v3.12 派生 +
+  PART 1.6 退役 + PART 1.7 国旗強化 + PART 1.8 不要）
+- `scripts/build_prompts.py` の `PERSON_NATIONALITY_HINTS` を全国 modern
+  daily casual に書き直し
+- `PROMPT_TEMPLATES["vocabulary_person"]` の pose / framing を国旗手持ち
+  （d）対応に改修
+- lesson_01 全 12 件再生成（既存 v3.12 image は invalidate・nanobanana
+  ~$0.50 想定）
+- `scripts/invariants.mjs` の B hash と promptGuide path を v4.0 に更新
+- `archive/prompts/` に v3.12 系を退避（master_prompt_design_guide_v3_12.py
+  + image_prompts_lesson01_v3_12.json）
+- 視認性検証：d 案で 7 国籍カード生成 → 日中韓 3 か国が一目区別できるか
+  目視確認 → 不足なら c 案に切替して再生成 → 確定したら lesson_01 全件再生成
+
+## 想定コスト
+
+- 7 国籍カード 1 round（d 試行）：~$0.27（nanobanana）
+- 必要なら c 案で 7 国籍カード再生成：~$0.27
+- lesson_01 person 全 12 件本生成：~$0.46
+- 合計：$1.00 前後
+
+## PHASE_BACKLOG v3.13 候補の扱い
+
+- `v3.13-#1` GARMENT_REGISTER_CONSISTENCY_RULE：**v4.0 pivot で不要化** →
+  PHASE_BACKLOG で retire
+- `v3.13-#2` role cards plain-solid 明文化：**v4.0 で副次的に解消見込み**
+  （modern wear 統一で plain-solid 規律がより自然に成立）→ 位置づけ変更で残置
+- `v3.13-#3` 伝統服が薄い／無い国の signature 多軸化：**v4.0 が逆方向で
+  解消** → PHASE_BACKLOG で retire
+- `v3.13-#4` 新語彙の自動分類サポート (vocab_subtype)：**v4.0 とは独立**
+  → PHASE_BACKLOG で保持（Phase 5 ⑥ との相互排他性は引き続き保留）
+
+---
+
 # Phase 5：入力系のローカル化（未着手・スコープ確定 2026-05-21）
 
 Phase 4 完了時点で **trigger 駆動の GAS 自動実行は 0 件**になったが、以下が
@@ -179,6 +292,10 @@ gas/pipeline.gs 削除済（⑥）
    PHASE_BACKLOG「Phase 4 後 backlog」に残置。Phase 5 ④ の worktree 作業とは別
    タイミングで着手（既存 v3.11.1 画像は --force 再生成しない限り変わらないため
    timing 制約なし・user 判断 2026-05-21）。
+   **2026-05-22 update**：v3.12 修正候補 1-6 は v4.0 pivot（全国 modern
+   daily casual wear への統一）で枠組み自体が消えるため、v4.0 完了後に
+   PHASE_BACKLOG から retire 予定。v4.0 worktree session で 1-6 を
+   個別に追従しない。
 6. **音声自然さチェックは Phase 5 と独立**：Gemini 2.5 audio path で PHASE_BACKLOG
    「Phase 3 後 backlog」に記録済（着手は Phase 5 完了後・user 判断 2026-05-21）。
 
@@ -207,12 +324,15 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   に切替。**例文配線は ⑤ で行う**（④ worktree 作業を待たずに main 側を進める分離）。
   完了＝`npm run import-lesson -- --lesson 01` が `seedLesson01` 同等動作で完走。
 
-- **④ ＜プラン強依存・worktree 専属＞** 例文 master prompt template 新設 +
-  build_prompts.py 拡張。**① と並行可能**。`master_prompt_design_guide_v3_N.py`
-  に `vocabulary_example_sentence` template 新設（STYLE_BIBLE / 不変条件を
-  vocabulary_person から継承）。`build_prompts.py` を catalog 駆動 + 全 vocab_type
-  （person / concrete_object / building / action_verb / adjective / etc.）+
-  例文にスコープ拡張。**v3.12 person 品質修正 1-6 は別作業（PHASE_BACKLOG 残置）**。
+- **④ ＜プラン強依存・worktree 専属・v4.0 完了が prerequisite＞** 例文 master
+  prompt template 新設 + build_prompts.py 拡張。**v4.0 完了 → main ff-merge
+  後に着手**（v3.13 → v4.0 pivot で「並行可能」条件は変化・2026-05-22）。
+  `master_prompt_design_guide_v4_N.py` に `vocabulary_example_sentence`
+  template 新設（STYLE_BIBLE / 不変条件を vocabulary_person から継承）。
+  `build_prompts.py` を catalog 駆動 + 全 vocab_type（person /
+  concrete_object / building / action_verb / adjective / etc.）+ 例文に
+  スコープ拡張。**v3.12 person 品質修正 1-6 は v4.0 で全国 modern wear に
+  置換されるため退避項目自体が消える見込み**。
   完了＝`python scripts/build_prompts.py --catalog` で vocab 全タイプ + 例文の
   prompt JSON 出力・`invariants[C]` PASS。
 
