@@ -5,7 +5,9 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-21（**Phase 5 ③ 完了** / `image-prompt-plan` worktree が v3.12 で一段落・**main 即時 active = v3.12 取り込み + v3.13 BACKLOG migration**）
+**最終更新：** 2026-05-22（**v3.12 取り込み完了 + v3.13 BACKLOG migrate 完了**。
+main 側は **待ち状態**：次の active 化は worktree が v3.13 → Phase 5 ④ を完了して
+ff-merge してくるか、user が Phase 5 ⑤⑥ の前倒し判断を下したとき）
 
 ---
 
@@ -14,12 +16,13 @@
 - **Phase 0／1／2／3／4：完了。** ✅
 - **Phase 5 ①：完了** ✅ — Goi_List 全レベル抽出済（17,908 entries・UNKNOWN 0）
 - **Phase 5 ②：完了** ✅ — `data/vocab_catalog.json` 確立（17,508 unique）／`classify-and-translate.mjs` を catalog 駆動化
-- **Phase 5 ③：完了** ✅ — `scripts/import-lesson.mjs` 新規（GAS `seedLesson01.gs` vocab 部のローカル等価実装）。`npm run import-lesson -- --lesson 01` および `02` で **catalog + image + audio registries** に対し **totalDelta=0**（書き出しスキップ・冪等保証）。合成 lesson_99 で新規 entry 作成パスも動作確認済（成立 / 削除済）。例文配線は ⑤ で行う。
-- **image-prompt-plan worktree：v3.12 完了** — `phase4-prompt-plan` ブランチが main から **7 commits ahead**。v3.12 person 品質修正（PHASE_BACKLOG「Phase 4 後 backlog」由来）。main 側に未取り込み。
-- **Phase 5 ④：worktree pending（v3.13 後）** — `master_prompt_design_guide_v3_N.py` 例文 template + `build_prompts.py` catalog 駆動拡張
+- **Phase 5 ③：完了** ✅ — `scripts/import-lesson.mjs` 新規。lesson_01 / 02 で totalDelta=0（書き出しスキップ・冪等保証）。例文配線は ⑤ で実施。
+- **v3.12 取り込み：完了** ✅ — `phase4-prompt-plan` を main に ff-merge（worktree で main 上に rebase 後）。invariants B hash = `2137a8e885ae`（v3.12）に更新済・validate PASS。
+- **v3.13 BACKLOG migrate：完了** ✅ — `docs/PROMPT_GUIDE_v3_12.md` 末尾 handoff の 4 件（#1〜#4）を `docs/PHASE_BACKLOG.md` § 「v3.13 マスタープロンプトガイド修正候補」へ migrate。ガイド本体からは該当セクション削除済（v3.12 完了状態として保全）。
+- **Phase 5 ④：worktree pending** — `master_prompt_design_guide_v3_N.py` 例文 template + `build_prompts.py` catalog 駆動拡張（v3.13 と並行 or 後着手）
 - **Phase 5 ⑤：main 次タスク（④ 完了待ち）** — 例文配線 + smoke 生成
 - **Phase 5 ⑥：未着手** — GAS 入力系 3 系統 + Sheet/Drive 退役（⑤ 完了後）
-- **Phase 4 後 backlog**：着手保留（残り 436 件本生成）
+- **Phase 4 後 backlog**：着手保留（v3.12 修正候補 1-6 の本適用は v3.12 取り込みで完結。残り 436 件本生成 / v3.13 候補 4 件 / 画像 QC 仕様 / scene-rich テンプレ A2 設計 等）
 - **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
 生存中の GAS 自動 trigger：**0 件**（Phase 4 完了時点・人間検証済 2026-05-21）。
@@ -28,61 +31,53 @@
 
 ---
 
-## active（main 即時）：v3.12 取り込み + v3.13 BACKLOG migration
+## active（main 即時）：**なし**
 
-**担当**：main 専属・worktree（image-prompt-plan）が一段落したことを受けての取り込みフロー
-**前提**：image-prompt-plan worktree が `phase4-prompt-plan` で 7 commits ahead・clean
+main 側に即時 active タスクはない。次の active 化は以下のいずれか：
 
-**やること（順序固定）：**
+1. **worktree が v3.13 + Phase 5 ④ を完了して ff-merge してくる**
+   → main で取り込み後、Phase 5 ⑤（例文配線 + smoke 生成）を active 化
+2. **user が Phase 5 ⑥ を前倒しで主体的に進めたい場合**
+   → ⑤ を待たず ⑥（GAS 退役）の準備に着手可能（ただし依存関係要再確認）
 
-1. `git fetch` → `git log phase4-prompt-plan ^main` で取り込み対象 commit を確認
-2. `git merge --ff-only phase4-prompt-plan` で v3.12 を main に取り込み
-3. `npm run validate` PASS 確認（invariants B hash が v3.12 のものに更新されているはず）
-4. `docs/PROMPT_GUIDE_v3_12.md` を読み、**v3.13 BACKLOG 4 件**を抽出
-5. 抽出した 4 件を `docs/PHASE_BACKLOG.md` の「Phase 4 後 backlog」セクションに migrate
-6. migration 完了後、`PROMPT_GUIDE_v3_12.md` から該当 4 件のセクションを削除
-   （v3.12 ガイド本体は v3.12 完了状態として保全。BACKLOG は別ファイル一元管理）
-7. NEXT_ACTIONS.md を「v3.12 取り込み済・v3.13 候補は PHASE_BACKLOG 経由」で書き直し
-8. commit（feat(prompt-plan): v3.12 取り込み + v3.13 BACKLOG migration 等）
-
-**完了条件**：`git status` clean・`npm run validate` PASS・`docs/PHASE_BACKLOG.md` に v3.13 候補 4 件 記載・`docs/PROMPT_GUIDE_v3_12.md` から migration 済セクション削除済。
-
-**規模見積**：1 セッション。
-
-**コスト**：$0（merge + docs 整理のみ）
+どちらの待ちかは user 判断。
 
 ---
 
 ## 並行起動可能：image-prompt-plan worktree で v3.13 着手
 
-main の v3.12 取り込みが完了したら、user が worktree セッションを別途立てて
-v3.13 を進行可能。**1 セッション = 1 worktree** の規律は維持。
+worktree セッションを別途立てて v3.13 を進行可能。
+**1 セッション = 1 worktree** の規律は維持。
 
 worktree セッション開始手順（`docs/WORKFLOW.md` § worktree セッション開始時 参照）：
 
 ```
 cd .claude/worktrees/image-prompt-plan
-git merge --ff-only main   # main の v3.12 merge + BACKLOG migration を取り込む
-npm run validate           # baseline 確認
-# v3.13 着手（#1 が即着手しやすい・docs/PHASE_BACKLOG.md 参照）
+git merge --ff-only main   # main の v3.12 merge + v3.13 BACKLOG migrate を取り込む
+npm run validate           # baseline 確認（B hash = 2137a8e885ae のはず）
+# v3.13 着手（#1 GARMENT_REGISTER_CONSISTENCY_RULE が最優先・docs/PHASE_BACKLOG.md 参照）
 ```
 
 **Phase 5 ④（例文 template + build_prompts.py catalog 駆動拡張）は v3.13 後に
 同じ worktree で着手**（`master_prompt_design_guide_v3_N.py` / `build_prompts.py` を
 触るため worktree 専属）。詳細は `docs/MIGRATION_PLAN.md` § Phase 5 ④ 参照。
 
+v3.13 と Phase 5 ④ を 1 worktree セッションに混ぜるか分けるかは user 判断
+（混ぜると invariants B hash 更新が 1 回で済むが、commit slice が大きくなる）。
+
 ---
 
 ## ブロッカー
 
 - Phase 5 ⑤ は ④ 完了に blocked（worktree 側の v3.13 + Phase 5 ④ 進捗待ち）。
+- Phase 5 ⑥ は ⑤ 完了に blocked（vocab + 例文の両方が catalog + registry 経由で動くこと確認後に GAS 退役）。
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate                   # invariants A=v7.5 / B=a79e54a29e51 / C=12×4 / D=55/55（3 WARN）PASS
+npm run validate                   # invariants A=v7.5 / B=2137a8e885ae / C=12×5 / D=55/55（3 WARN）PASS
 npm run missing-assets             # 現状 image 441 / audio 108（Phase 5 ⑤ 完了後に減少）
 npm run check-sa                   # Sheets API 疎通
 npm run check-tts-sa               # Cloud TTS API 疎通
@@ -116,5 +111,6 @@ python scripts/build_prompts.py --lesson 1       # worktree で実行（Phase 5 
 - raw source：`data/sources/goi_list_raw.pdf`（1.58 MB）/ `data/sources/goi_list_raw.json`（5.44 MB・17,908 entries）
 - Phase 5 ② catalog：`data/vocab_catalog.json`（9.85 MB・17,508 unique entries・schemaVersion 1.0）
 - Phase 5 ③ importer：`scripts/import-lesson.mjs`（GAS `seedLesson01.gs` vocab 部の冪等ローカル実装）
+- v3.12 取り込み：merge SHA は `git log --merges` 不要（ff-only のため merge commit なし）。worktree 7 commits（`v3.12 ガイド本体` → `v3.12 シリーズ パッチノート + v3.13 backlog handoff`）が main tip にそのまま乗っている形。
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。

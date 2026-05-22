@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-21（registry 未登録 382 件バックフィル完了で項目除去 / 画像 QC 仕様 下書きを Phase 4 ④ 退避項目として追加 / v3.11.1 人間検証で発見した v3.12 修正候補を worktree 引き継ぎ用に追加 / Phase 4 ④⑤ を Phase 4 後 backlog に移管反映 / Phase 4 ③ 持ち越し分 436 件を v3.12 後 backlog として追加 / ③ smoke 5 件 Imagen 4 経由レビューで追加発見した v3.12 修正候補 3 件を追記 / **方針転換：nanobanana 一本化** = v3.12 主指針を「nanobanana 安全」に変更、Imagen 4 由来 3 項目の優先度↓ / nanobanana で 5 件 --force 再生成 human review で項目 7-9 が未再現を実機確認、v3.12 では項目 1-6 のみ必須対応で OK / **Phase 3 後 backlog セクション新設** = Phase 5 設計議論で発見した音声自然さチェックを音声 line backlog として記録（Gemini 2.5 audio マルチモーダル path で実装確定・着手は Phase 5 完了後）/ 運用ルールに「Phase N 後」命名規則注記追加）
+最終更新：2026-05-22（v3.12 worktree merge を main 取り込み完了 → `docs/PROMPT_GUIDE_v3_12.md` 末尾 handoff の v3.13 BACKLOG 4 件 (#1〜#4) を新セクション「v3.13 マスタープロンプトガイド修正候補」として migrate）
 
 ---
 
@@ -403,6 +403,115 @@ bias 差を意味する。v3.12 ではどちらのモデルでも安全に動く
     nanobanana では prompt の `flat illustration` style anchor が効くため
     MEDIUM_LOCK 句や NO_RENDERED_TEXT_RULE は **必須ではない**（あれば
     防御力↑）。v3.12 では項目 1-6 のみに集中して構わない。
+
+---
+
+### v3.13 マスタープロンプトガイド修正候補（worktree 担当・v3.12 取り込み 2026-05-22 で migrate）
+- 出所：`docs/PROMPT_GUIDE_v3_12.md` 末尾 v3.13 BACKLOG handoff（worktree
+  → main fast-forward merge 経由の引き継ぎ機構）。v3.12 シリーズ実装中／
+  実機検証中に発見した次バージョン候補で、main session が migrate 完了印
+  として handoff 元のセクションを削除する規約。
+- 退避理由：v3.12 はガイド本体改修・実機検証・lesson_01 再生成まで完了
+  しており、これ以上のガイド改修は v3.13 として独立 worktree session で
+  着手する。Phase 5 ④（例文 template 新設）とは焦点が異なる
+  （v3.13 は単語レベル改善・Phase 5 ④ は例文構造拡張）ため別作業として
+  独立する（Phase 4 完了後 backlog の v3.12 セクションと同じ分離方針）。
+- 戻し方：worktree セッション（`.claude/worktrees/image-prompt-plan`）で
+  `git merge --ff-only main` 後、優先度順（#1 → #4）で着手。#1 は v3.12
+  実機検証で既に再現観測されているため最優先。
+- 想定コスト：実装はガイド本体改修と build_prompts.py の lookup 追加が
+  中心で API コストは低い（再生成 smoke 5-10 件で $0.20-0.40）。
+
+#### v3.13-#1: GARMENT_REGISTER_CONSISTENCY_RULE（新規普遍ルール）
+- **背景**：v3.12 実機検証（韓国男性カード）で hanbok 風 jeogori トップ
+  + modern gray trousers + 白スリップオン という「上=伝統 / 下=モダン /
+  靴=モダン抜けすぎ」のレジスター不揃いが確認された。現在の v3.12 には
+  衣服の register（伝統度／格式）を上下で揃えるルールが存在しない：
+  `FOOTWEAR RULE`（両足に靴を履け・register 不問）/ `TWO-COLOR RULE`
+  （上下で色を分けろ・register 不問）/ `TRADITIONAL_DRESS_PATTERN_RULE`
+  （伝統 silhouette のとき pattern を入れろ・trousers と footwear は不問）。
+- **提案**：PART 1.8 として GARMENT_REGISTER_CONSISTENCY_RULE を新設。
+  ```
+  原則: 上半身の register に trousers と footwear を揃える。
+    rule_a: 上半身が伝統 silhouette のとき、trousers と footwear は
+      (a) 同じ伝統 register（hanbok bottoms / 伝統低靴 等）OR
+      (b) "muted modern neutral"（無装飾の cream/charcoal/indigo trousers
+          + 無装飾の dark slip-on or simple flat = visually quiet 下半身）
+      のいずれか。白スリップオン等の「新しすぎる」要素は (b) outlier として禁止。
+    rule_b: 上半身が modern silhouette のとき、bottoms と footwear は modern。
+  ```
+- **スコープ**：日本人 (a) wagara top / (b) noragi、韓国 (a)(c) hanbok 系、
+  中国 (a)(b) 中国服系、ベトナム (a)(b) áo dài 系 — すべての伝統 silhouette
+  option に影響。FOOTWEAR RULE の許可リストから「visually loud」アイテムを
+  register 別に切り分ける形になる。
+- **実装難易度**：中。ガイド本体に rule 追記 + cultural_styling_hint の
+  footwear 記述を整合。lesson_01 の現在の出力で 韓国・日本・ベトナム を
+  再生成して効果検証。
+- **優先度**：高（v3.12 実機で再現観測済 → v3.13 で最優先着手）。
+
+#### v3.13-#2: role cards の plain-solid 明文化
+- **背景**：`NATIONAL_SYMBOL_ISOLATION_RULE.(d)` は "graphic / printed /
+  logo / patterned" garment や "unspecified print contents" を禁じているが、
+  これは nationality cards 向けの規律。role cards (医者・先生・学生 等) には
+  対応する明示的な plain-solid 規律が無く、nanobanana が生成的に小さな
+  stripes / dots / texture を出す可能性が残る。
+- **現状の実害**：未観測。lesson_01 の 5 role 画像（医者・先生・学生・
+  大学生・会社員）は plain solid で出ている。ただし将来 lesson 数や role
+  種類が増えたとき再発リスクあり。
+- **提案**：`ROLE_BASED_GENERIC_PROFILES.[role].outfit_hints` の各エントリに
+  "plain solid color (no stripes, no dots, no print, no pattern)" を追記、
+  OR PART 2.2 注記として一括規律を明文化。
+- **実装難易度**：低。テキスト追記のみ。
+- **優先度**：低（実害観測されてから対応で十分）。
+
+#### v3.13-#3: 伝統服が薄い／無い国の signature 多軸化
+- **背景**：v3.12 の `TRADITIONAL_DRESS_PATTERN_RULE` は rule_e
+  modern_styles_exempt で「伝統服がない国は entry 不要」を許容しているが、
+  代替の signature 軸を提供していない。将来 ドイツ・フランス・カナダ・
+  オーストラリア・オランダ 等が課に追加されたとき、cultural_styling_hint だけ
+  で差別化するには記述コストが高く、Imagen の収束に再び負ける可能性がある。
+- **提案**：v4.0（major-version）で `signature_for(word)` を cascading 構造化：
+  ```python
+  def signature_for(word):
+      # 以下を順次試して最初に hit したものを返す
+      return (
+          TRADITIONAL_DRESS_PATTERN_LOOKUP.get(word) or
+          MODERN_FASHION_ARCHETYPE_LOOKUP.get(word) or
+          REGIONAL_CRAFT_ACCENT_LOOKUP.get(word) or
+          FOOTWEAR_SIGNATURE_LOOKUP.get(word) or
+          COLOR_PALETTE_SIGNATURE_LOOKUP.get(word) or
+          None
+      )
+  ```
+  各 lookup の例：
+  | 軸 | 例 |
+  |---|---|
+  | modern fashion archetype | ドイツ = "minimalist Bauhaus-clean tailored coat" / フランス = "tailored navy blazer + silk scarf" / オーストラリア = "Akubra-style brimmed hat + rugged work jacket" |
+  | regional craft accent | カナダ = "Cowichan-style chunky knit sweater" / メキシコ = "small huichol-bead bracelet" / アルゼンチン = "facón-belt detail" |
+  | footwear signature | オランダ = "klompen-inspired wooden clog accent" / 英国 = "Wellington-style boots" / モロッコ = "babouche-style pointed slippers" |
+  | color palette | スカンジナビア = "muted blue + cream" / 地中海 = "terracotta + olive + cream" |
+- **実装難易度**：高（major-version 扱い）。v3.13 では設計検討のみ、実装は v4.0
+  リリース時。lesson 拡張で新国追加が現実化する時期に着手。
+- **優先度**：中（v4.0 候補・lesson 数 expansion 時に着手）。
+
+#### v3.13-#4: 新語彙の自動分類サポート (vocab_subtype)
+- **背景**：現在 `classify_person` は lookup miss すると build abort する設計
+  で、新国籍・新役割は人間が必ず手動で `PERSON_NATIONALITY_HINTS` /
+  `PERSON_ROLE_LOOKUP` 等に追加する必要がある。lesson 数増加に伴い、この
+  manual lookup expansion が運用コストになる。
+- **提案**：data 側に真実源を移す（`docs/MIGRATION_PLAN.md` 方向性と整合）：
+  1. GAS Vocabulary シートに `vocab_subtype` 列を追加
+     （例："nationality_east_asian" / "role_doctor" / "role_teacher" 等）
+  2. `gas/pipeline.gs#exportVocabTypesAll()` で `vocab_types_lessonNN.json` に
+     `vocab_subtype` を含めて export
+  3. `scripts/build_prompts.py` は subtype を見て分類、必要 lookup の有無を
+     pre-flight check で警告
+- **実装難易度**：中（GAS 改修 + build_prompts 改修）。
+- **優先度**：中（lesson 02, 03 拡張時に着手するのが自然）。
+- **注意**：Phase 5 ⑥（GAS 入力系 3 系統 + Sheet/Drive 退役）と相互排他的に
+  検討。Phase 5 で GAS が完全退役する場合、本提案の「GAS Vocabulary シートに
+  vocab_subtype 列追加」は不適用となり、ローカル CSV / JSON で真実源を持つ
+  設計に変える必要がある。Phase 5 ⑥ 実装方針確定後に再評価する。
 
 ---
 
