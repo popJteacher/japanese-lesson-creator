@@ -165,3 +165,9 @@
   手動再生成予定・PHASE_BACKLOG「Phase 4 後 backlog」に記録）。
   archive：`archive/prompts/master_prompt_design_guide_v3_12.py` +
   `archive/prompts/image_prompts_lesson01_v3_12.json` に v3.12 系を保全。
+
+- **2026-05-22 v4.0 flag size 残課題 retire**：v4.0 取り込み後の人間レビューで
+  `word_ベトナム人.png` のみ flag size が異常に大（他 11 件は許容内）。user が
+  worktree で `--force` 再生成 → main に手動コピー反映（hash
+  `298b98de2a77` → `971f22c6285d`）。PHASE_BACKLOG「flag size 均一化」項目は
+  retire。今後 lesson 拡張で新規 outlier が出た場合は per-image 対応。

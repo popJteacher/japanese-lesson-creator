@@ -32,9 +32,8 @@ invariants B hash = `5338c98aab5d` 確認済 → 次は Phase 5 ④ 着手準備
 - **Phase 5 ⑤／⑥：未着手** — ④ 完了後
 - **Phase 4 後 backlog**：v3.12 修正候補 1-6 は v4.0 で枠組み消失（retire
   予定・PHASE_BACKLOG 参照）。残り 436 件本生成 / 画像 QC 仕様 / scene-rich
-  テンプレ A2 設計 等は残置
-- **Phase 4 後 backlog（v4.0 由来 新規）：flag size の国別バラツキ
-  10-25%**（nanobanana 確率揺れ・user 手動対応予定）🆕
+  テンプレ A2 設計 等は残置。v4.0 由来「flag size 均一化」は user 手動で
+  word_ベトナム人.png のみ差し替え → retire 済（2026-05-22）
 - **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
 生存中の GAS 自動 trigger：**0 件**（Phase 4 完了時点・人間検証済 2026-05-21）。
@@ -123,8 +122,4 @@ python scripts/build_prompts.py --lesson 1       # v4.0 ガイド経由（--cata
 - v4.0 アーカイブ：`archive/prompts/master_prompt_design_guide_v3_12.py` +
   `archive/prompts/image_prompts_lesson01_v3_12.json`
 
-人間タスク：
-- **flag size 均一化（v4.0 由来・PHASE_BACKLOG「Phase 4 後 backlog」参照）：**
-  v4.0 で国旗両手持ち pose に統一したが、国別で flag size が 10-25% と
-  バラつく（nanobanana の確率揺れ）。user が手動で再生成・置換予定。
-- Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現。
+人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
