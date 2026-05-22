@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-22（**v3.13 → v4.0 pivot 反映**：v3.13-#1/#3 を retire、#2 を「v4.0 で副次的に解消見込み」に位置づけ変更、#4 のみ独立 backlog として保持。v4.0 phase は `docs/MIGRATION_PLAN.md` に新設）
+最終更新：2026-05-22（**v4.0 取り込み完了反映**：worktree → main ff-merge 後、v4.0 由来の新規 backlog として「flag size の国別バラツキ均一化（user 手動対応予定）」を Phase 4 後 backlog に追加。v3.13-#1/#3 retire・#2 副次解消見込み・#4 独立保持は前回反映済）
 
 ---
 
@@ -56,6 +56,26 @@
 ---
 
 ## Phase 4 後 backlog（Phase 4 完了後に個別着手）
+
+### v4.0 由来：flag size の国別バラツキ均一化（user 手動対応予定・2026-05-22）
+- 出所：v4.0 worktree session（image-prompt-plan）で role 5 + nationality 7
+  計 12 件を v4.0 ガイドで再生成した際、user 視覚レビューで発見。両手持ち
+  国旗 pose は安定して出るものの、flag の image-fill 比率が国によって
+  10-25% でバラつく（target は 12-15%）。nanobanana の確率揺れに起因する
+  生成 bias で、PART 1.1 NATIONALITY_NOUN_POLICY の hand-held flag 12-15%
+  指定は守られているが下限ギリギリ〜上限超えまでブレる。
+- 退避理由：プロンプト側で更に強い size lock を入れると hand pose や
+  body proportion を歪める副作用（v4.0 検証中に rounds 2-3 で確認）。
+  user 視覚で許容できる範囲のため、構造的修正ではなく **user 手動の
+  `--force` 再生成 + 目視差し替え** で対応する方針（user 判断 2026-05-22）。
+- 戻し方：user が許容外と判断した imageId のみ
+  `npm run generate-images -- --prompts data/image_prompts_lesson01_v4_0.json
+  --limit 1 --force` で 1 件ずつ再ガチャ。コスト目安 1 件 ~$0.04。
+  自動化候補が出た場合（例：将来の画像 QC 仕様で flag bbox 検出 + size
+  ratio measure が実装されたら automated retry hook 追加）、PHASE_BACKLOG
+  の「画像 QC 仕様」セクション D 検査に flag-size ratio を追加する形で吸収。
+- 優先度：低（user 手動 OK 判定なので blocker ではない・lesson 数増加で
+  累積したら自動化を再評価）。
 
 ### 画像 QC 仕様（旧 Phase 4 ④⑤ 設計下書き）
 - **位置付け変更（2026-05-21）：** 当初 Phase 4 ④⑤ の設計下書きとして退避していたが、

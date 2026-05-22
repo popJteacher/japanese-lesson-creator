@@ -155,3 +155,13 @@
   統一で副次的に解消見込み。#4 (vocab_subtype) のみ独立 backlog として保持。
   関連 memory：worktree 側 `project_v4_0_pivot.md` /
   main 側 `project_v4_0_pivot.md`（同名・worktree 起源情報を main 視点で保持）。
+
+- **2026-05-22 v4.0 実装完了**：worktree image-prompt-plan で v4.0 ガイド本体
+  + build_prompts.py 改修 + invariants 更新を実装し、4 ラウンド・nanobanana
+  48 件・$1.86 で実機検証 → user 視覚 OK「とてもよくなりました」→ main へ
+  ff-merge（commit `1a42cd4` / B hash `2137a8e885ae` → `5338c98aab5d`）。
+  data/images/word_*.png 12 件（role 5 + nationality 7）を v4.0 再生成済。
+  残課題：flag size の国別バラツキ（10-25% / nanobanana 確率揺れ / user
+  手動再生成予定・PHASE_BACKLOG「Phase 4 後 backlog」に記録）。
+  archive：`archive/prompts/master_prompt_design_guide_v3_12.py` +
+  `archive/prompts/image_prompts_lesson01_v3_12.json` に v3.12 系を保全。
