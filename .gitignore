@@ -41,7 +41,9 @@ secrets/
 data/*.js
 
 # プロジェクトナレッジ専用ファイル（claude.ai 管理・リポジトリ不要）
-SKILL*.md
+# ルートの SKILL*.md のみが対象（claude.ai 管理ファイル）。
+# docs/SKILLS_MANUAL.md 等の docs 配下マニュアルは tracked にする。
+/SKILL*.md
 
 # Python キャッシュ
 __pycache__/
