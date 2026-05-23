@@ -27,9 +27,23 @@ const ROOT = resolve(__dirname, '..');
 // apply_v3_3.py は Windows で CRLF を出すため raw 比較は偽陽性になる。
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
+  // 旧 SSOT (v4.1)：build_prompts.py が dead code 化されるまで B 検査を継続。
+  // Phase 5 ④' 完了 → build_prompts.py 完全撤去後は本フィールドを削除。
   promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v4_0.py'),
   promptGuideExpectedHashPrefix: '891b73f5ae2d', // v4.1 = v4.0 + Phase 5 ④ Q1 A: example_sentence template に FACIAL_FEATURES (PART 1.8) / HEAD_BODY_PROPORTION (PART 1.10) / FOOTWEAR_RULE を vocabulary_person 同様に inline 追加。LF 正規化後 SHA256 先頭 12 桁
-  // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
+  // 新 SSOT (v5.0)：Phase 5 ④' で導入された skill 用 6-PART Markdown ガイド。
+  // skill / scripts/lib/prompt_preflight.py / 人間レビューすべてが本 manifest を SSOT として参照。
+  // 各 PART file の LF 正規化後 SHA256 先頭 12 桁を順に連結して再 sha256 した値を「manifest hash」として固定。
+  guideManifest: [
+    resolve(ROOT, 'prompts/guide/part1_universal_rules.md'),
+    resolve(ROOT, 'prompts/guide/part2_style_bible.md'),
+    resolve(ROOT, 'prompts/guide/part3_vocab_type_rules.md'),
+    resolve(ROOT, 'prompts/guide/part4_prompt_templates.md'),
+    resolve(ROOT, 'prompts/guide/part5_vocab_reference_appendix.md'),
+    resolve(ROOT, 'prompts/guide/part6_output_instructions.md'),
+  ],
+  guideManifestExpectedHashPrefix: '1ca2f57ad927', // v5.0 初版 — 6 ファイル個別 hash を連結再 sha256
+  // S列プロンプト JSON の置き場
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
   // (_\d+)? を追加。従来の _v3_11.json 等も引き続き match する。
@@ -110,24 +124,54 @@ async function checkGasVersionDrift() {
 }
 
 // B. canonical プロンプトガイド hash アサート（LF 正規化後に比較）
+// Phase 5 ④' 以降は (B) 旧 .py（dead code 化中）と (B') 新 6-PART .md manifest の両方を検査する。
 async function checkPromptGuideHash() {
   const errors = [];
   const infos = [];
+
+  // (B) 旧 SSOT — build_prompts.py が dead code 化されるまで維持
   if (!(await exists(CANONICAL.promptGuide))) {
     errors.push(`invariants[B]: canonical プロンプトガイドが不在: ${CANONICAL.promptGuide}`);
-    return { errors, warns: [], infos };
-  }
-  const actual = await sha256PrefixNormalized(CANONICAL.promptGuide);
-  const expected = CANONICAL.promptGuideExpectedHashPrefix;
-  if (actual !== expected) {
-    errors.push(
-      `invariants[B]: canonical プロンプトガイド hash 不一致（LF 正規化後）。`
-      + ` expected=${expected} / actual=${actual}`
-      + ` (${CANONICAL.promptGuide})`
-    );
   } else {
-    infos.push(`invariants[B] プロンプトガイド hash OK（LF 正規化後）: ${actual}`);
+    const actual = await sha256PrefixNormalized(CANONICAL.promptGuide);
+    const expected = CANONICAL.promptGuideExpectedHashPrefix;
+    if (actual !== expected) {
+      errors.push(
+        `invariants[B]: canonical プロンプトガイド hash 不一致（LF 正規化後）。`
+        + ` expected=${expected} / actual=${actual}`
+        + ` (${CANONICAL.promptGuide})`
+      );
+    } else {
+      infos.push(`invariants[B] プロンプトガイド hash OK（LF 正規化後）: ${actual}`);
+    }
   }
+
+  // (B') 新 SSOT — skill 用 6-PART manifest hash
+  const partHashes = [];
+  let manifestOk = true;
+  for (const p of CANONICAL.guideManifest) {
+    if (!(await exists(p))) {
+      errors.push(`invariants[B']: skill ガイド PART ファイル不在: ${p}`);
+      manifestOk = false;
+      break;
+    }
+    partHashes.push(await sha256PrefixNormalized(p));
+  }
+  if (manifestOk) {
+    const concat = partHashes.join('');
+    const manifestActual = createHash('sha256').update(concat).digest('hex').slice(0, 12);
+    const manifestExpected = CANONICAL.guideManifestExpectedHashPrefix;
+    if (manifestActual !== manifestExpected) {
+      errors.push(
+        `invariants[B']: skill ガイド 6-PART manifest hash 不一致。`
+        + ` expected=${manifestExpected} / actual=${manifestActual}`
+        + ` (個別 hash: ${partHashes.join(',')})`
+      );
+    } else {
+      infos.push(`invariants[B'] skill ガイド 6-PART manifest hash OK: ${manifestActual}`);
+    }
+  }
+
   return { errors, warns: [], infos };
 }
 

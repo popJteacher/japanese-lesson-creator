@@ -188,3 +188,10 @@
   本格実装は新規 fresh worktree session で着手予定。関連 memory：
   `project_phase5_pivot_to_claude_code_skill.md` /
   `feedback_skill_over_api_for_prompt_gen.md`。
+
+- 2026-05-23 Phase 5 ④' worktree skill 実装完了：6-PART .md ガイド (manifest hash
+  1ca2f57ad927) + `.claude/skills/generate-image-prompt.md` (4 mode) + preflight
+  切出 `scripts/lib/prompt_preflight.py` + invariants B' 機械検証。lesson_01 smoke
+  PASS (医者)。schedule は Windows schtasks ローカル方式採用（remote /schedule
+  は見送り）。subagent Write が permission denied で全 6 PART を main session で
+  直接 Write した経緯あり (settings.local.json では subagent 解除されない harness 仕様)。
