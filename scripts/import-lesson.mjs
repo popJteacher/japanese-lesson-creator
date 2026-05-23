@@ -1,18 +1,19 @@
 #!/usr/bin/env node
-// import-lesson.mjs — Phase 5 ③
-// GAS seedLesson01.gs（seedVocabulary 部のみ）のローカル等価実装。
-// data/lesson_NN.json の vocabulary を:
-//   (1) data/vocab_catalog.json に追記
+// import-lesson.mjs — Phase 5 ③（vocab）+ ⑤ 後半（examples）
+// GAS seedLesson01.gs のローカル等価実装。
+// data/lesson_NN.json の vocabulary + examples を:
+//   (1) data/vocab_catalog.json に追記（vocab のみ）
 //       - 既存 entry → sourceIds / lessonRefs / bySource.lesson_NN に追記
 //       - 新規 entry → 通常通り作成
-//   (2) data/master_image_registry.json に pending 行追加
-//       - 既存 entry → usedInLessons のみ追加（firstLesson / status / images[] は不変）
-//       - 新規 entry → status:pending の stub を作成
-//   (3) data/master_audio_registry.json に pending 行追加
+//   (2) data/master_image_registry.json に pending 行追加（vocab + examples）
+//       - vocab：既存 entry → usedInLessons のみ追加（firstLesson / status / images[] は不変）
+//       - vocab：新規 entry → status:pending の stub を作成
+//       - examples：既存 entry → 触らない（status が generated/approved/rejected/outdated でも保持）
+//       - examples：新規 entry → status:pending の stub を作成（type: 'example_images'）
+//   (3) data/master_audio_registry.json に pending 行追加（vocab + examples）
 //       - 既存 entry → 触らない（audioUrl がそのまま）
-//       - 新規 entry → { audioUrl: null }
-//
-// vocab のみ（例文 / sentence_ex_* は Phase 5 ⑤ で実装する）。
+//       - 新規 entry（vocab）→ { audioUrl: null }
+//       - 新規 entry（examples）→ { audioUrl: null, sentence: "..." }
 //
 // 入出力（in-place）:
 //   data/lesson_NN.json                       [読み取りのみ]
@@ -20,9 +21,9 @@
 //   data/master_image_registry.json           [読み書き]
 //   data/master_audio_registry.json           [読み書き]
 //
-// べき等性（Phase 5 ③ 完了条件）:
-//   既に build-catalog 経由で catalog に入っている lesson_01 / lesson_02 に対しては
-//   実行しても 0 変更で完了する（差分カウンタ totalDelta === 0 → 書き出しスキップ）。
+// べき等性:
+//   既に処理済の lesson_01 / lesson_02 に対しては実行しても 0 変更で完了する
+//   （差分カウンタ totalDelta === 0 → 書き出しスキップ）。
 //
 // 使い方:
 //   npm run import-lesson -- --lesson 01
@@ -57,7 +58,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`import-lesson.mjs — Phase 5 ③ lesson_NN.json → catalog + registry 配線
+  console.log(`import-lesson.mjs — lesson_NN.json → catalog + registry 配線（vocab + examples）
 
 使い方:
   --lesson NN     対象課（必須・例: 01）
@@ -68,11 +69,9 @@ function printHelp() {
 入力:
   data/lesson_NN.json
 入出力 (in-place / atomic):
-  data/vocab_catalog.json
-  data/master_image_registry.json
-  data/master_audio_registry.json
-
-vocab のみ。例文 / sentence_* は Phase 5 ⑤ で扱う。
+  data/vocab_catalog.json                 [vocab のみ]
+  data/master_image_registry.json         [vocab + examples]
+  data/master_audio_registry.json         [vocab + examples]
 `);
 }
 
@@ -105,6 +104,26 @@ function harvestVocab(lessonJson) {
     for (const w of (pat?.words || [])) {
       if (!w.word) continue;
       out.push({ patternKey, ...w });
+    }
+  }
+  return out;
+}
+
+function harvestExamples(lessonJson) {
+  const out = [];
+  for (const p of (lessonJson?.patterns || [])) {
+    for (const ex of (p?.examples || [])) {
+      if (!ex.imageId) continue;
+      out.push({
+        patternId: p.id,
+        exampleNo: ex.no,
+        sentence: ex.sentence || '',
+        sentenceEn: ex.sentenceEn || '',
+        imageId: ex.imageId,
+        audioId: ex.audioId,
+        imageRole: ex.imageRole,
+        isAnchor: !!ex.isAnchor,
+      });
     }
   }
   return out;
@@ -261,6 +280,63 @@ function updateAudioRegistry(audReg, words, stats, { verbose }) {
 }
 
 // ────────────────────────────────────────────────────────────
+// image registry 更新（examples）
+// 既存 entry は status/images をそのまま保持（generated/approved/rejected/outdated）
+// 新規 entry は ex_L02_001 と同形式の pending stub を作成
+// ────────────────────────────────────────────────────────────
+function updateImageRegistryForExamples(imgReg, examples, lessonNoInt, stats, { verbose }) {
+  if (!imgReg.entries) imgReg.entries = {};
+  for (const ex of examples) {
+    if (!ex.imageId) { stats.missingImageId++; continue; }
+    if (imgReg.entries[ex.imageId]) {
+      stats.unchanged++;
+      continue;
+    }
+    imgReg.entries[ex.imageId] = {
+      type: 'example_images',
+      lesson: lessonNoInt,
+      patternId: ex.patternId,
+      exampleNo: ex.exampleNo,
+      sentence: ex.sentence,
+      sentenceEn: ex.sentenceEn,
+      slot: ex.isAnchor
+        ? `${ex.patternId} 代表例文(${ex.exampleNo})`
+        : `${ex.patternId} 例文(${ex.exampleNo})`,
+      status: 'pending',
+      images: [
+        {
+          imageId: `${ex.imageId}_img`,
+          filename: `${ex.imageId}.png`,
+          imageUrl: null,
+          promptRef: `image_prompts_lesson${lessonNoInt}.json#${ex.imageId}`,
+          generatedAt: null,
+          regenerate: false,
+        },
+      ],
+    };
+    stats.newEntry++;
+    if (verbose) console.log(`  + image example new pending: ${ex.imageId}`);
+  }
+}
+
+// ────────────────────────────────────────────────────────────
+// audio registry 更新（examples）
+// ────────────────────────────────────────────────────────────
+function updateAudioRegistryForExamples(audReg, examples, stats, { verbose }) {
+  if (!audReg.entries) audReg.entries = {};
+  for (const ex of examples) {
+    if (!ex.audioId) { stats.missingAudioId++; continue; }
+    if (audReg.entries[ex.audioId]) {
+      stats.unchanged++;
+      continue;
+    }
+    audReg.entries[ex.audioId] = { audioUrl: null, sentence: ex.sentence };
+    stats.newEntry++;
+    if (verbose) console.log(`  + audio example new pending: ${ex.audioId}`);
+  }
+}
+
+// ────────────────────────────────────────────────────────────
 // メイン
 // ────────────────────────────────────────────────────────────
 async function main() {
@@ -282,7 +358,8 @@ async function main() {
   const lessonPath = resolve(ROOT, `data/lesson_${lessonNN}.json`);
   const lessonJson = await readJson(lessonPath);
   const words = harvestVocab(lessonJson);
-  console.log(`${lessonId}: vocabulary ${words.length} entries`);
+  const examples = harvestExamples(lessonJson);
+  console.log(`${lessonId}: vocabulary ${words.length} entries / examples ${examples.length} entries`);
 
   // 既存資産
   const catalog = await readJson(CATALOG_PATH);
@@ -293,22 +370,30 @@ async function main() {
     catalog: { newEntry: 0, sourceAdded: 0, lessonRefAdded: 0, payloadAdded: 0, payloadUpdated: 0, unchanged: 0 },
     image:   { newEntry: 0, usedInLessonsUpdated: 0, unchanged: 0, missingImageId: 0 },
     audio:   { newEntry: 0, unchanged: 0, missingAudioId: 0 },
+    imageEx: { newEntry: 0, unchanged: 0, missingImageId: 0 },
+    audioEx: { newEntry: 0, unchanged: 0, missingAudioId: 0 },
   };
 
   updateCatalog(catalog, words, lessonId, stats.catalog, args);
   updateImageRegistry(imgReg, words, lessonNoInt, stats.image, args);
   updateAudioRegistry(audReg, words, stats.audio, args);
+  updateImageRegistryForExamples(imgReg, examples, lessonNoInt, stats.imageEx, args);
+  updateAudioRegistryForExamples(audReg, examples, stats.audioEx, args);
 
   const totalDelta =
     stats.catalog.newEntry + stats.catalog.sourceAdded + stats.catalog.lessonRefAdded +
     stats.catalog.payloadAdded + stats.catalog.payloadUpdated +
     stats.image.newEntry + stats.image.usedInLessonsUpdated +
-    stats.audio.newEntry;
+    stats.audio.newEntry +
+    stats.imageEx.newEntry +
+    stats.audioEx.newEntry;
 
   console.log('\n=== diff ===');
   console.log(`catalog: new=${stats.catalog.newEntry} +sourceId=${stats.catalog.sourceAdded} +lessonRef=${stats.catalog.lessonRefAdded} +payload=${stats.catalog.payloadAdded} ~payload=${stats.catalog.payloadUpdated} unchanged=${stats.catalog.unchanged}`);
   console.log(`image  : new=${stats.image.newEntry} +usedInLessons=${stats.image.usedInLessonsUpdated} unchanged=${stats.image.unchanged}` + (stats.image.missingImageId ? ` (missingImageId=${stats.image.missingImageId})` : ''));
   console.log(`audio  : new=${stats.audio.newEntry} unchanged=${stats.audio.unchanged}` + (stats.audio.missingAudioId ? ` (missingAudioId=${stats.audio.missingAudioId})` : ''));
+  console.log(`imageEx: new=${stats.imageEx.newEntry} unchanged=${stats.imageEx.unchanged}` + (stats.imageEx.missingImageId ? ` (missingImageId=${stats.imageEx.missingImageId})` : ''));
+  console.log(`audioEx: new=${stats.audioEx.newEntry} unchanged=${stats.audioEx.unchanged}` + (stats.audioEx.missingAudioId ? ` (missingAudioId=${stats.audioEx.missingAudioId})` : ''));
   console.log(`total delta: ${totalDelta}`);
 
   if (args.dryRun) {
