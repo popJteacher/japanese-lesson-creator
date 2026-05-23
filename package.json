@@ -18,7 +18,8 @@
     "generate-audio": "node scripts/generate-audio-local.mjs",
     "validate-audio": "node scripts/validate-audio.mjs",
     "generate-images": "node scripts/generate-images-local.mjs",
-    "import-lesson": "node scripts/import-lesson.mjs"
+    "import-lesson": "node scripts/import-lesson.mjs",
+    "export-skill-prompts": "node scripts/lib/export-skill-prompts.mjs"
   },
   "engines": {
     "node": ">=18"

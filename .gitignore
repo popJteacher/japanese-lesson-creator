@@ -18,6 +18,9 @@ Thumbs.db
 .tmp_verify/
 *.tmp
 
+# /export-skill-prompts の出力（手動投入用 .txt・派生物・user 環境依存）
+tmp/skill_prompts/
+
 # Node
 node_modules/
 npm-debug.log*

@@ -5,12 +5,12 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-23（**Track 1 + Track 2 両完了 → main へ merge 済 + 運用方針確定**：
-Track 1 (catalog 全 17,508 件 typed) と Track 2 (Phase 5 ④' skill 実装 = 6-PART
-ガイド + `.claude/skills/generate-image-prompt.md` + preflight 切出) を main へ
-3-way merge 完了。validate PASS（B `891b73f5ae2d` + B' `1ca2f57ad927`）。運用方針
-**Claude Code 上で手動 invoke を基本**と確定（schtasks 自動化は将来オプションで
-保留）。残るは Phase 5 ⑤/⑥ と派生の専用カテゴリ判断）
+**最終更新：** 2026-05-23（**Phase 5 ⑤ 前半 = lesson_02 例文 5 件 smoke 完了 +
+新 skill `/export-skill-prompts` 追加**：skill 実機初投入で lesson_02 anchor 5 件の
+example_sentence prompt を起草・preflight 5/5 PASS（retries 0）・`data/image_prompts_skill.json`
+に 6 entries (vocab 1 + example 5) 蓄積。手動画像生成用に JSON → .txt 変換 skill
+`/export-skill-prompts` を新規実装（spec + 実装 + npm script）。残るは Phase 5 ⑤
+後半 = import-lesson.mjs 接続、Phase 5 ⑥、派生の専用カテゴリ判断）
 
 ---
 
@@ -43,7 +43,16 @@ Track 1 (catalog 全 17,508 件 typed) と Track 2 (Phase 5 ④' skill 実装 = 
     （dead code 化中も同じ規律）
   - lesson_01 smoke：医者 prompt 1 件 → preflight PASS / `data/image_prompts_skill.json` 1 entry
   - 日次起動 wrapper：`scripts/schedule-daily-pull.bat`（人間が schtasks 登録）
-- **Phase 5 ⑤／⑥：未着手** — 人間タスク #1 (schtasks) と専用カテゴリ判断完了後
+- **Phase 5 ⑤ 前半 = lesson_02 例文 5 件 smoke：完了** ✅ 🆕
+  - リンさん共通キャラで anchor 5 件 (ex_L02_001/007/009/010/015) を起草
+  - preflight 5/5 PASS / retries 0 / aspect 16:9 / manifest hash `1ca2f57ad927` 一致
+  - `data/image_prompts_skill.json` に 6 entries 蓄積 (vocab_医者 + example 5)
+- **`/export-skill-prompts` 新 skill：実装完了** ✅ 🆕
+  - JSON → `tmp/skill_prompts/{imageId}.txt` 変換（手動投入用ヘッダー付き）
+  - filter：全件 / `--ids csv` / `--lesson NN`
+  - `.claude/skills/export-skill-prompts.md` / `scripts/lib/export-skill-prompts.mjs` /
+    `npm run export-skill-prompts` を整備
+- **Phase 5 ⑤ 後半・⑥：未着手** — import-lesson.mjs に skill 接続 + GAS 退役
 - **Phase 4 後 backlog**：残置
 - **Phase 3 後 backlog**：着手保留
 
@@ -65,6 +74,12 @@ Track 1 (catalog 全 17,508 件 typed) と Track 2 (Phase 5 ④' skill 実装 = 
 /generate-image-prompt mode=lesson --lesson 02      # 課マスター作成時
 /generate-image-prompt mode=explicit --words 医者,会社員
 /generate-image-prompt chain=true                   # prompt 生成 + 画像生成まで一気通貫
+
+# 手動で画像生成 UI に貼り付けたいとき
+/export-skill-prompts                               # 全件 .txt 展開
+/export-skill-prompts --lesson 02                   # 第 2 課のみ
+/export-skill-prompts --ids word_医者,ex_L02_001    # 特定 ID
+/export-skill-prompts --force                       # 既存 .txt を上書き
 ```
 
 **なぜ手動か**：user が「ためてある分を必要なときに pull したい」ため。日次強制起動
@@ -152,6 +167,7 @@ node scripts/classify-and-translate.mjs --classify [--smoke|--limit N|--force|--
 node scripts/build-catalog.mjs [--dry-run | --verbose]
 node scripts/transcribe-lesson-vocab-types.mjs [--dry-run | --verbose]
 npm run import-lesson -- --lesson NN [--dry-run | --verbose]
+npm run export-skill-prompts -- [--ids csv | --lesson NN | --out dir | --force | --help]   # 手動投入用 .txt 展開
 python scripts/lib/prompt_preflight.py < <json>   # skill から呼ばれる preflight CLI
 
 # skill invoke（claude session 内）= **これが基本ワークフロー**
