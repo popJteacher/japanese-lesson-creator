@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "mode": "skill",
+    "guideVersion": "v5.0",
+    "guideManifestHash": "1ca2f57ad927",
+    "generatedAt": "2026-05-23T11:49:41.652395Z",
+    "generator": ".claude/skills/generate-image-prompt.md",
+    "model": "claude-opus-4-7",
+    "totalEntries": 1,
+    "coveredVocabTypes": [
+      "person"
+    ],
+    "smokeTest": "lesson_01 word_医者 (Phase 5 ④' Step 5 verification)"
+  },
+  "vocabulary": [
+    {
+      "imageId": "word_医者",
+      "word": "医者",
+      "reading": "いしゃ",
+      "en": "doctor",
+      "vocab_type": "person",
+      "prompt": "\n[PURPOSE]\nCreate a vocabulary card illustration for Japanese language learning materials.\nThe image must instantly communicate the meaning of the word \"医者\" at a glance.\n\n[SUBJECT]\nA specific adult person. light brown skin with short curly dark-brown hair. Outfit and props: white doctor's coat (open at the front) over a simple blouse or scrubs top; MUST visibly wear a stethoscope draped around the neck with the chestpiece resting on the chest; MUST visibly wear a small name badge clipped to the coat (no specific name written, just a generic badge silhouette); MAY also hold a clipboard or pen in one hand as a secondary prop. Footwear MUST be plain dark leather loafers. Pose and expression: calm professional standing pose with arms naturally at the sides, neutral and welcoming expression.\nThe character's role must be immediately obvious from clothing, posture, and props alone.\nFACIAL FEATURES RULE (v4.0 PART 1.8): The character's face MUST clearly show all four primary facial features — eyes (with visible pupils, not blank circles), eyebrows (simple curved or angled lines above the eyes), nose (a simple line or dot or small shape), and mouth (a simple line or curve or small shape). NEVER omit any of these four features.\nHEAD-BODY PROPORTION RULE (v4.0 PART 1.10): The character MUST be rendered as an adult standing figure with approximately 7-head-height proportion. NEVER render adult roles with shorter 5-6 head proportions.\n\n[SCENE & ACTION]\nASPECT RATIO: The output image MUST be 1:1 SQUARE.\nFULL-BODY SHOT — the entire figure from the very top of the head to the soles of BOTH feet is fully inside the frame. head-to-toe figure spans about 80% of the image HEIGHT.\nCamera angle: HORIZONTAL 3/4 view at EYE LEVEL.\nFOOTWEAR RULE: Both feet MUST visibly wear footwear.\nSolid soft cream off-white background (warm off-white, NOT pure stark white). No other characters or objects in the frame.\nFramed with a standard ~50mm-equivalent lens at full standing distance.\n\n[STYLE RECIPE — DO NOT CHANGE]\nMinimalist flat vector illustration. Clean continuous black outlines with consistent line weight. Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white), deep slate navy outlines, muted warm blue and warm amber gold as accents, cool slate gray for secondary elements.\nThis should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.\n\n[CONSTRAINTS]\nNo text, no letters, no numbers, no decorative symbols anywhere.\nThe clothing, accessories, props, and any visible badges must NEVER include any flag, national emblem, nationality pin, country indicator, political symbol, or red-and-white circular badge. This is a role-based vocabulary card, not a nationality card.\nNo gradients, no shadows, no 3D effects, no photoreal textures.\n",
+      "aspect_ratio": "1:1",
+      "preflight_passed": true,
+      "retries": 0,
+      "created_at": "2026-05-23T11:49:41.485627Z"
+    }
+  ]
+}

@@ -60,6 +60,23 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Phase 5 ④' (2026-05-22): preflight ロジックは scripts/lib/prompt_preflight.py に
+# SSOT 移管。本ファイルは dead code 化予定だが、lesson_01 検証で skill 版との
+# 比較に使う期間中は新 SSOT から import して drift を防ぐ。
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
+from lib.prompt_preflight import (  # noqa: E402
+    preflight,
+    BG_EXACT_CREAM,
+    BG_EXACT_SKYBLUE,
+    NOT_TOKEN,
+    RE_FULLBODY,
+    RE_AREA_PERCENT,
+    RE_PORTRAIT_LENS,
+    RE_FLAG_OR_NAT,
+    RE_STRONG_TOKEN,
+    RE_PLACEHOLDER_REMAIN,
+)
 # v4.0 主経路（nanobanana 固定運用）。
 # Rollback to v3.12: GUIDE_PATH を 'master_prompt_design_guide_v3_12.py' に戻し、
 # scripts/invariants.mjs の promptGuideExpectedHashPrefix を v3.12 の 2137a8e885ae に戻す。
@@ -881,55 +898,9 @@ def flatten_examples(lesson_doc):
 
 # ─────────────────────────────────────────────────────────────
 # Pre-flight invariants（invariants.mjs C 相当）
+# 定数 / regex / preflight 関数は scripts/lib/prompt_preflight.py に SSOT 移管済。
+# ファイル冒頭の import 文を参照（Phase 5 ④' 2026-05-22）。
 # ─────────────────────────────────────────────────────────────
-BG_EXACT_CREAM  = "soft cream off-white background (warm off-white, NOT pure stark white)"
-BG_EXACT_SKYBLUE = "pale sky-blue background"
-NOT_TOKEN = "NOT pure stark white"
-
-RE_FULLBODY      = re.compile(r"full[-\s]?body|head[-\s]?to[-\s]?toe", re.IGNORECASE)
-RE_AREA_PERCENT  = re.compile(r"fills\s+\d+\s*[-–]?\s*\d*\s*%\s+of\s+the\s+image\s+area", re.IGNORECASE)
-RE_PORTRAIT_LENS = re.compile(r"85\s*mm\s+portrait\s+lens", re.IGNORECASE)
-RE_FLAG_OR_NAT   = re.compile(r"flag|nationality|国旗", re.IGNORECASE)
-RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
-# 任意の未置換 placeholder を検出する汎用パターン:
-#   {WORD_LIKE} または [{WORD_LIKE}] — 大文字英字 + アンダースコア
-RE_PLACEHOLDER_REMAIN = re.compile(r"\[\{[A-Z_]+\}\]|\{[A-Z_]+\}")
-
-
-# vocab_type / 例文 ごとの BG 期待値
-def _expected_bg(template_kind):
-    return BG_EXACT_SKYBLUE if template_kind == "building" else BG_EXACT_CREAM
-
-
-def preflight(text, template_kind, word):
-    """template_kind: vocab_type 文字列 or 'example_sentence' を受ける。
-    BG / NOT_TOKEN / 残存 placeholder / person 特有制約 / flag 文脈強表現
-    を invariants.mjs C 相当でチェック。
-    """
-    errs = []
-    bg_expected = _expected_bg(template_kind)
-    if bg_expected not in text:
-        errs.append(f"[C4] {word}: background string 不一致（必須: '{bg_expected}'）")
-    # NOT pure stark white は cream BG template にのみ必須
-    if template_kind != "building" and NOT_TOKEN not in text:
-        errs.append(f"[C5] {word}: NOT-token 不一致（必須: '{NOT_TOKEN}'）")
-    if template_kind == "person":
-        if not RE_FULLBODY.search(text):
-            errs.append(f"[C1] {word}: full-body / head-to-toe が無い")
-        if RE_AREA_PERCENT.search(text):
-            errs.append(f"[C1] {word}: 面積指定 'fills NN% of...' が残存")
-        if RE_PORTRAIT_LENS.search(text):
-            errs.append(f"[C1] {word}: '85mm portrait lens' が残存")
-    if RE_FLAG_OR_NAT.search(text):
-        if not RE_STRONG_TOKEN.search(text):
-            errs.append(f"[C6] {word}: flag/nationality 文脈に強表現 must/never が無い")
-    leftovers = RE_PLACEHOLDER_REMAIN.findall(text)
-    if leftovers:
-        # 重複除去して順序保持
-        seen = set()
-        uniq = [x for x in leftovers if not (x in seen or seen.add(x))]
-        errs.append(f"[PH] {word}: 未置換 placeholder 残存: {uniq[:5]}")
-    return errs
 
 
 def guide_hash_lf_normalized(path):

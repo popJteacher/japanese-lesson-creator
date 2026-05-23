@@ -8,7 +8,11 @@ Thumbs.db
 *.swp
 
 # Claude Code ローカル設定
-.claude/
+# .claude/ 配下の contents を ignore するが、プロジェクト共有 skill 定義
+# （.claude/skills/）は tracked にする（Phase 5 ④' 〜）。
+# Note: 親 dir 自体を ignore すると ! は効かないため、glob ignore + 例外で書く。
+.claude/*
+!.claude/skills/
 
 # 一時ファイル・検証用テンポラリ
 .tmp_verify/

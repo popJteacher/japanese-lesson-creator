@@ -3,9 +3,9 @@
     "mode": "lesson01",
     "guideVersion": "v4.0",
     "guideHashNormalized": "891b73f5ae2d",
-    "generatedAt": "2026-05-22",
+    "generatedAt": "2026-05-23",
     "generator": "scripts/build_prompts.py",
-    "scriptHash": "032c366cbf74",
+    "scriptHash": "419dd0e8c4f4",
     "source": "data/vocab_types_lesson01.json",
     "coveredVocabTypes": [
       "building",
