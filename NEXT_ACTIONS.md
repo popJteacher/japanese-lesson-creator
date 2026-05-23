@@ -5,12 +5,12 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-23（**Track 1 + Track 2 両完了 → main へ merge 済**：
+**最終更新：** 2026-05-23（**Track 1 + Track 2 両完了 → main へ merge 済 + 運用方針確定**：
 Track 1 (catalog 全 17,508 件 typed) と Track 2 (Phase 5 ④' skill 実装 = 6-PART
 ガイド + `.claude/skills/generate-image-prompt.md` + preflight 切出) を main へ
-3-way merge 完了。NEXT_ACTIONS.md のみ conflict したため統合再書き。validate
-PASS（B `891b73f5ae2d` + B' `1ca2f57ad927`）。残るは人間タスク (schtasks 登録)
-と Phase 5 ⑤/⑥、派生の専用カテゴリ判断）
+3-way merge 完了。validate PASS（B `891b73f5ae2d` + B' `1ca2f57ad927`）。運用方針
+**Claude Code 上で手動 invoke を基本**と確定（schtasks 自動化は将来オプションで
+保留）。残るは Phase 5 ⑤/⑥ と派生の専用カテゴリ判断）
 
 ---
 
@@ -53,17 +53,28 @@ PASS（B `891b73f5ae2d` + B' `1ca2f57ad927`）。残るは人間タスク (schta
 
 ## active
 
-### 人間タスク #1：schtasks 登録（daily 20 件 skill 自動起動）
+### Phase 5 運用方針：**Claude Code 上で手動 invoke を基本**とする（user 確定 2026-05-23）
+
+日次 prompt 生成は **interactive Claude Code session 内での手動 slash command 起動**
+を基本ワークフローとする。schtasks による自動化は **当面導入しない**。
 
 ```
-schtasks /create /tn "ClaudeDailyPromptPull" ^
-  /tr "\"c:\Users\kohn0\Desktop\japanese-lesson-creator-main\scripts\schedule-daily-pull.bat\"" ^
-  /sc daily /st 09:00
+# 通常の運用（必要なときに実行）
+/generate-image-prompt                              # daily-pull mode 20 件（デフォルト）
+/generate-image-prompt limit=50                     # 多めに pull
+/generate-image-prompt mode=lesson --lesson 02      # 課マスター作成時
+/generate-image-prompt mode=explicit --words 医者,会社員
+/generate-image-prompt chain=true                   # prompt 生成 + 画像生成まで一気通貫
 ```
 
-初回は手動実行 `scripts\schedule-daily-pull.bat` で
-`claude -p "/generate-image-prompt mode=daily-pull limit=20"` の skill discover
-挙動を確認。動かなければ bat 内の fallback 行に切替。
+**なぜ手動か**：user が「ためてある分を必要なときに pull したい」ため。日次強制起動
+より、`data/image_prompts_skill.json` の溜まり具合を見て user が判断する方式を選択。
+
+**将来的な自動化の余地**：`scripts/schedule-daily-pull.bat` と schtasks 手順は
+コードとして残置している（下記 deprecated コマンド参照）。user の運用が変わって
+「やっぱり毎朝 9:00 自動 pull したい」となったら、bat の `claude -p` 自動 discover
+挙動を初回手動テストして OK なら schtasks 登録できる状態は保たれている。
+復活手順は本ファイル末尾「将来の自動化オプション」セクション参照。
 
 ### 派生タスク（任意のタイミング・別セッション）：専用カテゴリ判断
 
@@ -78,7 +89,7 @@ node -e "const d=require('./data/_meta/vocab_type_warnings.json').warnings||requ
 
 ---
 
-## 人間タスク #1 完了後
+## 次のフェーズ
 
 - **Phase 5 ⑤ 着手可**：lesson_02 例文 5 件 smoke 生成 + import-lesson.mjs に skill 接続
 - **Phase 5 ⑥ 着手可**：GAS 入力系 3 系統退役
@@ -92,9 +103,8 @@ npm run validate                          # B + B' + C + D PASS
 
 ## ブロッカー
 
-- 人間タスク #1（schtasks 登録）：blocker なし（user 操作のみ）
 - 専用カテゴリ判断：blocker なし（user 判断のみ）
-- Phase 5 ⑤：人間タスク #1 完了に soft blocked（schtasks なしでも skill 手動 invoke 可）
+- Phase 5 ⑤：blocker なし（skill 手動 invoke で着手可）
 - Phase 5 ⑥：Phase 5 ⑤ 完了に blocked
 
 ---
@@ -143,18 +153,43 @@ node scripts/build-catalog.mjs [--dry-run | --verbose]
 node scripts/transcribe-lesson-vocab-types.mjs [--dry-run | --verbose]
 npm run import-lesson -- --lesson NN [--dry-run | --verbose]
 python scripts/lib/prompt_preflight.py < <json>   # skill から呼ばれる preflight CLI
-scripts\schedule-daily-pull.bat                   # 日次 20 件 skill 起動 wrapper
 
-# skill invoke（claude session 内）
-# /generate-image-prompt mode=daily-pull limit=20
-# /generate-image-prompt mode=lesson lesson=01
-# /generate-image-prompt mode=explicit words=医者,会社員
-# /generate-image-prompt mode=chain ...
+# skill invoke（claude session 内）= **これが基本ワークフロー**
+# /generate-image-prompt                          # daily-pull mode 20 件（デフォルト）
+# /generate-image-prompt mode=lesson --lesson 01
+# /generate-image-prompt mode=explicit --words 医者,会社員
+# /generate-image-prompt chain=true               # prompt 生成 + 画像生成まで一気通貫
 
 # ↓ 以下は ④' pivot 後 deprecated（skill 方式に置換済・dead code 維持）
 python scripts/build_prompts.py --lesson NN          # 旧決定論版（dead code）
 python scripts/build_prompts.py --catalog            # 旧決定論版（dead code）
 ```
+
+---
+
+## 将来の自動化オプション（現時点では未採用）
+
+user 確定方針：**当面は手動 invoke**。下記は将来「やっぱり自動化したい」となった
+ときの復活手順として残置。コード・bat は merge 済（本セッション）。
+
+```
+# (1) 初回手動テスト（claude -p の skill 自動 discover が動くか確認）
+scripts\schedule-daily-pull.bat
+type data\_meta\skill-daily-pull-YYYYMMDD.log         # 結果ログ確認
+
+# (2) 動いたら schtasks 登録
+schtasks /create /tn "ClaudeDailyPromptPull" ^
+  /tr "\"c:\Users\kohn0\Desktop\japanese-lesson-creator-main\scripts\schedule-daily-pull.bat\"" ^
+  /sc daily /st 09:00
+
+# (3) 状態確認 / 解除
+schtasks /query /tn "ClaudeDailyPromptPull" /v /fo LIST
+schtasks /delete /tn "ClaudeDailyPromptPull" /f
+```
+
+注：`claude -p "/generate-image-prompt ..."` の skill 自動 discover 挙動は
+**未検証**（bat L30 に明記）。動かなかった場合は bat L34-35 の fallback 行
+（`claude -p "Read .claude/skills/generate-image-prompt.md ..."` 形式）に切替。
 
 参考（再実行不要）：
 - 決定論版 lesson_01 出力：`data/image_prompts_lesson01_v4_0.json`（32 件・skill 品質比較用）
@@ -163,6 +198,6 @@ python scripts/build_prompts.py --catalog            # 旧決定論版（dead co
 - 旧 worktree path（役目終了）：`.claude/worktrees/example-prompts`, `.claude/worktrees/skill-implementation`
 
 人間タスク：
-- schtasks 登録（任意のタイミング）
+- skill の手動 invoke（必要なときに `/generate-image-prompt` 系を実行）
 - 専用カテゴリ判断（任意のタイミング・別セッション）
 - Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現
