@@ -6,9 +6,11 @@
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
 **最終更新：** 2026-05-24（**Phase α2 完了**：QC を loudnorm のみに簡素化＋
-naturalness QC inline 統合＋120 件本走＋word_雪 を平板 IPA で個別修正。
-次セッションは **Phase α3 = アクセント pipeline 構築（A 方針 = UniDic + LLM
-cross-check + 教師 override）**。117 件＋null 7 件＝合計 124 件を一括再生成）
+naturalness QC inline 統合＋120 件本走＋**重要発見：日本語アクセント指定は
+IPA ではなく Google 独自の yomigana 記法 (^...!) のみ honored**。word_雪 を
+yomigana_odaka `^ゆき!` で個別修正済。次セッションは **Phase α3 = アクセント
+pipeline 構築（A 方針 = UniDic + LLM cross-check + override、ただし出力は
+yomigana 記法）**。117 件＋null 7 件＝合計 124 件を一括再生成）
 
 ---
 
@@ -22,11 +24,15 @@ cross-check + 教師 override）**。117 件＋null 7 件＝合計 124 件を一
   - 120 件本走完了：成功 120/120、naturalness PASS 120/120
   - **重要発見**：Gemini QC は日本語アクセント核位置の誤りを検出できない
     （→ [[feedback-gemini-qc-misses-accent-errors]] memory）
-  - **重要発見**：OpenJTalk(pyopenjtalk-plus) → IPA + downstep ꜜ → Google SSML `<phoneme>`
-    で Google Cloud TTS が日本語アクセント核を honored する pipeline が smoke で成立
-    （→ [[project-openjtalk-ipa-google-pipeline]] memory）
-  - word_雪.mp3 を平板 IPA `jɯki` + 新 QC で個別修正済（user 視聴：単独 2 モーラ
-    尾高型は ꜜ 付きだと頭高に聞こえる → ꜜ 省略ルール確定）。他語は α3 で一括対応
+  - **最重要発見**：日本語の SSML phoneme は **IPA ではなく `alphabet="yomigana"` のみ**
+    が Google 公式仕様。IPA の downstep ꜜ や tone marker (˨˥ꜛ) は無視される。
+    正解は `<phoneme alphabet="yomigana" ph="^ゆき!">雪</phoneme>` 記法
+    （`^` = ピッチ句開始、`!` = 下降直前モーラの後）。
+    OpenJTalk accent_type を `!` 位置に直接変換可能。
+    （→ [[project-openjtalk-ipa-google-pipeline]] memory に詳細）
+  - word_雪.mp3 を yomigana_odaka `^ゆき!` + 新 QC で個別修正済（user 視聴 OK）。
+    他 9 件 (七日・消しゴム・二十日・二日・母・夜・来年・六日・安い) は
+    `tmp/google_smoke_ipa/word_*__yomigana.mp3` に smoke 済（次セッションで視聴判定）
 - **deferred 3 件**（worktree 担当・guide 修正必要）：vocab_男の人 / vocab_女の人 / word_秋
 - **worktree `phase4-prompt-plan` で guide 修正中**（並行進行）
 
@@ -47,13 +53,13 @@ validate:        ERROR 4 / WARN 9 / 自然さ 168/168 checked (4 WARN)
 
 ## active
 
-### Phase α3（次セッション開始点）：アクセント pipeline 構築（A 方針）
+### Phase α3（次セッション開始点）：アクセント pipeline 構築（A 方針 + yomigana 記法）
 
 **目的**：vocab_catalog.json 全 17508 件にアクセント情報を付与し、generate-audio-local.mjs
-を IPA SSML 対応に拡張、既存 audio を一括再生成して **NHK 系教科書アクセント**に揃える。
+を **yomigana SSML 対応**に拡張、既存 audio を一括再生成して **NHK 系教科書アクセント**に揃える。
 
 **設計方針：A = UniDic + LLM cross-check + 教師 override の 3 層ハイブリッド**
-（user 確定 2026-05-24）
+**＋ 出力は yomigana 記法 (`^...!`)**（user 確定 2026-05-24）
 
 | 層 | 役割 | ソース | カバー目安 |
 |---|---|---|---|
@@ -64,46 +70,49 @@ validate:        ERROR 4 / WARN 9 / 自然さ 168/168 checked (4 WARN)
 **naist-jdic は使わない**（NHK 系整合性が UniDic より一段下のため）。pyopenjtalk-plus
 は sudachipy 経由で UniDic を扱える可能性。要 PoC。
 
-**重要ルール：単独 2 モーラ尾高型は ꜜ 省略**（user 視聴で「雪」事例で確定）
-- `accent_type == mora_count == 2` のときは IPA から末尾 ꜜ を外す（平板扱い）
-- 3 モーラ以上の尾高型は ꜜ を残す（user 視聴で「七日 ナノカ↓」等は OK 評価）
-- 一般化検討：「単独 = 全尾高型で ꜜ 省略」（NHK 辞典慣習）も将来検討余地
+**yomigana 記法ルール（OpenJTalk accent_type からの機械変換・実装はこれだけ）：**
+- accent_type=0 → `^[全mora]` 平板（!なし）
+- accent_type=N (>0) → `^[1..Nモーラ]![N+1..全]`（N 番目モーラの後に !）
+- 例：端 `^はし` / 箸 `^は!し` / 橋・雪 `^はし!` `^ゆき!` / 七日 `^なのか!` / 母 `^は!は`
+
+**注：IPA 時代の特例「単独 2 モーラ尾高型は ꜜ 省略」ルールは廃止**
+- yomigana `^ゆき!` で正しく尾高型が合成されることを user 視聴で確認済
+- IPA は末尾 ꜜ が無視され頭高に聞こえる問題があったが、yomigana 記法ではその問題が起きない
 
 **前提（α2 で確定）**：
 - pyopenjtalk-plus は Python 3.14 で pip install 済（cmake 不要）
 - 試作スクリプト残置：
   - `tmp/extract_accent.py` — 10 単語の accent 抽出 PoC（naist-jdic 経由・UniDic 切替要）
-  - `tmp/google_ipa_smoke.mjs` — Google IPA smoke
-  - `tmp/google_smoke_ipa/accent_data.json` — 10 単語の抽出結果
-- IPA 変換ロジック（mora→IPA + downstep ꜜ 挿入）は extract_accent.py に実装済
+  - `tmp/yomigana_10_smoke.mjs` — 10 単語の yomigana 記法 smoke（次セッションで視聴）
+  - `tmp/yuki_pitch_smoke.mjs` / `tmp/bytes_compare_2mora.mjs` — IPA が部分 no-op の実証
+  - `tmp/google_smoke_ipa/accent_data.json` / `accent_data_2mora.json`
 
 **実行手順**：
 1. **UniDic 切替 PoC**（最重要・最初の判断点）
    - sudachipy + sudachidict（α2 で既にインストール済）でアクセント情報が取れるか確認
    - 取れない場合は fugashi+unidic 等の代替を試す
    - 失敗時は naist-jdic で進める fallback も残す（user に確認）
-2. **抽出 pipeline 本実装**（`scripts/extract-accent-catalog.py` or `.mjs`）
+2. **抽出 pipeline 本実装**（`scripts/extract-accent-catalog.py`）
    - vocab_catalog.json 全 entry を読み、word でループ
-   - UniDic から accent_type/mora_count/phonemes 取得
-   - **「単独 2 モーラ尾高型は ꜜ 省略」ルール適用**
-   - IPA + downstep 文字列を組み立て
-   - vocab_catalog.json に `accent_ipa` / `accent_type` / `mora_count` / `accent_source` カラム追加
+   - UniDic から accent_type / mora_count / reading（hiragana）取得
+   - **yomigana 記法に変換**：accent_type を `!` 位置に置く規則で文字列生成
+   - vocab_catalog.json に `accent_yomigana` / `accent_type` / `mora_count` / `accent_source` カラム追加
 3. **LLM cross-check pipeline**（並走可）
-   - 全 17508 件を Gemini 2.5 Flash に投げ「(word, reading, accent_ipa) が NHK 標準と一致するか」確認
+   - 全 17508 件を Gemini 2.5 Flash に投げ「(word, reading, accent_yomigana) が NHK 標準と一致するか」確認
    - 不一致と判定された entry を `_meta.accent_review_queue` に flag
    - コスト目安 ~$1.7
 4. **schema 更新**：vocab_catalog.json の `_meta.schemaVersion` を上げる
 5. **generate-audio-local.mjs 拡張**：
-   - registry.entries[id] に対応する vocab_catalog entry を引き、`accent_ipa` があれば SSML `<phoneme alphabet="ipa" ph="...">${word}</phoneme>` で送信
+   - registry.entries[id] に対応する vocab_catalog entry を引き、`accent_yomigana` があれば SSML `<phoneme alphabet="yomigana" ph="...">${word}</phoneme>` で送信
    - なければ plain text fallback（既存挙動）
 6. **Sheets `accent_override` 列追加**：
-   - 教師が違和感あった単語を手動上書きするレーン
-   - generate-audio-local.mjs は override > vocab_catalog.accent_ipa > fallback の優先順
+   - 教師が違和感あった単語を手動上書きするレーン（yomigana 記法を直接書く）
+   - generate-audio-local.mjs は override > vocab_catalog.accent_yomigana > fallback の優先順
 7. **既存 117 件 + null 7 件を一括再生成**：
    - `npm run generate-audio -- --force --status=local-or-null` 等（CLI 拡張要）
-   - 新 QC + IPA pipeline で全件再生
+   - 新 QC + yomigana pipeline で全件再生
 8. **validate** で invariants[D] PASS / 自然さ QC 168/168 確認
-9. **user 視聴で違和感ある単語があれば accent_override 登録**
+9. **user 視聴で違和感ある単語があれば accent_override 登録**（10 件分の yomigana smoke も次セッション冒頭で視聴確認）
 
 **注意事項**：
 - AI Studio prepayment credits 確認（feedback_check_ai_studio_credits）
@@ -198,9 +207,9 @@ npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 /
 npm run generate-audio                                # 新 QC + 自然さ inline
 npm run naturalness-check -- --force --only ID1,ID2  # 特定 entry 再走
 
-# OpenJTalk accent 抽出 (α2 PoC)
-python tmp/extract_accent.py                          # 10 単語の accent 抽出 → JSON
-node tmp/google_ipa_smoke.mjs                         # Google IPA smoke
+# OpenJTalk accent 抽出 + yomigana smoke (α2 PoC)
+python tmp/extract_accent.py                          # 10 単語の accent 抽出 → JSON (naist-jdic)
+node tmp/yomigana_10_smoke.mjs                        # ★ 10 単語の yomigana 記法 smoke (α3 で視聴判定)
 
 # 画像 prompt 展開
 ls tmp/skill_prompts/
