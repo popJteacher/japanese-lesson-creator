@@ -29,15 +29,17 @@
 //   validateOne(path, measure)       スペック判定 → { errors[], warns[] }
 //   runAudioValidation(opts)         data/audio/*.mp3 一括検証 → invariants 形式
 
-import { readdir, stat } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, basename } from 'node:path';
 import { loadEnv } from './lib/sheets-client.mjs';
+import { isWarn as isNaturalnessWarn } from './lib/audio-naturalness-qc.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const AUDIO_DIR = resolve(ROOT, 'data/audio');
+const AUDIO_REGISTRY_PATH = resolve(ROOT, 'data/master_audio_registry.json');
 
 // ────────────────────────────────────────────────────────────
 // スペック
@@ -214,7 +216,46 @@ export async function runAudioValidation(opts = {}) {
     + (warned > 0 ? `（うち ${warned} WARN）` : '')
     + `（spec: -16±${AUDIO_SPEC.lufsToleranceWarn} LUFS WARN / ±${AUDIO_SPEC.lufsToleranceError} ERROR / TP≤${AUDIO_SPEC.truePeakMax} / mp3 ${AUDIO_SPEC.sampleRate}Hz mono）`
   );
+
+  // 自然さ QC（Phase α1）: registry 上の naturalness を集計報告するだけ。
+  // 実 API 呼び出しは scripts/check-audio-naturalness.mjs で別途行う。
+  // HARD ERROR にはしない（人間レビューを置き換えない・補助のみ）。
+  try {
+    const natRep = await reportNaturalnessFromRegistry();
+    if (natRep) infos.push(natRep);
+  } catch (e) {
+    infos.push(`invariants[D] 自然さ QC: registry 読み込み失敗 (skip): ${e.message.slice(0, 120)}`);
+  }
+
   return { errors, warns, infos, total: files.length, passed, warned };
+}
+
+// 自然さ QC の registry 集計（HARD ERROR にしない・WARN もここでは出さない）
+async function reportNaturalnessFromRegistry() {
+  let registry;
+  try {
+    registry = JSON.parse(await readFile(AUDIO_REGISTRY_PATH, 'utf8'));
+  } catch (e) {
+    if (e.code === 'ENOENT') return null;
+    throw e;
+  }
+  const entries = registry.entries || {};
+  const localIds = Object.keys(entries).filter(id => {
+    const url = entries[id]?.audioUrl;
+    return typeof url === 'string' && !url.startsWith('http') && url.startsWith('data/audio/');
+  });
+  if (localIds.length === 0) return null;
+  let checked = 0, warns = 0;
+  for (const id of localIds) {
+    const n = entries[id]?.naturalness;
+    if (!n) continue;
+    checked++;
+    if (isNaturalnessWarn(n)) warns++;
+  }
+  if (checked === 0) {
+    return `invariants[D'] 自然さ QC: 0/${localIds.length} checked（未走。npm run naturalness-check で実行）`;
+  }
+  return `invariants[D'] 自然さ QC: ${checked}/${localIds.length} checked` + (warns > 0 ? `（うち ${warns} WARN: score≤3 or confidence='low'）` : '（WARN なし）');
 }
 
 // ────────────────────────────────────────────────────────────

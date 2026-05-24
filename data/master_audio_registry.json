@@ -64,67 +64,242 @@
       "audioUrl": "https://drive.google.com/uc?id=1ierHVQLM_6FvGDC8UC4NWvMu5QEjvE8n"
     },
     "sentence_ex_L01_001": {
-      "audioUrl": "data/audio/sentence_ex_L01_001.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_001.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「先生」の「せ」の音がやや不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_002": {
-      "audioUrl": "data/audio/sentence_ex_L01_002.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_002.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「大学生」の「がく」の音が少し不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_003": {
-      "audioUrl": "data/audio/sentence_ex_L01_003.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_003.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_004": {
-      "audioUrl": "data/audio/sentence_ex_L01_004.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_004.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_005": {
-      "audioUrl": "data/audio/sentence_ex_L01_005.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_005.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「中国人」の「人」のアクセントが平板になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_006": {
-      "audioUrl": "data/audio/sentence_ex_L01_006.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_006.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「リンさん」の「ン」が少し詰まり気味に聞こえる"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_007": {
-      "audioUrl": "data/audio/sentence_ex_L01_007.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_007.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「リンさんです」の「です」のイントネーションが少し不自然です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_008": {
-      "audioUrl": "data/audio/sentence_ex_L01_008.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_008.mp3",
+      "naturalness": {
+        "score": 3,
+        "confidence": "high",
+        "comments": [
+          "「先生」のアクセントが平板型になっている",
+          "「じゃありません」の「じゃ」が「ぢゃ」に聞こえる"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_009": {
-      "audioUrl": "data/audio/sentence_ex_L01_009.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_009.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「韓国人」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_010": {
-      "audioUrl": "data/audio/sentence_ex_L01_010.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_010.mp3",
+      "naturalness": {
+        "score": 3,
+        "confidence": "medium",
+        "comments": [
+          "「だれですか」の「れ」の音が不明瞭です。",
+          "「キムさんです」の「です」のイントネーションが不自然です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_011": {
-      "audioUrl": "data/audio/sentence_ex_L01_011.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_011.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「病院」の「い」の音がやや不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_012": {
-      "audioUrl": "data/audio/sentence_ex_L01_012.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_012.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「学校」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_013": {
-      "audioUrl": "data/audio/sentence_ex_L01_013.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_013.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「銀行」の「行」のアクセントがやや高い"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_014": {
-      "audioUrl": "data/audio/sentence_ex_L01_014.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_014.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「大学」の「学」のアクセントが低い"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L01_015": {
-      "audioUrl": "data/audio/sentence_ex_L01_015.mp3"
+      "audioUrl": "data/audio/sentence_ex_L01_015.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「デパート」の「パ」の音がやや不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_時計": {
-      "audioUrl": "data/audio/word_時計.mp3"
+      "audioUrl": "data/audio/word_時計.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_腕時計": {
-      "audioUrl": "data/audio/word_腕時計.mp3"
+      "audioUrl": "data/audio/word_腕時計.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ペン": {
-      "audioUrl": "data/audio/word_ペン.mp3"
+      "audioUrl": "data/audio/word_ペン.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_鉛筆": {
-      "audioUrl": "data/audio/word_鉛筆.mp3"
+      "audioUrl": "data/audio/word_鉛筆.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ケータイ": {
-      "audioUrl": "data/audio/word_ケータイ.mp3"
+      "audioUrl": "data/audio/word_ケータイ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_本": {
-      "audioUrl": "data/audio/word_本.mp3"
+      "audioUrl": "data/audio/word_本.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_雑誌": {
       "audioUrl": "https://drive.google.com/uc?id=1K3I3C_cs_FVmCt9C-86cyXvjVLLMPjpd"
@@ -136,26 +311,79 @@
       "audioUrl": "https://drive.google.com/uc?id=1_xJv5MoCbFk9UCebO2bVeuCt8D7sTy75"
     },
     "word_消しゴム": {
-      "audioUrl": "data/audio/word_消しゴム.mp3"
+      "audioUrl": "data/audio/word_消しゴム.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ビル": {
-      "audioUrl": "data/audio/word_ビル.mp3"
+      "audioUrl": "data/audio/word_ビル.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_市役所": {
-      "audioUrl": "data/audio/word_市役所.mp3"
+      "audioUrl": "data/audio/word_市役所.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_山": {
-      "audioUrl": "data/audio/word_山.mp3"
+      "audioUrl": "data/audio/word_山.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_人": {
-      "audioUrl": "data/audio/word_人.mp3"
+      "audioUrl": "data/audio/word_人.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「人」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_わたし": {
-      "audioUrl": "data/audio/word_わたし.mp3"
+      "audioUrl": "data/audio/word_わたし.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_001": {
       "audioUrl": "data/audio/sentence_ex_L02_001.mp3",
-      "sentence": "これは時計です。"
+      "sentence": "これは時計です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「時計」の「け」の音が少し不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_002": {
       "audioUrl": null,
@@ -164,11 +392,27 @@
     },
     "sentence_ex_L02_003": {
       "audioUrl": "data/audio/sentence_ex_L02_003.mp3",
-      "sentence": "これはケータイです。"
+      "sentence": "これはケータイです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「ケータイ」の「タ」の音が少し短く聞こえる"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_004": {
       "audioUrl": "data/audio/sentence_ex_L02_004.mp3",
-      "sentence": "それはペンです。"
+      "sentence": "それはペンです。",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_005": {
       "audioUrl": null,
@@ -182,19 +426,53 @@
     },
     "sentence_ex_L02_007": {
       "audioUrl": "data/audio/sentence_ex_L02_007.mp3",
-      "sentence": "あれはABCビルです。"
+      "sentence": "あれはABCビルです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「ビル」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_008": {
       "audioUrl": "data/audio/sentence_ex_L02_008.mp3",
-      "sentence": "あれは病院です。"
+      "sentence": "あれは病院です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「病院」の「い」の音がやや不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_009": {
       "audioUrl": "data/audio/sentence_ex_L02_009.mp3",
-      "sentence": "あれは山です。"
+      "sentence": "あれは山です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「山」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_010": {
       "audioUrl": "data/audio/sentence_ex_L02_010.mp3",
-      "sentence": "何ですか。"
+      "sentence": "何ですか。",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_011": {
       "audioUrl": null,
@@ -218,59 +496,183 @@
     },
     "sentence_ex_L02_015": {
       "audioUrl": "data/audio/sentence_ex_L02_015.mp3",
-      "sentence": "これはわたしのかばんです。"
+      "sentence": "これはわたしのかばんです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「わたし」の「し」の音が少し不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_016": {
       "audioUrl": "data/audio/sentence_ex_L02_016.mp3",
-      "sentence": "それはリンさんのかばんです。"
+      "sentence": "それはリンさんのかばんです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「リンさん」の「ん」が少し詰まって聞こえる"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_017": {
       "audioUrl": "data/audio/sentence_ex_L02_017.mp3",
-      "sentence": "これはキムさんの本ですか。— はい、わたしの本です。"
+      "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「本」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_018": {
       "audioUrl": "data/audio/sentence_ex_L02_018.mp3",
-      "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。"
+      "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
+      "naturalness": {
+        "score": 3,
+        "confidence": "high",
+        "comments": [
+          "「かばん」のアクセントが平板型になっている",
+          "「リンさん」の「ン」が不明瞭"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_019": {
       "audioUrl": "data/audio/sentence_ex_L02_019.mp3",
-      "sentence": "わたしのです。"
+      "sentence": "わたしのです。",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_020": {
       "audioUrl": "data/audio/sentence_ex_L02_020.mp3",
-      "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。"
+      "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「どうも、ありがとう」の「どうも」のイントネーションがやや不自然です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_021": {
       "audioUrl": "data/audio/sentence_ex_L02_021.mp3",
-      "sentence": "リンさんのペンはどれですか。— それです。"
+      "sentence": "リンさんのペンはどれですか。— それです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「リンさんのペンはどれですか」の「ペン」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_022": {
       "audioUrl": "data/audio/sentence_ex_L02_022.mp3",
-      "sentence": "キムさんのかばんはどれですか。— これです。"
+      "sentence": "キムさんのかばんはどれですか。— これです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「かばん」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_023": {
       "audioUrl": "data/audio/sentence_ex_L02_023.mp3",
-      "sentence": "タノムさんの本はどちらですか。— こちらです。"
+      "sentence": "タノムさんの本はどちらですか。— こちらです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「タノム」のアクセントが平板になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_024": {
       "audioUrl": "data/audio/sentence_ex_L02_024.mp3",
-      "sentence": "この人はアインシュタインです。"
+      "sentence": "この人はアインシュタインです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「人」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_025": {
       "audioUrl": "data/audio/sentence_ex_L02_025.mp3",
-      "sentence": "その人はアインシュタインです。"
+      "sentence": "その人はアインシュタインです。",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_026": {
       "audioUrl": "data/audio/sentence_ex_L02_026.mp3",
-      "sentence": "あの人はアインシュタインです。"
+      "sentence": "あの人はアインシュタインです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「人」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_027": {
       "audioUrl": "data/audio/sentence_ex_L02_027.mp3",
-      "sentence": "どの人ですか。— この人です。"
+      "sentence": "どの人ですか。— この人です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「どの人ですか」の「どの」のイントネーションがやや不自然です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_028": {
       "audioUrl": "data/audio/sentence_ex_L02_028.mp3",
-      "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。"
+      "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
+      "naturalness": {
+        "score": 3,
+        "confidence": "high",
+        "comments": [
+          "「ケリーさん」の「さん」のアクセントが平板になっている",
+          "「かばんですか」の「か」のアクセントが高い"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_犬": {
       "audioUrl": "https://drive.google.com/uc?id=1Qg4WamSifnv273EzmJvtnUQa50KHC8El",
@@ -282,31 +684,92 @@
     },
     "sentence_ex_L02_029": {
       "audioUrl": "data/audio/sentence_ex_L02_029.mp3",
-      "sentence": "タノムさんの時計はどれですか。— あれです。"
+      "sentence": "タノムさんの時計はどれですか。— あれです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「時計」の「と」の音の高さが不自然です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_030": {
       "audioUrl": "data/audio/sentence_ex_L02_030.mp3",
-      "sentence": "ケリーさんの消しゴムはどれですか。— これです。"
+      "sentence": "ケリーさんの消しゴムはどれですか。— これです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「消しゴム」の「し」の音がやや不明瞭です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_031": {
       "audioUrl": "data/audio/sentence_ex_L02_031.mp3",
-      "sentence": "あの建物は市役所です。"
+      "sentence": "あの建物は市役所です。",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_032": {
       "audioUrl": "data/audio/sentence_ex_L02_032.mp3",
-      "sentence": "その建物はABCビルですか。— はい、そうです。"
+      "sentence": "その建物はABCビルですか。— はい、そうです。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「ABCビル」の「ビル」のアクセントが平板になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_033": {
       "audioUrl": "data/audio/sentence_ex_L02_033.mp3",
-      "sentence": "あの山は富士山です。"
+      "sentence": "あの山は富士山です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「山」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_034": {
       "audioUrl": "data/audio/sentence_ex_L02_034.mp3",
-      "sentence": "どの犬ですか。— この犬です。"
+      "sentence": "どの犬ですか。— この犬です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「犬」のアクセントが平板型になっている"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "sentence_ex_L02_035": {
       "audioUrl": "data/audio/sentence_ex_L02_035.mp3",
-      "sentence": "どの写真ですか。— その写真です。"
+      "sentence": "どの写真ですか。— その写真です。",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「どの写真ですか」の「どの」のイントネーションがやや不自然です。"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_挨拶": {
       "audioUrl": "https://drive.google.com/uc?id=1tXEXmL0qxUa5hYdMRy6tGmFqdqKThRtF"
