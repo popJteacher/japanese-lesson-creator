@@ -1,0 +1,195 @@
+[
+  {
+    "id": "word_安い",
+    "word": "安い",
+    "phonemes": [
+      "y",
+      "a",
+      "s",
+      "u",
+      "i"
+    ],
+    "mora_repr": [
+      "ya",
+      "su",
+      "i"
+    ],
+    "mora_count": 3,
+    "accent_type": 2,
+    "ipa": "jasɯꜜi"
+  },
+  {
+    "id": "word_七日",
+    "word": "七日",
+    "phonemes": [
+      "n",
+      "a",
+      "n",
+      "o",
+      "k",
+      "a"
+    ],
+    "mora_repr": [
+      "na",
+      "no",
+      "ka"
+    ],
+    "mora_count": 3,
+    "accent_type": 3,
+    "ipa": "nanokaꜜ"
+  },
+  {
+    "id": "word_消しゴム",
+    "word": "消しゴム",
+    "phonemes": [
+      "k",
+      "e",
+      "sh",
+      "i",
+      "g",
+      "o",
+      "m",
+      "u"
+    ],
+    "mora_repr": [
+      "ke",
+      "shi",
+      "go",
+      "mu"
+    ],
+    "mora_count": 4,
+    "accent_type": 4,
+    "ipa": "keɕiɡomɯꜜ"
+  },
+  {
+    "id": "word_雪",
+    "word": "雪",
+    "phonemes": [
+      "y",
+      "u",
+      "k",
+      "i"
+    ],
+    "mora_repr": [
+      "yu",
+      "ki"
+    ],
+    "mora_count": 2,
+    "accent_type": 2,
+    "ipa": "jɯkiꜜ"
+  },
+  {
+    "id": "word_二十日",
+    "word": "二十日",
+    "phonemes": [
+      "h",
+      "a",
+      "ts",
+      "U",
+      "k",
+      "a"
+    ],
+    "mora_repr": [
+      "ha",
+      "tsU",
+      "ka"
+    ],
+    "mora_count": 3,
+    "accent_type": 3,
+    "ipa": "hat͡sɯ̥kaꜜ"
+  },
+  {
+    "id": "word_二日",
+    "word": "二日",
+    "phonemes": [
+      "f",
+      "U",
+      "ts",
+      "u",
+      "k",
+      "a"
+    ],
+    "mora_repr": [
+      "fU",
+      "tsu",
+      "ka"
+    ],
+    "mora_count": 3,
+    "accent_type": 3,
+    "ipa": "ɸɯ̥t͡sɯkaꜜ"
+  },
+  {
+    "id": "word_母",
+    "word": "母",
+    "phonemes": [
+      "h",
+      "a",
+      "h",
+      "a"
+    ],
+    "mora_repr": [
+      "ha",
+      "ha"
+    ],
+    "mora_count": 2,
+    "accent_type": 1,
+    "ipa": "haꜜha"
+  },
+  {
+    "id": "word_夜",
+    "word": "夜",
+    "phonemes": [
+      "y",
+      "o",
+      "r",
+      "u"
+    ],
+    "mora_repr": [
+      "yo",
+      "ru"
+    ],
+    "mora_count": 2,
+    "accent_type": 1,
+    "ipa": "joꜜɾɯ"
+  },
+  {
+    "id": "word_来年",
+    "word": "来年",
+    "phonemes": [
+      "r",
+      "a",
+      "i",
+      "n",
+      "e",
+      "N"
+    ],
+    "mora_repr": [
+      "ra",
+      "i",
+      "ne",
+      "N"
+    ],
+    "mora_count": 4,
+    "accent_type": 4,
+    "ipa": "ɾaineɴꜜ"
+  },
+  {
+    "id": "word_六日",
+    "word": "六日",
+    "phonemes": [
+      "m",
+      "u",
+      "i",
+      "k",
+      "a"
+    ],
+    "mora_repr": [
+      "mu",
+      "i",
+      "ka"
+    ],
+    "mora_count": 3,
+    "accent_type": 3,
+    "ipa": "mɯikaꜜ"
+  }
+]

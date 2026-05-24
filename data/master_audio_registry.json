@@ -3,7 +3,7 @@
     "version": "1.2",
     "description": "音声資産レジストリ。word_* は語彙音声、sentence_* は例文音声。audioUrl は音声生成後に設定する。",
     "createdAt": "2026-05-15",
-    "lastModified": "2026-05-21",
+    "lastModified": "2026-05-24",
     "changes": [
       "v1.0 (2026-05-15): 初版。L01 語彙17件 + 例文15件 = 32件登録。",
       "v1.1 (2026-05-17): L02 語彙15件 (word_病院はL01既存のため上書き更新のみ) + 例文28件 = 実質43件新規追加。totalEntries: 32 -> 75。",
@@ -919,7 +919,14 @@
       "audioUrl": "https://drive.google.com/uc?id=1japO6mdU3BZh2SAqncnM1-yIzLbS-JMa"
     },
     "word_一": {
-      "audioUrl": "https://drive.google.com/uc?id=1tRnm6Nn2Yq_NFnJEGXNdbZeEhsgB-YeJ"
+      "audioUrl": "data/audio/word_一.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_一月": {
       "audioUrl": "https://drive.google.com/uc?id=1pDbTsRXLmXTBLonU1WRc6iS1_Lfq-T06"
@@ -1096,7 +1103,14 @@
       "audioUrl": "https://drive.google.com/uc?id=1hLFEMwRDghD7c9j6HrP0cQokKyXI3BSv"
     },
     "word_日": {
-      "audioUrl": "https://drive.google.com/uc?id=1ZKqoqLTJCJiMwueRCD9IUx6AN0IXROO5"
+      "audioUrl": "data/audio/word_日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_カード": {
       "audioUrl": "https://drive.google.com/uc?id=1bnMOgmgswWxJR5_b83tsBYFqHvRJgrLo"
@@ -1417,7 +1431,14 @@
       "audioUrl": "https://drive.google.com/uc?id=1x-HHOTc-68PX6ujFUOWJ-4L7-b7YQJQe"
     },
     "word_四": {
-      "audioUrl": "https://drive.google.com/uc?id=1pwa0sXU6kcvla2UixvKF--fbiGOY3Bzq"
+      "audioUrl": "data/audio/word_四.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_時": {
       "audioUrl": "https://drive.google.com/uc?id=1OPoIvsiCprc0tHUMMnWdGugjp9Qm1cx5"
@@ -1438,7 +1459,14 @@
       "audioUrl": "https://drive.google.com/uc?id=1WB456yAldwsLtyJAKwzrmqamMYOfVq2B"
     },
     "word_七": {
-      "audioUrl": "https://drive.google.com/uc?id=1lIDJOzy_QZ8EkOWtLio7y9K894xAOimX"
+      "audioUrl": "data/audio/word_七.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_七月": {
       "audioUrl": "https://drive.google.com/uc?id=1M3FH7ZHrm5RZs0L3YyBDduz0Y-KfBusr"
@@ -1450,7 +1478,14 @@
       "audioUrl": "https://drive.google.com/uc?id=13ExEkOcLv-CZng0Gacv2Dbvo5rrw4I60"
     },
     "word_十": {
-      "audioUrl": "https://drive.google.com/uc?id=1SVgvwZ-Njzh3b3JUZ6V4o8e7PJ_C4ZYc"
+      "audioUrl": "data/audio/word_十.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_十一月": {
       "audioUrl": "https://drive.google.com/uc?id=1olm3Tfpz8pP9Hd00ajrOn1PU4hz3DJpo"
@@ -1594,328 +1629,1086 @@
       "audioUrl": "https://drive.google.com/uc?id=1X7-VuJRWTDHwNWBH1k8gSRyCUi2B4qFl"
     },
     "word_遠い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_遠い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_十日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_十日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_どこ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_どこ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_とても": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_とても.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_隣": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_隣.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_どの": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_どの.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_友達": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_友達.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_土曜": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_土曜.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_土曜日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_土曜日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_どれ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_どれ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_どんな": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_どんな.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ない": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ない.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_なぜ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_なぜ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_七つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_七つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_何": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_何.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_七日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_七日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_名前": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_名前.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_何日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_何日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_何人": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_何人.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_何年": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_何年.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_何分": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_何分.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二階": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二階.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二月": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二月.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_肉": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_肉.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二十": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二十.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_日曜": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_日曜.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_日曜日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_日曜日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_日本": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_日本.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_日本語": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_日本語.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_猫": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_猫.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_寝る": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_寝る.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_年": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_年.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ノート": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ノート.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_飲む": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_飲む.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_はい": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_はい.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_初めまして": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_初めまして.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二十歳": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二十歳.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_八": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_八.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_八月": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_八月.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_八十": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_八十.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二十日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二十日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_バナナ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_バナナ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_母": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_母.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_早い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_早い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_㏿い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_㏿い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_番": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_番.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_晩": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_晩.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_パン": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_パン.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_晩御飯": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_晩御飯.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_低い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_低い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_飛行機": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_飛行機.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_左": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_左.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_一つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_一つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_一人": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_一人.mp3",
+      "naturalness": {
+        "score": 4,
+        "confidence": "high",
+        "comments": [
+          "「り」の音がやや不明瞭です"
+        ],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_百": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_百.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_平仮名": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_平仮名.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_昼": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_昼.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_昼御飯": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_昼御飯.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二人": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二人.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_二日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_二日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_古い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_古い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_分": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_分.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ページ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ページ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ペット": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ペット.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_部屋": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_部屋.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_勉強": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_勉強.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_便利": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_便利.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ボールペン": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ボールペン.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_ポスト": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_ポスト.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_枚": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_枚.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_毎日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_毎日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_待つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_待つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_万": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_万.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_右": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_右.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_三日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_三日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_三つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_三つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_見る": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_見る.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_六日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_六日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_難しい": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_難しい.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_六つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_六つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_もう": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_もう.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_木曜": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_木曜.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_木曜日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_木曜日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_安い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_安い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_休み": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_休み.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_休む": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_休む.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_八つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_八つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_郵便局": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_郵便局.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_有名": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_有名.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_雪": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_雪.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_八日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_八日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_四日": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_四日.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_四つ": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_四つ.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_読む": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_読む.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_夜": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_夜.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_来月": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_来月.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_来週": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_来週.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_来年": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_来年.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_りんご": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_りんご.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_六": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_六.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_六月": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_六月.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_六時": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_六時.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_六十": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_六十.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_分かる": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_分かる.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_私": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_私.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     },
     "word_悪い": {
-      "audioUrl": null
+      "audioUrl": "data/audio/word_悪い.mp3",
+      "naturalness": {
+        "score": 5,
+        "confidence": "high",
+        "comments": [],
+        "checkedAt": "2026-05-24",
+        "model": "gemini-2.5-flash"
+      }
     }
   }
 }

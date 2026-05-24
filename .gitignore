@@ -21,6 +21,16 @@ Thumbs.db
 # /export-skill-prompts の出力（手動投入用 .txt・派生物・user 環境依存）
 tmp/skill_prompts/
 
+# tmp/ 配下の smoke artifacts（mp3 / log）は履歴に残さない。
+# 例外：α3 で参照する PoC スクリプトと小型 JSON は明示的に tracked。
+tmp/*.mp3
+tmp/*.log
+tmp/raw_compare/
+tmp/google_smoke/
+tmp/google_smoke_ipa/*.mp3
+tmp/raw_compare.mjs
+tmp/google_accent_smoke.mjs
+
 # Node
 node_modules/
 npm-debug.log*

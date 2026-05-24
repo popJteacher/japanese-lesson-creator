@@ -5,25 +5,27 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-24（**Phase α1 完了**：音声自然さ QC 実装＋55 件 smoke
-本走（$0.0099 / 4 WARN）。次セッションは **Phase α2 null 115 件の新規 TTS** から。
-worktree のガイド修正は引き続き並行）
+**最終更新：** 2026-05-24（**Phase α2 完了**：QC を loudnorm のみに簡素化＋
+naturalness QC inline 統合＋120 件本走＋word_雪 だけ IPA 尾高型で個別修正。
+次セッションは **Phase α3 = OpenJTalk アクセント自動抽出 pipeline 構築**。
+117 件＋null 7 件＝合計 124 件を IPA 適用で一括再生成）
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ 完了** ✅
-- **Phase α1 完了** ✅ 🆕 — 音声自然さ QC 実装＋55 件 smoke
-  - `scripts/lib/audio-naturalness-qc.mjs`（Gemini 2.5 Flash multimodal）
-  - `scripts/check-audio-naturalness.mjs`（CLI runner, rate limit, worker pool）
-  - `validate-audio.mjs` に invariants[D'] 自然さ集計を追加（HARD ERROR にしない）
-  - `npm run naturalness-check` 追加
-  - 55 件本走：0 ERROR / 4 WARN / $0.0099 / 42 秒
-  - WARN 内容例：「先生」のアクセント平板化・「じゃ」が「ぢゃ」に聞こえる 等
-    （Cloud TTS Neural2 の typical な癖を妥当に検出）
-- **再生成 24 件 prompt staging 済**：20 ported + 4 fresh、preflight 全 PASS、
-  `tmp/skill_prompts/` に 24 .txt 出力済。**user PNG 手作業待ち**
+- **Phase 0 〜 5 ⑤ / α1 完了** ✅
+- **Phase α2 完了** ✅ 🆕
+  - audio-qc.mjs を **loudnorm のみ**に簡素化（silenceremove / afade 廃止）
+    - 理由：user 視聴で「raw が自然 / qc が不自然」確定。語頭子音欠けと過剰フェード解消
+  - generate-audio-local.mjs に自然さ QC inline 統合（α1 既出）
+  - 120 件本走完了：成功 120/120、naturalness PASS 120/120
+  - **重要発見**：Gemini QC は日本語アクセント核位置の誤りを検出できない
+    （→ [[feedback-gemini-qc-misses-accent-errors]] memory）
+  - **重要発見**：OpenJTalk(pyopenjtalk-plus) → IPA + downstep ꜜ → Google SSML `<phoneme>`
+    で Google Cloud TTS が日本語アクセント核を honored する pipeline が smoke で成立
+    （→ [[project-openjtalk-ipa-google-pipeline]] memory）
+  - word_雪.mp3 だけ IPA 尾高型 `jɯkiꜜ` + 新 QC で個別修正済（他語は α3 で一括対応）
 - **deferred 3 件**（worktree 担当・guide 修正必要）：vocab_男の人 / vocab_女の人 / word_秋
 - **worktree `phase4-prompt-plan` で guide 修正中**（並行進行）
 
@@ -34,57 +36,73 @@ worktree のガイド修正は引き続き並行）
 ```
 image_registry: pending 440 / generated 17 / rejected 27 / outdated 6 / (none) 1
 image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
-audio_registry:  null 115 / Drive URL 296 / local 55 (うち naturalness 済 55 / WARN 4)
+audio_registry:  null 7 / Drive URL 291 / local 168
+validate:        ERROR 4 / WARN 9 / 自然さ 168/168 checked (4 WARN)
+                 ※ ERROR 4 件は LUFS 極端 (word_八つ/八月/八十/四つ) — α3 再生成で
+                 すべて新 QC 経由になるため自然解消見込み
 ```
 
 ---
 
 ## active
 
-### Phase α2（次セッション開始点）：null 115 件の新規 TTS + pipeline 統合
+### Phase α3（次セッション開始点）：OpenJTalk アクセント自動抽出 pipeline 構築
 
-**目的**：null 115 件の新規 TTS 生成。**併せて生成 pipeline に自然さ QC を統合**
-し、「`generate-audio` 1 コマンドで TTS → 技術 QC (applyQc) → 自然さ QC →
-registry 書き戻し」を完結させる。
+**目的**：vocab_catalog.json 全 17508 件のアクセント情報を OpenJTalk から
+自動抽出し、generate-audio-local.mjs を IPA SSML 対応に拡張、既存 audio を
+一括再生成して教科書アクセントに揃える。
 
-**統合作業（user 確定 2026-05-24）**：
-- `scripts/generate-audio-local.mjs` に自然さ QC 呼び出しを追加
-  - 既存：`applyQc` (technical) はファイル書き出し直前に inline 済
-  - 追加：書き出し後に `checkNaturalness` を呼び `entry.naturalness` を即書き戻し
-- `--no-naturalness` フラグで skip 可（`--no-qc` と同流儀・GEMINI_API_KEY 未設定時の fallback）
-- WARN/ERROR は生成自体を block しない（α1 設計と一致）
-- 統合完了後、`npm run naturalness-check` は **遡及検査専用**として残す
-  （新規 audio は pipeline で自動 QC されるが、orphan audio や `--force` 再走に使う）
+**前提（α2 で確定）**：
+- pyopenjtalk-plus は Python 3.14 で pip install 済（cmake 不要）
+- 試作スクリプト残置：
+  - `tmp/extract_accent.py` — 10 単語の accent 抽出 PoC
+  - `tmp/google_ipa_smoke.mjs` — Google IPA smoke
+  - `tmp/google_smoke_ipa/accent_data.json` — 10 単語の抽出結果
+- IPA 変換ロジック（mora→IPA + downstep ꜜ 挿入）は extract_accent.py に実装済
 
 **実行手順**：
-1. **コード統合** — generate-audio-local.mjs に naturalness 呼び出しを inline 化（30 分想定）
-2. `npm run generate-audio -- --status=null --dry-run` で 115 件確認
-3. `npm run generate-audio -- --status=null` で生成（TTS + 両 QC が 1 パスで走る）
-4. `npm run validate` で invariants[D] + invariants[D'] 両方 PASS を確認
-5. WARN 件は 1 件ずつ user 視聴 → 手作業で再生成 or 許容判断
+1. **抽出 pipeline 本実装**（`scripts/extract-accent-catalog.mjs` or `.py`）
+   - vocab_catalog.json 全 entry を読み、word でループ
+   - pyopenjtalk.extract_fullcontext() で accent_type/mora_count/phonemes 取得
+   - IPA + downstep 文字列を組み立て
+   - vocab_catalog.json に `accent_ipa` / `accent_type` / `mora_count` / `accent_source` カラム追加
+2. **schema 更新**：vocab_catalog.json の `_meta.schemaVersion` を上げる
+3. **generate-audio-local.mjs 拡張**：
+   - registry.entries[id] に対応する vocab_catalog entry を引き、`accent_ipa` があれば SSML `<phoneme alphabet="ipa" ph="...">${word}</phoneme>` で送信
+   - なければ plain text fallback（既存挙動）
+4. **Sheets `accent_override` 列追加**：
+   - 教師が違和感あった単語を手動上書きするレーン
+   - generate-audio-local.mjs は override > vocab_catalog.accent_ipa > fallback の優先順
+5. **既存 117 件 + null 7 件を一括再生成**：
+   - `npm run generate-audio -- --force --status=local-or-null` 等（CLI 拡張要）
+   - 新 QC + IPA pipeline で全件再生
+6. **validate** で invariants[D] PASS / 自然さ QC 168/168 確認
+7. **user 視聴で違和感ある単語があれば accent_override 登録**
+
+**注意事項**：
+- naist-jdic は NHK 標準と一致しない単語がまれにある（α2 で「雪」事例で実証）
+- 2 モーラ語の尾高型は単独発音だと頭高型と区別しにくい → user override で対応
+- AI Studio prepayment credits 確認（feedback_check_ai_studio_credits）→ 124 件 × 自然さ QC は ~$0.025
 
 **コスト目安**：
-- Cloud TTS Neural2 ja-JP $16/M chars × 115 件 × ~20 char = **~$0.04**
-- 自然さ QC $0.0002 × 115 件 = **~$0.023**
-- **合計 ~$0.07**（NEXT_ACTIONS α 帯予算 $0.5 に十分収まる）
-
-**注意**：
-- `feedback_check_ai_studio_credits` — 着手前に AI Studio prepayment credits を確認
-- 既存 55 件の WARN 4 件（L01_008 / L01_010 / L02_018 / L02_028）は α2 着手と
-  独立に user 視聴判断。pipeline 統合後 `--force --only ID...` で再生成可。
+- Cloud TTS Neural2 $16/Mchar × 124 件 × ~20 char = **~$0.04**
+- 自然さ QC $0.0002 × 124 件 = **~$0.025**
+- pyopenjtalk = ローカル・$0
+- **合計 ~$0.07**
 
 ---
 
 ## スケジュール（α → β → γ → δ → ε）
 
 ```
-Phase α  Audio 基盤完成（2-3 セッション）
-  α1 ✅  音声自然さチェック (C)   完了：55/55 checked / 4 WARN
-  α2 ★次 null 115 件の新規 TTS (A) ← α1 完了で QC 基盤あり
-  α3     Drive 296 件のローカル化 (B)  ← SA Drive smoke で 5 分判定
+Phase α  Audio 基盤完成（残 1-2 セッション）
+  α1 ✅ 音声自然さ QC 実装（Gemini 2.5 Flash）
+  α2 ✅ QC 簡素化 + naturalness inline + 120 件本走 + 雪 IPA 個別修正
+  α3 ★次 OpenJTalk アクセント pipeline 構築 + 124 件 IPA 再生成
+  α4   Drive 291 件のローカル化 (B) — SA Drive smoke で 5 分判定
 
 Phase β  宿題完成（1 セッション）
-  β1     正解判定 (D)・仕様確定済 ← 下記
+  β1     正解判定 (D)・仕様確定済
 
 Phase γ  スライド完成（1-2 セッション）
   γ1     音声再生（homework .audio-btn 機構を移植）
@@ -97,10 +115,10 @@ Phase δ  アクティビティ完成（3-5 セッション）
 
 Phase ε  統合テスト・リリース判断（1 セッション）
   ε1     end-to-end 動作確認
-  ε2     docs 整理（画像取り込み待ちの 1 行だけ残す）
+  ε2     docs 整理
 ```
 
-**総推定**：9-13 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
+**総推定**：10-14 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
 
 ---
 
@@ -116,10 +134,9 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 - 着手時に session_001 を生成 → ブラウザで目視 → user とその場で修正点を拾う
 - 仕入れ方式：walkthrough（事前リスト化しない）
 
-### α3 Drive ローカル化 (B)
+### α4 Drive ローカル化 (B)
 - 既存 SA：`secrets/sheets-sa.json` (`sheets-reader@gen-lang-client-0575082983.iam.gserviceaccount.com`)
-- α3 入り口で 1 件 SA Drive smoke test：成功 → 一括 DL / 失敗 → user に Drive 共有設定依頼
-- 事前準備しない（5 分判定でブロッカー回避）
+- α4 入り口で 1 件 SA Drive smoke test：成功 → 一括 DL / 失敗 → user に Drive 共有設定依頼
 
 ### δ2 applicability スキーマ（H Stage 2）
 既存 `act_online_roulette.applicability` をベースに 57 件付与：
@@ -133,22 +150,6 @@ Phase ε  統合テスト・リリース判断（1 セッション）
   "studentLevel": ["beginner", "intermediate", "advanced"] subset
 }
 ```
-δ2 着手時に schema 再レビュー（追加 field 必要性判定）→ 一括付与。
-
----
-
-## 引き継ぎで失われていた TODO 群（このスケジュールに統合済）
-
-- ❌→β1 宿題の正解/不正解判定機能
-- ❌→γ1 スライドに音声再生機能
-- ❌→γ2 スライドのデザイン微修正
-- ⚠→δ1 アクティビティ画像組み込み（9 中 3 ブロックのみ実装済 / 残 6 ブロック）
-- ❌→δ2+δ3 アクティビティ自動リコメンド機能（Stage 2/3・[design_brief.md](design_brief.md)）
-
-**既に実装済（user 認識補正）**：
-- ✅ スライド画像組み込み（`ImageResolver` 経由 7 箇所）
-- ✅ 宿題画像組み込み（同 9 箇所）
-- ✅ 宿題音声再生機能（`.audio-btn[data-src]` 機構）
 
 ---
 
@@ -156,7 +157,6 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 - α/β/γ/δ/ε：blocker なし
 - worktree `phase4-prompt-plan`：guide 修正中（並行・干渉なし）
-  - 完了 → main ff-merge → skill 再起動 → 3 件 prompt 生成 → user PNG 全件生成
 
 ---
 
@@ -165,22 +165,20 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 ```
 # 検証
 npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D PASS
-npm run missing-assets             # image 441 / audio 115（α3 完了後 0 を目指す）
 
-# 音声 (α 用)
-npm run generate-audio -- --status=null          # α2: null のみ拾う
-npm run naturalness-check                        # α1 で実装。未走 entry のみ拾う
-npm run naturalness-check -- --force --only ID1,ID2  # 特定 entry を再走
+# 音声 (α3 用 — 次セッションで実装拡張予定)
+npm run generate-audio                                # 新 QC + 自然さ inline
+npm run naturalness-check -- --force --only ID1,ID2  # 特定 entry 再走
 
-# 画像 prompt 展開（user PNG 作業用・既出力済）
-ls tmp/skill_prompts/              # 24 .txt 確認
+# OpenJTalk accent 抽出 (α2 PoC)
+python tmp/extract_accent.py                          # 10 単語の accent 抽出 → JSON
+node tmp/google_ipa_smoke.mjs                         # Google IPA smoke
+
+# 画像 prompt 展開
+ls tmp/skill_prompts/
 
 # 画像取り込み（user PNG 作業完了後）
 npm run generate-images -- --prompts data/image_prompts_skill.json --sync-only
-
-# 状態確認クエリ
-node -e "const r=require('./data/master_image_registry.json').entries; const c={}; for(const v of Object.values(r)){c[v.status||'(none)']=(c[v.status||'(none)']||0)+1;} console.log(c);"
-node -e "const r=require('./data/master_audio_registry.json').entries; let n=0,d=0,l=0; for(const v of Object.values(r)){if(!v.audioUrl)n++; else if(v.audioUrl.includes('drive.google.com'))d++; else l++;} console.log({null:n,drive:d,local:l});"
 ```
 
 ---
@@ -192,5 +190,5 @@ node -e "const r=require('./data/master_audio_registry.json').entries; let n=0,d
 - [docs/REFERENCE.md](docs/REFERENCE.md) — 命名規則・スキーマ詳細（不変仕様）
 - [docs/WORKFLOW.md](docs/WORKFLOW.md) — main / worktree の使い分け
 - [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md) — Phase 0〜5 全体ロードマップ
-- [docs/PHASE_BACKLOG.md](docs/PHASE_BACKLOG.md) — 退避中項目（特に Phase 3 後 backlog の音声自然さチェック仕様）
-- [design_brief.md](design_brief.md) — ツール設計書（applicability / Stage 2/3 の出所）
+- [docs/PHASE_BACKLOG.md](docs/PHASE_BACKLOG.md) — 退避中項目
+- [design_brief.md](design_brief.md) — ツール設計書
