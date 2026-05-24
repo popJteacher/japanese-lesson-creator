@@ -24,12 +24,19 @@
 //   npm run generate-audio -- --force                   # 既存ファイルも上書き
 //   npm run generate-audio -- --no-qc                   # 技術 QC をスキップ（debug 用）
 //   npm run generate-audio -- --no-naturalness          # 自然さ QC（Gemini）をスキップ
+//   npm run generate-audio -- --no-accent                # yomigana アクセント指定をスキップ
 //
 // 自然さ QC（Phase α2 統合・2026-05-24）:
 //   GEMINI_API_KEY が .env にあれば、書き出し後に inline で自然さ評価を実行し
 //   entry.naturalness = { score, confidence, comments, checkedAt, model } を書き戻す。
 //   未設定なら自動 skip（fallback、ログのみ）。WARN/ERROR は生成を block しない。
 //   遡及検査専用 CLI は scripts/check-audio-naturalness.mjs に残置。
+//
+// yomigana アクセント指定（Phase α3 統合・2026-05-24）:
+//   vocab_catalog.json の各 entry に `accent_yomigana` (例: "^ゆき!") があれば、
+//   SSML <phoneme alphabet="yomigana" ph="..."> で送信して教科書アクセントで合成。
+//   なければ plain text fallback（既存挙動）。--no-accent でスキップ可。
+//   word target のみ対象（sentence は対象外）。
 
 import { readFile, writeFile, mkdir, rename, stat } from 'node:fs/promises';
 import { resolve, dirname, relative } from 'node:path';
@@ -43,6 +50,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const AUDIO_REGISTRY = resolve(ROOT, 'data/master_audio_registry.json');
 const AUDIO_DIR = resolve(ROOT, 'data/audio');
 const USAGE_FILE = resolve(ROOT, 'data/_meta/tts_usage.json');
+const VOCAB_CATALOG = resolve(ROOT, 'data/vocab_catalog.json');
 
 const DEFAULT_MAX_CHARS_MONTH = 800_000;
 const FREE_TIER_LIMIT = 1_000_000;
@@ -75,6 +83,10 @@ async function writeJsonAtomic(path, data) {
 async function fileExists(path) {
   try { await stat(path); return true; } catch { return false; }
 }
+function escapeSsml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
 
 // ────────────────────────────────────────────────────────────
 // 合成対象の抽出
@@ -93,7 +105,8 @@ function extractTargets({ vocab, examples }) {
     if (!audioId || !word) continue;
     if (audioUrl) continue;
     if (audioStatus && audioStatus !== 'pending') continue;
-    targets.push({ kind: 'word', id: audioId, text: reading || word });
+    // word は vocab_catalog lookup 用、text は plain text fallback 用
+    targets.push({ kind: 'word', id: audioId, text: reading || word, word, reading });
   }
 
   for (const row of examples.rows) {
@@ -116,7 +129,7 @@ function extractTargets({ vocab, examples }) {
 function parseArgs(argv) {
   const args = {
     dryRun: false, limit: null, only: null,
-    maxChars: DEFAULT_MAX_CHARS_MONTH, force: false, noQc: false, noNaturalness: false,
+    maxChars: DEFAULT_MAX_CHARS_MONTH, force: false, noQc: false, noNaturalness: false, noAccent: false,
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -124,6 +137,7 @@ function parseArgs(argv) {
     else if (a === '--force') args.force = true;
     else if (a === '--no-qc') args.noQc = true;
     else if (a === '--no-naturalness') args.noNaturalness = true;
+    else if (a === '--no-accent') args.noAccent = true;
     else if (a === '--limit') {
       const v = parseInt(argv[++i], 10);
       if (!Number.isFinite(v) || v <= 0) { console.error('--limit must be positive int'); process.exit(2); }
@@ -137,7 +151,7 @@ function parseArgs(argv) {
       if (!Number.isFinite(v) || v <= 0) { console.error('--max-chars must be positive int'); process.exit(2); }
       args.maxChars = v;
     } else if (a === '--help' || a === '-h') {
-      console.log('Usage: node scripts/generate-audio-local.mjs [--dry-run] [--limit N] [--only word|sentence] [--max-chars N] [--force] [--no-qc] [--no-naturalness]');
+      console.log('Usage: node scripts/generate-audio-local.mjs [--dry-run] [--limit N] [--only word|sentence] [--max-chars N] [--force] [--no-qc] [--no-naturalness] [--no-accent]');
       process.exit(0);
     } else {
       console.error(`Unknown arg: ${a}`); process.exit(2);
@@ -164,11 +178,30 @@ async function main() {
         ? '無効（--dry-run）'
         : `有効（${NATURALNESS_MODEL}）`;
 
+  // vocab_catalog から accent_yomigana lookup map を作成（word target のみ対象）
+  // key 形式: "word|reading"（vocab_catalog の entry.key と一致）
+  const accentMap = new Map();
+  let accentLabel;
+  if (args.noAccent) {
+    accentLabel = '無効（--no-accent）';
+  } else {
+    try {
+      const catalog = await readJson(VOCAB_CATALOG);
+      for (const e of (catalog.entries || [])) {
+        if (e.accent_yomigana && e.key) accentMap.set(e.key, e.accent_yomigana);
+      }
+      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件）`;
+    } catch (e) {
+      accentLabel = `無効（vocab_catalog 読み込み失敗: ${String(e.message || e).slice(0, 80)}）`;
+    }
+  }
+
   console.log('===== generate-audio-local 開始 =====');
   console.log(`  voice:         ${VOICE.name} (${VOICE.languageCode})`);
   console.log(`  audio dir:     ${relative(ROOT, AUDIO_DIR)}/`);
   console.log(`  technical qc:  ${args.noQc ? '無効（--no-qc）' : '2-pass loudnorm (I=-16)'}`);
   console.log(`  naturalness:   ${naturalnessLabel}`);
+  console.log(`  accent (yomigana): ${accentLabel}`);
   console.log(`  max chars/月:  ${args.maxChars.toLocaleString()} (free tier ${FREE_TIER_LIMIT.toLocaleString()})`);
   if (args.dryRun) console.log('  mode: --dry-run（API 呼ばず、書き込みなし）');
   if (args.limit) console.log(`  --limit: ${args.limit}`);
@@ -245,6 +278,7 @@ async function main() {
   const tts = await createTtsClient({ rootDir: ROOT });
 
   let okCount = 0, errCount = 0, charsThisRun = 0;
+  let accentAppliedCount = 0;
   let naturalnessOkCount = 0, naturalnessWarnCount = 0, naturalnessErrCount = 0;
   const today = todayISO();
   for (let i = 0; i < targets.length; i++) {
@@ -252,14 +286,28 @@ async function main() {
     const out = resolve(AUDIO_DIR, `${t.id}.mp3`);
     const relPath = `data/audio/${t.id}.mp3`;
     try {
-      const raw = await synthesize(tts, { text: t.text, voice: VOICE });
+      // word target で accent_yomigana がある場合は SSML <phoneme alphabet="yomigana">、
+      // それ以外は plain text fallback。sentence は常に plain text。
+      const accentYomigana = t.kind === 'word' && t.word && t.reading
+        ? accentMap.get(`${t.word}|${t.reading}`)
+        : null;
+      let raw;
+      let accentTag = '';
+      if (accentYomigana) {
+        const ssml = `<speak><phoneme alphabet="yomigana" ph="${escapeSsml(accentYomigana)}">${escapeSsml(t.word)}</phoneme></speak>`;
+        raw = await synthesize(tts, { ssml, voice: VOICE });
+        accentAppliedCount++;
+        accentTag = ` [accent="${accentYomigana}"]`;
+      } else {
+        raw = await synthesize(tts, { text: t.text, voice: VOICE });
+      }
       const finalAudio = args.noQc ? raw : await applyQc(raw);
       await writeFile(out, finalAudio);
       registry.entries[t.id].audioUrl = relPath;
       charsThisRun += t.text.length;
       okCount++;
       const qcTag = args.noQc ? '' : ` → QC ${finalAudio.length}B`;
-      console.log(`  ✓ [${i+1}/${targets.length}] ${t.id} (${t.text.length} chars, raw ${raw.length}B${qcTag})`);
+      console.log(`  ✓ [${i+1}/${targets.length}] ${t.id} (${t.text.length} chars, raw ${raw.length}B${qcTag})${accentTag}`);
 
       // 自然さ QC (Phase α2 inline)。HARD ERROR にせず生成は続行する。
       if (naturalnessOn) {
@@ -312,6 +360,7 @@ async function main() {
 
   console.log('\n===== generate-audio-local 完了 =====');
   console.log(`  成功: ${okCount} / エラー: ${errCount}`);
+  console.log(`  accent (yomigana) 適用: ${accentAppliedCount} 件`);
   if (naturalnessOn) {
     console.log(`  naturalness: PASS ${naturalnessOkCount} / WARN ${naturalnessWarnCount} / ERROR ${naturalnessErrCount}`);
   }
