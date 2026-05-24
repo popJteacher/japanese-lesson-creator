@@ -5,122 +5,98 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-24（**Phase α3 完了**：integrity gate で pipeline bug 一掃 +
-LLM cross-check 路線を Claude Code 直接レビューに pivot + override 機構実装 +
-175 件再生成。次セッションは **user 視聴サンプル → 違和感あれば override 追加**
-→ **Phase α4 = Drive 291 件ローカル化**）
+**最終更新：** 2026-05-24（**Phase α4 完了** 🆕：Drive 291 件を SA 経由で
+ローカル化、WAV→ffmpeg loudnorm→MP3 変換、registry 書き換え。Phase α 全完了。
+次セッションは **user 視聴サンプル（α3+α4）** → **Phase β1 = 宿題正解判定**）
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ / α1 / α2 完了** ✅
-- **Phase α3 完了** ✅ 🆕（前半 + 後半とも）
+- **Phase 0 〜 5 ⑤ / α1 / α2 / α3 / α4 完了** ✅
+- **Phase α 全完了** ✅ 🆕
 
-### α3 前半（既存）
-- `scripts/extract-accent-catalog.py` 実装、UniDic+naist-jdic ハイブリッド抽出
-- 17502/17508 件に accent_yomigana 付与（unidic 15162 / naist-jdic 2340）
-- `_meta.schemaVersion: 1.0 → 1.1`
-- generate-audio-local.mjs に SSML `<phoneme alphabet="yomigana">` 拡張
+### α4（今回）🆕
+- **Drive SA smoke PASS**：既存 `secrets/sheets-sa.json` で 1 件 DL 成功
+  - SA email: `sheets-reader@gen-lang-client-0575082983.iam.gserviceaccount.com`
+  - owner=user 自身、共有設定済で 291 件アクセス可
+  - **重要発見**：Drive 由来 audio は **WAV 形式**（既存 local 168 は MP3）
+- `scripts/check-drive-sa.mjs` 新規（1 件 metadata + DL 試行・診断付き）
+- `scripts/download-drive-audio.mjs` 新規（一括 DL pipeline）
+  - flow: Drive WAV → `applyQc` (ffmpeg loudnorm) → MP3 96kbps 48kHz → `data/audio/{id}.mp3`
+  - registry 更新: `audioUrl=ローカル`, `originalAudioUrl=元 Drive URL`, `audioSource='drive-download'`, `audioLocalizedAt`
+  - 自然さ QC inline（Gemini、text lookup 失敗時は skip）
+- **本走完了**：291/291 OK・132 秒・errors 0
+  - raw DL: 10.35 MiB → QC out: 2.80 MiB (3.7x 圧縮)
+  - naturalness 22/291 checked（lesson_NN.json に text ある entries のみ）
+  - 残 269 件は vocab_catalog 専用 → 自然さ QC は **lookupText 拡張で将来カバー可能**
+- **registry-as-canon 維持**：Drive 依存ゼロ、Drive 自動 trigger（GAS）も 0 件
 
-### α3 後半（今回）🆕
-- **重要発見**：Gemini 2.5 Flash の accent 判定は信頼不能
-  - 100 件 mid-range smoke で **44% wrong / 56% flag** された
-  - 主因は **中高化バイアス**（大学・絶対・庭先・誇り・書斎 等の平板語を一律「中高」と誤判定）
-  - LLM cross-check 路線は放棄。Claude Code 直接判定に pivot
-- **整合性ゲート実装**（`extract-accent-catalog.py`）
-  - reading ↔ accent_yomigana の bare kana 不整合を自動検出
-  - 長音 ー と お段+う / え段+い は等価扱い（音的同一）
-  - bug entry を `accent_source='unknown'` に降格
-- **再抽出 → クリーン化**：unidic 14755 / naist-jdic 2253 / unknown 500
-  - reject 内訳: nonkana 45 + mismatch 449 = 494 件降格
-  - integrity 再計測：substantive mismatch 0 / non-kana 0 ✅
-  - `_meta.schemaVersion: 1.1 → 1.2`、`accent_reject_counts` 追加
-- **accent_override 機構実装**
-  - `vocab_catalog.json` の entry に `accent_override` フィールド追加可
-  - `generate-audio-local.mjs` 優先順を **override > accent_yomigana > plain text** に拡張
-  - `accent_override_meta { source, addedAt, reason, previous_yomigana, previous_source }` も保存
-- **116 word entries を Claude Code が直接 NHK 第2版照合**
-  - 109 件は妥当（UniDic/naist 出力が NHK 主形 or 副位形）
-  - **7 件 override 適用**（lesson_01/02 audio target）：
-    | word | reading | override | 根拠 |
-    |---|---|---|---|
-    | 二階 | にかい | `^にか!い` | NHK 2型 中高 |
-    | 寝る | ねる | `^ね!る` | NHK 1型 頭高 |
-    | ボールペン | ぼーるぺん | `^ぼーる!ぺん` | NHK 3型 中高 |
-    | 何日 | なんにち | `^な!んにち` | NHK 1型 |
-    | 何人 | なんにん | `^な!んにん` | NHK 1型 |
-    | 何年 | なんねん | `^な!んねん` | NHK 1型 |
-    | 何分 | なんふん | `^な!んぷん` | NHK 1型 + 連濁 ふ→ぷ |
-- **175 件再生成完了**（new QC + override-aware yomigana SSML）
-  - 成功 175/175、accent 適用 126 件、naturalness PASS 164 / WARN 11 / ERROR 0
-  - TTS 文字数 1,119 / 当月 6,739 / 上限 800,000
-- **deferred 3 件**（worktree 担当・guide 修正必要）：vocab_男の人 / vocab_女の人 / word_秋
-- **worktree `phase4-prompt-plan` で guide 修正中**（並行進行）
+### α3（前セッション・参考）
+- integrity gate + accent_override 機構 + 175 件再生成
+- 7 件 override 適用、Claude Code 直接 NHK 第2版照合
+- LLM cross-check (Gemini Flash) は中高バイアスで実用不能と判明、scripts は参考残置
 
 生存中の GAS 自動 trigger：**0 件**。
+α4 完了で Phase 3 ⑥ 「GAS retired」相当が 100% 達成。
 
 ### スナップショット（2026-05-24・コマンドで再導出）
 
 ```
 image_registry: pending 440 / generated 17 / rejected 27 / outdated 6 / (none) 1
 image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
-audio_registry:  null 7 / Drive URL 291 / local 168 + 7 = 175
-validate:        ERROR 8 / WARN 26 / 自然さ 168/168 checked (11 WARN)
-                 ※ ERROR 8 件はすべて単語短尺 audio の LUFS 限界
+audio_registry:  null 7 / local 459 / drive 0 (= 466 total)
+                 audioSource=drive-download 291 / tts-local 168
+validate:        ERROR 28 / WARN 73 / 自然さ 190/459 checked (11 WARN)
+                 ※ ERROR 28 件は全て単語短尺 audio の LUFS 限界
                    (loudnorm R128 統合 400ms 窓に対し audio が短すぎる構造問題)
-                   再生成では解消しない既知制約。-21〜-24 LUFS 帯
-                   対象: わたし/私/二十日/二十歳/八/八つ/八月/八十
+                   再生成では解消しない既知制約。-19〜-24 LUFS 帯
 vocab_catalog:  17508 entries (schemaVersion 1.2)
                 accent_yomigana 17008 (unidic 14755 / naist-jdic 2253)
-                accent_override 7 / accent unknown 500 (integrity-rejected を含む)
+                accent_override 7 / accent unknown 500
 ```
 
 ---
 
 ## active
 
-### 次セッション開始点：user 視聴サンプル + override 追加（必要に応じ）
+### 次セッション開始点：user 視聴サンプル → Phase β1
 
-**今回 7 件の override 適用 + 116 件の Claude Code 直接レビュー済**だが、
-user 視聴で残りの 109 件「妥当」判定が本当に違和感ないか確認する必要あり。
+**user 視聴対象**（前 α3 後半 + 今 α4 合算）：
+- 459 件のローカル audio が data/audio/ に揃った
+- 内訳：tts-local 168 (new QC + override-aware yomigana SSML) + drive-download 291 (元 GAS 生成・WAV→MP3 化)
+- 質感が混在する可能性：TTS Neural2 vs 元 Drive 生成（旧 voice/QC かも）
 
-**手順（次セッション・~30 分）**：
+**手順（次セッション・user 視聴 + 必要なら override 追加）**：
+1. `npm run start` でブラウザから lesson_01/02 を起動 → vocabulary タブで全件再生
+2. 重点確認:
+   - **質感の混在**：TTS 168 件 vs Drive 由来 291 件で voice 違いが出るか
+   - **アクセント違和感**：7 override + 残 109 件 Claude 判定「妥当」
+   - 既知 naturalness WARN 11 件（commented 3 件、特に sentence_ex_L02_026/033/035 の「です」消失）
+3. 違和感あれば `vocab_catalog.json` に `accent_override` 追加 → `--force --only` で再生成
+4. 完了次第 **Phase β1 = 宿題正解判定** に進む
 
-1. **lesson_01/02 audio をブラウザで聴く**
-   - 候補：lesson_01 起動 → vocabulary タブで全件再生
-   - 特に user 既視聴の 10 件 + 今回 override した 7 件 + naturalness WARN 11 件を重点
-2. **違和感あれば override 追加**
-   - `data/vocab_catalog.json` の対象 entry に `accent_override` 直接編集（または小さい patch script）
-   - 形式: `"accent_override": "^...!"` + `"accent_override_meta": {...}`
-3. **対象 entry を --force 再生成**
-   ```
-   node scripts/generate-audio-local.mjs --force --only word_XX,word_YY
-   ```
-   ※ generate-audio-local.mjs に `--only` がなければ追加実装が必要（未確認）
-4. **validate** で invariants[D'] 自然さ確認
-5. **完了したら Phase α4 へ進む**
+**naturalness QC 拡張候補（後回し可）**：
+- `lookupText()` を vocab_catalog → word 引きで拡張すれば Drive 由来 269 件もカバー
+- 効果：459 全件 naturalness 取得、隠れた品質問題を発見できる
+- コスト：269 × $0.0002 ≈ $0.05、~3 分
+- 必要性：user 視聴で問題が見つかったら走らせる。事前は不要
 
-**naturalness WARN 11 件の優先確認候補**（コメント付き 3 件）：
-- `sentence_ex_L02_026`: アインシュタイン「シュ」母音脱落 / 平板アクセント
-- `sentence_ex_L02_033`: 富士山「です」聞き取れない
-- `sentence_ex_L02_035`: その写真「です」聞き取れない
-- ※ いずれも例文最後の「です」消失 → TTS Neural2-B の既知挙動の可能性
-
-**LUFS ERROR 8 件は「触らない」**（短尺 audio の構造問題、validate spec の方が tight すぎ）
+**触らない既知制約**：
+- LUFS ERROR 28 件（loudnorm R128 統合 400ms 窓の短尺 audio 構造問題、validate spec の方が tight すぎる）
 
 ---
 
 ## スケジュール（α → β → γ → δ → ε）
 
 ```
-Phase α  Audio 基盤完成
+Phase α  Audio 基盤完成  ✅ 全完了
   α1 ✅ 音声自然さ QC 実装（Gemini 2.5 Flash）
-  α2 ✅ QC 簡素化 + naturalness inline + 120 件本走 + 雪 IPA 個別修正
-  α3 ✅ accent pipeline + integrity gate + override 機構 + 175 件再生成 🆕
-  α4 ★次 Drive 291 件のローカル化 (B) — SA Drive smoke で 5 分判定
+  α2 ✅ QC 簡素化 + naturalness inline + 120 件本走
+  α3 ✅ accent pipeline + integrity gate + override 機構 + 175 件再生成
+  α4 ✅ Drive 291 件のローカル化 (B) — WAV→MP3 + naturalness inline 🆕
 
-Phase β  宿題完成（1 セッション）
+Phase β  宿題完成（1 セッション）★次
   β1     正解判定 (D)・仕様確定済
 
 Phase γ  スライド完成（1-2 セッション）
@@ -137,7 +113,7 @@ Phase ε  統合テスト・リリース判断（1 セッション）
   ε2     docs 整理
 ```
 
-**総推定**：9-13 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
+**総推定**：8-12 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
 
 ---
 
@@ -152,10 +128,6 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 ### γ2 スライドデザイン微修正 (F)
 - 着手時に session_001 を生成 → ブラウザで目視 → user とその場で修正点を拾う
 - 仕入れ方式：walkthrough（事前リスト化しない）
-
-### α4 Drive ローカル化 (B)
-- 既存 SA：`secrets/sheets-sa.json` (`sheets-reader@gen-lang-client-0575082983.iam.gserviceaccount.com`)
-- α4 入り口で 1 件 SA Drive smoke test：成功 → 一括 DL / 失敗 → user に Drive 共有設定依頼
 
 ### δ2 applicability スキーマ（H Stage 2）
 既存 `act_online_roulette.applicability` をベースに 57 件付与：
@@ -174,7 +146,7 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ## ブロッカー / 並行
 
-- α/β/γ/δ/ε：blocker なし
+- β/γ/δ/ε：blocker なし
 - worktree `phase4-prompt-plan`：guide 修正中（並行・干渉なし）
 
 ---
@@ -183,26 +155,29 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ```
 # 検証
-npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D / D' PASS
+npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D / D' 各 PASS
 
-# 音声 (α3 後半完了 — accent_override + yomigana SSML 統合済)
+# 音声生成 (α3 後半完了・accent_override + yomigana SSML 統合済)
 npm run generate-audio                          # 未生成のみ
 npm run generate-audio -- --force               # 既存も上書き再合成
 npm run generate-audio -- --no-accent           # accent 指定なし plain text
-node scripts/check-audio-naturalness.mjs --force --only ID1,ID2  # 特定 entry 自然さ再走
+
+# 音声ローカル化 (α4 完了・再走は基本不要)
+node scripts/check-drive-sa.mjs                 # 1 件 smoke (再確認用)
+node scripts/download-drive-audio.mjs --force --only ID  # 特定 entry 再 DL
+
+# 自然さ QC（個別）
+node scripts/check-audio-naturalness.mjs --force --only ID1,ID2
 
 # OpenJTalk accent 抽出（再構築が必要なときだけ）
 python scripts/extract-accent-catalog.py        # 全 17508 件再抽出 + integrity gate
 python tmp/inspect_accent_integrity.py          # reading ↔ yomigana 整合性レポート
 
 # accent cross-check（Gemini 路線・参考残置・実用しない）
-node scripts/check-accent-cross.mjs --dry-run   # 対象 + 概算コスト
-node scripts/check-accent-cross.mjs --smoke     # 1 batch (20 件) smoke
+node scripts/check-accent-cross.mjs --dry-run
 
-# 画像 prompt 展開
+# 画像
 ls tmp/skill_prompts/
-
-# 画像取り込み（user PNG 作業完了後）
 npm run generate-images -- --prompts data/image_prompts_skill.json --sync-only
 ```
 
