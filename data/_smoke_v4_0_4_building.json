@@ -1,16 +1,16 @@
 {
   "_meta": {
     "lessonNo": 1,
-    "guideVersion": "v4.0.4-smoke-r8-minimal-clean",
+    "guideVersion": "v4.0.4-smoke-r11-reference-attachment",
     "guideHashNormalized": "5338c98aab5d",
     "generatedAt": "2026-05-24",
-    "generator": "manual-smoke (Stage 1 round-8: minimal-clean from-scratch)",
+    "generator": "manual-smoke (Stage 1 round-11: in-context style transfer via reference image attachment)",
     "scriptHash": "manual",
     "vocabTypesSource": "data/master_image_registry.json (word_building 4 entries)",
     "coveredVocabTypes": [
       "building"
     ],
-    "notes": "Stage 1 round-8 minimal-clean. user 指示で master prompt guide を一旦忘れて基本要素から再構築。user 選択: Subject=B (type + 1-2 features) / Style=B (標準・designer brief なし) / Palette=C (token 列挙 + contrast principle 明示 = 会社 recipe を universal rule として埋め込み) / Constraints=★★★ のみ (No text / No Japanese / No decorative icons)。R7 minimal で発生した cream-on-cream washout は universal contrast principle 明示で解消狙い。Type 紛れ防止 list / 上層階人物禁止 / 排水管禁止 は意図的に削除（実バグ再発したら R9 で必要分のみ追加）。"
+    "notes": "Stage 1 round-11: text-only path 限界が R9/R10 連続失敗で実証され、user 手動 reference 添付 (病院 prompt + 医者カード参照) の成功例で確認された方針転換。pipeline 改修 (scripts/lib/nanobanana-client.mjs に referenceImages 引数追加 + scripts/generate-images-local.mjs に styleReferences 読み取り) により nanobanana の multi-image input 機能を活用。各 prompt に person カード 2 枚 (word_医者 + word_日本人) を style anchor として添付し、text prompt は ~720 chars の user 病院 prompt 構造 (positive specification / adjective stacking / 短文連打) に統一。仮説: in-context style transfer (擬似 LoRA) で person カードの brand voice (palette / line weight / illustration tone) が building に転写され、text-only path で再現できなかった warmth + brand coherence が実現する。コスト試算: 1 件 ~$0.0387 + ref 2 枚 × 1290 token × $0.30/M ≈ $0.0008 上乗せ = ~$0.0395/件 (約 2% 増)。Phase 6 仮で Flux+自作 LoRA に切替検討 (docs/MIGRATION_PLAN.md 参照)。"
   },
   "vocabulary": [
     {
@@ -19,7 +19,11 @@
       "reading": "ガッコウ",
       "en": "school",
       "vocab_type": "building",
-      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese SCHOOL at a glance.\n\n[SUBJECT]\nA Japanese public elementary school: a 3-story building with classroom windows, a school gate with metal fencing, and two children in school uniforms walking through the gate.\nThe English label \"SCHOOL\" is mounted above the main entrance — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"SCHOOL\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+      "styleReferences": [
+        "data/images/word_医者.png",
+        "data/images/word_日本人.png"
+      ],
+      "prompt": "A flat vector illustration of a classical Japanese elementary school building. Two stories, symmetrical, with a low-pitched hipped roof and a central clock tower bearing a simple analog clock face above the main entrance. Muted warm blue facade, cool slate gray roof, warm amber gold signboard and gate posts, all set on a soft cream off-white background. A small signboard above the main entrance reads \"SCHOOL\" — the only text in the entire image. Two simplified tree silhouettes flank the building; a low perimeter wall and a closed metal gate are in the foreground. Match the illustration style, line weight, palette tokens, and overall brand voice of the attached reference vocabulary cards (image_1 = 医者 doctor card, image_2 = 日本人 Japanese person card — same series). Defined deep slate navy outlines, soft and even lighting, no gradients, no shadows, no 3D effects. The output is a 1:1 square image. The overall feel is minimalist and elegant."
     },
     {
       "imageId": "word_大学",
@@ -27,7 +31,11 @@
       "reading": "ダイガク",
       "en": "university",
       "vocab_type": "building",
-      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese UNIVERSITY campus at a glance.\n\n[SUBJECT]\nA Japanese university campus: a modern multi-story academic building behind a campus entrance gate (two pillars supporting a horizontal sign beam), with two young adult students in their 20s with backpacks walking through the gate.\nThe English label \"UNIVERSITY\" is mounted on the horizontal sign beam — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"UNIVERSITY\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+      "styleReferences": [
+        "data/images/word_医者.png",
+        "data/images/word_日本人.png"
+      ],
+      "prompt": "A flat vector illustration of a classical Japanese university academic building behind a formal campus gate. A 5-story stately academic facade with regular rows of rectangular windows; in front of the building stands a substantial campus entrance gate consisting of two stone pillars supporting a horizontal sign beam. Muted warm blue facade, cool slate gray low-pitched roof and stone gate pillars, warm amber gold sign beam, all set on a soft cream off-white background. The horizontal sign beam reads \"UNIVERSITY\" — the only text in the entire image. Two mature simplified tree silhouettes flank the gate walkway; an open campus path leads through the gate toward the building's main entrance in the foreground. Match the illustration style, line weight, palette tokens, and overall brand voice of the attached reference vocabulary cards (image_1 = 医者 doctor card, image_2 = 日本人 Japanese person card — same series). Defined deep slate navy outlines, soft and even lighting, no gradients, no shadows, no 3D effects. The output is a 1:1 square image. The overall feel is minimalist and elegant."
     },
     {
       "imageId": "word_デパート",
@@ -35,7 +43,11 @@
       "reading": "デパート",
       "en": "department store",
       "vocab_type": "building",
-      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese DEPARTMENT STORE at a glance.\n\n[SUBJECT]\nA Japanese mid-sized department store building (4-5 floors), substantial and wide, with large display windows on the ground floor showing mannequins in garments, and a shopper carrying a shopping bag near the entrance.\nThe English label \"DEPT. STORE\" is mounted on a horizontal signboard above the entrance — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"DEPT. STORE\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+      "styleReferences": [
+        "data/images/word_医者.png",
+        "data/images/word_日本人.png"
+      ],
+      "prompt": "A flat vector illustration of a classical Japanese mid-size department store building. Four stories, wide and substantial, with a continuous run of ground-floor display windows showing simplified mannequin silhouettes wearing garments, and a horizontal awning above the main entrance. Muted warm blue upper-floor facade, cool slate gray ground-floor strip and roof parapet, warm amber gold awning and signboard, all set on a soft cream off-white background. A small horizontal signboard above the entrance reads \"DEPT. STORE\" — the only text in the entire image. Two simplified potted tree silhouettes flank the entrance; the wide display windows and double glass doors are in the foreground. Match the illustration style, line weight, palette tokens, and overall brand voice of the attached reference vocabulary cards (image_1 = 医者 doctor card, image_2 = 日本人 Japanese person card — same series). Defined deep slate navy outlines, soft and even lighting, no gradients, no shadows, no 3D effects. The output is a 1:1 square image. The overall feel is minimalist and elegant."
     },
     {
       "imageId": "word_会社",
@@ -43,7 +55,11 @@
       "reading": "カイシャ",
       "en": "company office",
       "vocab_type": "building",
-      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese OFFICE BUILDING at a glance.\n\n[SUBJECT]\nA modern Japanese mid-sized office building (4-6 floors) with a glass curtain wall facade, a ground-floor entrance with glass doors, and an office worker in a business suit carrying a briefcase walking in or out.\nThe English label \"OFFICE\" is mounted on a small signboard above the entrance — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"OFFICE\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+      "styleReferences": [
+        "data/images/word_医者.png",
+        "data/images/word_日本人.png"
+      ],
+      "prompt": "A flat vector illustration of a modern Japanese mid-size company office building. A 6-story tall and professional volume with a glass curtain-wall facade of identical rectangular window panels arranged in a regular grid; at street level there is a lobby entrance with floor-to-ceiling glass doors framed by a flat horizontal canopy, and a small rectangular plaque-style signboard beside the entrance. Muted warm blue facade, cool slate gray glass window panels and lobby doors, warm amber gold lobby canopy and entrance plaque, all set on a soft cream off-white background. The plaque beside the entrance reads \"OFFICE\" — the only text in the entire image. A single mature simplified tree silhouette in a low planter sits beside the entrance; the lobby canopy and glass doors are in the foreground. Match the illustration style, line weight, palette tokens, and overall brand voice of the attached reference vocabulary cards (image_1 = 医者 doctor card, image_2 = 日本人 Japanese person card — same series). Defined deep slate navy outlines, soft and even lighting, no gradients, no shadows, no 3D effects. The output is a 1:1 square image. The overall feel is minimalist and elegant."
     }
   ]
 }

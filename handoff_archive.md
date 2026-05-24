@@ -155,3 +155,15 @@
   統一で副次的に解消見込み。#4 (vocab_subtype) のみ独立 backlog として保持。
   関連 memory：worktree 側 `project_v4_0_pivot.md` /
   main 側 `project_v4_0_pivot.md`（同名・worktree 起源情報を main 視点で保持）。
+
+- **2026-05-24 v4.0.4 building Stage 1 R9-R11 → R12 へ**：worktree image-prompt-plan で
+  R9 (person template 同型化 7464 chars) NG → R10 (universal template + STYLE_BIBLE 厳守
+  1700 chars) で R9 より悪化 → R11 (pipeline 改修で reference attachment 実装：
+  nanobanana-client.mjs の referenceImages 引数 + generate-images-local.mjs の
+  styleReferences loader / 1 件 word_学校 smoke) でも user 病院手動品質に達せず削除。
+  text-only path の cross-vocab-type style coherence 限界（feedback 学び 6）・STYLE_BIBLE
+  単一強制過剰（学び 7）・人物含めるべき（学び 8）・cross-ref aspect 別 specific（学び 9）
+  を新規追記。R12 = 5 軸統合（universal template + reference attachment + per-building
+  palette + people + aspect-specific cross-ref）へ。Phase 6 (Flux + 自作 LoRA 切替検討) を
+  docs/MIGRATION_PLAN.md に追加・着手判断基準 4 条件 + spike スライス案あり。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` / 同 `feedback_nanobanana_prompt_design.md`（学び 1-9）。

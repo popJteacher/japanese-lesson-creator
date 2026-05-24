@@ -349,6 +349,93 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   経由削除はやらない）。完了＝`gas/` ディレクトリ削除済・人間タスク欄に
   「Sheet (Vocabulary/Examples) 削除確認」のみ残る。
 
+# Phase 6（検討中・着手未確定）：自作 LoRA + Flux への画像生成切替検討
+
+> このセクションは **評価・spike phase**。Phase 5 完了後・lesson 1-3 程度の
+> 安定カードが蓄積された段階で着手可否を判断する。**コスト・実現性が詰まる
+> まで「着手 phase」として扱わない**（user 判断 2026-05-24）。
+
+## 動機
+
+Phase 4 後 + v4.0.4 building 改修 R11 から運用予定の「Gemini 2.5 Flash Image
+(Nano Banana) + reference image attachment」方式は **in-context style transfer
+＝ 擬似 LoRA** の挙動。論理的には自作 LoRA で学習したモデルとほぼ等価。
+
+- **短期（R11〜）**：Nano Banana + reference は即運用可・初期コスト 0・brand
+  確定中の柔軟性が高い
+- **長期（Phase 6 仮）**：lesson 1-3 程度で 50-100 枚 confirmed カード蓄積後、
+  自前 LoRA 学習 → per-image cost 劇的削減 + brand 安定性向上が見込める
+
+R11 で生成された confirmed カード群が **そのまま Phase 6 の LoRA 学習データ
+セット候補** になる自然な順序関係。
+
+## コスト試算（要 spike 実機確認）
+
+| 項目 | Nano Banana + reference | Flux + 自作 LoRA |
+|---|---|---|
+| per-image cost | ~$0.040 | ~$0.001-0.005（API host）/ ~電気代のみ（自前 GPU） |
+| LoRA 学習 1 回 | n/a | $5-30（クラウド GPU 数時間）+ 人間作業 1-2 時間（キャプション付け / dataset 整備） |
+| brand 変更コスト | reference 入れ替えで即時・$0 | 再学習 $5-30 + 数時間 |
+| インフラ | API key のみ（既存 GEMINI_API_KEY 流用） | 自前 GPU or Replicate/fal.ai/RunPod account |
+| アスペクト比制御 | prompt inline directive（v3.11.1 TEMPORARY workaround）| resolution 指定で確実（**Flux 優位**） |
+| テキスト描画品質 | 高（label "SCHOOL" 等安定）| 中（要 spike 確認・flat illustration 内小テキストは苦手な可能性） |
+
+**切替閾値（ballpark）**：LoRA 投資 $30 + 整備時間 / 月 $0.036 削減
+= **月 833 枚生成で 1 ヶ月回収**。
+
+→ 月生成見込み数が 1000 枚を超えた時点で経済合理性が成立。lesson 1 課あたり
+~450 枚 (vocab 437 + sentence ~20) として、課を月 2 課ペース以上で進める段階。
+
+## 実現性評価（要 spike 実機確認）
+
+未確定で spike test 必要な項目：
+
+1. **flat vector / brand-style-guide スタイルが Flux LoRA で再現可能か**
+   - Flux は写真リアル系で評価高い・flat illustration 系 LoRA は civitai 等で
+     実例多数
+   - 「Japanese language learning material brand」固有スタイルを 20-100 枚で
+     学習できるかは不明
+   - **spike 内容**：v4.0 person 12 枚を dataset として SDXL or Flux LoRA を
+     1 回学習し、building 4 件を生成して Nano Banana + reference と比較
+
+2. **テキスト描画品質**：Flux 系は label テキストが苦手な可能性。spike で
+   signboard "SCHOOL" が読めるレベルで描画できるか確認。
+   不可なら post-processing で text overlay（GAS 時代の旧方式回帰）も検討対象。
+
+3. **API option 選定**：
+   - **Replicate**（Flux + LoRA host・per-image $0.003-0.005）
+   - **fal.ai**（同・速度速・推奨候補）
+   - **RunPod**（自前 LoRA host）
+   - **自前 GPU + ComfyUI**（電気代のみ・運用負担あり）
+   - spike では 1-2 option を実測
+
+4. **brand drift リスク**：LoRA は学習 dataset 品質依存・dataset 偏ると brand
+   硬直化。Nano Banana + reference は柔軟性高。dataset 安定性確認後でないと
+   切替不可。
+
+## 着手判断基準（全て満たす必要）
+
+1. lesson 1-3 完了で 50-100 枚 confirmed カードが蓄積（dataset 候補成立）
+2. brand drift なし（confirmed 群の visual review で一貫性 OK）
+3. 月生成見込み数 > 1000 枚（経済合理性 ballpark 成立）
+4. **spike test PASS**：Flux/SDXL LoRA 1 回学習で flat vector +
+   brand-style-guide + テキスト描画品質が Nano Banana 同等
+
+## 着手時のスライス案（仮）
+
+- **①** **Spike** — v4.0 person 12 枚で SDXL or Flux LoRA を 1 回学習。
+  対象クラウド GPU + 学習 framework（Kohya / ComfyUI 等）を選定。cost & 品質
+  を実測。完了＝spike 結果を docs に残し、go/no-go 判定。
+- **②** 本学習 — lesson 1-3 全 confirmed カードで本 LoRA。dataset
+  キャプション付け、validation split、評価 prompt 群を整備。
+- **③** pipeline 切替 — `scripts/generate-images-local.mjs` に
+  `--backend flux-lora` 追加。Nano Banana backend は `--backend nanobanana`
+  で残置（fallback 用）。
+- **④** invariants B 更新 — master prompt guide が LoRA backend 向けに簡素化
+  （reference attachment 不要・style 指示大幅削減）→ B hash 再計算。
+
+---
+
 # 横断要件（全 Phase）
 - データ＋行単位状態台帳（現シート：語彙438／例文1027＋status 列）を
   repo ローカル JSON に移す（SSOT）。**Phase 5 のメインゴール**として扱う。
