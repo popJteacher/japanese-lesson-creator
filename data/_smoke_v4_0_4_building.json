@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "lessonNo": 1,
+    "guideVersion": "v4.0.4-smoke-r8-minimal-clean",
+    "guideHashNormalized": "5338c98aab5d",
+    "generatedAt": "2026-05-24",
+    "generator": "manual-smoke (Stage 1 round-8: minimal-clean from-scratch)",
+    "scriptHash": "manual",
+    "vocabTypesSource": "data/master_image_registry.json (word_building 4 entries)",
+    "coveredVocabTypes": [
+      "building"
+    ],
+    "notes": "Stage 1 round-8 minimal-clean. user 指示で master prompt guide を一旦忘れて基本要素から再構築。user 選択: Subject=B (type + 1-2 features) / Style=B (標準・designer brief なし) / Palette=C (token 列挙 + contrast principle 明示 = 会社 recipe を universal rule として埋め込み) / Constraints=★★★ のみ (No text / No Japanese / No decorative icons)。R7 minimal で発生した cream-on-cream washout は universal contrast principle 明示で解消狙い。Type 紛れ防止 list / 上層階人物禁止 / 排水管禁止 は意図的に削除（実バグ再発したら R9 で必要分のみ追加）。"
+  },
+  "vocabulary": [
+    {
+      "imageId": "word_学校",
+      "word": "学校",
+      "reading": "ガッコウ",
+      "en": "school",
+      "vocab_type": "building",
+      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese SCHOOL at a glance.\n\n[SUBJECT]\nA Japanese public elementary school: a 3-story building with classroom windows, a school gate with metal fencing, and two children in school uniforms walking through the gate.\nThe English label \"SCHOOL\" is mounted above the main entrance — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"SCHOOL\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+    },
+    {
+      "imageId": "word_大学",
+      "word": "大学",
+      "reading": "ダイガク",
+      "en": "university",
+      "vocab_type": "building",
+      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese UNIVERSITY campus at a glance.\n\n[SUBJECT]\nA Japanese university campus: a modern multi-story academic building behind a campus entrance gate (two pillars supporting a horizontal sign beam), with two young adult students in their 20s with backpacks walking through the gate.\nThe English label \"UNIVERSITY\" is mounted on the horizontal sign beam — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"UNIVERSITY\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+    },
+    {
+      "imageId": "word_デパート",
+      "word": "デパート",
+      "reading": "デパート",
+      "en": "department store",
+      "vocab_type": "building",
+      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese DEPARTMENT STORE at a glance.\n\n[SUBJECT]\nA Japanese mid-sized department store building (4-5 floors), substantial and wide, with large display windows on the ground floor showing mannequins in garments, and a shopper carrying a shopping bag near the entrance.\nThe English label \"DEPT. STORE\" is mounted on a horizontal signboard above the entrance — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"DEPT. STORE\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+    },
+    {
+      "imageId": "word_会社",
+      "word": "会社",
+      "reading": "カイシャ",
+      "en": "company office",
+      "vocab_type": "building",
+      "prompt": "\n[WHAT]\nVocabulary card for Japanese language learning. The image must instantly read as a Japanese OFFICE BUILDING at a glance.\n\n[SUBJECT]\nA modern Japanese mid-sized office building (4-6 floors) with a glass curtain wall facade, a ground-floor entrance with glass doors, and an office worker in a business suit carrying a briefcase walking in or out.\nThe English label \"OFFICE\" is mounted on a small signboard above the entrance — small, clearly legible. NO other text.\n\n[STYLE]\nMinimalist flat vector illustration for an educational brand style guide. Clean continuous black outlines, consistent line weight. Completely flat solid color fills only — no gradients, no shadows, no 3D effects, no photoreal textures.\n\nLimited palette: soft cream off-white background, deep slate navy outlines, muted warm blue, warm amber gold. The building uses muted warm blue as its primary fill color to contrast with the cream background; cream and amber gold are used as accent details only.\n\n[CONSTRAINTS]\n- No text in the image other than the single label \"OFFICE\".\n- No Japanese kanji or kana.\n- No decorative icons, logos, mascots, books, globes, stars, hearts on the building facade or signboard."
+    }
+  ]
+}

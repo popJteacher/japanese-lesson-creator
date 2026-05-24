@@ -37,7 +37,7 @@
       "v1.8 (2026-05-17): lesson_02.json v2.11.3 同期。L02 語彙 15件追加 (word_病院は L01 既存のためスキップ)。totalEntries: 71 -> 86 (world_map の static_asset を含む実態カウントに修正)。",
       "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。"
     ],
-    "lastModified": "2026-05-22"
+    "lastModified": "2026-05-24"
   },
   "entries": {
     "word_医者": {
@@ -226,14 +226,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_学校_001",
-          "filename": "vocab_学校.png",
-          "imageUrl": "https://drive.google.com/uc?id=1tErTQHSVhEv376Zx4TxLrOZ8I4b_rwoe",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_学校",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_学校_001",
+          "filename": "word_学校.png",
+          "imageUrl": "data/images/word_学校.png",
+          "promptRef": "_smoke_v4_0_4_building.json#word_学校",
+          "generatedAt": "2026-05-24",
           "regenerate": false
         }
       ]
@@ -270,14 +270,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_大学_001",
-          "filename": "vocab_大学.png",
-          "imageUrl": "https://drive.google.com/uc?id=1no7zDP2RK4FWOBoMgloxMDhAzC0-m9WC",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_大学",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_大学_001",
+          "filename": "word_大学.png",
+          "imageUrl": "data/images/word_大学.png",
+          "promptRef": "_smoke_v4_0_4_building.json#word_大学",
+          "generatedAt": "2026-05-24",
           "regenerate": false
         }
       ]
@@ -292,14 +292,14 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "generated",
       "images": [
         {
-          "imageId": "vocab_デパート_001",
-          "filename": "vocab_デパート.png",
-          "imageUrl": "https://drive.google.com/uc?id=1epODDd3cDUG9HXlIiakyFBov4oqWQ3CJ",
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_デパート",
-          "generatedAt": "2026-05-12",
+          "imageId": "word_デパート_001",
+          "filename": "word_デパート.png",
+          "imageUrl": "data/images/word_デパート.png",
+          "promptRef": "_smoke_v4_0_4_building.json#word_デパート",
+          "generatedAt": "2026-05-24",
           "regenerate": false
         }
       ]
@@ -3953,13 +3953,14 @@
       "reading": "かいしゃ",
       "en": "company",
       "context": "vocabulary_building",
-      "status": "pending",
+      "status": "generated",
       "images": [
         {
           "imageId": "word_会社_001",
           "filename": "word_会社.png",
-          "imageUrl": null,
-          "generatedAt": null,
+          "imageUrl": "data/images/word_会社.png",
+          "promptRef": "_smoke_v4_0_4_building.json#word_会社",
+          "generatedAt": "2026-05-24",
           "regenerate": false
         }
       ]

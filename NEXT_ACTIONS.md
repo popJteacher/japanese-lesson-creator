@@ -5,9 +5,9 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-22（**v3.13 → v4.0 pivot 確定**。worktree image-prompt-plan
-で「アジア／西洋アシンメトリ」問題が論点化し、modern wear + 国旗強化への大方針
-転換が決定。main 側 docs 整理完了 → 次は worktree session で v4.0 着手フェーズ）
+**最終更新：** 2026-05-24（worktree image-prompt-plan で **v4.0.4 building 改修 Stage 1 R1-R8 完了**。
+R8 で過剰規律窒息 ⇄ 過剰簡素化の両極端を経験。次セッション R9 で person template
+同型化を試行する handoff。memory に学び 4/5 + Stage 1 project 記録を追記済み）
 
 ---
 
@@ -16,22 +16,18 @@
 - **Phase 0／1／2／3／4：完了。** ✅
 - **Phase 5 ①／②／③：完了** ✅（catalog + import-lesson 配線済）
 - **v3.12 取り込み：完了** ✅（invariants B hash = `2137a8e885ae`）
-- **v3.13 BACKLOG migrate：完了** ✅（PHASE_BACKLOG に集約）
-- **v3.13 → v4.0 pivot：確定（docs 整理完了 2026-05-22）** 🆕
-  - 経緯：worktree image-prompt-plan で v3.13 #1 着手前にアジア／西洋
-    アシンメトリ問題（日中韓越のみ伝統服 → exoticization リスク + modern
-    reality との乖離）が論点化。逆方向の simplification として全国
-    modern daily casual wear + 国旗視認性強化へ pivot。
-  - 反映済：`docs/MIGRATION_PLAN.md` § v4.0 新設 / `docs/PHASE_BACKLOG.md`
-    v3.13-#1/#3 retire・#2 位置づけ変更・#4 のみ独立保持 /
-    `handoff_archive.md` 方針転換ログに 1 行追記
-- **v4.0 worktree 実装：未着手** — main の docs 整理完了で worktree 側
-  の着手準備が整った
-- **Phase 5 ④：v4.0 完了が prerequisite** — v4.0 → Phase 5 ④ → Phase 5 ⑤ → Phase 5 ⑥ の順序
+- **v4.0 取り込み：完了** ✅（invariants B hash = `5338c98aab5d`・lesson_01 person 12 件再生成済）
+- **v4.0.4 building 改修 Stage 1：R1-R8 完了** 🆕
+  - smoke 32 件 / $1.24 使用済（実機 nanobanana 検証）
+  - 対象 4 件：word_学校 / word_大学 / word_デパート / word_会社（registry status=generated）
+  - 結論：person template 同型化（[[feedback-nanobanana-prompt-design]] 学び 4/5）が次の方向
+  - 詳細経緯：worktree memory `project_v4_0_4_building_stage1.md`
+- **v4.0.4 building 改修 Stage 1 R9：未着手** ← 次セッション着手
+- **v4.0.4 building 改修 Stage 2：R9 OK 後に着手**（ガイド本体取り込み）
+- **Phase 5 ④：v4.0 完了済だが v4.0.4 building 取り込み後に着手推奨**
 - **Phase 5 ⑤／⑥：未着手** — Phase 5 ④ 完了後
-- **Phase 4 後 backlog**：v3.12 修正候補 1-6 は v4.0 で枠組み消失見込み
-  （v4.0 完了後に retire 予定）。残り 436 件本生成 / 画像 QC 仕様 /
-  scene-rich テンプレ A2 設計 等は残置
+- **Phase 4 後 backlog**：v3.12 修正候補 1-6 は v4.0 完了で retire 済。残り 436 件本生成 /
+  画像 QC 仕様 / scene-rich テンプレ A2 設計 等は残置
 - **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
 
 生存中の GAS 自動 trigger：**0 件**（Phase 4 完了時点・人間検証済 2026-05-21）。
@@ -42,61 +38,85 @@
 
 ## active（main 即時）：**なし**
 
-main 側の docs 整理（MIGRATION_PLAN / PHASE_BACKLOG / handoff_archive /
-NEXT_ACTIONS）は完了。main 即時 active タスクはない。
-次の active 化は **worktree が v4.0 を完了して ff-merge してくる** とき。
+main 即時 active タスクはない。次の active 化は **worktree が v4.0.4 building 取り込み
+（Stage 2）を完了して ff-merge してくる** とき。
 
 ---
 
-## 並行起動可能：image-prompt-plan worktree で v4.0 着手
+## 次セッション最優先：image-prompt-plan worktree で R9 着手
 
-worktree session を立てて v4.0 マスタープロンプトガイドの実装に着手可能。
-**1 セッション = 1 worktree** の規律は維持。
+worktree session を立てて v4.0.4 building 改修 Stage 1 の R9（person template 同型化）に
+着手する。**1 セッション = 1 worktree** の規律は維持。
 
-worktree セッション開始手順（`docs/WORKFLOW.md` § worktree セッション開始時
-＋ 本 NEXT_ACTIONS の指示）：
+worktree セッション開始手順（`docs/WORKFLOW.md` § worktree セッション開始時 ＋ 本指示）：
 
 ```
 cd .claude/worktrees/image-prompt-plan
-git merge --ff-only main       # v4.0 phase + v3.13 retire 反映を取り込む
-npm run validate               # baseline 確認（B hash = 2137a8e885ae v3.12 のはず）
-# v4.0 着手（docs/MIGRATION_PLAN.md § v4.0 マスタープロンプトガイド major-version 改修 参照）
+git pull --ff-only main          # main 側更新の取り込み（あれば）
+npm run validate                 # baseline 確認（B hash = 5338c98aab5d v4.0 のはず）
+# 必要なら memory 確認（学び 4/5 と project_v4_0_4_building_stage1.md）
+# R9 着手
 ```
 
-worktree 側の実装スコープ（`docs/MIGRATION_PLAN.md` § v4.0 全文を SSOT として参照）：
+### R9 設計仕様（worktree memory より）
 
-1. `prompts/master_prompt_design_guide_v4_0.py` 新規作成（v3.12 派生 +
-   PART 1.6 退役 + PART 1.7 国旗強化 + PART 1.8 不要）
-2. `scripts/build_prompts.py` の `PERSON_NATIONALITY_HINTS` を全国 modern
-   daily casual に書き直し（`TRADITIONAL_DRESS_PATTERN_LOOKUP` 退役）
-3. `PROMPT_TEMPLATES["vocabulary_person"]` の pose / framing を国旗手持ち
-   （d）対応に改修
-4. `scripts/invariants.mjs` の B hash と promptGuide path を v4.0 に更新
-5. `archive/prompts/` に v3.12 系を退避（v3_12.py + image_prompts JSON）
-6. **視認性検証フロー**：d 案（手持ち国旗）で 7 国籍カード生成
-   → 日中韓 3 か国が一目区別できるか目視確認 → 不足なら c 案（背景 banner）
-   に切替 → 確定したら lesson_01 全 12 件再生成
-7. 想定コスト：$1.00 前後（d 試行 $0.27 + 必要なら c 試行 $0.27 + 本生成 $0.46）
+**目的**：v4.0.4 building Stage 1 で R1-R8 が両極端 swing で品質出ず。person prompts は
+~6500 chars / 5 sections / universal rule の inline 名前付き invoke で安定生成しているので、
+同型構造を building に適用して安定化する。
 
-v4.0 完了 → main ff-merge 後、別 worktree session で Phase 5 ④（例文
-template 新設 + build_prompts.py catalog 駆動拡張）に着手する分離が原則。
-混ぜることは技術的に可能だが、スライス境界が崩れるため非推奨。
+**作業手順**：
+
+1. `data/_smoke_v4_0_4_building.json` の 4 prompt を以下構造に書き直す（~3500-4500 chars / 1 prompt）：
+   ```
+   [PURPOSE]   — instant communication
+   [SUBJECT]   — architectural form + scene cue + people + 4 universal rule inline invoke
+   [SCENE & ACTION] — ASPECT RATIO directive (1:1) + composition + background
+   [STYLE RECIPE — DO NOT CHANGE] — palette + style discipline + CONTRAST RULE inline
+   [CONSTRAINTS] — SIGNAGE_ISOLATION + text rules
+   ```
+
+2. inline 名前付き invoke する universal rule 4 つ（person prompts の書き方を手本に）：
+   - **BUILDING_CONTRAST_RULE** (derived from STYLE_BIBLE.visual_contrast_principle):
+     cream 背景 → 建物 primary = muted warm blue（cream/amber は accent only）
+   - **BUILDING_TYPE_IDENTITY_RULE** (PART 1.3 ROLE_VISUAL_IDENTITY_RULE applied):
+     3 signature 同時 (form + scene cue + people cue)
+   - **HEAD-BODY PROPORTION RULE** (v4.0 PART 1.10): 建物 scene 内の人物も 7 頭身
+   - **SIGNAGE_ISOLATION_RULE** (PART 1.1 NATIONAL_SYMBOL_ISOLATION applied): 1 English label のみ
+
+3. `npm run generate-images -- --prompts data/_smoke_v4_0_4_building.json --force --max-images 40`
+   で 4 件再生成（~$0.16）
+
+4. user 目視確認 → OK なら Stage 2 へ / NG なら 1 仮説 1 変数で R10 設計
+
+### Stage 2（R9 OK 後）
+
+R9 で品質が確定したら本格取り込み：
+
+1. `prompts/master_prompt_design_guide_v4_0.py` の `PROMPT_TEMPLATES["vocabulary_building"]`
+   を R9 prompt 構造で書き直す（universal rule reference を含む形）
+2. `BACKGROUND_BY_TYPE["building"]` を削除（default cream に統合）
+3. `scripts/invariants.mjs` の C4 building 分岐を default cream 期待に更新 + B hash 再計算
+4. `scripts/build_prompts.py` に vocabulary_building 対応を追加（現在 MVP person のみ）
+5. archive に v4.0 building 旧テンプレを退避
+
+想定コスト：Stage 2 検証 ~$0.20（4 件本生成）
 
 ---
 
 ## ブロッカー
 
-- Phase 5 ④ は v4.0 完了に blocked（v4.0 ガイドで動くため）。
-- Phase 5 ⑤ は ④ 完了に blocked。
-- Phase 5 ⑥ は ⑤ 完了に blocked。
+- Phase 5 ④ は v4.0 完了済だが、v4.0.4 building 取り込み（Stage 2）後に着手推奨
+  （building テンプレが安定してから例文テンプレ拡張するほうが土台が固い）
+- Phase 5 ⑤ は ④ 完了に blocked
+- Phase 5 ⑥ は ⑤ 完了に blocked
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate                   # invariants A=v7.5 / B=2137a8e885ae(v3.12) / C=12×5 / D=55/55（3 WARN）PASS
-npm run missing-assets             # 現状 image 441 / audio 108（Phase 5 ⑤ 完了後に減少）
+npm run validate                   # invariants A=v7.5 / B=5338c98aab5d(v4.0) / C / D=55/55（3 WARN）PASS
+npm run missing-assets             # image 437 / audio 108
 npm run check-sa                   # Sheets API 疎通
 npm run check-tts-sa               # Cloud TTS API 疎通
 npm run check-ffmpeg               # ffmpeg / ffprobe / filter / encoder 疎通
@@ -117,15 +137,12 @@ node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 node scripts/build-catalog.mjs [--dry-run | --verbose]
 npm run import-lesson -- --lesson NN [--dry-run | --verbose]
-python scripts/build_prompts.py --lesson 1       # worktree で実行（v4.0 で --catalog 追加予定は Phase 5 ④）
+python scripts/build_prompts.py --lesson 1       # MVP person のみ
 ```
 
 参考（再実行不要）：
-- Phase 5 ① 抽出 script：`archive/scripts_old/extract_goi_list_v1_phase5.mjs`
-- raw source：`data/sources/goi_list_raw.pdf` / `data/sources/goi_list_raw.json`（17,908 entries）
-- Phase 5 ② catalog：`data/vocab_catalog.json`（17,508 unique entries）
-- v3.12 取り込み：merge SHA は `git log --merges` 不要（ff-only のため merge commit なし）
-- v4.0 pivot 経緯：`handoff_archive.md` § 方針転換ログ 2026-05-22 / worktree
-  memory `project_v4_0_pivot.md` / main memory `project_v4_0_pivot.md`
+- v4.0 取り込み：merge SHA は `git log --merges` 不要（ff-only のため merge commit なし）
+- v4.0.4 building Stage 1 経緯：worktree memory `project_v4_0_4_building_stage1.md`
+  / 学び `feedback_nanobanana_prompt_design.md` 学び 4・5
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
