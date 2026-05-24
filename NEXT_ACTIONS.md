@@ -5,41 +5,56 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-24（**Phase α3 前半完了**：UniDic+naist-jdic ハイブリッド抽出
-pipeline 実装＋vocab_catalog 17508/17502 件 (99.97%) に accent_yomigana 付与
-＋generate-audio-local.mjs を yomigana SSML 対応に拡張。次セッションは
-**Phase α3 後半 = LLM cross-check + 175 件再生成 + user 視聴**）
+**最終更新：** 2026-05-24（**Phase α3 完了**：integrity gate で pipeline bug 一掃 +
+LLM cross-check 路線を Claude Code 直接レビューに pivot + override 機構実装 +
+175 件再生成。次セッションは **user 視聴サンプル → 違和感あれば override 追加**
+→ **Phase α4 = Drive 291 件ローカル化**）
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ / α1 完了** ✅
-- **Phase α2 完了** ✅ 🆕
-  - audio-qc.mjs を **loudnorm のみ**に簡素化（silenceremove / afade 廃止）
-    - 理由：user 視聴で「raw が自然 / qc が不自然」確定。語頭子音欠けと過剰フェード解消
-  - generate-audio-local.mjs に自然さ QC inline 統合（α1 既出）
-  - 120 件本走完了：成功 120/120、naturalness PASS 120/120
-  - **重要発見**：Gemini QC は日本語アクセント核位置の誤りを検出できない
-    （→ [[feedback-gemini-qc-misses-accent-errors]] memory）
-  - **最重要発見**：日本語の SSML phoneme は **IPA ではなく `alphabet="yomigana"` のみ**
-    が Google 公式仕様。IPA の downstep ꜜ や tone marker (˨˥ꜛ) は無視される。
-    正解は `<phoneme alphabet="yomigana" ph="^ゆき!">雪</phoneme>` 記法
-    （`^` = ピッチ句開始、`!` = 下降直前モーラの後）。
-    OpenJTalk accent_type を `!` 位置に直接変換可能。
-    （→ [[project-openjtalk-ipa-google-pipeline]] memory に詳細）
-  - word_雪.mp3 を yomigana_odaka `^ゆき!` + 新 QC で個別修正済（user 視聴 OK）。
-    10 件 (七日・消しゴム・二十日・二日・母・夜・来年・六日・安い・雪) を
-    yomigana 記法で smoke、user 視聴で全件 OK 確認済
-- **Phase α3 前半完了** ✅ 🆕
-  - `scripts/extract-accent-catalog.py` 実装（A 方針 = UniDic + naist-jdic ハイブリッド）
-  - vocab_catalog.json 17508 件処理：unidic 15162 / naist-jdic 2340 / unknown 6
-  - 17502/17508 件 (99.97%) に `accent_yomigana` / `accent_type` / `mora_count` / `reading_kana` / `accent_source` 追加
-  - `_meta.schemaVersion: 1.0 → 1.1`
-  - `scripts/generate-audio-local.mjs` 拡張：vocab_catalog から accent map 構築、
-    word target で accent あれば SSML `<phoneme alphabet="yomigana" ph="...">`、
-    なければ plain text fallback。CLI `--no-accent` で skip 可
-  - dry-run 確認：`accent (yomigana): 有効（vocab_catalog から 17502 件）` 表示
+- **Phase 0 〜 5 ⑤ / α1 / α2 完了** ✅
+- **Phase α3 完了** ✅ 🆕（前半 + 後半とも）
+
+### α3 前半（既存）
+- `scripts/extract-accent-catalog.py` 実装、UniDic+naist-jdic ハイブリッド抽出
+- 17502/17508 件に accent_yomigana 付与（unidic 15162 / naist-jdic 2340）
+- `_meta.schemaVersion: 1.0 → 1.1`
+- generate-audio-local.mjs に SSML `<phoneme alphabet="yomigana">` 拡張
+
+### α3 後半（今回）🆕
+- **重要発見**：Gemini 2.5 Flash の accent 判定は信頼不能
+  - 100 件 mid-range smoke で **44% wrong / 56% flag** された
+  - 主因は **中高化バイアス**（大学・絶対・庭先・誇り・書斎 等の平板語を一律「中高」と誤判定）
+  - LLM cross-check 路線は放棄。Claude Code 直接判定に pivot
+- **整合性ゲート実装**（`extract-accent-catalog.py`）
+  - reading ↔ accent_yomigana の bare kana 不整合を自動検出
+  - 長音 ー と お段+う / え段+い は等価扱い（音的同一）
+  - bug entry を `accent_source='unknown'` に降格
+- **再抽出 → クリーン化**：unidic 14755 / naist-jdic 2253 / unknown 500
+  - reject 内訳: nonkana 45 + mismatch 449 = 494 件降格
+  - integrity 再計測：substantive mismatch 0 / non-kana 0 ✅
+  - `_meta.schemaVersion: 1.1 → 1.2`、`accent_reject_counts` 追加
+- **accent_override 機構実装**
+  - `vocab_catalog.json` の entry に `accent_override` フィールド追加可
+  - `generate-audio-local.mjs` 優先順を **override > accent_yomigana > plain text** に拡張
+  - `accent_override_meta { source, addedAt, reason, previous_yomigana, previous_source }` も保存
+- **116 word entries を Claude Code が直接 NHK 第2版照合**
+  - 109 件は妥当（UniDic/naist 出力が NHK 主形 or 副位形）
+  - **7 件 override 適用**（lesson_01/02 audio target）：
+    | word | reading | override | 根拠 |
+    |---|---|---|---|
+    | 二階 | にかい | `^にか!い` | NHK 2型 中高 |
+    | 寝る | ねる | `^ね!る` | NHK 1型 頭高 |
+    | ボールペン | ぼーるぺん | `^ぼーる!ぺん` | NHK 3型 中高 |
+    | 何日 | なんにち | `^な!んにち` | NHK 1型 |
+    | 何人 | なんにん | `^な!んにん` | NHK 1型 |
+    | 何年 | なんねん | `^な!んねん` | NHK 1型 |
+    | 何分 | なんふん | `^な!んぷん` | NHK 1型 + 連濁 ふ→ぷ |
+- **175 件再生成完了**（new QC + override-aware yomigana SSML）
+  - 成功 175/175、accent 適用 126 件、naturalness PASS 164 / WARN 11 / ERROR 0
+  - TTS 文字数 1,119 / 当月 6,739 / 上限 800,000
 - **deferred 3 件**（worktree 担当・guide 修正必要）：vocab_男の人 / vocab_女の人 / word_秋
 - **worktree `phase4-prompt-plan` で guide 修正中**（並行進行）
 
@@ -50,98 +65,60 @@ pipeline 実装＋vocab_catalog 17508/17502 件 (99.97%) に accent_yomigana 付
 ```
 image_registry: pending 440 / generated 17 / rejected 27 / outdated 6 / (none) 1
 image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
-audio_registry:  null 7 / Drive URL 291 / local 168
-validate:        ERROR 4 / WARN 8 / 自然さ 168/168 checked (4 WARN)
-                 ※ ERROR 4 件は LUFS 極端 (word_八つ/八月/八十/四つ) — α3 後半再生成で
-                 すべて新 QC + yomigana 経由になるため自然解消見込み
-vocab_catalog:  17508 entries (schemaVersion 1.1)
-                accent_yomigana 17502 / unknown 6
-                source breakdown: unidic 15162 / naist-jdic 2340
+audio_registry:  null 7 / Drive URL 291 / local 168 + 7 = 175
+validate:        ERROR 8 / WARN 26 / 自然さ 168/168 checked (11 WARN)
+                 ※ ERROR 8 件はすべて単語短尺 audio の LUFS 限界
+                   (loudnorm R128 統合 400ms 窓に対し audio が短すぎる構造問題)
+                   再生成では解消しない既知制約。-21〜-24 LUFS 帯
+                   対象: わたし/私/二十日/二十歳/八/八つ/八月/八十
+vocab_catalog:  17508 entries (schemaVersion 1.2)
+                accent_yomigana 17008 (unidic 14755 / naist-jdic 2253)
+                accent_override 7 / accent unknown 500 (integrity-rejected を含む)
 ```
 
 ---
 
 ## active
 
-### Phase α3 後半（次セッション開始点）：LLM cross-check + 175 件再生成
+### 次セッション開始点：user 視聴サンプル + override 追加（必要に応じ）
 
-**前半（pipeline 構築）は完了済**。次は LLM 検証 + 既存 audio 一括差し替え。
+**今回 7 件の override 適用 + 116 件の Claude Code 直接レビュー済**だが、
+user 視聴で残りの 109 件「妥当」判定が本当に違和感ないか確認する必要あり。
 
-**設計方針：A = UniDic + LLM cross-check + 教師 override の 3 層ハイブリッド**
-**＋ 出力は yomigana 記法 (`^...!`)**（user 確定 2026-05-24）
+**手順（次セッション・~30 分）**：
 
-| 層 | 役割 | ソース | カバー目安 |
-|---|---|---|---|
-| **第 1 層：自動抽出** | 主辞書からアクセント自動取得 | **UniDic**（NHK 系整合性 ★★★★）| 95% |
-| **第 2 層：LLM cross-check** | 「NHK 標準と一致するか」検証 | Gemini 2.5 Flash（~$1.7 / 17508 件）| 残差 5% を flag |
-| **第 3 層：教師 override** | 違和感を手動修正 | Sheets `accent_override` 列 | 残り <1% |
+1. **lesson_01/02 audio をブラウザで聴く**
+   - 候補：lesson_01 起動 → vocabulary タブで全件再生
+   - 特に user 既視聴の 10 件 + 今回 override した 7 件 + naturalness WARN 11 件を重点
+2. **違和感あれば override 追加**
+   - `data/vocab_catalog.json` の対象 entry に `accent_override` 直接編集（または小さい patch script）
+   - 形式: `"accent_override": "^...!"` + `"accent_override_meta": {...}`
+3. **対象 entry を --force 再生成**
+   ```
+   node scripts/generate-audio-local.mjs --force --only word_XX,word_YY
+   ```
+   ※ generate-audio-local.mjs に `--only` がなければ追加実装が必要（未確認）
+4. **validate** で invariants[D'] 自然さ確認
+5. **完了したら Phase α4 へ進む**
 
-**naist-jdic は使わない**（NHK 系整合性が UniDic より一段下のため）。pyopenjtalk-plus
-は sudachipy 経由で UniDic を扱える可能性。要 PoC。
+**naturalness WARN 11 件の優先確認候補**（コメント付き 3 件）：
+- `sentence_ex_L02_026`: アインシュタイン「シュ」母音脱落 / 平板アクセント
+- `sentence_ex_L02_033`: 富士山「です」聞き取れない
+- `sentence_ex_L02_035`: その写真「です」聞き取れない
+- ※ いずれも例文最後の「です」消失 → TTS Neural2-B の既知挙動の可能性
 
-**yomigana 記法ルール（OpenJTalk accent_type からの機械変換・実装はこれだけ）：**
-- accent_type=0 → `^[全mora]` 平板（!なし）
-- accent_type=N (>0) → `^[1..Nモーラ]![N+1..全]`（N 番目モーラの後に !）
-- 例：端 `^はし` / 箸 `^は!し` / 橋・雪 `^はし!` `^ゆき!` / 七日 `^なのか!` / 母 `^は!は`
-
-**注：IPA 時代の特例「単独 2 モーラ尾高型は ꜜ 省略」ルールは廃止**
-- yomigana `^ゆき!` で正しく尾高型が合成されることを user 視聴で確認済
-- IPA は末尾 ꜜ が無視され頭高に聞こえる問題があったが、yomigana 記法ではその問題が起きない
-
-**前提（α2 で確定）**：
-- pyopenjtalk-plus は Python 3.14 で pip install 済（cmake 不要）
-- 試作スクリプト残置：
-  - `tmp/extract_accent.py` — 10 単語の accent 抽出 PoC（naist-jdic 経由・UniDic 切替要）
-  - `tmp/yomigana_10_smoke.mjs` — 10 単語の yomigana 記法 smoke（次セッションで視聴）
-  - `tmp/yuki_pitch_smoke.mjs` / `tmp/bytes_compare_2mora.mjs` — IPA が部分 no-op の実証
-  - `tmp/google_smoke_ipa/accent_data.json` / `accent_data_2mora.json`
-
-**実行手順（後半・次セッション）**：
-1. **LLM cross-check pipeline**（最初のタスク・user 確認後・コスト ~$1.7）
-   - 17508 件を Gemini 2.5 Flash に投げ「(word, reading, accent_yomigana) が NHK 標準と一致するか」確認
-   - 不一致と判定された entry を `_meta.accent_review_queue` に flag
-   - 既知の問題語（「来年」UniDic 平板 vs naist-jdic 尾高）が flag されるか確認
-2. **175 件再生成**：
-   - `npm run generate-audio -- --force`（既存 168 local + null 7 を全件上書き）
-   - 新 QC + yomigana SSML 経由
-   - コスト ~$0.04（TTS）+ ~$0.025（自然さ QC）
-3. **validate** で invariants[D] PASS / 自然さ QC 全件確認
-4. **user 視聴 sample 確認**（10-20 件抽出、特に α2 で問題報告された 10 件 + 複合語サンプル）
-5. **Sheets `accent_override` 列追加**（残差補正の仕組み）
-   - 教師が違和感あった単語を手動上書き（yomigana 記法を直接書く）
-   - generate-audio-local.mjs を override > vocab_catalog.accent_yomigana > fallback の優先順に拡張
-6. 視聴で見つかった問題語を override に登録、対象 entry を `--force` で再生成
-
-**完了済（前半）**：
-- ✅ UniDic 切替（fugashi + unidic-lite で `aType` 取得確認）
-- ✅ 抽出 pipeline 実装（`scripts/extract-accent-catalog.py`、A 方針ハイブリッド）
-- ✅ 17502/17508 件に accent 付与（unidic 15162 / naist-jdic 2340 / unknown 6）
-- ✅ schema 更新（v1.0 → v1.1）
-- ✅ generate-audio-local.mjs を yomigana SSML 対応に拡張（`--no-accent` フラグ追加）
-
-**注意事項**：
-- AI Studio prepayment credits 確認（feedback_check_ai_studio_credits）
-  → 17508 件 LLM cross-check (~$1.7) + 124 件 自然さ QC (~$0.025) = **要確認**
-- Gemini naturalness QC はアクセント判定不可（α2 で実証・[[feedback-gemini-qc-misses-accent-errors]]）
-  → LLM cross-check は別 prompt で「NHK 整合性」を明示的に問う設計が必須
-
-**コスト目安**：
-- Cloud TTS Neural2 $16/Mchar × 124 件 × ~20 char = **~$0.04**
-- 自然さ QC $0.0002 × 124 件 = **~$0.025**
-- LLM accent cross-check $0.0001 × 17508 件 = **~$1.75**
-- pyopenjtalk / UniDic = ローカル・$0
-- **合計 ~$1.85**（user prepayment credits 確認要）
+**LUFS ERROR 8 件は「触らない」**（短尺 audio の構造問題、validate spec の方が tight すぎ）
 
 ---
 
 ## スケジュール（α → β → γ → δ → ε）
 
 ```
-Phase α  Audio 基盤完成（残 1-2 セッション）
+Phase α  Audio 基盤完成
   α1 ✅ 音声自然さ QC 実装（Gemini 2.5 Flash）
   α2 ✅ QC 簡素化 + naturalness inline + 120 件本走 + 雪 IPA 個別修正
-  α3 ★次 OpenJTalk アクセント pipeline 構築 + 124 件 IPA 再生成
-  α4   Drive 291 件のローカル化 (B) — SA Drive smoke で 5 分判定
+  α3 ✅ accent pipeline + integrity gate + override 機構 + 175 件再生成 🆕
+  α4 ★次 Drive 291 件のローカル化 (B) — SA Drive smoke で 5 分判定
 
 Phase β  宿題完成（1 セッション）
   β1     正解判定 (D)・仕様確定済
@@ -160,7 +137,7 @@ Phase ε  統合テスト・リリース判断（1 セッション）
   ε2     docs 整理
 ```
 
-**総推定**：10-14 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
+**総推定**：9-13 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
 
 ---
 
@@ -206,15 +183,21 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ```
 # 検証
-npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D PASS
+npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D / D' PASS
 
-# 音声 (α3 用 — 次セッションで実装拡張予定)
-npm run generate-audio                                # 新 QC + 自然さ inline
-npm run naturalness-check -- --force --only ID1,ID2  # 特定 entry 再走
+# 音声 (α3 後半完了 — accent_override + yomigana SSML 統合済)
+npm run generate-audio                          # 未生成のみ
+npm run generate-audio -- --force               # 既存も上書き再合成
+npm run generate-audio -- --no-accent           # accent 指定なし plain text
+node scripts/check-audio-naturalness.mjs --force --only ID1,ID2  # 特定 entry 自然さ再走
 
-# OpenJTalk accent 抽出 + yomigana smoke (α2 PoC)
-python tmp/extract_accent.py                          # 10 単語の accent 抽出 → JSON (naist-jdic)
-node tmp/yomigana_10_smoke.mjs                        # ★ 10 単語の yomigana 記法 smoke (α3 で視聴判定)
+# OpenJTalk accent 抽出（再構築が必要なときだけ）
+python scripts/extract-accent-catalog.py        # 全 17508 件再抽出 + integrity gate
+python tmp/inspect_accent_integrity.py          # reading ↔ yomigana 整合性レポート
+
+# accent cross-check（Gemini 路線・参考残置・実用しない）
+node scripts/check-accent-cross.mjs --dry-run   # 対象 + 概算コスト
+node scripts/check-accent-cross.mjs --smoke     # 1 batch (20 件) smoke
 
 # 画像 prompt 展開
 ls tmp/skill_prompts/

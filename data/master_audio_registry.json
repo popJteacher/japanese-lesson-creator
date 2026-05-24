@@ -69,7 +69,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「先生」の「せ」の音がやや不明瞭です。"
+          "「先生です」の「です」のイントネーションがやや不自然です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -78,10 +78,10 @@
     "sentence_ex_L01_002": {
       "audioUrl": "data/audio/sentence_ex_L01_002.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「大学生」の「がく」の音が少し不明瞭です。"
+          "「大学生」の「生」のアクセントが高い"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -90,9 +90,12 @@
     "sentence_ex_L01_003": {
       "audioUrl": "data/audio/sentence_ex_L01_003.mp3",
       "naturalness": {
-        "score": 5,
+        "score": 3,
         "confidence": "high",
-        "comments": [],
+        "comments": [
+          "「会社員」の「い」が脱落している",
+          "全体的にイントネーションが不自然"
+        ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -100,9 +103,11 @@
     "sentence_ex_L01_004": {
       "audioUrl": "data/audio/sentence_ex_L01_004.mp3",
       "naturalness": {
-        "score": 5,
+        "score": 4,
         "confidence": "high",
-        "comments": [],
+        "comments": [
+          "「日本人です」の「です」のイントネーションがやや不自然です。"
+        ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -110,10 +115,11 @@
     "sentence_ex_L01_005": {
       "audioUrl": "data/audio/sentence_ex_L01_005.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「中国人」の「人」のアクセントが平板になっている"
+          "「中国人です」の「です」が「で」で切れてしまっている。",
+          "「リンさんは」の「は」のアクセントが不自然。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -122,11 +128,9 @@
     "sentence_ex_L01_006": {
       "audioUrl": "data/audio/sentence_ex_L01_006.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「リンさん」の「ン」が少し詰まり気味に聞こえる"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -134,11 +138,9 @@
     "sentence_ex_L01_007": {
       "audioUrl": "data/audio/sentence_ex_L01_007.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「リンさんです」の「です」のイントネーションが少し不自然です。"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -146,11 +148,10 @@
     "sentence_ex_L01_008": {
       "audioUrl": "data/audio/sentence_ex_L01_008.mp3",
       "naturalness": {
-        "score": 3,
+        "score": 4,
         "confidence": "high",
         "comments": [
-          "「先生」のアクセントが平板型になっている",
-          "「じゃありません」の「じゃ」が「ぢゃ」に聞こえる"
+          "「先生じゃありません」の「じゃ」の音がやや不明瞭です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -162,7 +163,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「韓国人」のアクセントが平板型になっている"
+          "「韓国人じゃありません」の「じゃ」の音が少し不明瞭です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -171,11 +172,10 @@
     "sentence_ex_L01_010": {
       "audioUrl": "data/audio/sentence_ex_L01_010.mp3",
       "naturalness": {
-        "score": 3,
-        "confidence": "medium",
+        "score": 4,
+        "confidence": "high",
         "comments": [
-          "「だれですか」の「れ」の音が不明瞭です。",
-          "「キムさんです」の「です」のイントネーションが不自然です。"
+          "「だれですか」の「か」のイントネーションが少し不自然です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -184,10 +184,11 @@
     "sentence_ex_L01_011": {
       "audioUrl": "data/audio/sentence_ex_L01_011.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「病院」の「い」の音がやや不明瞭です。"
+          "「東西病院」の「東西」のアクセントが平板になっている",
+          "「医者です」の「です」のイントネーションが不自然"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -199,7 +200,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「学校」のアクセントが平板型になっている"
+          "「東西学校」の「学校」のアクセントが平板になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -208,10 +209,11 @@
     "sentence_ex_L01_013": {
       "audioUrl": "data/audio/sentence_ex_L01_013.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「銀行」の「行」のアクセントがやや高い"
+          "「東西銀行」の「銀行」のアクセントが平板型になっている",
+          "「会社員」の「員」の母音が脱落している"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -223,7 +225,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「大学」の「学」のアクセントが低い"
+          "「東西大学」の「東西」のアクセントが平板型になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -235,7 +237,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「デパート」の「パ」の音がやや不明瞭です。"
+          "「東西」のアクセントが平板になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -353,11 +355,9 @@
     "word_人": {
       "audioUrl": "data/audio/word_人.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「人」のアクセントが平板型になっている"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -376,11 +376,9 @@
       "audioUrl": "data/audio/sentence_ex_L02_001.mp3",
       "sentence": "これは時計です。",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「時計」の「け」の音が少し不明瞭です。"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -394,11 +392,9 @@
       "audioUrl": "data/audio/sentence_ex_L02_003.mp3",
       "sentence": "これはケータイです。",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「ケータイ」の「タ」の音が少し短く聞こえる"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -431,7 +427,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「ビル」のアクセントが平板型になっている"
+          "「ビルです」の「です」のイントネーションがやや不自然です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -441,11 +437,9 @@
       "audioUrl": "data/audio/sentence_ex_L02_008.mp3",
       "sentence": "あれは病院です。",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「病院」の「い」の音がやや不明瞭です。"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -457,7 +451,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「山」のアクセントが平板型になっている"
+          "「あれは」の「は」が少し弱く聞こえる"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -501,7 +495,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「わたし」の「し」の音が少し不明瞭です。"
+          "「かばんです」の「か」のアクセントが高い"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -514,7 +508,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「リンさん」の「ん」が少し詰まって聞こえる"
+          "「リンさん」の「ン」が少し詰まりすぎているように聞こえる。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -524,10 +518,11 @@
       "audioUrl": "data/audio/sentence_ex_L02_017.mp3",
       "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「本」のアクセントが平板型になっている"
+          "「キムさんの本ですか」の「ですか」のイントネーションが不自然です。",
+          "「わたしの本です」の「です」のアクセントが不自然です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -537,12 +532,9 @@
       "audioUrl": "data/audio/sentence_ex_L02_018.mp3",
       "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
       "naturalness": {
-        "score": 3,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「かばん」のアクセントが平板型になっている",
-          "「リンさん」の「ン」が不明瞭"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -562,10 +554,11 @@
       "audioUrl": "data/audio/sentence_ex_L02_020.mp3",
       "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「どうも、ありがとう」の「どうも」のイントネーションがやや不自然です。"
+          "「ケリーさん」の「さん」のアクセントが平板になっている",
+          "「どうも、ありがとう」の「どうも」のイントネーションが不自然"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -575,10 +568,10 @@
       "audioUrl": "data/audio/sentence_ex_L02_021.mp3",
       "sentence": "リンさんのペンはどれですか。— それです。",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「リンさんのペンはどれですか」の「ペン」のアクセントが平板型になっている"
+          "「それです」の「です」が途切れている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -588,11 +581,9 @@
       "audioUrl": "data/audio/sentence_ex_L02_022.mp3",
       "sentence": "キムさんのかばんはどれですか。— これです。",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「かばん」のアクセントが平板型になっている"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -604,7 +595,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「タノム」のアクセントが平板になっている"
+          "「どちらですか」の「ち」のアクセントが低い"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -617,7 +608,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「人」のアクセントが平板型になっている"
+          "「アインシュタイン」の「シュ」の音がやや不明瞭です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -627,9 +618,11 @@
       "audioUrl": "data/audio/sentence_ex_L02_025.mp3",
       "sentence": "その人はアインシュタインです。",
       "naturalness": {
-        "score": 5,
+        "score": 4,
         "confidence": "high",
-        "comments": [],
+        "comments": [
+          "「アインシュタイン」の「シュ」の音がやや不明瞭です。"
+        ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -638,10 +631,11 @@
       "audioUrl": "data/audio/sentence_ex_L02_026.mp3",
       "sentence": "あの人はアインシュタインです。",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「人」のアクセントが平板型になっている"
+          "「アインシュタイン」の「シュ」の母音が脱落している",
+          "「アインシュタイン」のアクセントが平板型になっている（頭高型が自然）"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -654,7 +648,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「どの人ですか」の「どの」のイントネーションがやや不自然です。"
+          "「どの人ですか」の「どの」のアクセントが平板型になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -664,11 +658,11 @@
       "audioUrl": "data/audio/sentence_ex_L02_028.mp3",
       "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
       "naturalness": {
-        "score": 3,
+        "score": 4,
         "confidence": "high",
         "comments": [
           "「ケリーさん」の「さん」のアクセントが平板になっている",
-          "「かばんですか」の「か」のアクセントが高い"
+          "「かばんですか」の「か」のイントネーションが少し不自然"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -689,7 +683,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「時計」の「と」の音の高さが不自然です。"
+          "「あれです」の「あれ」のアクセントが平板になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -702,7 +696,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「消しゴム」の「し」の音がやや不明瞭です。"
+          "「ケリーさんの」の「の」のイントネーションがやや不自然です。"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -726,7 +720,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「ABCビル」の「ビル」のアクセントが平板になっている"
+          "「ABCビル」の「ビル」のアクセントが平板型になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -736,10 +730,10 @@
       "audioUrl": "data/audio/sentence_ex_L02_033.mp3",
       "sentence": "あの山は富士山です。",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「山」のアクセントが平板型になっている"
+          "「富士山です」の「です」が聞き取れない"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -752,7 +746,7 @@
         "score": 4,
         "confidence": "high",
         "comments": [
-          "「犬」のアクセントが平板型になっている"
+          "「どの犬ですか」の「犬」のアクセントが平板型になっている"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -762,10 +756,10 @@
       "audioUrl": "data/audio/sentence_ex_L02_035.mp3",
       "sentence": "どの写真ですか。— その写真です。",
       "naturalness": {
-        "score": 4,
+        "score": 3,
         "confidence": "high",
         "comments": [
-          "「どの写真ですか」の「どの」のイントネーションがやや不自然です。"
+          "「その写真です」の「です」が聞き取れない"
         ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
@@ -2171,11 +2165,9 @@
     "word_一人": {
       "audioUrl": "data/audio/word_一人.mp3",
       "naturalness": {
-        "score": 4,
+        "score": 5,
         "confidence": "high",
-        "comments": [
-          "「り」の音がやや不明瞭です"
-        ],
+        "comments": [],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }
@@ -2483,9 +2475,11 @@
     "word_安い": {
       "audioUrl": "data/audio/word_安い.mp3",
       "naturalness": {
-        "score": 5,
+        "score": 4,
         "confidence": "high",
-        "comments": [],
+        "comments": [
+          "「やすい」の「す」の母音がやや不明瞭に聞こえる。"
+        ],
         "checkedAt": "2026-05-24",
         "model": "gemini-2.5-flash"
       }

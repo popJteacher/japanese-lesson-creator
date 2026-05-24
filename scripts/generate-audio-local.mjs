@@ -178,19 +178,28 @@ async function main() {
         ? '無効（--dry-run）'
         : `有効（${NATURALNESS_MODEL}）`;
 
-  // vocab_catalog から accent_yomigana lookup map を作成（word target のみ対象）
+  // vocab_catalog から accent lookup map を作成（word target のみ対象）
   // key 形式: "word|reading"（vocab_catalog の entry.key と一致）
+  // 優先順: accent_override > accent_yomigana > (なし → plain text fallback)
+  // accent_override は教師が NHK 標準と違う UniDic/naist 結果を手動で上書きする用途。
   const accentMap = new Map();
   let accentLabel;
+  let overrideCount = 0;
   if (args.noAccent) {
     accentLabel = '無効（--no-accent）';
   } else {
     try {
       const catalog = await readJson(VOCAB_CATALOG);
       for (const e of (catalog.entries || [])) {
-        if (e.accent_yomigana && e.key) accentMap.set(e.key, e.accent_yomigana);
+        if (!e.key) continue;
+        if (e.accent_override) {
+          accentMap.set(e.key, e.accent_override);
+          overrideCount++;
+        } else if (e.accent_yomigana) {
+          accentMap.set(e.key, e.accent_yomigana);
+        }
       }
-      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件）`;
+      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件、うち override ${overrideCount} 件）`;
     } catch (e) {
       accentLabel = `無効（vocab_catalog 読み込み失敗: ${String(e.message || e).slice(0, 80)}）`;
     }

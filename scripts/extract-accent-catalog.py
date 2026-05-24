@@ -24,6 +24,13 @@ import os
 import re
 import sys
 
+# Windows コンソール (cp932) で漢字を含む出力が落ちないよう UTF-8 で reconfigure
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
 import fugashi
 import unidic_lite
 import pyopenjtalk
@@ -33,10 +40,81 @@ import pyopenjtalk
 # ────────────────────────────────────────────────────────────
 SMALL_KANA = set('ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ')
 
+# 整合性チェック用：長音 ー → 直前モーラの母音
+LONG_VOWEL_MAP = {
+    'あ': 'あ', 'い': 'い', 'う': 'う', 'え': 'え', 'お': 'お',
+    'か': 'あ', 'き': 'い', 'く': 'う', 'け': 'え', 'こ': 'お',
+    'さ': 'あ', 'し': 'い', 'す': 'う', 'せ': 'え', 'そ': 'お',
+    'た': 'あ', 'ち': 'い', 'つ': 'う', 'て': 'え', 'と': 'お',
+    'な': 'あ', 'に': 'い', 'ぬ': 'う', 'ね': 'え', 'の': 'お',
+    'は': 'あ', 'ひ': 'い', 'ふ': 'う', 'へ': 'え', 'ほ': 'お',
+    'ま': 'あ', 'み': 'い', 'む': 'う', 'め': 'え', 'も': 'お',
+    'や': 'あ', 'ゆ': 'う', 'よ': 'お',
+    'ら': 'あ', 'り': 'い', 'る': 'う', 'れ': 'え', 'ろ': 'お',
+    'わ': 'あ', 'を': 'お',
+    'が': 'あ', 'ぎ': 'い', 'ぐ': 'う', 'げ': 'え', 'ご': 'お',
+    'ざ': 'あ', 'じ': 'い', 'ず': 'う', 'ぜ': 'え', 'ぞ': 'お',
+    'だ': 'あ', 'ぢ': 'い', 'づ': 'う', 'で': 'え', 'ど': 'お',
+    'ば': 'あ', 'び': 'い', 'ぶ': 'う', 'べ': 'え', 'ぼ': 'お',
+    'ぱ': 'あ', 'ぴ': 'い', 'ぷ': 'う', 'ぺ': 'え', 'ぽ': 'お',
+    'ゃ': 'あ', 'ゅ': 'う', 'ょ': 'お',
+}
+
+KANA_RE = re.compile(r'^[぀-ゟ゠-ヿー]*$')
+
 
 def kata_to_hira(s):
     """カタカナをひらがなに変換（ひらがな・その他はそのまま）"""
     return ''.join(chr(ord(c) - 0x60) if 'ァ' <= c <= 'ヶ' else c for c in s)
+
+
+def normalize_long(s):
+    """長音表記揺れを吸収した正規形を返す（音的等価形）。
+       - katakana → hiragana
+       - お段+う → お段+お、え段+い → え段+え
+       - ー → 直前モーラの母音複製
+    """
+    if not s:
+        return ''
+    s = kata_to_hira(s)
+    s = re.sub(r'([こそとのほもよろごぞどぼぽ])う', r'\1お', s)
+    s = re.sub(r'([けせてねへめれげぜでべぺ])い', r'\1え', s)
+    s = re.sub(r'(きょ|しょ|ちょ|にょ|ひょ|みょ|りょ|ぎょ|じょ|びょ|ぴょ)う',
+               lambda m: m.group(1) + 'お', s)
+    out = []
+    for c in s:
+        if c == 'ー':
+            prev = out[-1] if out else ''
+            v = LONG_VOWEL_MAP.get(prev, '')
+            out.append(v)
+        else:
+            out.append(c)
+    return ''.join(out)
+
+
+def is_pure_kana(s):
+    """ひらがな・カタカナ・長音 ー のみで構成されているか"""
+    return bool(KANA_RE.match(s))
+
+
+def bare_kana(yomi):
+    """yomigana 記法から ^ ! を除去"""
+    return yomi.replace('^', '').replace('!', '')
+
+
+def integrity_check(reading, accent_yomigana):
+    """reading と accent_yomigana の bare kana が一致するか判定。
+    戻り値: (ok: bool, reason: str)
+      reason は失敗時のみ意味あり ('nonkana' | 'mismatch')
+    """
+    if not reading or not accent_yomigana:
+        return (False, 'missing')
+    bare = bare_kana(accent_yomigana)
+    if not is_pure_kana(bare):
+        return (False, 'nonkana')
+    if normalize_long(reading) == normalize_long(bare):
+        return (True, 'ok')
+    return (False, 'mismatch')
 
 
 def split_morae(kana):
@@ -147,16 +225,29 @@ def extract_via_naist(word):
 
 
 # ────────────────────────────────────────────────────────────
-# A 方針ハイブリッド
+# A 方針ハイブリッド + 整合性ゲート
 # ────────────────────────────────────────────────────────────
-def extract_accent(word):
+def extract_accent(word, expected_reading=None):
+    """expected_reading が指定された場合、抽出結果の reading と整合しない
+    （別読み・kana 化失敗・漢字混入 等）entry は降格して 'unknown' を返す。
+    """
     # 1st: UniDic（単一形態素のみ）
     r = extract_via_unidic(word)
     if r:
-        return r
+        if expected_reading:
+            ok, reason = integrity_check(expected_reading, r['accent_yomigana'])
+            if not ok:
+                r = None  # 降格して naist-jdic を試す
+                fallback_reason_unidic = reason
+        if r:
+            return r
     # 2nd: naist-jdic（複合語含む全般）
     r = extract_via_naist(word)
     if r:
+        if expected_reading:
+            ok, reason = integrity_check(expected_reading, r['accent_yomigana'])
+            if not ok:
+                return {'accent_source': 'unknown', 'accent_reject_reason': reason}
         return r
     # 失敗
     return {'accent_source': 'unknown'}
@@ -210,26 +301,39 @@ def main():
     print(f'  total entries: {len(entries)}')
 
     counts = {'unidic': 0, 'naist-jdic': 0, 'unknown': 0}
+    reject_counts = {'nonkana': 0, 'mismatch': 0, 'missing': 0}
     sample_misses = []
+    sample_rejects = []
     for i, e in enumerate(entries):
         if args.limit and i >= args.limit:
             break
         word = e.get('word', '')
+        expected_reading = e.get('reading', '')
         if not word:
             continue
-        r = extract_accent(word)
+        r = extract_accent(word, expected_reading=expected_reading)
+        # 整合性 reject の場合は旧 accent_* フィールドも消す（残ると validate が引きずる）
+        if r.get('accent_source') == 'unknown':
+            for k in ('accent_type', 'mora_count', 'reading_kana', 'accent_yomigana'):
+                e.pop(k, None)
         e.update(r)
         counts[r.get('accent_source', 'unknown')] += 1
-        if r.get('accent_source') == 'unknown' and len(sample_misses) < 20:
+        if 'accent_reject_reason' in r:
+            reject_counts[r['accent_reject_reason']] = reject_counts.get(r['accent_reject_reason'], 0) + 1
+            if len(sample_rejects) < 15:
+                sample_rejects.append({'word': word, 'reading': expected_reading,
+                                       'reason': r['accent_reject_reason']})
+        elif r.get('accent_source') == 'unknown' and len(sample_misses) < 15:
             sample_misses.append(word)
         if (i + 1) % 1000 == 0:
             print(f'  {i+1}/{len(entries)} processed')
 
     # schema 更新
     catalog.setdefault('_meta', {})
-    catalog['_meta']['schemaVersion'] = '1.1'
+    catalog['_meta']['schemaVersion'] = '1.2'
     catalog['_meta']['accent_added_at'] = '2026-05-24'
     catalog['_meta']['accent_source_counts'] = counts
+    catalog['_meta']['accent_reject_counts'] = reject_counts
 
     # atomic write
     tmp = args.output + '.tmp'
@@ -238,8 +342,13 @@ def main():
     os.replace(tmp, args.output)
     print(f'wrote {args.output}')
     print(f'  source counts: {counts}')
+    print(f'  reject counts (integrity gate): {reject_counts}')
     if sample_misses:
-        print(f'  sample misses (first 20): {sample_misses}')
+        print(f'  sample extraction misses (first 15): {sample_misses}')
+    if sample_rejects:
+        print(f'  sample integrity rejects (first 15):')
+        for s in sample_rejects:
+            print(f'    {s}')
 
 
 if __name__ == '__main__':
