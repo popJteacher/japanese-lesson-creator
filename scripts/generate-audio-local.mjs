@@ -180,12 +180,14 @@ async function main() {
 
   // vocab_catalog から accent lookup map を作成（word target のみ対象）
   // key 形式: "word|reading"（vocab_catalog の entry.key と一致）
-  // 優先順: accent_override > accent_yomigana > (なし → plain text fallback)
-  // accent_override は教師が NHK 標準と違う UniDic/naist 結果を手動で上書きする用途。
+  // 優先順: accent_override (manual) > accent_consensus_override > accent_yomigana > plain
+  // - accent_override: 教師が手動で NHK 標準と違う UniDic/naist 結果を上書きする用途
+  // - accent_consensus_override: scripts/build-accent-consensus.py が UniDic+NHK+OJAD 合議で書く
   const accentMap = new Map();
   const ttsWorkaroundMap = new Map();  // word → { usePlainKana, ... } (Phase α5 後半・2026-05-25)
   let accentLabel;
   let overrideCount = 0;
+  let consensusCount = 0;
   let workaroundCount = 0;
   if (args.noAccent) {
     accentLabel = '無効（--no-accent）';
@@ -197,6 +199,9 @@ async function main() {
         if (e.accent_override) {
           accentMap.set(e.key, e.accent_override);
           overrideCount++;
+        } else if (e.accent_consensus_override) {
+          accentMap.set(e.key, e.accent_consensus_override);
+          consensusCount++;
         } else if (e.accent_yomigana) {
           accentMap.set(e.key, e.accent_yomigana);
         }
@@ -205,7 +210,7 @@ async function main() {
           workaroundCount++;
         }
       }
-      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件、うち override ${overrideCount} 件、TTS workaround ${workaroundCount} 件）`;
+      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件、うち override ${overrideCount} / consensus ${consensusCount}、TTS workaround ${workaroundCount} 件）`;
     } catch (e) {
       accentLabel = `無効（vocab_catalog 読み込み失敗: ${String(e.message || e).slice(0, 80)}）`;
     }

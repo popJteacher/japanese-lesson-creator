@@ -50,6 +50,8 @@ function parseArgs(argv) {
     dryRun: false, limit: null, noNaturalness: false, maxChars: DEFAULT_MAX_CHARS,
     source: 'drive-download',  // target source filter
     notSource: null,           // 'tts-local-regen' で「今日 regen していない全件」を選べる
+    force: false,              // 全 word_* entry を対象 (--source/--not-source filter を無視)
+    accentChanged: false,      // accent_consensus_override 持つ entry のみ
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -59,6 +61,8 @@ function parseArgs(argv) {
     else if (a === '--max-chars') args.maxChars = parseInt(argv[++i], 10);
     else if (a === '--source') args.source = argv[++i];
     else if (a === '--not-source') { args.notSource = argv[++i]; args.source = null; }
+    else if (a === '--force') { args.force = true; args.source = null; args.notSource = null; }
+    else if (a === '--accent-changed') { args.accentChanged = true; args.source = null; args.notSource = null; }
     else { console.error(`Unknown arg: ${a}`); process.exit(2); }
   }
   return args;
@@ -69,8 +73,8 @@ function pickCatalogEntry(catalog, word) {
   // (avoid duplicate-reading entries with accent_source='unknown')
   const matches = catalog.entries.filter(e => e.word === word);
   if (!matches.length) return null;
-  // Prefer entries with accent_yomigana or accent_override
-  const withAcc = matches.filter(e => e.accent_yomigana || e.accent_override);
+  // Prefer entries with accent_override / accent_consensus_override / accent_yomigana
+  const withAcc = matches.filter(e => e.accent_yomigana || e.accent_override || e.accent_consensus_override);
   if (withAcc.length) {
     // If multiple, prefer one with accent_source != 'unknown' and accent_reject_reason absent
     const clean = withAcc.filter(e => e.accent_source && e.accent_source !== 'unknown' && !e.accent_reject_reason);
@@ -98,19 +102,42 @@ async function main() {
   const registry = await readJson(AUDIO_REGISTRY);
   const catalog = await readJson(VOCAB_CATALOG);
 
-  // Find target entries by source filter
+  // Build a set of words with accent_consensus_override (for --accent-changed)
+  const consensusWords = new Set();
+  if (args.accentChanged) {
+    for (const e of (catalog.entries || [])) {
+      if (e.word && e.accent_consensus_override) consensusWords.add(e.word);
+    }
+  }
+
+  // Find target entries by filter
   const matchedEntries = [];
   for (const [id, e] of Object.entries(registry.entries)) {
     const src = e.audioSource;
-    if (args.source && src === args.source) {
-      matchedEntries.push({ id, entry: e });
+    let include = false;
+    if (args.force) {
+      include = id.startsWith('word_'); // 全 word_* entry
+    } else if (args.accentChanged) {
+      if (id.startsWith('word_')) {
+        const word = id.substring(5);
+        if (consensusWords.has(word)) include = true;
+      }
+    } else if (args.source && src === args.source) {
+      include = true;
     } else if (args.notSource && src !== args.notSource) {
-      matchedEntries.push({ id, entry: e });
+      include = true;
     }
+    if (include) matchedEntries.push({ id, entry: e });
   }
-  const filterDesc = args.notSource ? `not '${args.notSource}'` : `'${args.source}'`;
+  const filterDesc = args.force
+    ? 'ALL word_* (--force)'
+    : args.accentChanged
+      ? `accent_consensus_override holders (${consensusWords.size} catalog words)`
+      : args.notSource
+        ? `not '${args.notSource}'`
+        : `'${args.source}'`;
   console.log(`===== regen-audio 開始 =====`);
-  console.log(`  audioSource filter: ${filterDesc}`);
+  console.log(`  filter: ${filterDesc}`);
   console.log(`  候補: ${matchedEntries.length} 件`);
   const driveDownloadEntries = matchedEntries;  // keep var name for downstream code
 
@@ -127,7 +154,11 @@ async function main() {
         continue;
       }
       const reading = catEntry.reading || word;
-      const yomigana = catEntry.accent_override || catEntry.accent_yomigana || null;
+      // Precedence: manual override > consensus override > UniDic yomigana
+      const yomigana = catEntry.accent_override
+        || catEntry.accent_consensus_override
+        || catEntry.accent_yomigana
+        || null;
       const workaround = pickTtsWorkaround(catalog, word);
       targets.push({ kind: 'word', id, word, reading, text: reading, yomigana, workaround });
     } else {
