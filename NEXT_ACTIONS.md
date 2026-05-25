@@ -5,10 +5,10 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-25（worktree image-prompt-plan で **v4.0.4 building 改修 Stage 1 + Stage 2 完了**。
-採用 4 件本番化 + guide 本体取り込み done。新 B hash = `078fd0bd9ffe`。
-build_prompts.py で 15 entries (12 person + 3 building) 生成 + invariants 全 PASS。次は cleanup or
-新 lesson の building 同型展開 or main への ff-merge）
+**最終更新：** 2026-05-25（worktree image-prompt-plan で **v4.0.4 building Stage 2 後 cleanup 完了**。
+smoke entry 22 件 + smoke PNG 22 枚削除 + `_smoke_v4_0_4_building.json` archive 化。
+残 registry entry 491 / B hash `078fd0bd9ffe` 不変 / validate PASS。
+worktree は ff-merge 待ち状態）
 
 ---
 
@@ -22,7 +22,7 @@ build_prompts.py で 15 entries (12 person + 3 building) 生成 + invariants 全
   - smoke 100 件 / $3.99 使用済
   - 採用 4 件確定：学校 R25 / 大学 R26 / デパート R22 / 会社 R22
   - 本番化済（cp + production registry entry 4 件 update）
-- **v4.0.4 building 改修 Stage 2 (guide 本体取り込み)：完了** ✅ 🆕
+- **v4.0.4 building 改修 Stage 2 (guide 本体取り込み)：完了** ✅
   - 新 invariants B hash = `078fd0bd9ffe`
   - `prompts/master_prompt_design_guide_v4_0.py`:
     - `BUILDING_BRAND_VOICE_REF` + `BUILDING_ARCHITECTURAL_REF` + `BUILDING_UNIVERSAL_RULE_V4_0_4` (A-1〜A-11) 新規
@@ -31,9 +31,13 @@ build_prompts.py で 15 entries (12 person + 3 building) 生成 + invariants 全
     - `BACKGROUND_BY_TYPE["building"]` 撤去
   - `scripts/invariants.mjs`: C4/C5 の building 分岐撤去（全 vocab_type で default cream 統一）
   - `scripts/build_prompts.py`: `render_building()` 新規 / `main()` で buildings 反復 / preflight に building branch / PLACEHOLDERS 17 個追加
-  - Verification (no API) PASS: `python scripts/build_prompts.py --lesson 1` で 15 entries 生成（12 person + 3 building = 学校/大学/デパート / 病院・銀行 skip = 未移行）
-  - `npm run validate` PASS（B hash 078fd0bd9ffe / C 7 files including v4_0_4.json 15 entries / D 55/55 PASS 3 WARN）
-- **Phase 5 ④：v4.0 完了済だが v4.0.4 取り込み後に着手推奨** ← Stage 2 完了で着手可
+- **v4.0.4 building Stage 2 後 cleanup：完了** ✅ 🆕
+  - `master_image_registry.json`: `_smoke_only: true` entry 22 件削除（R12-R26 検証 + 採用源 smoke r25/r26/r22）
+  - `data/images/`: 対応 smoke PNG 22 枚削除
+  - `data/_smoke_v4_0_4_building.json` → `archive/data/` に退避
+  - 採用 4 件 production entry (word_学校 / word_大学 / word_デパート / word_会社) は維持
+  - validate PASS（B hash `078fd0bd9ffe` 不変 / 残 registry entry 491 / 音声 55/55 PASS 3 WARN）
+- **Phase 5 ④：v4.0 完了済だが v4.0.4 取り込み後に着手推奨** ← Stage 2+cleanup 完了で着手可
 - **Phase 5 ⑤／⑥：未着手** — Phase 5 ④ 完了後
 - **Phase 6（仮）：Flux + 自作 LoRA 切替検討** — lesson 1-3 完了 + 50-100 枚 confirmed カード蓄積後に着手判断
 - **Phase 4 後 backlog**：v3.12 修正候補 1-6 は v4.0 完了で retire 済。残り 436 件本生成 /
@@ -48,19 +52,19 @@ build_prompts.py で 15 entries (12 person + 3 building) 生成 + invariants 全
 
 ## active（main 即時）：**なし**
 
-main 即時 active タスクはない。次の active 化は **worktree が cleanup 完了して ff-merge してくる** とき。
+main 即時 active タスクはない。次の active 化は **worktree が ff-merge してくる** とき。
 
 ---
 
-## 次セッション最優先：cleanup or 新 lesson 展開 or main ff-merge
+## 次セッション最優先：main への ff-merge or 新 lesson 展開
 
 選択肢:
 
-### (A) Stage 2 後 cleanup（推奨・小作業 ~30 分）
-1. registry 一時 entry 一括 cleanup（R12-R26 で生成された `_smoke_only: true` entry 17 個削除）
-2. `data/images/` の不採用 smoke PNG 削除（採用 4 枚は production 名で配置済・smoke 版 r25/r26/r22 + R12-R24 検証 PNG 計 19 枚削除）
-3. `data/_smoke_v4_0_4_building.json` を `archive/data/` に退避
-4. cleanup commit
+### (C) main への ff-merge（推奨・Stage 1+2+cleanup 一括取り込み）
+1. main branch に切替
+2. `git merge --ff-only phase4-prompt-plan` (worktree から)
+3. main 側の NEXT_ACTIONS / docs を整合化
+4. main の commit 履歴に Stage 1+2+cleanup を取り込む（`ed83027` まで）
 
 ### (B) 新 lesson の building 同型展開（lesson_02 building の v4_0_4_* fields 追加）
 1. `BUILDING_CUES["病院"]` / `["銀行"]` / `["駅"]` / `["スーパー"]` に v4_0_4_* fields 追加
@@ -68,19 +72,13 @@ main 即時 active タスクはない。次の active 化は **worktree が clea
 3. build_prompts.py --lesson 2 で 検証
 4. user 目視で OK なら本番化（実機 ~$0.04 × N 件）
 
-### (C) main への ff-merge（Stage 1+2 完了の取り込み）
-1. main branch に切替
-2. `git merge --ff-only phase4-prompt-plan` (or worktree から)
-3. main 側の NEXT_ACTIONS / docs を整合化
-4. main の commit 履歴に Stage 1+2 を取り込む
-
-優先順は user 判断。recommend = (A) cleanup → (C) ff-merge → (B) lesson_02 展開 の順。
+優先順は user 判断。recommend = (C) ff-merge → (B) lesson_02 展開 の順。
 
 ---
 
 ## ブロッカー
 
-- Phase 5 ④ は v4.0 完了済だが、v4.0.4 building Stage 2 後（now done）に着手可
+- Phase 5 ④ は v4.0 完了済だが、v4.0.4 building Stage 2+cleanup 後（now done）に着手可
 - Phase 5 ⑤ は ④ 完了に blocked
 - Phase 5 ⑥ は ⑤ 完了に blocked
 - Phase 6 LoRA 切替は lesson 1-3 完了 + spike test PASS が前提
@@ -90,7 +88,7 @@ main 即時 active タスクはない。次の active 化は **worktree が clea
 ## 当日 cap / wip 状態（次セッション開始時の注意）
 
 - **当日 cap 3/62 使用済**（R25 学校 + R25 大学 + R26 大学 = 3 件 $0.1161）
-- **wip 状態**: なし（Stage 1 本番化 = WIP commit c9f70e0 / Stage 2 = 最終 commit 予定）
+- **wip 状態**: なし（Stage 2 commit = `ef3f228` / cleanup commit = `ed83027`）
 
 ---
 
@@ -127,7 +125,7 @@ python scripts/build_prompts.py --lesson 1       # v4.0.4: person 12 + building 
 ```
 
 参考（再実行不要）：
-- v4.0.4 building Stage 1+2 経緯：worktree memory `project_v4_0_4_building_stage1.md`
+- v4.0.4 building Stage 1+2+cleanup 経緯：worktree memory `project_v4_0_4_building_stage1.md`
   / 学び `feedback_nanobanana_prompt_design.md` 学び 1-13 全文
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
