@@ -183,8 +183,10 @@ async function main() {
   // 優先順: accent_override > accent_yomigana > (なし → plain text fallback)
   // accent_override は教師が NHK 標準と違う UniDic/naist 結果を手動で上書きする用途。
   const accentMap = new Map();
+  const ttsWorkaroundMap = new Map();  // word → { usePlainKana, ... } (Phase α5 後半・2026-05-25)
   let accentLabel;
   let overrideCount = 0;
+  let workaroundCount = 0;
   if (args.noAccent) {
     accentLabel = '無効（--no-accent）';
   } else {
@@ -198,8 +200,12 @@ async function main() {
         } else if (e.accent_yomigana) {
           accentMap.set(e.key, e.accent_yomigana);
         }
+        if (e.tts_workaround && e.word) {
+          ttsWorkaroundMap.set(e.word, e.tts_workaround);
+          workaroundCount++;
+        }
       }
-      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件、うち override ${overrideCount} 件）`;
+      accentLabel = `有効（vocab_catalog から ${accentMap.size} 件、うち override ${overrideCount} 件、TTS workaround ${workaroundCount} 件）`;
     } catch (e) {
       accentLabel = `無効（vocab_catalog 読み込み失敗: ${String(e.message || e).slice(0, 80)}）`;
     }
@@ -297,12 +303,18 @@ async function main() {
     try {
       // word target で accent_yomigana がある場合は SSML <phoneme alphabet="yomigana">、
       // それ以外は plain text fallback。sentence は常に plain text。
-      const accentYomigana = t.kind === 'word' && t.word && t.reading
+      // ただし tts_workaround.usePlainKana=true の word は SSML をスキップして
+      // text=reading (kana) で送る（Google TTS の kanji 誤読 bug 対策、例：寝る→にゃる）。
+      const workaround = t.kind === 'word' && t.word ? ttsWorkaroundMap.get(t.word) : null;
+      const accentYomigana = !workaround?.usePlainKana && t.kind === 'word' && t.word && t.reading
         ? accentMap.get(`${t.word}|${t.reading}`)
         : null;
       let raw;
       let accentTag = '';
-      if (accentYomigana) {
+      if (workaround?.usePlainKana) {
+        raw = await synthesize(tts, { text: t.reading || t.text, voice: VOICE });
+        accentTag = ` [tts_workaround:usePlainKana]`;
+      } else if (accentYomigana) {
         const ssml = `<speak><phoneme alphabet="yomigana" ph="${escapeSsml(accentYomigana)}">${escapeSsml(t.word)}</phoneme></speak>`;
         raw = await synthesize(tts, { ssml, voice: VOICE });
         accentAppliedCount++;
