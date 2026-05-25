@@ -5,105 +5,78 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-25 延長 fix-up + worktree D 案取り込み（**Phase α5 fix-up
-+ worktree phase4-prompt-plan v4.0.4 building の成果物のみ取り込み完了** 🆕：
-audio 5 件確定 + PNG 6 件 + registry 整合化。code 部分 (build_prompts.py /
-guide v4.0.py 改修) は skill pivot で obsolete のため drop。**次は Phase β1
-(宿題正解判定) 着手 ／ 並行で worktree session が design insight を
-PART 1-6 .md へ手動転記**）
+**最終更新：** 2026-05-25 Phase β1 完了（**宿題練習問題の正解判定 UI + 例文音声削除
++ 語彙カードに音声ボタン移設** 🆕：homework_html.js で examples[] 正規表現抽出 +
+複数解許容 + visual ○× / もう一度 / 正解を表示 ボタン。例文・練習問題の音声ボタンは
+保留中のため削除し、語彙チェック 17 カードに音声ボタンを移設。user 試聴 OK）
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ / α1 / α2 / α3 / α4 / α5 / α5 後半 / α5 延長 完了** ✅
+- **Phase 0 〜 5 ⑤ / α1 〜 α5 延長 / α5 fix-up / β1 完了** ✅
 
-### α5 延長 fix-up (2026-05-25 後半) 🆕
+### Phase β1 (2026-05-25 完了) 🆕
 
-user 試聴で 5 件 NG 判定 → catalog 修正 + regen → 全 OK 確定：
+`src/generators/homework_html.js` 改修:
 
-| word | 修正前 | 修正後 (yomigana SSML) | 備考 |
-|---|---|---|---|
-| する | consensus `^す!る` 頭高 | override `^する` 平板 | accent 核なしだが user OK |
-| はい | consensus `^はい` 平板 | override `^は!い` 頭高 | NHK 1 標準 |
-| 何分 | pickCatalogEntry が なにぶん entry を誤選択 | なんふん override `^な!んぷん` | catalog 同表記2読み問題 |
-| 寝る | tts_workaround.usePlainKana (Google default) | override `^ねる!` 尾高 | **5/25 朝に確定したが延長 regen で plain に戻された再発バグ** |
-| 分 | pickCatalogEntry が ぶん entry を誤選択 | ふん override `^ふ!ん` | catalog 同表記2読み問題 |
+- **正解抽出** (lesson_01 examples[] + namedCharacters fallback):
+  - p1: `^(\S+?)さんは(\S+?)です。?$` で examples 抽出 + occupation/nationality 補完
+  - p2: 質問形式 examples 不在のため namedCharacters の occupation/nationality のみ
+  - p3: 既存 RE_AFFIL でパース済 → `[char, building, occupation]` + 東西 prefix 有/無 2 形
+  - `isMeaningfulAttr` で "——" placeholder を除外（ケリーさん occupation 等）
+- **判定 UI**: 答え合わせ / もう一度 / 正解を表示 ボタン
+- **複数解許容**: any-match で○判定、per-input は「いずれかの正解組のその位置」一致で緑/赤
+- **もう一度**: ×の input だけクリア、○ 済みは保持
+- **正解を表示**: トグル式（表示↔隠す）
+- **音声配置の変更**: 例文・練習問題の音声ボタン削除（β1 後の例文 audio 再検討待ち）
+  → 語彙チェック 17 カードに音声ボタン移設
 
-#### 同表記2読み問題の構造的根本原因
-`pickCatalogEntry` は `word` 完全一致 → accent 付き entry → accent_source !== 'unknown' を優先で選択。
-N5 教材ターゲットの reading (なんふん / ふん) を強制選択するため、不要 entry (なにぶん idx=4856 / ぶん idx=15406) の accent を全 clear して候補から除外する手当を実施。
-**恒久対策（β 以降）**: pickCatalogEntry を lesson_*.json 参照経由の reading 確定に切り替えると安全。
-
-### Phase α5 延長 本体（前回まで）
-
-- `scripts/scrape-ojad.py` — OJAD scraper (0.6s sleep)
-- `scripts/lib/{yomigana_normalize,nhk_lookup,ojad_lookup}.py` — 共通 lib
-- `scripts/build-accent-consensus.py` — 3 ソース合議エンジン
-- OJAD scrape: 416 word 中 389 ok / 22 not_found
-- Consensus apply: 57 entries に accent_consensus_override 付与
-- audio 一括 regen: 416 件 (--force, Neural2 + yomigana SSML, naturalness inline)
-- fix-up: 5 件再修正 (上記)
-
-#### precedence (audio 生成時・確定)
-`accent_override (manual)` > `accent_consensus_override` > `accent_yomigana (UniDic raw)` > plain
-- generate-audio-local.mjs / regen-drive-download.mjs 両方で honor
-
----
-
-### 次セッション着手点：**Phase β1 (宿題正解判定)**
-
-audio 確定済。β1 に着手可。
-
-### スナップショット（2026-05-25 fix-up + D 案取り込み後・コマンドで再導出）
+### スナップショット（2026-05-25 β1 完了後・コマンドで再導出）
 
 ```
 image_registry: pending 439 / generated 40 / approved 5 / outdated 6 / (none) 1
-                (worktree D 案で rejected 27 件を消化: 22→generated + 5→approved)
 image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
 audio_registry:  tts-local-regen 416 / (none) 50 (= 466 total)
-                 word: 416/466 (5 件 fix-up 後・全 user OK)
-                 sentence: 50/466 は 5/24 のまま (今回触らず)
+                 word: 416/466 (α5 fix-up 後・全 user OK)
+                 sentence: 50/466 は 5/24 のまま (β1 では触らず)
 vocab_catalog:  17508 entries (schemaVersion 1.2)
                 accent_yomigana 17007 / accent_override 22 / accent_consensus_override 53
-                accent unknown 502 (うち 何分(なにぶん)・分(ぶん) 2 件を新たに unknown 化)
+                accent unknown 502
                 tts_workaround 0 (寝る usePlainKana 解除)
 ojad cache:     416 entries (389 ok / 22 not_found)
-data/images:    +6 PNG (vocab_大学.png / vocab_病院.jpg / word_{デパート,会社,大学,学校}.png)
-                worktree phase4-prompt-plan v4.0.4 building Stage 1 採用版
+homework β1:    p1×5 + p2×5 + p3×5 = 15 exercise に judgement UI + 17 語彙カードに音声
 ```
 
 ---
 
 ## active
 
-### β1 仕様（consensus 完了後）
-- **採点タイミング**：即時（設問ごとに判定 + ピンポンマーク + 音声フィードバック）
-- **不正解時**：「もう一度」ボタンで何度でも retry
-- **正解参照**：どのタイミングでも「正解を表示」ボタンで開ける
-- **スコア**：表示しない（提出のみ・テストっぽさを避ける）
+### 次セッション着手点：**Phase β1 残課題 / γ1 着手**
 
-### 並行待機（β1 後に着手）
+β1 本体は完了。残課題:
+
+- **lesson_02 以降の β1 検証**: 現状 lesson_01 のみ確認済。lesson_02 や将来課で
+  practiceImageSource: "vocabulary" 経路 (blankCount===1 のみ judge UI 出力) と
+  異なる template に対する答え抽出ロジックは未検証。lesson_02 で patterns を見て
+  必要なら拡張する。
+- **練習問題に複数 practiceTemplates がある場合**: 現コードは `practiceTemplates[0]`
+  のみ使用 (lesson_01 p2 は 3 templates「質問/肯定/否定」あるが先頭 1 つのみ render)。
+  全 templates 対応は γ 以降の拡張候補。
+
+### 並行待機
 
 - **例文 audio の再検討**：AivisSpeech 試用 or 商用 (Azure/ElevenLabs) 検証
-  - 50 sentence audio は 5/24 のまま（per-word phoneme は 富士山 で破綻・
-    per-mora prosody はチョッピー化・pyopenjtalk は HTS 90 年代品質）
+  - 50 sentence audio は 5/24 のまま、β1 では UI から消した状態
+  - 採用が決まったら homework_html.js の example-row に audioBtnHtml を戻す
 - **ボールペン override** の NHK 新辞典 2016 PDF 検証
-  (今日 consensus が `^ぼーるぺん` 平板を提案、manual は `^ぼーる!ぺん` 中高 4 → 要確認)
+  (consensus が `^ぼーるぺん` 平板を提案、manual は `^ぼーる!ぺん` 中高 4 → 要確認)
 - **同表記2読み恒久対策**: pickCatalogEntry を lesson_*.json reading 確定に切替
-  (今回 fix-up は手動で不要 entry の accent を clear したが、本筋ではない)
-- **次の worktree session の宿題** (a)(e)(f) は 2026-05-25 hybrid (3) で完了:
-  - **完了済**: (a) `git merge main` (commit 9f0458f, worktree 6 commit hash 保持・
-    全 main 採用で resolve / drop 確定) / (e) 採用 4 件 production PNG 維持 /
-    (f) main に ff-merge (9f0458f が main HEAD)
-  - **次回**: (b) design insight (A-1〜A-11 universal rule / per-building 4 件
-    テーブル / 学び 1-13 / 5-image reference attach / cyclist pose 6 軸) を
-    `prompts/guide/part1-6.md` に手動転記 → (c) Python guide
-    (master_prompt_design_guide_v4_0.py) + render_building() 廃棄 →
-    (d) invariants.mjs 旧 B 行 (promptGuideExpectedHashPrefix) 撤去 / B' のみ
-    残す ((c) と連動)。
-  worktree branch (phase4-prompt-plan) は **削除しない**（design insight 参照源）。
-  詳細 memory: `project_worktree_v4_0_4_obsolete_under_skill_pivot.md`
+- **worktree D 案残宿題** (b)(c)(d): design insight (A-1〜A-11 / per-building 4 件 /
+  学び 1-13 / 5-image reference / cyclist pose 6 軸) を `prompts/guide/part1-6.md`
+  に手動転記 → render_building() / master_prompt_design_guide_v4_0.py 廃棄 →
+  invariants.mjs 旧 B 行撤去。worktree branch (phase4-prompt-plan) は削除しない。
+  詳細: `project_worktree_v4_0_4_obsolete_under_skill_pivot.md`
 
 ### 触らない既知制約
 - LUFS ERROR 28 件（短尺 audio × loudnorm R128 統合 400ms 窓の構造問題）
@@ -114,49 +87,40 @@ data/images:    +6 PNG (vocab_大学.png / vocab_病院.jpg / word_{デパート
 
 ```
 Phase α  Audio 基盤完成  ✅ 全完了
-  α1 ✅ 音声自然さ QC 実装（Gemini 2.5 Flash）
-  α2 ✅ QC 簡素化 + naturalness inline + 120 件本走
-  α3 ✅ accent pipeline + integrity gate + override 機構 + 175 件再生成
-  α4 ✅ Drive 291 件のローカル化 (B) — WAV→MP3 + naturalness inline
-  α5 ✅ word audio 416 件 NHK 標準統一 + NHK CSV 突合機構
-        後半 ✅ 12 件 NHK/OJAD override fix + tts_workaround 機構
-        延長 ✅ OJAD scraper + Consensus engine + 57 件 consensus override 🆕
-
-Phase β  宿題完成（1 セッション）
-  β1     正解判定 (D)・仕様確定済（user 試聴 OK 出たら着手）
-
+Phase β  宿題完成
+  β1 ✅ 正解判定 (D)・homework_html.js 改修・user 試聴 OK 🆕
 Phase γ  スライド完成（1-2 セッション）
-  γ1     音声再生（homework .audio-btn 機構を移植）
+  γ1     音声再生（homework .audio-btn 機構を移植）  ← 次の着手候補
   γ2     デザイン微修正（session_001 起動 → 目視 → その場で拾う）
-
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
   δ2     applicability メタデータ 57 件 (H Stage 2)  ← user 教育判断・最重
   δ3     recommender.js + form UI 統合 (H Stage 3)
-
 Phase ε  統合テスト・リリース判断（1 セッション）
   ε1     end-to-end 動作確認
   ε2     docs 整理 + 例文 audio 再検討
 ```
 
-**総推定**：6-9 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
+**総推定**：5-8 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
 
 ---
 
 ## 確定仕様
 
-### β1 宿題正解判定 (D)
-- 採点タイミング：即時（設問ごと判定 + ピンポンマーク + 音声フィードバック）
-- 不正解時：「もう一度」で何度でも retry
-- 正解参照：「正解を表示」ボタンでいつでも開ける
+### β1 宿題正解判定 (D) — 実装済 🆕
+- 採点タイミング：即時（設問ごと判定 + visual ○×）
+- 不正解時：「もう一度」で何度でも retry（× input のみクリア・○ 済みは保持）
+- 正解参照：「正解を表示」ボタンでトグル
 - スコア：表示しない
+- 正解ソース：examples[] 正規表現抽出 + namedCharacters fallback
+- 判定粒度：複数解 any-match で○、per-input 緑/赤、句読点・空白無視
+- フィードバック：visual のみ（音声 SFX なし）
+- 音声配置：語彙チェックカードのみ（例文・練習問題は保留）
 
 ### γ2 スライドデザイン微修正 (F)
 - 着手時に session_001 を生成 → ブラウザで目視 → user とその場で修正点を拾う
-- 仕入れ方式：walkthrough（事前リスト化しない）
 
 ### δ2 applicability スキーマ（H Stage 2）
-既存 `act_online_roulette.applicability` をベースに 57 件付与：
 ```json
 {
   "patterns": "any" | ["p1", ...],
@@ -175,10 +139,8 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ## ブロッカー / 並行
 
-- β/γ/δ/ε：blocker なし
+- γ/δ/ε：blocker なし
 - worktree `phase4-prompt-plan`：guide 修正中（並行・干渉なし）
-  - main 側で 23 commits 進化 (Phase 5 ④/⑤ + α1-α5 延長)、worktree 側で 6 commits
-    → ff-merge 不可能、3-way merge or rebase 必要 (要別セッション)
 
 ---
 
@@ -188,28 +150,22 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 # 検証
 npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D / D' 各 PASS
 
+# β1 動作確認（一時 verify 用）
+node tmp/verify_homework_beta1.mjs                # verify_homework_beta1.html 生成
+python -m http.server 8765 --bind 127.0.0.1       # ローカルサーバー
+# → http://127.0.0.1:8765/verify_homework_beta1.html を開く
+
 # Audio 再生成
 node scripts/regen-drive-download.mjs --accent-changed     # consensus 持つ entry のみ
 node scripts/regen-drive-download.mjs --force              # 全 word_* 強制 regen
-node scripts/regen-drive-download.mjs --source drive-download  # 旧 GAS 由来のみ
-node scripts/regen-drive-download.mjs --not-source tts-local-regen  # 今日 regen していない全件
 npm run generate-audio                                      # 新規 Sheet 追加分のみ
 
 # Accent consensus (UniDic + NHK + OJAD)
 python scripts/scrape-ojad.py --audio-only                  # OJAD scrape (~6 min)
-python scripts/scrape-ojad.py --only WORD,WORD              # 特定 word 追加 scrape
-python scripts/build-accent-consensus.py --dry-run --audio-only  # report のみ
-python scripts/build-accent-consensus.py --apply --audio-only    # catalog 更新
-
-# NHK 突合 (mismatch 検出)
-python scripts/check-accent-nhk.py --audio-only             # 既 audio entry のみ
-python scripts/check-accent-nhk.py --only WORD,WORD         # 特定 word のみ
+python scripts/build-accent-consensus.py --apply --audio-only
 
 # 自然さ QC（個別）
 node scripts/check-audio-naturalness.mjs --force --only ID1,ID2
-
-# OpenJTalk accent 抽出（再構築が必要なときだけ）
-python scripts/extract-accent-catalog.py        # 全 17508 件再抽出 + integrity gate
 
 # 画像
 ls tmp/skill_prompts/
@@ -220,11 +176,11 @@ npm run generate-images -- --prompts data/image_prompts_skill.json --sync-only
 
 ## 関連ドキュメント
 
-- [docs/MANUAL_image_generation.md](docs/MANUAL_image_generation.md) — 手動画像生成の段取り（5 段階）
+- [docs/MANUAL_image_generation.md](docs/MANUAL_image_generation.md) — 手動画像生成の段取り
 - [docs/MANUAL_word_example_state.md](docs/MANUAL_word_example_state.md) — どこに何があるか / status の見方
 - [docs/REFERENCE.md](docs/REFERENCE.md) — 命名規則・スキーマ詳細（不変仕様）
 - [docs/WORKFLOW.md](docs/WORKFLOW.md) — main / worktree の使い分け
 - [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md) — Phase 0〜5 全体ロードマップ
 - [docs/PHASE_BACKLOG.md](docs/PHASE_BACKLOG.md) — 退避中項目
-- [docs/design_ojad_nhk_consensus.md](docs/design_ojad_nhk_consensus.md) — α5 延長 consensus 設計 (実装済)
+- [docs/design_ojad_nhk_consensus.md](docs/design_ojad_nhk_consensus.md) — α5 延長 consensus 設計
 - [design_brief.md](design_brief.md) — ツール設計書
