@@ -195,3 +195,97 @@
   PASS (医者)。schedule は Windows schtasks ローカル方式採用（remote /schedule
   は見送り）。subagent Write が permission denied で全 6 PART を main session で
   直接 Write した経緯あり (settings.local.json では subagent 解除されない harness 仕様)。
+
+<!-- ↓ 2026-05-25 D 案取り込み: worktree phase4-prompt-plan の v4.0.4 building 経緯。
+     当該作業は main 側 5/22 Phase 5 ④ pivot (Claude Code skill 方式) を knowing せず
+     並行進化したため code (build_prompts.py / guide v4.0.py 改修) は dead = drop。
+     design insight (5-image reference attach / building layout determinism / cyclist
+     pose 6 軸明示 等) は後続 worktree session で PART 1-6 .md へ手動転記予定。
+     取り込みは PNG 6 件 + archive smoke json + registry generated 化のみ。 -->
+
+- **2026-05-24 v4.0.4 building Stage 1 R9-R11 → R12 へ**：worktree image-prompt-plan で
+  R9 (person template 同型化 7464 chars) NG → R10 (universal template + STYLE_BIBLE 厳守
+  1700 chars) で R9 より悪化 → R11 (pipeline 改修で reference attachment 実装：
+  nanobanana-client.mjs の referenceImages 引数 + generate-images-local.mjs の
+  styleReferences loader / 1 件 word_学校 smoke) でも user 病院手動品質に達せず削除。
+  text-only path の cross-vocab-type style coherence 限界（feedback 学び 6）・STYLE_BIBLE
+  単一強制過剰（学び 7）・人物含めるべき（学び 8）・cross-ref aspect 別 specific（学び 9）
+  を新規追記。R12 = 5 軸統合（universal template + reference attachment + per-building
+  palette + people + aspect-specific cross-ref）へ。Phase 6 (Flux + 自作 LoRA 切替検討) を
+  docs/MIGRATION_PLAN.md に追加・着手判断基準 4 条件 + spike スライス案あり。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` / 同 `feedback_nanobanana_prompt_design.md`（学び 1-9）。
+
+- **2026-05-24 v4.0.4 building Stage 1 R12-R24 完了 / R23+R22 採用判定**：R12 (5 軸統合 + A/B
+  比較) で text-only 限界実証 → R13-R20 で minimal palette + 3/4 isometric + low-angle + 人物
+  variety を順次積層 → **R21 (Gemini ヒント取り込み: close-up framing + side wings off-frame
+  + figures prominent 1/3) で学校採用候補確定** → R22 で残り 3 件展開 → R23 で道路色
+  cream 統一 (GROUND/PAVEMENT rule 新設) → R24 (Gemini 3 軸: dramatic 3-point perspective
+  + 街角 continuation + 大きな signboard + ref 切替 image_5=デパート R22) **失敗**：学校
+  building の symmetric institutional form と dramatic perspective が衝突 → 学校 R23 採用
+  継続判定。Stage 1 確定採用 = 学校 R23 / 大学 R23 / デパート R22 / 会社 R22。新規学び 10-12
+  追記 (symmetric form vs perspective 衝突 / blank text 暴走 / per-vocab-type surroundings
+  context)。**user 重要訂正**: 「single freestanding building」universal rule は誤り、大学・
+  学校・デパート・会社では周辺 building/補助施設の描画が自然 → per-vocab-type で柔軟に。
+  R25 (学校サイズ拡大 + 大学微修正: 木一貫 + 人物服 accent 衝突回避) を明日着手後 Stage 2
+  (PROMPT_TEMPLATES["vocabulary_building"] guide 取り込み + invariants B hash 再計算 +
+  build_prompts.py 対応) へ。当日 cap 60/60 上限到達・cost ~$2.32 (R12-R24 で 60 件)。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md`（R12-R24 経緯 + universal
+  rule 確定版 + per-vocab-type table）/ 同 `feedback_nanobanana_prompt_design.md` 学び 10-12。
+
+- **2026-05-25 v4.0.4 building Stage 1 R25-R26 完了 / 採用 4 件確定 + 本番化 done**：R25
+  (学校 = R23 + dominate frame 75%+ + blank text rule / 大学 = R23 + 全樹木 leafy summer +
+  cyclist 服 warm yellow 禁止 + blank text rule + 副 academic building OK) で 2 件生成
+  $0.0774。学校 R25 = user OK 採用、大学 R25 = cyclist 姿勢が「自転車に座っているだけ」の
+  静的不自然姿勢で NG → R26 (R25 + cyclist 姿勢明示: 前傾 torso + 両手ハンドル + 両足ペダル on
+  + dynamic motion + 7-head proportion + image_3 anchor) で再生成 $0.0387、user OK 採用。
+  Stage 1 最終採用 = 学校 R25 / 大学 R26 / デパート R22 / 会社 R22。**本番化済**: 採用 4 PNG
+  を production 名 cp (`data/images/word_学校.png` 他 3 件)、registry production entry 4 件
+  update (generatedAt + promptRef + `_v4_0_4_adopted` 注記)。新規学び 13: cyclist 姿勢は
+  default で不自然になりがち、6 軸明示 specify 必須 (a-f: torso 前傾 / 両手 grip / 両足 pedal
+  on / frame size / 7-head proportion / motion line)。Universal rule A-1〜A-11 結晶
+  (A-11 cyclist pose 新設)。**インシデント**: 最初の generate-images background run で
+  `master_image_registry.json` (240KB) と `data/_meta/imagen_usage.json` (711B) が両方
+  NULL bytes で破損 → Claude file-history `559ab4a0-...@v1` から registry 復元 + usage
+  再構築 → foreground 再実行で成功。教訓: generate-images は必ず foreground 実行。
+  当日 cap 3/62 (R25 2 件 + R26 1 件 = $0.1161)。次セッション = Stage 2 (guide 本体取り込み)
+  / verification は build_prompts.py で生成した prompt と smoke prompt の no-API diff 方針。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` (R25-R26 + 本番化 + universal
+  rule A-1〜A-11 確定版 update) / 同 `feedback_nanobanana_prompt_design.md` 学び 13 追加。
+
+- **2026-05-25 v4.0.4 building Stage 2 完了 / guide 本体取り込み + invariants B hash 更新 +
+  build_prompts.py building 対応 + no-API verification PASS**：Stage 1 結晶 (A-1〜A-11 +
+  per-vocab-type table 4 採用) を guide に取り込み。
+  (1) `prompts/master_prompt_design_guide_v4_0.py`:
+  `BUILDING_BRAND_VOICE_REF` (image_1 = word_日本人.png) +
+  `BUILDING_ARCHITECTURAL_REF` (image_5 = vocab_病院.jpg) +
+  `BUILDING_UNIVERSAL_RULE_V4_0_4` (A-1〜A-11 multi-paragraph string) 新規。
+  `BUILDING_CUES` 4 採用 entry (学校/大学/デパート/会社) に v4_0_4_* fields 17 種追加
+  (vocab_type_desc / form_desc / signature / accent / accent_targets / label /
+  signboard_location / surroundings_context / surroundings_block /
+  framing_extra (学校 のみ) / activities_block / landscaping_block /
+  type_relevant_refs (3 件 list))。
+  `PROMPT_TEMPLATES["vocabulary_building"]` 全面書き直し (旧 ~1700 chars pale sky-blue
+  full-bleed → 新 ~5100 chars universal rule + per-building 変数 + 5-image reference)。
+  `BACKGROUND_BY_TYPE["building"]` 撤去 + `BUILDING_BACKGROUND_EXACT` constant 削除。
+  (2) `scripts/invariants.mjs`: `BACKGROUND_BY_TYPE.building` 撤去 + C4/C5 で
+  `type === 'building'` / `type !== 'building'` 例外撤去 + `promptGuideExpectedHashPrefix`
+  を旧 `5338c98aab5d` → 新 `078fd0bd9ffe` に更新。
+  (3) `scripts/build_prompts.py`: `render_building(g, entry)` 新規 (返り値 = (prompt,
+  styleReferences) or (None, None) for unmigrated)、`main()` で buildings 反復 +
+  `buildings_skipped` 追跡、`preflight()` に building branch (person 専用 full-body /
+  area% / portrait lens チェック skip)、`PLACEHOLDERS` に v4.0.4 building 17 種追加、
+  出力 JSON entry に `styleReferences: [path, ...]` (5 枚) 付与、出力 path
+  `image_prompts_lesson01_v4_0_4.json` / `coveredVocabTypes: ["person","building"]` /
+  `renderedCounts` + `buildingsSkipped` _meta 追加。
+  (4) `npm run validate` PASS (B 078fd0bd9ffe / C 7 files including v4_0_4.json 15
+  entries / D 55/55 PASS 3 WARN)。
+  (5) **no-API Verification PASS**: `python scripts/build_prompts.py --lesson 1` で
+  15 entries 生成 (12 person + 3 building = 学校 path / 大学 path / デパート path; 病院 +
+  銀行 = 2 件 skip / 未移行)。学校 prompt len=10966 / 大学 len=11212 / デパート len=10323
+  (smoke R25/R26 より長い：universal rule explicit セクション化 + image_5 cross-ref 強化
+  のため)、styleReferences 全件 5 枚正しく付与、placeholder 全消失、
+  [A-1]〜[A-11] / BUILDING SCALE EMPHASIS / BLANK TEXT SURFACES / image_5 病院 anchor
+  全て含む。今後 lesson_02 以降の building (病院/銀行/駅/スーパー) も同型展開で対応可能。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` Stage 2 done section
+  / B hash = 078fd0bd9ffe / 本セッション = WIP commit c9f70e0 (本番化) + 最終 commit
+  (Stage 2)。次セッション = cleanup or 新 lesson 展開 or main ff-merge。
