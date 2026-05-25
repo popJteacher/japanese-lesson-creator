@@ -1,0 +1,1472 @@
+{
+  "sudachipy": {
+    "status": "ok",
+    "samples": [
+      {
+        "word": "安い",
+        "morphs": [
+          {
+            "surface": "安い",
+            "reading": "ヤスイ",
+            "pos": [
+              "形容詞",
+              "一般",
+              "*",
+              "*",
+              "形容詞",
+              "終止形-一般"
+            ],
+            "normalized": "安い",
+            "dictionary_form": "安い",
+            "_all_methods": [
+              "begin",
+              "dictionary_form",
+              "dictionary_id",
+              "end",
+              "get_word_info",
+              "is_oov",
+              "normalized_form",
+              "part_of_speech",
+              "part_of_speech_id",
+              "raw_surface",
+              "reading_form",
+              "split",
+              "surface",
+              "synonym_group_ids",
+              "word_id"
+            ]
+          }
+        ]
+      },
+      {
+        "word": "七日",
+        "morphs": [
+          {
+            "surface": "七",
+            "reading": "ナナ",
+            "pos": [
+              "名詞",
+              "数詞",
+              "*",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "7",
+            "dictionary_form": "七"
+          },
+          {
+            "surface": "日",
+            "reading": "ニチ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "助数詞可能",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "日",
+            "dictionary_form": "日"
+          }
+        ]
+      },
+      {
+        "word": "消しゴム",
+        "morphs": [
+          {
+            "surface": "消しゴム",
+            "reading": "ケシゴム",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "消しゴム",
+            "dictionary_form": "消しゴム"
+          }
+        ]
+      },
+      {
+        "word": "雪",
+        "morphs": [
+          {
+            "surface": "雪",
+            "reading": "ユキ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "雪",
+            "dictionary_form": "雪"
+          }
+        ]
+      },
+      {
+        "word": "二十日",
+        "morphs": [
+          {
+            "surface": "二十",
+            "reading": "ニトウ",
+            "pos": [
+              "名詞",
+              "数詞",
+              "*",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "20",
+            "dictionary_form": "二十"
+          },
+          {
+            "surface": "日",
+            "reading": "カ",
+            "pos": [
+              "接尾辞",
+              "名詞的",
+              "助数詞",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "日",
+            "dictionary_form": "日"
+          }
+        ]
+      },
+      {
+        "word": "二日",
+        "morphs": [
+          {
+            "surface": "二",
+            "reading": "フタ",
+            "pos": [
+              "名詞",
+              "数詞",
+              "*",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "2",
+            "dictionary_form": "二"
+          },
+          {
+            "surface": "日",
+            "reading": "カ",
+            "pos": [
+              "接尾辞",
+              "名詞的",
+              "助数詞",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "日",
+            "dictionary_form": "日"
+          }
+        ]
+      },
+      {
+        "word": "母",
+        "morphs": [
+          {
+            "surface": "母",
+            "reading": "ハハ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "母",
+            "dictionary_form": "母"
+          }
+        ]
+      },
+      {
+        "word": "夜",
+        "morphs": [
+          {
+            "surface": "夜",
+            "reading": "ヨル",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "副詞可能",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "夜",
+            "dictionary_form": "夜"
+          }
+        ]
+      },
+      {
+        "word": "来年",
+        "morphs": [
+          {
+            "surface": "来年",
+            "reading": "ライネン",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "副詞可能",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "来年",
+            "dictionary_form": "来年"
+          }
+        ]
+      },
+      {
+        "word": "六日",
+        "morphs": [
+          {
+            "surface": "六",
+            "reading": "ムイ",
+            "pos": [
+              "名詞",
+              "数詞",
+              "*",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "6",
+            "dictionary_form": "六"
+          },
+          {
+            "surface": "日",
+            "reading": "カ",
+            "pos": [
+              "接尾辞",
+              "名詞的",
+              "助数詞",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "日",
+            "dictionary_form": "日"
+          }
+        ]
+      },
+      {
+        "word": "服",
+        "morphs": [
+          {
+            "surface": "服",
+            "reading": "フク",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "服",
+            "dictionary_form": "服"
+          }
+        ]
+      },
+      {
+        "word": "靴",
+        "morphs": [
+          {
+            "surface": "靴",
+            "reading": "クツ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "靴",
+            "dictionary_form": "靴"
+          }
+        ]
+      },
+      {
+        "word": "池",
+        "morphs": [
+          {
+            "surface": "池",
+            "reading": "イケ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "池",
+            "dictionary_form": "池"
+          }
+        ]
+      },
+      {
+        "word": "川",
+        "morphs": [
+          {
+            "surface": "川",
+            "reading": "カワ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "川",
+            "dictionary_form": "川"
+          }
+        ]
+      },
+      {
+        "word": "山",
+        "morphs": [
+          {
+            "surface": "山",
+            "reading": "ヤマ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "山",
+            "dictionary_form": "山"
+          }
+        ]
+      },
+      {
+        "word": "猫",
+        "morphs": [
+          {
+            "surface": "猫",
+            "reading": "ネコ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "猫",
+            "dictionary_form": "猫"
+          }
+        ]
+      },
+      {
+        "word": "雨",
+        "morphs": [
+          {
+            "surface": "雨",
+            "reading": "アメ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "雨",
+            "dictionary_form": "雨"
+          }
+        ]
+      },
+      {
+        "word": "秋",
+        "morphs": [
+          {
+            "surface": "秋",
+            "reading": "アキ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "副詞可能",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "秋",
+            "dictionary_form": "秋"
+          }
+        ]
+      },
+      {
+        "word": "春",
+        "morphs": [
+          {
+            "surface": "春",
+            "reading": "ハル",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "副詞可能",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "春",
+            "dictionary_form": "春"
+          }
+        ]
+      },
+      {
+        "word": "海",
+        "morphs": [
+          {
+            "surface": "海",
+            "reading": "ウミ",
+            "pos": [
+              "名詞",
+              "普通名詞",
+              "一般",
+              "*",
+              "*",
+              "*"
+            ],
+            "normalized": "海",
+            "dictionary_form": "海"
+          }
+        ]
+      }
+    ],
+    "note": "sudachi の Morpheme に accent 情報があるか _all_methods を確認"
+  },
+  "fugashi_unidic": {
+    "status": "ok",
+    "unidic_lite": true,
+    "samples": [
+      {
+        "word": "安い",
+        "nodes": [
+          {
+            "surface": "安い",
+            "feature": "UnidicFeatures26(pos1='形容詞', pos2='一般', pos3='*', pos4='*', cType='形容詞', cForm='終止形-一般', lForm='ヤスイ', lemma='安い', orth='安い', pron='ヤスイ', orthBase='安い', pronBase='ヤスイ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ヤスイ', kanaBase='ヤスイ', form='ヤスイ', formBase='ヤスイ', iConType='*', fConType='*', aType='2', aConType='C1', aModeType='*')",
+            "feature_dict": {
+              "pos1": "形容詞",
+              "pos2": "一般",
+              "pos3": "*",
+              "pos4": "*",
+              "cType": "形容詞",
+              "cForm": "終止形-一般",
+              "lForm": "ヤスイ",
+              "lemma": "安い",
+              "orth": "安い",
+              "pron": "ヤスイ",
+              "orthBase": "安い",
+              "pronBase": "ヤスイ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ヤスイ",
+              "kanaBase": "ヤスイ",
+              "form": "ヤスイ",
+              "formBase": "ヤスイ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C1",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "七日",
+        "nodes": [
+          {
+            "surface": "七",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='数詞', pos3='*', pos4='*', cType='*', cForm='*', lForm='ナナ', lemma='七', orth='七', pron='ナナ', orthBase='七', pronBase='ナナ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ナナ', kanaBase='ナナ', form='ナナ', formBase='ナナ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "数詞",
+              "pos3": "*",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ナナ",
+              "lemma": "七",
+              "orth": "七",
+              "pron": "ナナ",
+              "orthBase": "七",
+              "pronBase": "ナナ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ナナ",
+              "kanaBase": "ナナ",
+              "form": "ナナ",
+              "formBase": "ナナ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          },
+          {
+            "surface": "日",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='助数詞可能', pos4='*', cType='*', cForm='*', lForm='ニチ', lemma='日', orth='日', pron='ニチ', orthBase='日', pronBase='ニチ', goshu='漢', iType='*', iForm='*', fType='*', fForm='*', kana='ニチ', kanaBase='ニチ', form='ニチ', formBase='ニチ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "助数詞可能",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ニチ",
+              "lemma": "日",
+              "orth": "日",
+              "pron": "ニチ",
+              "orthBase": "日",
+              "pronBase": "ニチ",
+              "goshu": "漢",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ニチ",
+              "kanaBase": "ニチ",
+              "form": "ニチ",
+              "formBase": "ニチ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "消しゴム",
+        "nodes": [
+          {
+            "surface": "消し",
+            "feature": "UnidicFeatures26(pos1='動詞', pos2='一般', pos3='*', pos4='*', cType='五段-サ行', cForm='連用形-一般', lForm='ケス', lemma='消す', orth='消し', pron='ケシ', orthBase='消す', pronBase='ケス', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ケシ', kanaBase='ケス', form='ケシ', formBase='ケス', iConType='*', fConType='*', aType='0', aConType='C4', aModeType='*')",
+            "feature_dict": {
+              "pos1": "動詞",
+              "pos2": "一般",
+              "pos3": "*",
+              "pos4": "*",
+              "cType": "五段-サ行",
+              "cForm": "連用形-一般",
+              "lForm": "ケス",
+              "lemma": "消す",
+              "orth": "消し",
+              "pron": "ケシ",
+              "orthBase": "消す",
+              "pronBase": "ケス",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ケシ",
+              "kanaBase": "ケス",
+              "form": "ケシ",
+              "formBase": "ケス",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "0",
+              "aConType": "C4",
+              "aModeType": "*"
+            }
+          },
+          {
+            "surface": "ゴム",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='ゴム', lemma='ゴム-gom', orth='ゴム', pron='ゴム', orthBase='ゴム', pronBase='ゴム', goshu='外', iType='*', iForm='*', fType='*', fForm='*', kana='ゴム', kanaBase='ゴム', form='ゴム', formBase='ゴム', iConType='*', fConType='*', aType='1', aConType='C1', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ゴム",
+              "lemma": "ゴム-gom",
+              "orth": "ゴム",
+              "pron": "ゴム",
+              "orthBase": "ゴム",
+              "pronBase": "ゴム",
+              "goshu": "外",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ゴム",
+              "kanaBase": "ゴム",
+              "form": "ゴム",
+              "formBase": "ゴム",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C1",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "雪",
+        "nodes": [
+          {
+            "surface": "雪",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='ユキ', lemma='雪', orth='雪', pron='ユキ', orthBase='雪', pronBase='ユキ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ユキ', kanaBase='ユキ', form='ユキ', formBase='ユキ', iConType='*', fConType='*', aType='2', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ユキ",
+              "lemma": "雪",
+              "orth": "雪",
+              "pron": "ユキ",
+              "orthBase": "雪",
+              "pronBase": "ユキ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ユキ",
+              "kanaBase": "ユキ",
+              "form": "ユキ",
+              "formBase": "ユキ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "二十日",
+        "nodes": [
+          {
+            "surface": "二十",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='数詞', pos3='*', pos4='*', cType='*', cForm='*', lForm='ハツ', lemma='二十', orth='二十', pron='ハツ', orthBase='二十', pronBase='ハツ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ハツ', kanaBase='ハツ', form='ハツ', formBase='ハツ', iConType='*', fConType='*', aType='0', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "数詞",
+              "pos3": "*",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ハツ",
+              "lemma": "二十",
+              "orth": "二十",
+              "pron": "ハツ",
+              "orthBase": "二十",
+              "pronBase": "ハツ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ハツ",
+              "kanaBase": "ハツ",
+              "form": "ハツ",
+              "formBase": "ハツ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "0",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          },
+          {
+            "surface": "日",
+            "feature": "UnidicFeatures26(pos1='接尾辞', pos2='名詞的', pos3='助数詞', pos4='*', cType='*', cForm='*', lForm='カ', lemma='日', orth='日', pron='カ', orthBase='日', pronBase='カ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='カ', kanaBase='カ', form='カ', formBase='カ', iConType='*', fConType='D', aType='*', aConType='C4', aModeType='*')",
+            "feature_dict": {
+              "pos1": "接尾辞",
+              "pos2": "名詞的",
+              "pos3": "助数詞",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "カ",
+              "lemma": "日",
+              "orth": "日",
+              "pron": "カ",
+              "orthBase": "日",
+              "pronBase": "カ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "カ",
+              "kanaBase": "カ",
+              "form": "カ",
+              "formBase": "カ",
+              "iConType": "*",
+              "fConType": "D",
+              "aType": "*",
+              "aConType": "C4",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "二日",
+        "nodes": [
+          {
+            "surface": "二",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='数詞', pos3='*', pos4='*', cType='*', cForm='*', lForm='フタ', lemma='二', orth='二', pron='フタ', orthBase='二', pronBase='フタ', goshu='和', iType='フ混合', iForm='基本形', fType='*', fForm='*', kana='フタ', kanaBase='フタ', form='フタ', formBase='フタ', iConType='*', fConType='*', aType='2', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "数詞",
+              "pos3": "*",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "フタ",
+              "lemma": "二",
+              "orth": "二",
+              "pron": "フタ",
+              "orthBase": "二",
+              "pronBase": "フタ",
+              "goshu": "和",
+              "iType": "フ混合",
+              "iForm": "基本形",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "フタ",
+              "kanaBase": "フタ",
+              "form": "フタ",
+              "formBase": "フタ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          },
+          {
+            "surface": "日",
+            "feature": "UnidicFeatures26(pos1='接尾辞', pos2='名詞的', pos3='助数詞', pos4='*', cType='*', cForm='*', lForm='カ', lemma='日', orth='日', pron='カ', orthBase='日', pronBase='カ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='カ', kanaBase='カ', form='カ', formBase='カ', iConType='*', fConType='D', aType='*', aConType='C4', aModeType='*')",
+            "feature_dict": {
+              "pos1": "接尾辞",
+              "pos2": "名詞的",
+              "pos3": "助数詞",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "カ",
+              "lemma": "日",
+              "orth": "日",
+              "pron": "カ",
+              "orthBase": "日",
+              "pronBase": "カ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "カ",
+              "kanaBase": "カ",
+              "form": "カ",
+              "formBase": "カ",
+              "iConType": "*",
+              "fConType": "D",
+              "aType": "*",
+              "aConType": "C4",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "母",
+        "nodes": [
+          {
+            "surface": "母",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='ハハ', lemma='母', orth='母', pron='ハハ', orthBase='母', pronBase='ハハ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ハハ', kanaBase='ハハ', form='ハハ', formBase='ハハ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ハハ",
+              "lemma": "母",
+              "orth": "母",
+              "pron": "ハハ",
+              "orthBase": "母",
+              "pronBase": "ハハ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ハハ",
+              "kanaBase": "ハハ",
+              "form": "ハハ",
+              "formBase": "ハハ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "夜",
+        "nodes": [
+          {
+            "surface": "夜",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='副詞可能', pos4='*', cType='*', cForm='*', lForm='ヨル', lemma='夜', orth='夜', pron='ヨル', orthBase='夜', pronBase='ヨル', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ヨル', kanaBase='ヨル', form='ヨル', formBase='ヨル', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "副詞可能",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ヨル",
+              "lemma": "夜",
+              "orth": "夜",
+              "pron": "ヨル",
+              "orthBase": "夜",
+              "pronBase": "ヨル",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ヨル",
+              "kanaBase": "ヨル",
+              "form": "ヨル",
+              "formBase": "ヨル",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "来年",
+        "nodes": [
+          {
+            "surface": "来年",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='副詞可能', pos4='*', cType='*', cForm='*', lForm='ライネン', lemma='来年', orth='来年', pron='ライネン', orthBase='来年', pronBase='ライネン', goshu='漢', iType='*', iForm='*', fType='*', fForm='*', kana='ライネン', kanaBase='ライネン', form='ライネン', formBase='ライネン', iConType='*', fConType='*', aType='0', aConType='C2', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "副詞可能",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ライネン",
+              "lemma": "来年",
+              "orth": "来年",
+              "pron": "ライネン",
+              "orthBase": "来年",
+              "pronBase": "ライネン",
+              "goshu": "漢",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ライネン",
+              "kanaBase": "ライネン",
+              "form": "ライネン",
+              "formBase": "ライネン",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "0",
+              "aConType": "C2",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "六日",
+        "nodes": [
+          {
+            "surface": "六",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='数詞', pos3='*', pos4='*', cType='*', cForm='*', lForm='ム', lemma='六', orth='六', pron='ムイ', orthBase='六', pronBase='ムイ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ムイ', kanaBase='ムイ', form='ムイ', formBase='ムイ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "数詞",
+              "pos3": "*",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ム",
+              "lemma": "六",
+              "orth": "六",
+              "pron": "ムイ",
+              "orthBase": "六",
+              "pronBase": "ムイ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ムイ",
+              "kanaBase": "ムイ",
+              "form": "ムイ",
+              "formBase": "ムイ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          },
+          {
+            "surface": "日",
+            "feature": "UnidicFeatures26(pos1='接尾辞', pos2='名詞的', pos3='助数詞', pos4='*', cType='*', cForm='*', lForm='カ', lemma='日', orth='日', pron='カ', orthBase='日', pronBase='カ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='カ', kanaBase='カ', form='カ', formBase='カ', iConType='*', fConType='D', aType='*', aConType='C4', aModeType='*')",
+            "feature_dict": {
+              "pos1": "接尾辞",
+              "pos2": "名詞的",
+              "pos3": "助数詞",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "カ",
+              "lemma": "日",
+              "orth": "日",
+              "pron": "カ",
+              "orthBase": "日",
+              "pronBase": "カ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "カ",
+              "kanaBase": "カ",
+              "form": "カ",
+              "formBase": "カ",
+              "iConType": "*",
+              "fConType": "D",
+              "aType": "*",
+              "aConType": "C4",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "服",
+        "nodes": [
+          {
+            "surface": "服",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='フク', lemma='服', orth='服', pron='フク', orthBase='服', pronBase='フク', goshu='漢', iType='フ濁', iForm='基本形', fType='*', fForm='*', kana='フク', kanaBase='フク', form='フク', formBase='フク', iConType='*', fConType='*', aType='2', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "フク",
+              "lemma": "服",
+              "orth": "服",
+              "pron": "フク",
+              "orthBase": "服",
+              "pronBase": "フク",
+              "goshu": "漢",
+              "iType": "フ濁",
+              "iForm": "基本形",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "フク",
+              "kanaBase": "フク",
+              "form": "フク",
+              "formBase": "フク",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "靴",
+        "nodes": [
+          {
+            "surface": "靴",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='クツ', lemma='靴', orth='靴', pron='クツ', orthBase='靴', pronBase='クツ', goshu='和', iType='ク濁', iForm='基本形', fType='*', fForm='*', kana='クツ', kanaBase='クツ', form='クツ', formBase='クツ', iConType='*', fConType='*', aType='2', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "クツ",
+              "lemma": "靴",
+              "orth": "靴",
+              "pron": "クツ",
+              "orthBase": "靴",
+              "pronBase": "クツ",
+              "goshu": "和",
+              "iType": "ク濁",
+              "iForm": "基本形",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "クツ",
+              "kanaBase": "クツ",
+              "form": "クツ",
+              "formBase": "クツ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "池",
+        "nodes": [
+          {
+            "surface": "池",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='イケ', lemma='池', orth='池', pron='イケ', orthBase='池', pronBase='イケ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='イケ', kanaBase='イケ', form='イケ', formBase='イケ', iConType='*', fConType='*', aType='2', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "イケ",
+              "lemma": "池",
+              "orth": "池",
+              "pron": "イケ",
+              "orthBase": "池",
+              "pronBase": "イケ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "イケ",
+              "kanaBase": "イケ",
+              "form": "イケ",
+              "formBase": "イケ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "川",
+        "nodes": [
+          {
+            "surface": "川",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='カワ', lemma='川', orth='川', pron='カワ', orthBase='川', pronBase='カワ', goshu='和', iType='カ濁', iForm='基本形', fType='*', fForm='*', kana='カワ', kanaBase='カワ', form='カワ', formBase='カワ', iConType='*', fConType='*', aType='2', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "カワ",
+              "lemma": "川",
+              "orth": "川",
+              "pron": "カワ",
+              "orthBase": "川",
+              "pronBase": "カワ",
+              "goshu": "和",
+              "iType": "カ濁",
+              "iForm": "基本形",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "カワ",
+              "kanaBase": "カワ",
+              "form": "カワ",
+              "formBase": "カワ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "2",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "山",
+        "nodes": [
+          {
+            "surface": "山",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='ヤマ', lemma='山', orth='山', pron='ヤマ', orthBase='山', pronBase='ヤマ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ヤマ', kanaBase='ヤマ', form='ヤマ', formBase='ヤマ', iConType='*', fConType='B1WB2WB,B1WB2WB3WB4WB', aType='2', aConType='C4', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ヤマ",
+              "lemma": "山",
+              "orth": "山",
+              "pron": "ヤマ",
+              "orthBase": "山",
+              "pronBase": "ヤマ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ヤマ",
+              "kanaBase": "ヤマ",
+              "form": "ヤマ",
+              "formBase": "ヤマ",
+              "iConType": "*",
+              "fConType": "B1WB2WB,B1WB2WB3WB4WB",
+              "aType": "2",
+              "aConType": "C4",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "猫",
+        "nodes": [
+          {
+            "surface": "猫",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='ネコ', lemma='猫', orth='猫', pron='ネコ', orthBase='猫', pronBase='ネコ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ネコ', kanaBase='ネコ', form='ネコ', formBase='ネコ', iConType='*', fConType='*', aType='1', aConType='C4', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ネコ",
+              "lemma": "猫",
+              "orth": "猫",
+              "pron": "ネコ",
+              "orthBase": "猫",
+              "pronBase": "ネコ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ネコ",
+              "kanaBase": "ネコ",
+              "form": "ネコ",
+              "formBase": "ネコ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C4",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "雨",
+        "nodes": [
+          {
+            "surface": "雨",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='アメ', lemma='雨', orth='雨', pron='アメ', orthBase='雨', pronBase='アメ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='アメ', kanaBase='アメ', form='アメ', formBase='アメ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "アメ",
+              "lemma": "雨",
+              "orth": "雨",
+              "pron": "アメ",
+              "orthBase": "雨",
+              "pronBase": "アメ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "アメ",
+              "kanaBase": "アメ",
+              "form": "アメ",
+              "formBase": "アメ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "秋",
+        "nodes": [
+          {
+            "surface": "秋",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='副詞可能', pos4='*', cType='*', cForm='*', lForm='アキ', lemma='秋', orth='秋', pron='アキ', orthBase='秋', pronBase='アキ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='アキ', kanaBase='アキ', form='アキ', formBase='アキ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "副詞可能",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "アキ",
+              "lemma": "秋",
+              "orth": "秋",
+              "pron": "アキ",
+              "orthBase": "秋",
+              "pronBase": "アキ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "アキ",
+              "kanaBase": "アキ",
+              "form": "アキ",
+              "formBase": "アキ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "春",
+        "nodes": [
+          {
+            "surface": "春",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='副詞可能', pos4='*', cType='*', cForm='*', lForm='ハル', lemma='春', orth='春', pron='ハル', orthBase='春', pronBase='ハル', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ハル', kanaBase='ハル', form='ハル', formBase='ハル', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "副詞可能",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ハル",
+              "lemma": "春",
+              "orth": "春",
+              "pron": "ハル",
+              "orthBase": "春",
+              "pronBase": "ハル",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ハル",
+              "kanaBase": "ハル",
+              "form": "ハル",
+              "formBase": "ハル",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      },
+      {
+        "word": "海",
+        "nodes": [
+          {
+            "surface": "海",
+            "feature": "UnidicFeatures26(pos1='名詞', pos2='普通名詞', pos3='一般', pos4='*', cType='*', cForm='*', lForm='ウミ', lemma='海', orth='海', pron='ウミ', orthBase='海', pronBase='ウミ', goshu='和', iType='*', iForm='*', fType='*', fForm='*', kana='ウミ', kanaBase='ウミ', form='ウミ', formBase='ウミ', iConType='*', fConType='*', aType='1', aConType='C3', aModeType='*')",
+            "feature_dict": {
+              "pos1": "名詞",
+              "pos2": "普通名詞",
+              "pos3": "一般",
+              "pos4": "*",
+              "cType": "*",
+              "cForm": "*",
+              "lForm": "ウミ",
+              "lemma": "海",
+              "orth": "海",
+              "pron": "ウミ",
+              "orthBase": "海",
+              "pronBase": "ウミ",
+              "goshu": "和",
+              "iType": "*",
+              "iForm": "*",
+              "fType": "*",
+              "fForm": "*",
+              "kana": "ウミ",
+              "kanaBase": "ウミ",
+              "form": "ウミ",
+              "formBase": "ウミ",
+              "iConType": "*",
+              "fConType": "*",
+              "aType": "1",
+              "aConType": "C3",
+              "aModeType": "*"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "naist_jdic_compare": {
+    "status": "ok",
+    "samples": [
+      {
+        "word": "安い",
+        "mora_count": 3,
+        "accent_type": 2
+      },
+      {
+        "word": "七日",
+        "mora_count": 3,
+        "accent_type": 3
+      },
+      {
+        "word": "消しゴム",
+        "mora_count": 4,
+        "accent_type": 4
+      },
+      {
+        "word": "雪",
+        "mora_count": 2,
+        "accent_type": 2
+      },
+      {
+        "word": "二十日",
+        "mora_count": 3,
+        "accent_type": 3
+      },
+      {
+        "word": "二日",
+        "mora_count": 3,
+        "accent_type": 3
+      },
+      {
+        "word": "母",
+        "mora_count": 2,
+        "accent_type": 1
+      },
+      {
+        "word": "夜",
+        "mora_count": 2,
+        "accent_type": 1
+      },
+      {
+        "word": "来年",
+        "mora_count": 4,
+        "accent_type": 4
+      },
+      {
+        "word": "六日",
+        "mora_count": 3,
+        "accent_type": 3
+      },
+      {
+        "word": "服",
+        "mora_count": 2,
+        "accent_type": 2
+      },
+      {
+        "word": "靴",
+        "mora_count": 2,
+        "accent_type": 2
+      },
+      {
+        "word": "池",
+        "mora_count": 2,
+        "accent_type": 2
+      },
+      {
+        "word": "川",
+        "mora_count": 2,
+        "accent_type": 2
+      },
+      {
+        "word": "山",
+        "mora_count": 2,
+        "accent_type": 2
+      },
+      {
+        "word": "猫",
+        "mora_count": 2,
+        "accent_type": 1
+      },
+      {
+        "word": "雨",
+        "mora_count": 2,
+        "accent_type": 1
+      },
+      {
+        "word": "秋",
+        "mora_count": 2,
+        "accent_type": 1
+      },
+      {
+        "word": "春",
+        "mora_count": 2,
+        "accent_type": 1
+      },
+      {
+        "word": "海",
+        "mora_count": 2,
+        "accent_type": 1
+      }
+    ]
+  }
+}

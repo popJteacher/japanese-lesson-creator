@@ -60,6 +60,23 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Phase 5 ④' (2026-05-22): preflight ロジックは scripts/lib/prompt_preflight.py に
+# SSOT 移管。本ファイルは dead code 化予定だが、lesson_01 検証で skill 版との
+# 比較に使う期間中は新 SSOT から import して drift を防ぐ。
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
+from lib.prompt_preflight import (  # noqa: E402
+    preflight,
+    BG_EXACT_CREAM,
+    BG_EXACT_SKYBLUE,
+    NOT_TOKEN,
+    RE_FULLBODY,
+    RE_AREA_PERCENT,
+    RE_PORTRAIT_LENS,
+    RE_FLAG_OR_NAT,
+    RE_STRONG_TOKEN,
+    RE_PLACEHOLDER_REMAIN,
+)
 # v4.0 主経路（nanobanana 固定運用）。
 # Rollback to v3.12: GUIDE_PATH を 'master_prompt_design_guide_v3_12.py' に戻し、
 # scripts/invariants.mjs の promptGuideExpectedHashPrefix を v3.12 の 2137a8e885ae に戻す。
@@ -624,117 +641,266 @@ def render_person(g, entry, kind, sub):
 
 
 # ─────────────────────────────────────────────────────────────
-# v4.0.4 (2026-05-25): vocab_type=building 対応
-# Stage 1 (R1-R26) 結晶の universal rule + per-building 変数 + 5-image
-# reference attachment を guide BUILDING_UNIVERSAL_RULE_V4_0_4 +
-# BUILDING_CUES[word]["v4_0_4_*"] + BUILDING_BRAND_VOICE_REF +
-# BUILDING_ARCHITECTURAL_REF から組み立てる。
-# 出力 JSON entry には styleReferences: [path, ...] (5 枚) を付与する
-# （generate-images-local.mjs / scripts/lib/nanobanana-client.mjs が
-#  multi-image input として nanobanana API に渡す）。
+# Phase 5 ④ Q3 B: 残り 8 vocab_type template + example_sentence の render 関数
+# 設計方針：
+#   - lookup-driven (building / concrete_object / abstract_concept): word →
+#     guide のデータ table 直接参照 → placeholder 置換。table 未掲載なら ABORT
+#     with informative message.
+#   - strategy-driven (action_verb / adjective / demonstrative / variant_grid /
+#     spatial_relation / example_sentence): 完全 deterministic 化には per-word
+#     データ追加表が要る。本 worktree session の責務は配線完成までで、未掲載
+#     word での invocation 時には「どこに何を足せばよいか」を明示して ABORT。
+#   - lesson_01 では person + building のみ exercise される。他 7 template の
+#     dispatch 実行は main session の Q2 B 完了後、--lesson 2 や --catalog で。
 # ─────────────────────────────────────────────────────────────
+
+
+def _require_table_entry(table, word, table_name, hint_path):
+    """guide のデータ table から word に対応する entry を取得。
+    無ければ informative error で abort。
+    """
+    if word not in table:
+        sys.exit(
+            f"ABORT: '{word}' が {table_name} に未掲載。\n"
+            f"  追加先: {hint_path}\n"
+            f"  既存キー（参考）: {list(table.keys())[:5]} ..."
+        )
+    return table[word]
+
+
 def render_building(g, entry):
-    """vocab_type=building の prompt と styleReferences を生成。
-    word が BUILDING_CUES に未登録または v4_0_4_label fields が未定義
-    （= 未 Stage 2 migrate の banks / hospitals 等）は (None, None) を返す。
+    """vocabulary_building template を BUILDING_CUES から組み立てる。"""
+    word = entry["word"]
+    cue = _require_table_entry(
+        g.BUILDING_CUES, word, "BUILDING_CUES",
+        "prompts/master_prompt_design_guide_v4_0.py § PART 4.4 BUILDING_CUES",
+    )
+    template = g.PROMPT_TEMPLATES["vocabulary_building"]
+    return (template
+            .replace("[{BUILDING_TYPE}]", cue["building_type"])
+            .replace("[{BUILDING_DESCRIPTION_AND_SCALE}]", cue["building_scale"])
+            .replace("[{SIGNAGE_TEXT}]", cue["signage_text"])
+            .replace("[{PRIMARY_SCENE_CUE}]", cue["primary_scene_cue"]))
+
+
+def _per_entry_data_required_abort(vocab_type, word, needed_fields, hint):
+    """strategy-driven template が per-word データを要求するが未提供の場合の
+    abort 共通ハンドラ。informative message で次セッションへ申し送る。"""
+    sys.exit(
+        f"ABORT: vocab_type='{vocab_type}' word='{word}' の prompt 生成には\n"
+        f"  per-word データが必要：{needed_fields}\n"
+        f"  追加先: {hint}\n"
+        f"  注：本 render 関数は Phase 5 ④ Q3 B で配線完成のみ。データ表整備は\n"
+        f"  Phase 5 ④ 後または Phase 5 ⑤ 着手後の人間／main session タスク。"
+    )
+
+
+def render_object_concrete(g, entry):
+    """vocabulary_object_concrete を OBJECT_SIGNATURES から組み立てる。
+    DISPLAY_STRATEGY / SIGNAGE_EXCEPTION は per-word 判断のためデフォルト適用。
     """
     word = entry["word"]
-    cue = g.BUILDING_CUES.get(word)
-    if not cue or "v4_0_4_label" not in cue:
-        return None, None
-    template = g.PROMPT_TEMPLATES["vocabulary_building"]
-    refs = cue["v4_0_4_type_relevant_refs"]
-    if len(refs) != 3:
-        raise ValueError(
-            f"BUILDING_CUES[{word}].v4_0_4_type_relevant_refs must have exactly 3 entries; "
-            f"got {len(refs)}"
-        )
-    subs = [
-        ("{BG_EXACT}",                g.BACKGROUND_BY_TYPE["default"]),
-        ("{BUILDING_UNIVERSAL_RULE}", g.BUILDING_UNIVERSAL_RULE_V4_0_4.rstrip()),
-        ("{VOCAB_TYPE_DESC}",         cue["v4_0_4_vocab_type_desc"]),
-        ("{FORM_DESC}",               cue["v4_0_4_form_desc"]),
-        ("{SIGNATURE}",               cue["v4_0_4_signature"]),
-        ("{ACCENT_TARGETS}",          cue["v4_0_4_accent_targets"]),
-        ("{ACCENT}",                  cue["v4_0_4_accent"]),
-        ("{LABEL}",                   cue["v4_0_4_label"]),
-        ("{SIGNBOARD_LOCATION}",      cue["v4_0_4_signboard_location"]),
-        ("{SIGNBOARD_LOC_SHORT}",     cue["v4_0_4_signboard_location_short"]),
-        ("{SURROUNDINGS_BLOCK}",      cue.get("v4_0_4_surroundings_block", "")),
-        ("{FRAMING_EXTRA}",           cue.get("v4_0_4_framing_extra", "")),
-        ("{ACTIVITIES_BLOCK}",        cue["v4_0_4_activities_block"]),
-        ("{LANDSCAPING_BLOCK}",       cue["v4_0_4_landscaping_block"]),
-        ("{REF2_DESC}",               refs[0]["desc"]),
-        ("{REF3_DESC}",               refs[1]["desc"]),
-        ("{REF4_DESC}",               refs[2]["desc"]),
-    ]
-    prompt = template
-    for k, v in subs:
-        prompt = prompt.replace(k, v)
-    # styleReferences 順: image_1 = brand voice, image_2-4 = type-relevant,
-    # image_5 = architectural anchor （A-5 規律）
-    style_references = (
-        [g.BUILDING_BRAND_VOICE_REF]
-        + [r["path"] for r in refs]
-        + [g.BUILDING_ARCHITECTURAL_REF]
+    sig = _require_table_entry(
+        g.OBJECT_SIGNATURES, word, "OBJECT_SIGNATURES",
+        "prompts/master_prompt_design_guide_v4_0.py § PART 4.5 OBJECT_SIGNATURES",
     )
-    return prompt, style_references
+    # OBJECT_SIGNATURES の構造想定：primary_signatures[] / material_hints[] /
+    # avoid[]。template の {OBJECT_DESCRIPTION} に概念説明、
+    # {VISUAL_SIGNATURE} に primary_signatures、{MATERIAL_TEXTURE_HINT} に
+    # material_hints を充てる。display strategy は OBJECT_ALONE デフォルト。
+    sig_lines = sig.get("primary_signatures") or []
+    material_lines = sig.get("material_hints") or []
+    object_desc = sig.get("_en") or word
+    strategy_block = (g.OBJECT_STRATEGIES.get("OBJECT_ALONE", "")
+                      if hasattr(g, "OBJECT_STRATEGIES") else "")
+    template = g.PROMPT_TEMPLATES["vocabulary_object_concrete"]
+    return (template
+            .replace("[TARGET_WORD]", word)
+            .replace("{OBJECT_DESCRIPTION}", object_desc)
+            .replace("{VISUAL_SIGNATURE}", "; ".join(sig_lines) or word)
+            .replace("{DISPLAY_STRATEGY}", "OBJECT_ALONE")
+            .replace("{STRATEGY_BLOCK}", strategy_block)
+            .replace("{MATERIAL_TEXTURE_HINT}", "; ".join(material_lines) or "—")
+            .replace("{SIGNAGE_EXCEPTION_IF_ANY}", "なし"))
+
+
+def render_abstract_concept(g, entry):
+    """abstract_concept を ABSTRACT_METAPHORS から組み立てる。"""
+    word = entry["word"]
+    meta = _require_table_entry(
+        g.ABSTRACT_METAPHORS, word, "ABSTRACT_METAPHORS",
+        "prompts/master_prompt_design_guide_v4_0.py § PART 4.8 ABSTRACT_METAPHORS",
+    )
+    template = g.PROMPT_TEMPLATES["abstract_concept"]
+    return (template
+            .replace("[TARGET_WORD]", word)
+            .replace("{TARGET_WORD_EN}", meta.get("_en") or entry.get("en") or "")
+            .replace("{CONCEPT_DEFINITION}", meta.get("concept_definition", ""))
+            .replace("{VISUAL_METAPHOR}", meta.get("visual_metaphor", ""))
+            .replace("{EMOTIONAL_TONE}", meta.get("emotional_tone", "neutral"))
+            .replace("{COMPOSITION_MOOD}", meta.get("composition_mood", "calm centered"))
+            .replace("{COLOR_TONE_ADJUSTMENT}", meta.get("color_tone_adjustment", "default palette")))
+
+
+def render_action_verb(g, entry):
+    """action_verb template の配線。strategy 選択と CHARACTER/ACTION 記述は
+    per-word データが必要。未掲載なら informative abort。"""
+    word = entry["word"]
+    # 期待される per-word データ：character_description, action_description,
+    # visualization_strategy ∈ {MOTION_ARROW/OUTCOME/BEFORE_AFTER/SEQUENCE_3PANEL/SYMBOLIC_MOTION_LINES}
+    return _per_entry_data_required_abort(
+        "action_verb", word,
+        ["character_description", "action_description", "visualization_strategy"],
+        "guide PART 4.11 ACTION_VERB_STRATEGIES は戦略 block のみ。per-word "
+        "選択と CHARACTER_DESCRIPTION/ACTION_DESCRIPTION は将来 "
+        "ACTION_VERB_PROFILES = {word: {...}} 形式で追加予定。",
+    )
+
+
+def render_adjective(g, entry):
+    """vocabulary_adjective template の配線。ADJECTIVE_STRATEGIES は 3 戦略 block
+    のみ。per-word の category / anchor_objects 等は要追加表。"""
+    word = entry["word"]
+    return _per_entry_data_required_abort(
+        "adjective", word,
+        ["adjective_category", "anchor_objects", "strategy"],
+        "guide PART 4.12 ADJECTIVE_STRATEGIES は戦略 block のみ。per-word "
+        "ADJECTIVE_PROFILES = {word: {...}} 形式の表が将来必要。",
+    )
+
+
+def render_demonstrative_kosoado(g, entry):
+    """demonstrative_kosoado template の配線。DEMONSTRATIVE_MODELS は 3 model block
+    のみ。per-word の SPEAKER/LISTENER/TARGET_OBJECT は要追加表。"""
+    word = entry["word"]
+    return _per_entry_data_required_abort(
+        "demonstrative", word,
+        ["ko_so_a_type", "model_type_name", "speaker_description",
+         "listener_description", "target_object"],
+        "guide PART 4.9 DEMONSTRATIVE_MODELS は model block のみ。per-word "
+        "DEMONSTRATIVE_PROFILES が将来必要。",
+    )
+
+
+def render_variant_grid(g, entry):
+    """vocabulary_variant_grid は比較対象セットの定義が必要。スカラ word への
+    自動 dispatch は通常不要（lesson 設計時に明示的に呼ぶ）。"""
+    word = entry["word"]
+    return _per_entry_data_required_abort(
+        "variant_grid", word,
+        ["grid_size", "grid_arrangement", "tile_descriptions[]", "tile_signatures[]"],
+        "通常 lesson 設計時に explicit に呼ぶ。VARIANT_GRID_SETS = {set_id: {...}} "
+        "形式の表追加が前提。",
+    )
+
+
+def render_spatial_relation(g, entry):
+    """spatial_relation template の配線。7 標準位置語（上下左右前後中）の
+    REFERENCE_OBJECT / TARGET_OBJECT / SPATIAL_POSITION は要追加表。"""
+    word = entry["word"]
+    return _per_entry_data_required_abort(
+        "spatial_relation", word,
+        ["target_word_jp", "target_word_en", "reference_object",
+         "target_object", "spatial_position", "camera_setup"],
+        "SPATIAL_RELATION_PROFILES = {上/下/前/後ろ/右/左/中: {...}} 形式の "
+        "表追加が必要。",
+    )
+
+
+def render_example_sentence(g, example, lesson_no):
+    """example_sentence template の配線。lesson_NN.json の patterns[].examples[]
+    から呼び出される。per-sentence の CHARACTER_DESCRIPTIONS / SCENE_DESCRIPTION
+    /VISUAL_SYMBOL_IF_NEEDED は今 lesson JSON に持たない fields のため、
+    sentence/sentenceEn から最小の prompt を heuristic 構成する scaffold。
+    将来 lesson_NN.json に example.imagePrompt = {characters, scene,
+    visualSymbol, composition} を追加すれば deterministic 化できる。
+    """
+    sentence_jp = example.get("sentence", "")
+    sentence_en = example.get("sentenceEn", "")
+    if not sentence_jp:
+        sys.exit(f"ABORT: example_sentence: sentence が空 (lesson {lesson_no}, "
+                 f"no={example.get('no')})")
+    # 詳細記述が lesson JSON に未付与の場合の heuristic defaults。
+    # v4.0 universal rules（FACIAL_FEATURES / HEAD_BODY_PROPORTION / FOOTWEAR）は
+    # template 本体に v4.1 で inline 済（Q1 A）なので、ここでは character identity の
+    # 最小記述だけ提供すればよい（重複記述を避ける）。
+    img_prompt_meta = example.get("imagePrompt") or {}
+    character_descriptions = img_prompt_meta.get(
+        "characterDescriptions",
+        "Two generic adult Japanese speakers in modern daily casual wear, "
+        "neutral approachable expressions.",
+    )
+    scene_description = img_prompt_meta.get(
+        "sceneDescription",
+        f"A simple eye-level scene that visually depicts the sentence: "
+        f"'{sentence_jp}'. The scene must make the sentence meaning obvious "
+        f"without text.",
+    )
+    visual_symbol = img_prompt_meta.get("visualSymbolIfNeeded", "")
+    composition_notes = img_prompt_meta.get("compositionNotes", "")
+    template = g.PROMPT_TEMPLATES["example_sentence"]
+    return (template
+            .replace("[{SENTENCE_JP}]", sentence_jp)
+            .replace("{SENTENCE_EN}", sentence_en)
+            .replace("{CHARACTER_DESCRIPTIONS}", character_descriptions)
+            .replace("{SCENE_DESCRIPTION}", scene_description)
+            .replace("{VISUAL_SYMBOL_IF_NEEDED}", visual_symbol)
+            .replace("{COMPOSITION_NOTES}", composition_notes))
+
+
+# ─────────────────────────────────────────────────────────────
+# vocab_type → render 関数 dispatch（Q3 B）
+# vocab_type 文字列は data/vocab_types_lesson*.json および将来 main の Q2 B
+# classifier 出力で使われる canonical 値に合わせる。person + building は
+# lesson_01 で確認済、それ以外は main Q2 B 完了後に実 exercise される。
+# ─────────────────────────────────────────────────────────────
+def render_vocab_entry(g, entry):
+    """vocabulary 1 件分の prompt を vocab_type に応じて dispatch。"""
+    vt = entry.get("vocab_type")
+    if vt is None:
+        sys.exit(f"ABORT: vocab_type 未設定: {entry.get('word', '?')} "
+                 f"(imageId={entry.get('imageId', '?')})")
+    word = entry["word"]
+    if vt == "person":
+        kind, sub = classify_person(word)
+        if kind is None:
+            sys.exit(f"ABORT: '{word}' が PERSON_ROLE_LOOKUP / "
+                     f"PERSON_NATIONALITY_HINTS のいずれにも未掲載")
+        return render_person(g, entry, kind, sub)
+    if vt == "building":
+        return render_building(g, entry)
+    if vt == "concrete_object":
+        return render_object_concrete(g, entry)
+    if vt == "abstract_concept":
+        return render_abstract_concept(g, entry)
+    if vt == "action_verb":
+        return render_action_verb(g, entry)
+    if vt == "adjective":
+        return render_adjective(g, entry)
+    if vt == "demonstrative":
+        return render_demonstrative_kosoado(g, entry)
+    if vt == "variant_grid":
+        return render_variant_grid(g, entry)
+    if vt == "spatial_relation":
+        return render_spatial_relation(g, entry)
+    sys.exit(f"ABORT: 未対応 vocab_type='{vt}' (word={word})")
+
+
+def flatten_examples(lesson_doc):
+    """lesson_NN.json の patterns[].examples[] を flatten。"""
+    examples = []
+    for pat in lesson_doc.get("patterns", []) or []:
+        for ex in pat.get("examples", []) or []:
+            if ex.get("imageId"):
+                examples.append(ex)
+    return examples
 
 
 # ─────────────────────────────────────────────────────────────
 # Pre-flight invariants（invariants.mjs C 相当）
+# 定数 / regex / preflight 関数は scripts/lib/prompt_preflight.py に SSOT 移管済。
+# ファイル冒頭の import 文を参照（Phase 5 ④' 2026-05-22）。
 # ─────────────────────────────────────────────────────────────
-BG_EXACT  = "soft cream off-white background (warm off-white, NOT pure stark white)"
-NOT_TOKEN = "NOT pure stark white"
-
-RE_FULLBODY      = re.compile(r"full[-\s]?body|head[-\s]?to[-\s]?toe", re.IGNORECASE)
-RE_AREA_PERCENT  = re.compile(r"fills\s+\d+\s*[-–]?\s*\d*\s*%\s+of\s+the\s+image\s+area", re.IGNORECASE)
-RE_PORTRAIT_LENS = re.compile(r"85\s*mm\s+portrait\s+lens", re.IGNORECASE)
-RE_FLAG_OR_NAT   = re.compile(r"flag|nationality|国旗", re.IGNORECASE)
-RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
-
-PLACEHOLDERS = [
-    # person 用
-    "[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
-    "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
-    "{CULTURAL_STYLING_HINT}", "{APPARENT_FEATURES_HINT}",
-    "{FLAG_PLACEMENT}",  # v3.12 PART 1.7
-    "{NATIONALITY_EXCEPTION_BLOCK}",
-    # v4.0.4 building 用
-    "{BG_EXACT}", "{BUILDING_UNIVERSAL_RULE}",
-    "{VOCAB_TYPE_DESC}", "{FORM_DESC}", "{SIGNATURE}",
-    "{ACCENT}", "{ACCENT_TARGETS}",
-    "{LABEL}", "{SIGNBOARD_LOCATION}", "{SIGNBOARD_LOC_SHORT}",
-    "{SURROUNDINGS_BLOCK}", "{FRAMING_EXTRA}",
-    "{ACTIVITIES_BLOCK}", "{LANDSCAPING_BLOCK}",
-    "{REF2_DESC}", "{REF3_DESC}", "{REF4_DESC}",
-]
-
-
-def preflight(text, vocab_type, word):
-    errs = []
-    if BG_EXACT not in text:
-        errs.append(f"[C4] {word}: background string 不一致（必須: '{BG_EXACT}'）")
-    if NOT_TOKEN not in text:
-        errs.append(f"[C5] {word}: NOT-token 不一致（必須: '{NOT_TOKEN}'）")
-    if vocab_type == "person":
-        if not RE_FULLBODY.search(text):
-            errs.append(f"[C1] {word}: full-body / head-to-toe が無い")
-        if RE_AREA_PERCENT.search(text):
-            errs.append(f"[C1] {word}: 面積指定 'fills NN% of...' が残存")
-        if RE_PORTRAIT_LENS.search(text):
-            errs.append(f"[C1] {word}: '85mm portrait lens' が残存")
-    # v4.0.4: building は person 専用チェックを skip（full-body 等は対象外）
-    # 強表現 (must/never) チェックは flag/nationality 文脈のみ。building は universal rule
-    # 内に "must" / "MUST" 多用しているため通過するが、flag 言及がないため C6 は skip。
-    if RE_FLAG_OR_NAT.search(text):
-        if not RE_STRONG_TOKEN.search(text):
-            errs.append(f"[C6] {word}: flag/nationality 文脈に強表現 must/never が無い")
-    # 空文字以外の placeholder 残存を検出（{SURROUNDINGS_BLOCK} 等は空文字置換 OK）
-    for p in PLACEHOLDERS:
-        if p in text:
-            errs.append(f"[PH] {word}: placeholder {p} 未置換")
-    return errs
 
 
 def guide_hash_lf_normalized(path):
@@ -752,136 +918,171 @@ def file_hash(path):
 
 
 # ─────────────────────────────────────────────────────────────
-# main
+# main（Phase 5 ④ Q3 B 拡張版 — 全 vocab_type + 例文 + --catalog mode）
 # ─────────────────────────────────────────────────────────────
-def main():
-    ap = argparse.ArgumentParser(description="決定論 S列生成（MVP: person のみ）")
-    ap.add_argument("--lesson", type=int, default=1, help="課番号（MVP は 1 のみ対応）")
-    ap.add_argument("--vocab-types", default=None,
-                    help="vocab_types JSON のパス（既定: data/vocab_types_lessonNN.json）")
-    ap.add_argument("--out", default=None,
-                    help="出力パス（既定: data/image_prompts_lessonNN_v3_12.json）")
-    args = ap.parse_args()
-
-    if args.lesson != 1:
-        sys.exit("ABORT: MVP は lesson 1 のみ対応です（--lesson 1）。")
-
-    vocab_types_path = args.vocab_types or os.path.join(
-        ROOT, "data", f"vocab_types_lesson{args.lesson:02d}.json"
-    )
-    if not os.path.exists(vocab_types_path):
-        sys.exit(
-            f"ABORT: vocab_types ファイルが不在: {vocab_types_path}\n"
-            "  人間タスク: gas/pipeline.gs#exportVocabTypesAll() を実行し、Drive 上の "
-            f"vocab_types_lesson{args.lesson:02d}.json を repo に取り込んでください。"
-        )
-
-    with open(vocab_types_path, encoding="utf-8") as f:
-        vt_doc = json.load(f)
-    persons = [v for v in vt_doc.get("vocabulary", []) if v.get("vocab_type") == "person"]
-    if not persons:
-        sys.exit(f"ABORT: vocab_type=person のエントリが {vocab_types_path} に無い")
-    # v4.0.4 (2026-05-25): vocab_type=building も対象。Stage 2 移行済 (BUILDING_CUES に
-    # v4_0_4_label fields ある) のみレンダリング。未移行 (病院 / 銀行 / 駅 / スーパー 等)
-    # は skip して buildings_skipped に記録。
-    buildings = [v for v in vt_doc.get("vocabulary", []) if v.get("vocab_type") == "building"]
-
-    g = load_guide()
-    rendered = []
-    all_errors = []
-    unclassified = []
-    buildings_skipped = []
-
-    for entry in persons:
-        kind, sub = classify_person(entry["word"])
-        if kind is None:
-            unclassified.append(entry["word"])
+def _process_vocab_entries(g, entries, source_label):
+    """vocab entries 群を render_vocab_entry で dispatch し、preflight を回す。"""
+    rendered, all_errors = [], []
+    for entry in entries:
+        if not entry.get("vocab_type"):
+            print(f"  WARN: vocab_type 未設定 skip: {entry.get('word', '?')}",
+                  file=sys.stderr)
             continue
-        prompt = render_person(g, entry, kind, sub)
-        all_errors.extend(preflight(prompt, "person", entry["word"]))
+        prompt = render_vocab_entry(g, entry)
+        all_errors.extend(preflight(prompt, entry["vocab_type"], entry["word"]))
         rendered.append({
-            "imageId":    entry["imageId"],
+            "imageId":    entry.get("imageId") or f"word_{entry['word']}",
             "word":       entry["word"],
-            "reading":    entry["reading"],
-            "en":         entry["en"],
+            "reading":    entry.get("reading", ""),
+            "en":         entry.get("en", ""),
             "vocab_type": entry["vocab_type"],
             "prompt":     prompt,
+            "_source":    source_label,
         })
+    return rendered, all_errors
 
-    for entry in buildings:
-        prompt, style_refs = render_building(g, entry)
-        if prompt is None:
-            buildings_skipped.append(entry["word"])
-            continue
-        all_errors.extend(preflight(prompt, "building", entry["word"]))
+
+def _process_examples(g, lesson_doc, lesson_no):
+    """lesson_NN.json の patterns[].examples[] を flatten し
+    render_example_sentence を回す。"""
+    rendered, all_errors = [], []
+    for ex in flatten_examples(lesson_doc):
+        prompt = render_example_sentence(g, ex, lesson_no)
+        # example_sentence は word 概念がないので imageId を word 代用
+        all_errors.extend(preflight(prompt, "example_sentence", ex["imageId"]))
         rendered.append({
-            "imageId":         entry["imageId"],
-            "word":            entry["word"],
-            "reading":         entry["reading"],
-            "en":              entry["en"],
-            "vocab_type":      entry["vocab_type"],
-            "styleReferences": style_refs,
-            "prompt":          prompt,
+            "imageId":     ex["imageId"],
+            "sentence":    ex.get("sentence", ""),
+            "sentenceEn":  ex.get("sentenceEn", ""),
+            "pattern":     ex.get("pattern", ""),
+            "vocab_type":  "example_sentence",
+            "prompt":      prompt,
         })
+    return rendered, all_errors
 
-    if unclassified:
-        for w in unclassified:
-            print(f"  未分類: {w}（PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS に追加が必要）",
-                  file=sys.stderr)
-        sys.exit(f"ABORT: {len(unclassified)} 件の person が役割/国籍に分類できない。")
 
-    if buildings_skipped:
-        for w in buildings_skipped:
-            print(f"  v4.0.4 未移行 building (skip): {w}（BUILDING_CUES[{w}] に v4_0_4_label fields を追加すれば対象化）",
-                  file=sys.stderr)
+def main():
+    ap = argparse.ArgumentParser(
+        description="Phase 5 ④ 決定論 prompt 生成（全 vocab_type + 例文）",
+    )
+    ap.add_argument("--lesson", type=int, default=None,
+                    help="課番号 (--catalog と排他)")
+    ap.add_argument("--catalog", action="store_true",
+                    help="data/vocab_catalog.json の vocab_type 付き entries を一気生成")
+    ap.add_argument("--vocab-types", default=None,
+                    help="--lesson モードで vocab_types JSON のパス上書き")
+    ap.add_argument("--out", default=None,
+                    help="出力パス（既定: --lesson は data/image_prompts_lessonNN_v4_0.json、"
+                         "--catalog は data/image_prompts_catalog_v4_0.json）")
+    args = ap.parse_args()
+
+    if args.lesson is None and not args.catalog:
+        sys.exit("ABORT: --lesson NN か --catalog のいずれかを指定してください。")
+    if args.lesson is not None and args.catalog:
+        sys.exit("ABORT: --lesson と --catalog は排他です。")
+
+    g = load_guide()
+
+    if args.catalog:
+        # ─── --catalog mode ─────────────────────────────────────────
+        catalog_path = os.path.join(ROOT, "data", "vocab_catalog.json")
+        if not os.path.exists(catalog_path):
+            sys.exit(f"ABORT: {catalog_path} が不在")
+        with open(catalog_path, encoding="utf-8") as f:
+            cat = json.load(f)
+        entries_with_type = [e for e in cat.get("entries", []) if e.get("vocab_type")]
+        entries_without_type = len(cat.get("entries", [])) - len(entries_with_type)
+        print(f"catalog: {len(entries_with_type)} entries with vocab_type "
+              f"({entries_without_type} skipped without vocab_type)")
+        if entries_without_type > 0:
+            print(f"  注：vocab_type 未設定の {entries_without_type} 件は main の Q2 B "
+                  f"（Gemini classify）完了後に埋まる予定")
+        rendered, all_errors = _process_vocab_entries(
+            g, entries_with_type, "catalog",
+        )
+        out_path = args.out or os.path.join(
+            ROOT, "data", "image_prompts_catalog_v4_0.json",
+        )
+        meta_source = "data/vocab_catalog.json"
+    else:
+        # ─── --lesson NN mode ───────────────────────────────────────
+        vocab_types_path = args.vocab_types or os.path.join(
+            ROOT, "data", f"vocab_types_lesson{args.lesson:02d}.json",
+        )
+        if not os.path.exists(vocab_types_path):
+            sys.exit(
+                f"ABORT: vocab_types ファイルが不在: {vocab_types_path}\n"
+                f"  対処：main session 側で classify-and-translate.mjs により "
+                f"lesson_{args.lesson:02d} の vocab_type を生成する必要あり。",
+            )
+        with open(vocab_types_path, encoding="utf-8") as f:
+            vt_doc = json.load(f)
+        vocab_entries = vt_doc.get("vocabulary", [])
+        if not vocab_entries:
+            sys.exit(f"ABORT: {vocab_types_path} に vocabulary entries が無い")
+        rendered_vocab, errs_vocab = _process_vocab_entries(
+            g, vocab_entries, f"vocab_types_lesson{args.lesson:02d}",
+        )
+
+        # 例文：lesson_NN.json から patterns[].examples[] を読む
+        lesson_path = os.path.join(ROOT, "data", f"lesson_{args.lesson:02d}.json")
+        rendered_examples, errs_examples = [], []
+        if os.path.exists(lesson_path):
+            with open(lesson_path, encoding="utf-8") as f:
+                lesson_doc = json.load(f)
+            try:
+                rendered_examples, errs_examples = _process_examples(
+                    g, lesson_doc, args.lesson,
+                )
+            except SystemExit as e:
+                # render_example_sentence は ABORT exit を投げる — そのまま伝播
+                raise
+        else:
+            print(f"  notice: {lesson_path} 不在のため例文 prompt は生成しない")
+
+        rendered = rendered_vocab + rendered_examples
+        all_errors = errs_vocab + errs_examples
+        out_path = args.out or os.path.join(
+            ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v4_0.json",
+        )
+        meta_source = os.path.relpath(vocab_types_path, ROOT).replace("\\", "/")
 
     if all_errors:
-        print(f"=== invariant violations: {len(all_errors)} ===", file=sys.stderr)
+        print(f"\n=== invariant violations: {len(all_errors)} ===", file=sys.stderr)
         for e in all_errors:
             print(f"  {e}", file=sys.stderr)
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
-    out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v4_0_4.json"
-    )
-    person_count = sum(1 for r in rendered if r["vocab_type"] == "person")
-    building_count = sum(1 for r in rendered if r["vocab_type"] == "building")
+    covered = sorted({e["vocab_type"] for e in rendered})
     out = {
         "_meta": {
-            "lessonNo": args.lesson,
-            "guideVersion": "v4.0.4",
-            "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
-            "generatedAt": datetime.date.today().isoformat(),
-            "generator": "scripts/build_prompts.py",
-            "scriptHash": file_hash(os.path.abspath(__file__)),
-            "vocabTypesSource": os.path.relpath(vocab_types_path, ROOT).replace("\\", "/"),
-            "vocabTypesMeta": vt_doc.get("_meta", {}),
-            "coveredVocabTypes": ["person", "building"],
-            "renderedCounts": {"person": person_count, "building": building_count},
-            "buildingsSkipped": buildings_skipped,
-            "notes": ("v4.0.4 (2026-05-25): vocab_type=person + vocab_type=building "
-                      "(Stage 2 取り込み済 4 建物 = 学校/大学/デパート/会社) 対応。"
-                      "BUILDING_CUES に v4_0_4_label fields がある建物のみレンダリング。"
-                      "未移行 (病院/銀行/駅/スーパー 等) は buildingsSkipped に記録。"
-                      "building entry は styleReferences: [path, ...] (5 枚 = brand voice "
-                      "+ 3 type-relevant person + architectural anchor 病院) を含み、"
-                      "scripts/generate-images-local.mjs が multi-image input として nanobanana に渡す。"
-                      " --- person side: v4.0 (2026-05-22) major-version pivot 維持。"
-                      "全国共通 modern daily casual wear + 国旗両手持ち（hand-held flag "
-                      "in both hands in front of the chest）。PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE "
-                      "退役、PART 1.7 FLAG_PLACEMENT_RULE 簡素化、伝統 silhouette 禁止は "
-                      "universal NO_TRADITIONAL_SILHOUETTE_RULE で集約。phenotype は PART 1.5 "
-                      "PHENOTYPE_SPECIFICATION_RULE 経由で word hash deterministic 解決。"),
+            "mode":                 "catalog" if args.catalog else f"lesson{args.lesson:02d}",
+            "guideVersion":         "v4.0",
+            "guideHashNormalized":  guide_hash_lf_normalized(GUIDE_PATH),
+            "generatedAt":          datetime.date.today().isoformat(),
+            "generator":            "scripts/build_prompts.py",
+            "scriptHash":           file_hash(os.path.abspath(__file__)),
+            "source":               meta_source,
+            "coveredVocabTypes":    covered,
+            "totalEntries":         len(rendered),
+            "notes": (
+                "Phase 5 ④ Q3 B 拡張版（2026-05-22）：vocabulary 9 vocab_type + "
+                "例文 (example_sentence) の dispatch + render 関数 完成。person + "
+                "building は完全実装（BUILDING_CUES driven）、abstract_concept / "
+                "concrete_object は data table 引きで実装、action_verb / adjective / "
+                "demonstrative / variant_grid / spatial_relation / example_sentence "
+                "は配線完成・per-word データ未整備 word で invocation 時は informative "
+                "abort。catalog mode は main Q2 B の vocab_type 付与後に有効化される。"
+            ),
         },
         "vocabulary": rendered,
     }
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
-    print(f"OK: {len(rendered)} entries → {out_path}")
-    print(f"  person:              {person_count} 件")
-    print(f"  building:            {building_count} 件 (skipped: {len(buildings_skipped)} = {buildings_skipped})")
+    print(f"\nOK: {len(rendered)} entries → {out_path}")
     print(f"  guideHashNormalized: {out['_meta']['guideHashNormalized']}")
-    print(f"  vocabTypesSource:    {out['_meta']['vocabTypesSource']}")
+    print(f"  source:              {meta_source}")
+    print(f"  coveredVocabTypes:   {covered}")
     print(f"  Pre-flight invariants: PASS（{len(rendered)} 件全て）")
 
 

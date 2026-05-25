@@ -5,162 +5,222 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-25（worktree image-prompt-plan で **v4.0.4 building Stage 2 後 cleanup 完了**。
-smoke entry 22 件 + smoke PNG 22 枚削除 + `_smoke_v4_0_4_building.json` archive 化。
-残 registry entry 491 / B hash `078fd0bd9ffe` 不変 / validate PASS。
-⚠ **ff-merge 不可能を発見** — main が merge-base から 23 commit 先行 (Phase α1-α4 音声 QC + accent + Phase 5 ④/⑤)。
-worktree は 6 commit 先行。両方が独立に進化 → 3-way merge or rebase が必要。
-user 「main 側と一度相談」判断で merge は保留。次セッションは main 側で状態整理してから合流戦略を立てる）
+**最終更新：** 2026-05-25 延長 fix-up + worktree D 案取り込み（**Phase α5 fix-up
++ worktree phase4-prompt-plan v4.0.4 building の成果物のみ取り込み完了** 🆕：
+audio 5 件確定 + PNG 6 件 + registry 整合化。code 部分 (build_prompts.py /
+guide v4.0.py 改修) は skill pivot で obsolete のため drop。**次は Phase β1
+(宿題正解判定) 着手 ／ 並行で worktree session が design insight を
+PART 1-6 .md へ手動転記**）
 
 ---
 
 ## 現在地
 
-- **Phase 0／1／2／3／4：完了。** ✅
-- **Phase 5 ①／②／③：完了** ✅（catalog + import-lesson 配線済）
-- **v3.12 取り込み：完了** ✅（invariants B hash = `2137a8e885ae`）
-- **v4.0 取り込み：完了** ✅（旧 invariants B hash = `5338c98aab5d`・lesson_01 person 12 件再生成済）
-- **v4.0.4 building 改修 Stage 1 (smoke R1-R26)：完了** ✅
-  - smoke 100 件 / $3.99 使用済
-  - 採用 4 件確定：学校 R25 / 大学 R26 / デパート R22 / 会社 R22
-  - 本番化済（cp + production registry entry 4 件 update）
-- **v4.0.4 building 改修 Stage 2 (guide 本体取り込み)：完了** ✅
-  - 新 invariants B hash = `078fd0bd9ffe`
-  - `prompts/master_prompt_design_guide_v4_0.py`:
-    - `BUILDING_BRAND_VOICE_REF` + `BUILDING_ARCHITECTURAL_REF` + `BUILDING_UNIVERSAL_RULE_V4_0_4` (A-1〜A-11) 新規
-    - `BUILDING_CUES` 4 採用 entry に v4_0_4_* fields 追加（後方互換のため旧 fields 残置）
-    - `PROMPT_TEMPLATES["vocabulary_building"]` 全面書き直し（旧 pale sky-blue → 新 universal rule + per-building + 5-image ref）
-    - `BACKGROUND_BY_TYPE["building"]` 撤去
-  - `scripts/invariants.mjs`: C4/C5 の building 分岐撤去（全 vocab_type で default cream 統一）
-  - `scripts/build_prompts.py`: `render_building()` 新規 / `main()` で buildings 反復 / preflight に building branch / PLACEHOLDERS 17 個追加
-- **v4.0.4 building Stage 2 後 cleanup：完了** ✅ 🆕
-  - `master_image_registry.json`: `_smoke_only: true` entry 22 件削除（R12-R26 検証 + 採用源 smoke r25/r26/r22）
-  - `data/images/`: 対応 smoke PNG 22 枚削除
-  - `data/_smoke_v4_0_4_building.json` → `archive/data/` に退避
-  - 採用 4 件 production entry (word_学校 / word_大学 / word_デパート / word_会社) は維持
-  - validate PASS（B hash `078fd0bd9ffe` 不変 / 残 registry entry 491 / 音声 55/55 PASS 3 WARN）
-- **Phase 5 ④：v4.0 完了済だが v4.0.4 取り込み後に着手推奨** ← Stage 2+cleanup 完了で着手可
-- **Phase 5 ⑤／⑥：未着手** — Phase 5 ④ 完了後
-- **Phase 6（仮）：Flux + 自作 LoRA 切替検討** — lesson 1-3 完了 + 50-100 枚 confirmed カード蓄積後に着手判断
-- **Phase 4 後 backlog**：v3.12 修正候補 1-6 は v4.0 完了で retire 済。残り 436 件本生成 /
-  画像 QC 仕様 / scene-rich テンプレ A2 設計 等は残置
-- **Phase 3 後 backlog**：着手保留（音声自然さチェック・Gemini 2.5 audio path）
+- **Phase 0 〜 5 ⑤ / α1 / α2 / α3 / α4 / α5 / α5 後半 / α5 延長 完了** ✅
 
-生存中の GAS 自動 trigger：**0 件**（Phase 4 完了時点・人間検証済 2026-05-21）。
-残存 GAS は手動実行用 `seedLesson01` / `extractFromGoiList` / `importFromLessonJson`
-の 3 系統のみ（Phase 5 ⑥ で退役予定）。
+### α5 延長 fix-up (2026-05-25 後半) 🆕
 
----
+user 試聴で 5 件 NG 判定 → catalog 修正 + regen → 全 OK 確定：
 
-## active（main 即時）：**なし**
+| word | 修正前 | 修正後 (yomigana SSML) | 備考 |
+|---|---|---|---|
+| する | consensus `^す!る` 頭高 | override `^する` 平板 | accent 核なしだが user OK |
+| はい | consensus `^はい` 平板 | override `^は!い` 頭高 | NHK 1 標準 |
+| 何分 | pickCatalogEntry が なにぶん entry を誤選択 | なんふん override `^な!んぷん` | catalog 同表記2読み問題 |
+| 寝る | tts_workaround.usePlainKana (Google default) | override `^ねる!` 尾高 | **5/25 朝に確定したが延長 regen で plain に戻された再発バグ** |
+| 分 | pickCatalogEntry が ぶん entry を誤選択 | ふん override `^ふ!ん` | catalog 同表記2読み問題 |
 
-main 即時 active タスクはない。次の active 化は **worktree が ff-merge してくる** とき。
+#### 同表記2読み問題の構造的根本原因
+`pickCatalogEntry` は `word` 完全一致 → accent 付き entry → accent_source !== 'unknown' を優先で選択。
+N5 教材ターゲットの reading (なんふん / ふん) を強制選択するため、不要 entry (なにぶん idx=4856 / ぶん idx=15406) の accent を全 clear して候補から除外する手当を実施。
+**恒久対策（β 以降）**: pickCatalogEntry を lesson_*.json 参照経由の reading 確定に切り替えると安全。
+
+### Phase α5 延長 本体（前回まで）
+
+- `scripts/scrape-ojad.py` — OJAD scraper (0.6s sleep)
+- `scripts/lib/{yomigana_normalize,nhk_lookup,ojad_lookup}.py` — 共通 lib
+- `scripts/build-accent-consensus.py` — 3 ソース合議エンジン
+- OJAD scrape: 416 word 中 389 ok / 22 not_found
+- Consensus apply: 57 entries に accent_consensus_override 付与
+- audio 一括 regen: 416 件 (--force, Neural2 + yomigana SSML, naturalness inline)
+- fix-up: 5 件再修正 (上記)
+
+#### precedence (audio 生成時・確定)
+`accent_override (manual)` > `accent_consensus_override` > `accent_yomigana (UniDic raw)` > plain
+- generate-audio-local.mjs / regen-drive-download.mjs 両方で honor
 
 ---
 
-## 次セッション最優先：main↔worktree 合流戦略の決定（user 相談待ち）
+### 次セッション着手点：**Phase β1 (宿題正解判定)**
 
-### 状況（2026-05-25 検出）
+audio 確定済。β1 に着手可。
 
-- **merge-base**: `1a42cd4 feat(phase4): v4.0 major-version pivot`
-- **main 先行 23 commit** (新しい順):
-  - `b4340dc feat(phase-α4): Drive 291 件のローカル化 (WAV→ffmpeg loudnorm→MP3)`
-  - `f5bdf75 feat(phase-α3-後半): integrity gate + accent_override 機構 + 175 件再生成`
-  - `d476293 feat(phase-α3-前半): UniDic+naist-jdic ハイブリッド抽出 + 17508 件 yomigana`
-  - `1096953 discover(phase-α2): 日本語アクセント指定は IPA でなく yomigana 記法のみ`
-  - `6178dc7 docs(phase-α3): NEXT_ACTIONS を A 方針 (UniDic + LLM cross-check + override) に書き換え`
-  - `72238f5 feat(phase-α2): QC を loudnorm のみに簡素化 + 120 件本走`
-  - `4de9c5a feat(phase-α1): 音声自然さ QC 実装 + 55 件 smoke 完了`
-  - `c152a19 feat(phase5-⑤後半): import-lesson examples 対応 + 再生成 pipeline + マニュアル 2 本`
-  - `5b79a84 docs: SKILLS_MANUAL.md 新規追加`
-  - `4f0f244 feat(phase5-⑤): /export-skill-prompts skill + lesson_02 例文 5 件 smoke`
-  - ... 他 13 件 (phase5-④/⑤ + skill 系統)
-- **worktree 先行 6 commit**: f1a9236 / 950dcfd / c9f70e0 / ef3f228 / ed83027 / 4fbb148
-- **main 側に未 commit 変更**: `M data/image_prompts_skill.json` + 多数の untracked (vocab_大学.png / vocab_病院.jpg / nhk_counter_accent.json / scripts/check-accent-nhk.py / scripts/test-tts-accent-rendering.mjs / tmp/ 配下)
+### スナップショット（2026-05-25 fix-up + D 案取り込み後・コマンドで再導出）
 
-### 予想される conflict 領域
-
-- `scripts/invariants.mjs`（worktree が B hash 078fd0bd9ffe + C4/C5 building 分岐撤去 ↔ main が Phase 5 ④' で B' 系統追加？）
-- `data/master_image_registry.json`（worktree が大幅編集 / main 側でも vocab_大学/vocab_病院 追加されている → registry も触っている可能性）
-- `NEXT_ACTIONS.md`（main 専属違反: worktree が編集 / WORKFLOW.md の conflict policy = main 側採用）
-- `data/lesson_*.json`（Phase 5 ⑤ で例文追加 / worktree は触っていない＝conflict なしのはず）
-- main 側 untracked PNG（`vocab_大学.png` / `vocab_病院.jpg`）と worktree 削除済 smoke PNG の関係要確認
-
-### 選択肢
-
-#### (α) worktree を main に rebase 後 ff-merge
-- worktree 側で `git rebase main` → conflict 解決 → 線形履歴を保つ
-- 6 commit を書き換えるため commit hash 変わる
-
-#### (β) main で 3-way merge commit
-- main 側で `git merge phase4-prompt-plan` → conflict 解決 → merge commit
-- worktree の commit hash を保つ / 履歴は分岐＋合流
-
-#### (γ) main 側で状態整理してから合流
-- まず main の未 commit 変更 (image_prompts_skill / accent 系) を commit or stash
-- main 側 NEXT_ACTIONS の現状把握
-- 改めて (α) or (β) を選ぶ
-
-**user 判断: (γ)「main 側と一度相談」**。次セッション main 側で状態整理 → 合流戦略確定。
-
-### 並行 backlog（merge 後）
-
-- (B) 新 lesson の building 同型展開（lesson_02 building の v4_0_4_* fields 追加）
-  - `BUILDING_CUES["病院"]` / `["銀行"]` / `["駅"]` / `["スーパー"]` に v4_0_4_* fields 追加
-  - build_prompts.py --lesson 2 で検証 → user 目視 OK で本番化（実機 ~$0.04 × N 件）
+```
+image_registry: pending 439 / generated 40 / approved 5 / outdated 6 / (none) 1
+                (worktree D 案で rejected 27 件を消化: 22→generated + 5→approved)
+image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
+audio_registry:  tts-local-regen 416 / (none) 50 (= 466 total)
+                 word: 416/466 (5 件 fix-up 後・全 user OK)
+                 sentence: 50/466 は 5/24 のまま (今回触らず)
+vocab_catalog:  17508 entries (schemaVersion 1.2)
+                accent_yomigana 17007 / accent_override 22 / accent_consensus_override 53
+                accent unknown 502 (うち 何分(なにぶん)・分(ぶん) 2 件を新たに unknown 化)
+                tts_workaround 0 (寝る usePlainKana 解除)
+ojad cache:     416 entries (389 ok / 22 not_found)
+data/images:    +6 PNG (vocab_大学.png / vocab_病院.jpg / word_{デパート,会社,大学,学校}.png)
+                worktree phase4-prompt-plan v4.0.4 building Stage 1 採用版
+```
 
 ---
 
-## ブロッカー
+## active
 
-- Phase 5 ④ は v4.0 完了済だが、v4.0.4 building Stage 2+cleanup 後（now done）に着手可
-- Phase 5 ⑤ は ④ 完了に blocked
-- Phase 5 ⑥ は ⑤ 完了に blocked
-- Phase 6 LoRA 切替は lesson 1-3 完了 + spike test PASS が前提
+### β1 仕様（consensus 完了後）
+- **採点タイミング**：即時（設問ごとに判定 + ピンポンマーク + 音声フィードバック）
+- **不正解時**：「もう一度」ボタンで何度でも retry
+- **正解参照**：どのタイミングでも「正解を表示」ボタンで開ける
+- **スコア**：表示しない（提出のみ・テストっぽさを避ける）
+
+### 並行待機（β1 後に着手）
+
+- **例文 audio の再検討**：AivisSpeech 試用 or 商用 (Azure/ElevenLabs) 検証
+  - 50 sentence audio は 5/24 のまま（per-word phoneme は 富士山 で破綻・
+    per-mora prosody はチョッピー化・pyopenjtalk は HTS 90 年代品質）
+- **ボールペン override** の NHK 新辞典 2016 PDF 検証
+  (今日 consensus が `^ぼーるぺん` 平板を提案、manual は `^ぼーる!ぺん` 中高 4 → 要確認)
+- **同表記2読み恒久対策**: pickCatalogEntry を lesson_*.json reading 確定に切替
+  (今回 fix-up は手動で不要 entry の accent を clear したが、本筋ではない)
+- **次の worktree session の宿題**: `phase4-prompt-plan` worktree で
+  (a) `git merge main` (or rebase) で skill pivot を取り込む (conflict は全 main 採用、
+  worktree の build_prompts.py / guide v4.0.py 改修は破棄)、
+  (b) v4.0.4 design insight (5-image reference attach / building layout determinism /
+  cyclist pose 6 軸明示 等) を `prompts/guide/part1-6.md` に手動転記、
+  (c) main に ff-merge。
+  worktree branch は **削除しない**（design insight 参照源）。
+  詳細 memory: `project_worktree_v4_0_4_obsolete_under_skill_pivot.md`
+
+### 触らない既知制約
+- LUFS ERROR 28 件（短尺 audio × loudnorm R128 統合 400ms 窓の構造問題）
 
 ---
 
-## 当日 cap / wip 状態（次セッション開始時の注意）
+## スケジュール（α → β → γ → δ → ε）
 
-- **当日 cap 3/62 使用済**（R25 学校 + R25 大学 + R26 大学 = 3 件 $0.1161）
-- **wip 状態**: なし（Stage 2 commit = `ef3f228` / cleanup commit = `ed83027`）
+```
+Phase α  Audio 基盤完成  ✅ 全完了
+  α1 ✅ 音声自然さ QC 実装（Gemini 2.5 Flash）
+  α2 ✅ QC 簡素化 + naturalness inline + 120 件本走
+  α3 ✅ accent pipeline + integrity gate + override 機構 + 175 件再生成
+  α4 ✅ Drive 291 件のローカル化 (B) — WAV→MP3 + naturalness inline
+  α5 ✅ word audio 416 件 NHK 標準統一 + NHK CSV 突合機構
+        後半 ✅ 12 件 NHK/OJAD override fix + tts_workaround 機構
+        延長 ✅ OJAD scraper + Consensus engine + 57 件 consensus override 🆕
+
+Phase β  宿題完成（1 セッション）
+  β1     正解判定 (D)・仕様確定済（user 試聴 OK 出たら着手）
+
+Phase γ  スライド完成（1-2 セッション）
+  γ1     音声再生（homework .audio-btn 機構を移植）
+  γ2     デザイン微修正（session_001 起動 → 目視 → その場で拾う）
+
+Phase δ  アクティビティ完成（3-5 セッション）
+  δ1     画像組み込み 6 ブロック (E)
+  δ2     applicability メタデータ 57 件 (H Stage 2)  ← user 教育判断・最重
+  δ3     recommender.js + form UI 統合 (H Stage 3)
+
+Phase ε  統合テスト・リリース判断（1 セッション）
+  ε1     end-to-end 動作確認
+  ε2     docs 整理 + 例文 audio 再検討
+```
+
+**総推定**：6-9 セッション。worktree のガイド修正 + PNG 生成パイプは並行進行。
+
+---
+
+## 確定仕様
+
+### β1 宿題正解判定 (D)
+- 採点タイミング：即時（設問ごと判定 + ピンポンマーク + 音声フィードバック）
+- 不正解時：「もう一度」で何度でも retry
+- 正解参照：「正解を表示」ボタンでいつでも開ける
+- スコア：表示しない
+
+### γ2 スライドデザイン微修正 (F)
+- 着手時に session_001 を生成 → ブラウザで目視 → user とその場で修正点を拾う
+- 仕入れ方式：walkthrough（事前リスト化しない）
+
+### δ2 applicability スキーマ（H Stage 2）
+既存 `act_online_roulette.applicability` をベースに 57 件付与：
+```json
+{
+  "patterns": "any" | ["p1", ...],
+  "jlptLevels": ["N5", "N4", "N3", "N2", "N1"] subset,
+  "fadingStages": ["controlled", "guided", "free"] subset,
+  "duration": { "min": N, "max": N },
+  "supportedLessons": [lesson_no],
+  "studentLevel": ["beginner", "intermediate", "advanced"] subset
+}
+```
+
+### accent precedence (Phase α5 延長確定)
+`accent_override (manual)` > `accent_consensus_override` > `accent_yomigana (UniDic raw)` > plain text fallback
+
+---
+
+## ブロッカー / 並行
+
+- β/γ/δ/ε：blocker なし
+- worktree `phase4-prompt-plan`：guide 修正中（並行・干渉なし）
+  - main 側で 23 commits 進化 (Phase 5 ④/⑤ + α1-α5 延長)、worktree 側で 6 commits
+    → ff-merge 不可能、3-way merge or rebase 必要 (要別セッション)
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate                   # invariants A=v7.5 / B=078fd0bd9ffe(v4.0.4) / C 7 files / D=55/55（3 WARN）PASS
-npm run missing-assets             # image 437 / audio 108
-npm run check-sa                   # Sheets API 疎通
-npm run check-tts-sa               # Cloud TTS API 疎通
-npm run check-ffmpeg               # ffmpeg / ffprobe / filter / encoder 疎通
-npm run check-imagen-key           # AI Studio ListModels（Imagen 4 系）
-npm run check-nanobanana-key       # AI Studio ListModels（Nano Banana）
-npm run sync-registries [-- --dry-run | --verbose | --only image|audio]
-npm run backfill-registries [-- --dry-run | --verbose | --only image|audio]
-npm run generate-audio [-- --dry-run | --limit N | --only word|sentence | --max-chars N | --force | --no-qc]
-npm run generate-images -- --prompts <path> [--print-prompts | --sync-only | --dry-run]
-                                  [--backend nanobanana|imagen4]  # 既定 nanobanana
-                                  [--limit N] [--max-images N] [--force]
-                                  [--out <md>]
-                                  # prompt JSON 内 styleReferences: [...] で参照画像添付 (v4.0.4 R11)
-                                  # ⚠ FOREGROUND 推奨（2026-05-25 background run で registry + usage NULL 破損例あり）
-npm run validate-audio
-node scripts/_tts-smoke.mjs
-node scripts/_imagen-smoke.mjs        # 実機 1 枚＝$0.04 (Imagen 4)
-node scripts/_nanobanana-smoke.mjs    # 実機 1 枚＝~$0.0387 (Nano Banana)
-node scripts/diff-registries.mjs <a.json> <b.json>
-npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
-node scripts/build-catalog.mjs [--dry-run | --verbose]
-npm run import-lesson -- --lesson NN [--dry-run | --verbose]
-python scripts/build_prompts.py --lesson 1       # v4.0.4: person 12 + building 3 (学校/大学/デパート) → image_prompts_lesson01_v4_0_4.json
-                                                  # building 出力 entry には styleReferences: [...] (5 枚) 自動付与
-                                                  # 未移行 building (病院/銀行/駅/スーパー) は skip + stderr warn
+# 検証
+npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D / D' 各 PASS
+
+# Audio 再生成
+node scripts/regen-drive-download.mjs --accent-changed     # consensus 持つ entry のみ
+node scripts/regen-drive-download.mjs --force              # 全 word_* 強制 regen
+node scripts/regen-drive-download.mjs --source drive-download  # 旧 GAS 由来のみ
+node scripts/regen-drive-download.mjs --not-source tts-local-regen  # 今日 regen していない全件
+npm run generate-audio                                      # 新規 Sheet 追加分のみ
+
+# Accent consensus (UniDic + NHK + OJAD)
+python scripts/scrape-ojad.py --audio-only                  # OJAD scrape (~6 min)
+python scripts/scrape-ojad.py --only WORD,WORD              # 特定 word 追加 scrape
+python scripts/build-accent-consensus.py --dry-run --audio-only  # report のみ
+python scripts/build-accent-consensus.py --apply --audio-only    # catalog 更新
+
+# NHK 突合 (mismatch 検出)
+python scripts/check-accent-nhk.py --audio-only             # 既 audio entry のみ
+python scripts/check-accent-nhk.py --only WORD,WORD         # 特定 word のみ
+
+# 自然さ QC（個別）
+node scripts/check-audio-naturalness.mjs --force --only ID1,ID2
+
+# OpenJTalk accent 抽出（再構築が必要なときだけ）
+python scripts/extract-accent-catalog.py        # 全 17508 件再抽出 + integrity gate
+
+# 画像
+ls tmp/skill_prompts/
+npm run generate-images -- --prompts data/image_prompts_skill.json --sync-only
 ```
 
-参考（再実行不要）：
-- v4.0.4 building Stage 1+2+cleanup 経緯：worktree memory `project_v4_0_4_building_stage1.md`
-  / 学び `feedback_nanobanana_prompt_design.md` 学び 1-13 全文
+---
 
-人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。
+## 関連ドキュメント
+
+- [docs/MANUAL_image_generation.md](docs/MANUAL_image_generation.md) — 手動画像生成の段取り（5 段階）
+- [docs/MANUAL_word_example_state.md](docs/MANUAL_word_example_state.md) — どこに何があるか / status の見方
+- [docs/REFERENCE.md](docs/REFERENCE.md) — 命名規則・スキーマ詳細（不変仕様）
+- [docs/WORKFLOW.md](docs/WORKFLOW.md) — main / worktree の使い分け
+- [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md) — Phase 0〜5 全体ロードマップ
+- [docs/PHASE_BACKLOG.md](docs/PHASE_BACKLOG.md) — 退避中項目
+- [docs/design_ojad_nhk_consensus.md](docs/design_ojad_nhk_consensus.md) — α5 延長 consensus 設計 (実装済)
+- [design_brief.md](design_brief.md) — ツール設計書

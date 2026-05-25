@@ -324,19 +324,150 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   に切替。**例文配線は ⑤ で行う**（④ worktree 作業を待たずに main 側を進める分離）。
   完了＝`npm run import-lesson -- --lesson 01` が `seedLesson01` 同等動作で完走。
 
-- **④ ＜プラン強依存・worktree 専属・v4.0 完了が prerequisite＞** 例文 master
-  prompt template 新設 + build_prompts.py 拡張。**v4.0 完了 → main ff-merge
-  後に着手**（v3.13 → v4.0 pivot で「並行可能」条件は変化・2026-05-22）。
-  `master_prompt_design_guide_v4_N.py` に `vocabulary_example_sentence`
-  template 新設（STYLE_BIBLE / 不変条件を vocabulary_person から継承）。
-  `build_prompts.py` を catalog 駆動 + 全 vocab_type（person /
-  concrete_object / building / action_verb / adjective / etc.）+ 例文に
-  スコープ拡張。**v3.12 person 品質修正 1-6 は v4.0 で全国 modern wear に
-  置換されるため退避項目自体が消える見込み**。
-  完了＝`python scripts/build_prompts.py --catalog` で vocab 全タイプ + 例文の
-  prompt JSON 出力・`invariants[C]` PASS。
+- **④ ＜並行 2 セッション・2026-05-22 設計確定＞** v4.0 完了済 →
+  example-prompts worktree + 別 fresh main session の **並行スコープ**で進める。
+  worktree report で 9 templates 未配線 / `vocab_catalog.json` の
+  vocab_type 未付与 / `vocab_types_lesson02.json` 不在 / lesson_02 例文 28 件
+  （NEXT_ACTIONS の「22 件」は誤記）が判明し、当初計画を 3 軸（Template scope
+  / vocab_type fill / Builder scope）で再設計。
 
-- **⑤** 例文配線 + smoke 生成。**main 専属・プラン依存（③ + ④ 完了後）**。
+  **Q1 確定（A: v4.0 規律 inline 追加）：** v4.0 ガイドに既存の `example_sentence`
+  template に PART 1.8 FACIAL_FEATURES / PART 1.10 HEAD_BODY_PROPORTION /
+  FOOTWEAR 等の v4.0 universal rules を inline 追加して v4.0 標準化。
+  「新設」は文言誤りで実態は **v4.0 規律適用**。
+
+  **Q2 確定（A+B 並行）：** lesson 参照済 catalog 転写（A・決定論・worktree 担当）
+  + Gemini 2.5 Flash で残り 17,473 件分類（B・main session 担当）。コスト
+  ~$0.40-1.00。`vocab_types_lesson02.json` 不在のため、B の smoke 100 件は
+  **lesson_02 18 件 + N5/N4 高頻度 82 件**で構成して lesson_02 vocab_type も
+  smoke 段階で確定する設計。
+
+  **Q3 確定（B: 例文 + 全 vocab_type 一気拡張）：** `build_prompts.py` を
+  catalog 駆動 + 全 vocab_type（person / building / concrete_object /
+  action_verb / adjective / abstract_concept / variant_grid / spatial_relation
+  / demonstrative_kosoado）+ 例文 にスコープ拡張。9 templates + 例文を配線。
+
+  **worktree (example-prompts) スコープ：**
+  - Q1 A: `example_sentence` template v4.0 universal rules inline
+  - Q3 B: `scripts/build_prompts.py` の dispatch + render 関数を 9 種類 + 例文に拡張
+  - Q2 A 一部: `data/vocab_types_lesson01.json` の 17 件のみ catalog 転写
+    （新規 `scripts/transcribe-lesson-vocab-types.mjs` 推奨）
+  - `scripts/invariants.mjs` B hash 更新（v4.0 例文 inline 反映後）
+  - 完了条件：`python scripts/build_prompts.py --lesson 1` で lesson_01 全 17 件
+    （person 12 + building 5）の prompt JSON 出力・`invariants[C]` PASS
+
+  **main 別セッションスコープ（fresh start）：**
+  - Q2 B: `scripts/classify-and-translate.mjs` 拡張で Gemini 2.5 Flash classifier
+    実装（`--classify` モード追加）
+  - Smoke 100 件 = lesson_02 18 件 + N5/N4 高頻度 82 件
+  - user 品質レビュー → 本番 17,473 件分類
+  - `data/vocab_catalog.json` に vocab_type 書き戻し
+  - WARN（confidence 低）件数を `data/_meta/vocab_type_warnings.json` に
+  - 完了条件：catalog 全 17,508 件に vocab_type 付与・`python scripts/build_prompts.py
+    --lesson 2` で lesson_02 全件（vocab + 例文 28 件）prompt JSON 出力可能になる
+
+  **Phase 5 ④ 全体完了条件：** A + B 両方 ff-merge 後、`--lesson 1` / `--lesson 2`
+  両方で prompt JSON 出力 + `npm run validate` PASS。
+
+  注：v3.12 person 品質修正 1-6 は v4.0 で全国 modern wear に置換されるため
+  退避項目自体が消える（PHASE_BACKLOG retire 済）。
+
+- **④' ＜2026-05-22 アーキテクチャ pivot：Claude Code スキル方式＞**
+
+  Phase 5 ④ worktree A 進行中の user との対話で、build_prompts.py 決定論方式が
+  本来の設計意図と乖離していることが判明し、Claude Code スキル方式へ pivot。
+
+  **pivot 理由：**
+  - 当初設計：ガイドの普遍ルールに従って AI（チャット越し Claude）が prompt 書く →
+    GAS 時代の実運用はこの形だった（`importImagePrompts()` で Claude 生成 JSON を
+    S 列に投入する流れ）
+  - v3.x → v4.0 ローカル化過程で `build_prompts.py` が「決定論 S列生成」と
+    自己定義されてしまい、Python が手書き辞書を引いて穴埋めする形に変質
+  - lesson_01 では辞書が整備されているため 17 件は動くが、Goi_List 17,508 件への
+    自動展開には原理的に到達不可能
+  - 当初 Claude API（Sonnet）案を検討したが、user 指示で **Claude Code スキル方式**
+    に確定（API 課金 0・サブスクリプション内・GAS 時代の流れを取り戻す）
+
+  **新アーキテクチャ：**
+
+  | 役割 | 担当 | API 課金 |
+  |---|---|---|
+  | プロンプト生成（普遍ルール適用） | **Claude Code スキル `/generate-image-prompt`** | 0 |
+  | プロンプト検証 | Python preflight（既存ロジック再利用） | 0 |
+  | vocab_type 分類 | Gemini（既存 classify-and-translate.mjs） | 微小 |
+  | 画像生成 | nanobanana / Imagen | 件単価 |
+  | スケジューリング | Claude Code `/schedule` skill で daily 自動実行 | 0 |
+
+  **運用モデル：**
+  - メイン：毎日朝 X 時に Claude Code が自動起動 → 未着手 word を 20 件 pick →
+    スキルで prompt 生成 → JSON 蓄積 → user が日中に手動で nanobanana 画像生成
+  - chain mode：user 任意 trigger で Claude prompt + Gemini 画像 を 1 ショット連結
+  - 累積：20 件/日 × 365 = 7,200 件/年 + chain 分 → 1-2 年で ~17,000 件カバー想定
+
+  **worktree (Phase 5 ④' 専用 fresh worktree) スコープ：**
+  - ガイドを **6 部構成**に reorganize（user 提案 2026-05-22）：
+    - PART 1: Universal Rules（全 vocab_type 共通）
+      - 既存 PART 1.1〜1.10 + FOOTWEAR
+      - **NATIONAL_SYMBOL_ISOLATION_RULE 新規追加**（旧 PERSON_NATIONALITY_HINTS
+        の「服に国旗色を再現しない」原則を抽出して universal 化）
+    - PART 2: STYLE_BIBLE
+    - PART 3: **vocab_type 別ルール（新規セクション）** ← user 提案の核心
+      - 3.person / 3.building / 3.object_concrete / 3.action_verb / 3.adjective /
+        3.abstract_concept / 3.demonstrative_kosoado / 3.spatial_relation /
+        3.example_sentence の独立サブセクション
+      - 各 vocab_type 固有のルール（aspect ratio / camera / pose / strategy
+        選択基準 等）を、今 PROMPT_TEMPLATES の自然文に inline 埋め込みされて
+        いるものから抽出して整理
+    - PART 4: PROMPT_TEMPLATES（骨格・placeholder のみ・rule 詳細は PART 1+2+3 から参照）
+    - PART 5: **Vocabulary Reference Appendix（新規セクション）**
+      - 既存 PERSON_NATIONALITY_HINTS / PERSON_ROLE_LOOKUP /
+        ROLE_BASED_GENERIC_PROFILES / BUILDING_CUES / OBJECT_SIGNATURES /
+        ABSTRACT_METAPHORS / PHENOTYPE_PROFILES / COUNTRY_TO_PROFILE /
+        ROLE_PHENOTYPE_PALETTE 等を **Python 辞書から Markdown 風 reference として転記**
+      - 中身は完全保全（実機検証で得た知識を無駄にしない）
+    - PART 6: Output Instructions（LLM 用出力指示 + preflight 制約）
+  - `.claude/skills/generate-image-prompt.md` スキル定義新規作成
+  - preflight 関数群を `scripts/lib/prompt-preflight.py` に切り出して skill から bash 経由で呼べる構造化
+  - chain mode：スキル内で `npm run generate-images` を bash 起動して Gemini 画像生成と連結
+  - lesson_01 で skill を手動 invoke して 17 件 + 例文 15 件の prompt 生成 →
+    決定論版出力との品質比較
+  - `invariants.mjs` の B hash を新ガイド hash に更新
+
+  **PART 1-6 構造の目的：**
+  - 現状は vocab_type 固有ルールが PROMPT_TEMPLATES の自然文に inline 埋め込み
+    → Claude (skill) が機械的に解釈しづらい / ルール変更時に template grep が必要
+  - vocab_type 別独立セクション化で：Claude が階層的に読める / ルール変更が局所化 /
+    新 vocab_type 追加 hurdle 低減
+  - Python 辞書から Markdown 風 reference への形式変更：Claude が直接 Read できる /
+    更新が容易 / 知識（中身）は完全保全
+
+  **完了条件：**
+  - `.claude/skills/generate-image-prompt.md` invoke 可能
+  - ガイド PART 1-5 構造で reorganize 済（中身保全・hash 更新）
+  - lesson_01 17 件 + 例文の prompt を skill 経由で生成し preflight 全 PASS
+  - `npm run validate` invariants A/B/C PASS
+
+  **deprecated 範囲（worktree A の Q3 B 由来の Python コード）：**
+  - `build_prompts.py` の `render_person` / `render_building` /
+    `render_object_concrete` / `render_abstract_concept` /
+    `render_action_verb` / `render_adjective` / `render_demonstrative_kosoado` /
+    `render_variant_grid` / `render_spatial_relation` /
+    `render_example_sentence` / `render_vocab_entry` dispatch / `compose_*` /
+    `classify_person` / `phenotype_for` / `flag_placement_for` 等
+  - これらは git history としては残るが、新アーキテクチャでは dead code 化
+  - **Q1 A の example_sentence template inline 化（v4.1）は活きる**
+  - **Q2 A の `scripts/transcribe-lesson-vocab-types.mjs` は活きる**
+  - **preflight 関数群は新スキルの検証ゲートとして主役級に格上げ**
+
+  **main B との関係：**
+  - main B（Gemini で 17,473 件 vocab_type 分類）は依然必要（vocab_type は
+    skill の入力）
+  - ただし着手順序が変更：先に Phase 5 ④' 完了でスキルが動くことを確認 →
+    後で main B で vocab_type を全件付与
+  - main B も skill 方式に統一する余地あり（`/classify-vocab-type` スキル新規）—
+    user 確認待ち
+
+- **⑤** 例文配線 + smoke 生成。**main 専属・プラン依存（③ + ④' 完了後）**。
   ③ の `import-lesson.mjs` を ④ の builder に接続（vocab + 例文両方の prompt が
   registry に乗る）。lesson_02 例文 5 件 smoke 生成（nanobanana・~$0.20）で
   同値検証。完了＝lesson_02 例文 5 件が pending→ready まで通り、
@@ -348,93 +479,6 @@ active なスライスは `NEXT_ACTIONS.md` に 1 件だけ載せる。
   空になればディレクトリごと撤去。**Sheet 削除は人間タスクとして残す**（Sheets API
   経由削除はやらない）。完了＝`gas/` ディレクトリ削除済・人間タスク欄に
   「Sheet (Vocabulary/Examples) 削除確認」のみ残る。
-
-# Phase 6（検討中・着手未確定）：自作 LoRA + Flux への画像生成切替検討
-
-> このセクションは **評価・spike phase**。Phase 5 完了後・lesson 1-3 程度の
-> 安定カードが蓄積された段階で着手可否を判断する。**コスト・実現性が詰まる
-> まで「着手 phase」として扱わない**（user 判断 2026-05-24）。
-
-## 動機
-
-Phase 4 後 + v4.0.4 building 改修 R11 から運用予定の「Gemini 2.5 Flash Image
-(Nano Banana) + reference image attachment」方式は **in-context style transfer
-＝ 擬似 LoRA** の挙動。論理的には自作 LoRA で学習したモデルとほぼ等価。
-
-- **短期（R11〜）**：Nano Banana + reference は即運用可・初期コスト 0・brand
-  確定中の柔軟性が高い
-- **長期（Phase 6 仮）**：lesson 1-3 程度で 50-100 枚 confirmed カード蓄積後、
-  自前 LoRA 学習 → per-image cost 劇的削減 + brand 安定性向上が見込める
-
-R11 で生成された confirmed カード群が **そのまま Phase 6 の LoRA 学習データ
-セット候補** になる自然な順序関係。
-
-## コスト試算（要 spike 実機確認）
-
-| 項目 | Nano Banana + reference | Flux + 自作 LoRA |
-|---|---|---|
-| per-image cost | ~$0.040 | ~$0.001-0.005（API host）/ ~電気代のみ（自前 GPU） |
-| LoRA 学習 1 回 | n/a | $5-30（クラウド GPU 数時間）+ 人間作業 1-2 時間（キャプション付け / dataset 整備） |
-| brand 変更コスト | reference 入れ替えで即時・$0 | 再学習 $5-30 + 数時間 |
-| インフラ | API key のみ（既存 GEMINI_API_KEY 流用） | 自前 GPU or Replicate/fal.ai/RunPod account |
-| アスペクト比制御 | prompt inline directive（v3.11.1 TEMPORARY workaround）| resolution 指定で確実（**Flux 優位**） |
-| テキスト描画品質 | 高（label "SCHOOL" 等安定）| 中（要 spike 確認・flat illustration 内小テキストは苦手な可能性） |
-
-**切替閾値（ballpark）**：LoRA 投資 $30 + 整備時間 / 月 $0.036 削減
-= **月 833 枚生成で 1 ヶ月回収**。
-
-→ 月生成見込み数が 1000 枚を超えた時点で経済合理性が成立。lesson 1 課あたり
-~450 枚 (vocab 437 + sentence ~20) として、課を月 2 課ペース以上で進める段階。
-
-## 実現性評価（要 spike 実機確認）
-
-未確定で spike test 必要な項目：
-
-1. **flat vector / brand-style-guide スタイルが Flux LoRA で再現可能か**
-   - Flux は写真リアル系で評価高い・flat illustration 系 LoRA は civitai 等で
-     実例多数
-   - 「Japanese language learning material brand」固有スタイルを 20-100 枚で
-     学習できるかは不明
-   - **spike 内容**：v4.0 person 12 枚を dataset として SDXL or Flux LoRA を
-     1 回学習し、building 4 件を生成して Nano Banana + reference と比較
-
-2. **テキスト描画品質**：Flux 系は label テキストが苦手な可能性。spike で
-   signboard "SCHOOL" が読めるレベルで描画できるか確認。
-   不可なら post-processing で text overlay（GAS 時代の旧方式回帰）も検討対象。
-
-3. **API option 選定**：
-   - **Replicate**（Flux + LoRA host・per-image $0.003-0.005）
-   - **fal.ai**（同・速度速・推奨候補）
-   - **RunPod**（自前 LoRA host）
-   - **自前 GPU + ComfyUI**（電気代のみ・運用負担あり）
-   - spike では 1-2 option を実測
-
-4. **brand drift リスク**：LoRA は学習 dataset 品質依存・dataset 偏ると brand
-   硬直化。Nano Banana + reference は柔軟性高。dataset 安定性確認後でないと
-   切替不可。
-
-## 着手判断基準（全て満たす必要）
-
-1. lesson 1-3 完了で 50-100 枚 confirmed カードが蓄積（dataset 候補成立）
-2. brand drift なし（confirmed 群の visual review で一貫性 OK）
-3. 月生成見込み数 > 1000 枚（経済合理性 ballpark 成立）
-4. **spike test PASS**：Flux/SDXL LoRA 1 回学習で flat vector +
-   brand-style-guide + テキスト描画品質が Nano Banana 同等
-
-## 着手時のスライス案（仮）
-
-- **①** **Spike** — v4.0 person 12 枚で SDXL or Flux LoRA を 1 回学習。
-  対象クラウド GPU + 学習 framework（Kohya / ComfyUI 等）を選定。cost & 品質
-  を実測。完了＝spike 結果を docs に残し、go/no-go 判定。
-- **②** 本学習 — lesson 1-3 全 confirmed カードで本 LoRA。dataset
-  キャプション付け、validation split、評価 prompt 群を整備。
-- **③** pipeline 切替 — `scripts/generate-images-local.mjs` に
-  `--backend flux-lora` 追加。Nano Banana backend は `--backend nanobanana`
-  で残置（fallback 用）。
-- **④** invariants B 更新 — master prompt guide が LoRA backend 向けに簡素化
-  （reference attachment 不要・style 指示大幅削減）→ B hash 再計算。
-
----
 
 # 横断要件（全 Phase）
 - データ＋行単位状態台帳（現シート：語彙438／例文1027＋status 列）を

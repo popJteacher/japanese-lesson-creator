@@ -3,7 +3,7 @@
 > これは凍結ではなく退避。各項目は所属 Phase の active 化と同時に作業対象に戻る。
 > ロードマップ本体は `docs/MIGRATION_PLAN.md`。現在 active な作業は `NEXT_ACTIONS.md`。
 
-最終更新：2026-05-22（**v3.13 → v4.0 pivot 反映**：v3.13-#1/#3 を retire、#2 を「v4.0 で副次的に解消見込み」に位置づけ変更、#4 のみ独立 backlog として保持。v4.0 phase は `docs/MIGRATION_PLAN.md` に新設）
+最終更新：2026-05-22（**v4.0 由来「flag size 均一化」backlog を retire**：user 視覚確認で word_ベトナム人.png のみ flag size が異常に大きく、user 手動で worktree 側で再生成 → main にコピー反映済。残り 11 件は許容範囲と確認。lesson_02+ 拡張で新規 outlier が出た場合は per-image 対応とする。v3.13-#1/#3 retire・#2 副次解消見込み・#4 独立保持は前回反映済）
 
 ---
 

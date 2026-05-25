@@ -1,23 +1,19 @@
 // scripts/lib/audio-qc.mjs
-// Phase 3 ④（two-pass 化版）：ffmpeg ベースの音声 QC パイプライン。
-// raw mp3 Buffer を受け取り、QC 適用済みの mp3 Buffer を返す。
+// Phase α2（loudnorm-only 化・2026-05-24）：ffmpeg ベースの音声 QC。
+// raw mp3 Buffer を受け取り、音量正規化のみ適用した mp3 Buffer を返す。
 //
-// 2-pass loudnorm 構成：
-//   Pass 1（測定）  trim → loudnorm(I=-16, print_format=json) → null   出力捨て・JSON 取得
-//   Pass 2（適用）  trim → loudnorm(I=-16, measured_*, linear=true)
-//                      → fade in → fade out                              実出力 mp3
+// Why loudnorm-only:
+//   旧版は silenceremove + 2-pass loudnorm + afade を直列適用していたが、
+//   短い vocab（2-3 文字・<1秒）で silenceremove が語頭子音を削り afade
+//   と相まって「もごもご」した音になる問題が user 視聴で発覚した
+//   (2026-05-24 raw vs qc 比較)。語頭の鋭さは TTS が出している自然な
+//   表情なので、それを保つために trim/fade を全廃し loudnorm のみ残す。
 //
-// なぜ two-pass か:
-//   single-pass loudnorm は 3 秒ウィンドウのリアルタイム調整なので、
-//   短尺（<3秒）や Q&A 形式（内部 silence 多）の audio で -16 LUFS から
-//   2〜4 LUFS ずれることがある（L01_010 等で実測）。two-pass は先に
-//   ファイル全体を測ってから線形ゲイン補正をするため精度 ±0.5 LUFS。
+// 2-pass loudnorm 構成（精度 ±0.5 LUFS のため維持）：
+//   Pass 1（測定）  loudnorm(I=-16, print_format=json) → null
+//   Pass 2（適用）  loudnorm(I=-16, measured_*, linear=true)
 //
-// 両端 trim は areverse の対称適用（stop_periods=1 を使うと文中 silence
-// で stream が打ち切られるため避ける）。末尾フェードアウトも同じ areverse トリック。
-//
-// 出典：注記は NEXT_ACTIONS.md / docs/MIGRATION_PLAN.md Phase 3 ④ 参照。
-// GAS では ffmpeg 不可だったため新規獲得機能。
+// 出典：注記は NEXT_ACTIONS.md / docs/MIGRATION_PLAN.md 参照。
 //
 // 公開 API:
 //   applyQc(inputMp3Buffer, opts) → Promise<Buffer>
@@ -29,25 +25,9 @@ import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const TRIM_OPTS = 'start_periods=1:start_duration=0.05:start_threshold=-50dB:detection=peak';
-const TRIM_CHAIN = [
-  `silenceremove=${TRIM_OPTS}`,
-  'areverse',
-  `silenceremove=${TRIM_OPTS}`,
-  'areverse',
-].join(',');
-const FADE_CHAIN = [
-  'afade=t=in:st=0:d=0.05',
-  'areverse',
-  'afade=t=in:st=0:d=0.1',
-  'areverse',
-].join(',');
-
 const LOUDNORM_TARGET = 'I=-16:TP=-1.5:LRA=11';
 
 export const QC_PIPELINE = {
-  trimChain: TRIM_CHAIN,
-  fadeChain: FADE_CHAIN,
   loudnormTarget: LOUDNORM_TARGET,
 };
 
@@ -64,8 +44,8 @@ export async function applyQc(inputMp3Buffer, opts = {}) {
   try {
     await writeFile(inPath, inputMp3Buffer);
 
-    // Pass 1: 測定（trim → loudnorm with print_format → discard）
-    const measureFilter = `${TRIM_CHAIN},loudnorm=${LOUDNORM_TARGET}:print_format=json`;
+    // Pass 1: 測定（loudnorm with print_format → discard）
+    const measureFilter = `loudnorm=${LOUDNORM_TARGET}:print_format=json`;
     const pass1 = await runFfmpegCapture(ffmpegPath, [
       '-y', '-hide_banner', '-nostats',
       '-i', inPath,
@@ -80,7 +60,7 @@ export async function applyQc(inputMp3Buffer, opts = {}) {
     const inputIVal = parseFloat(measured.input_i);
     const canTwoPass = Number.isFinite(inputIVal) && inputIVal > -99 && inputIVal < 0;
 
-    const applyLoudnorm = canTwoPass
+    const applyFilter = canTwoPass
       ? `loudnorm=${LOUDNORM_TARGET}`
         + `:measured_I=${measured.input_i}`
         + `:measured_TP=${measured.input_tp}`
@@ -89,7 +69,6 @@ export async function applyQc(inputMp3Buffer, opts = {}) {
         + `:offset=${measured.target_offset}`
         + `:linear=true`
       : `loudnorm=${LOUDNORM_TARGET}`;
-    const applyFilter = `${TRIM_CHAIN},${applyLoudnorm},${FADE_CHAIN}`;
     await runFfmpegStrict(ffmpegPath, [
       '-y', '-hide_banner', '-loglevel', 'error',
       '-i', inPath,

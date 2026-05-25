@@ -8,11 +8,28 @@ Thumbs.db
 *.swp
 
 # Claude Code ローカル設定
-.claude/
+# .claude/ 配下の contents を ignore するが、プロジェクト共有 skill 定義
+# （.claude/skills/）は tracked にする（Phase 5 ④' 〜）。
+# Note: 親 dir 自体を ignore すると ! は効かないため、glob ignore + 例外で書く。
+.claude/*
+!.claude/skills/
 
 # 一時ファイル・検証用テンポラリ
 .tmp_verify/
 *.tmp
+
+# /export-skill-prompts の出力（手動投入用 .txt・派生物・user 環境依存）
+tmp/skill_prompts/
+
+# tmp/ 配下の smoke artifacts（mp3 / log）は履歴に残さない。
+# 例外：α3 で参照する PoC スクリプトと小型 JSON は明示的に tracked。
+tmp/*.mp3
+tmp/*.log
+tmp/raw_compare/
+tmp/google_smoke/
+tmp/google_smoke_ipa/*.mp3
+tmp/raw_compare.mjs
+tmp/google_accent_smoke.mjs
 
 # Node
 node_modules/
@@ -34,7 +51,9 @@ secrets/
 data/*.js
 
 # プロジェクトナレッジ専用ファイル（claude.ai 管理・リポジトリ不要）
-SKILL*.md
+# ルートの SKILL*.md のみが対象（claude.ai 管理ファイル）。
+# docs/SKILLS_MANUAL.md 等の docs 配下マニュアルは tracked にする。
+/SKILL*.md
 
 # Python キャッシュ
 __pycache__/

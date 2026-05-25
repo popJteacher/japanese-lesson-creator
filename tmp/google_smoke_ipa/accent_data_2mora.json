@@ -1,0 +1,221 @@
+[
+  {
+    "word": "服",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "fU",
+      "ku"
+    ],
+    "ipa": "ɸɯ̥kɯꜜ"
+  },
+  {
+    "word": "靴",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "kU",
+      "tsu"
+    ],
+    "ipa": "kɯ̥t͡sɯꜜ"
+  },
+  {
+    "word": "池",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "i",
+      "ke"
+    ],
+    "ipa": "ikeꜜ"
+  },
+  {
+    "word": "猫",
+    "mora_count": 2,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "ne",
+      "ko"
+    ],
+    "ipa": "neꜜko"
+  },
+  {
+    "word": "雨",
+    "mora_count": 2,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "a",
+      "me"
+    ],
+    "ipa": "aꜜme"
+  },
+  {
+    "word": "秋",
+    "mora_count": 2,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "a",
+      "ki"
+    ],
+    "ipa": "aꜜki"
+  },
+  {
+    "word": "春",
+    "mora_count": 2,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "ha",
+      "ru"
+    ],
+    "ipa": "haꜜɾɯ"
+  },
+  {
+    "word": "海",
+    "mora_count": 2,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "u",
+      "mi"
+    ],
+    "ipa": "ɯꜜmi"
+  },
+  {
+    "word": "川",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "ka",
+      "wa"
+    ],
+    "ipa": "kawaꜜ"
+  },
+  {
+    "word": "山",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "ya",
+      "ma"
+    ],
+    "ipa": "jamaꜜ"
+  },
+  {
+    "word": "目",
+    "mora_count": 1,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "me"
+    ],
+    "ipa": "meꜜ"
+  },
+  {
+    "word": "口",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "kU",
+      "chi"
+    ],
+    "ipa": "kɯ̥t͡ɕiꜜ"
+  },
+  {
+    "word": "耳",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "mi",
+      "mi"
+    ],
+    "ipa": "mimiꜜ"
+  },
+  {
+    "word": "鼻",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "ha",
+      "na"
+    ],
+    "ipa": "hanaꜜ"
+  },
+  {
+    "word": "手",
+    "mora_count": 1,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "te"
+    ],
+    "ipa": "teꜜ"
+  },
+  {
+    "word": "足",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "a",
+      "shi"
+    ],
+    "ipa": "aɕiꜜ"
+  },
+  {
+    "word": "声",
+    "mora_count": 2,
+    "accent_type": 1,
+    "accent_label": "頭高",
+    "mora_repr": [
+      "ko",
+      "e"
+    ],
+    "ipa": "koꜜe"
+  },
+  {
+    "word": "色",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "i",
+      "ro"
+    ],
+    "ipa": "iɾoꜜ"
+  },
+  {
+    "word": "肉",
+    "mora_count": 2,
+    "accent_type": 2,
+    "accent_label": "中高/尾高(2)",
+    "mora_repr": [
+      "ni",
+      "ku"
+    ],
+    "ipa": "nikɯꜜ"
+  },
+  {
+    "word": "魚",
+    "mora_count": 3,
+    "accent_type": 3,
+    "accent_label": "中高/尾高(3)",
+    "mora_repr": [
+      "sa",
+      "ka",
+      "na"
+    ],
+    "ipa": "sakanaꜜ"
+  }
+]

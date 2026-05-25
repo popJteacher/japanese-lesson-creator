@@ -25,6 +25,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 
 const MODEL = 'gemma-4-26b-a4b-it';
+const FLASH_MODEL = 'gemini-2.5-flash';
 const ENDPOINT_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_POS = '名詞';
 
@@ -39,6 +40,13 @@ const VALID_VOCAB_TYPES = [
 
 // Gemini Free tier 想定。`.env` の GEMINI_RPM/RPD/TPM で上書き可。
 const RATE_DEFAULTS = { rpm: 15, rpd: 1500, tpm: 1_000_000 };
+
+// --classify (Gemini 2.5 Flash) は paid tier 想定で別 default。.env で上書き可。
+const FLASH_RATE_DEFAULTS = { rpm: 1000, rpd: 100_000, concurrency: 8 };
+
+const CATALOG_PATH = resolve(ROOT, 'data/vocab_catalog.json');
+const WARNINGS_PATH = resolve(ROOT, 'data/_meta/vocab_type_warnings.json');
+const CHECKPOINT_EVERY = 200;
 
 const BACKOFF = {
   maxRetries: 5,
@@ -73,6 +81,7 @@ function parseArgs(argv) {
   const args = {
     lesson: null, verify: false, force: false,
     only: null, limit: null, dryRun: false, help: false,
+    classify: false, smoke: false, concurrency: null,
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -80,34 +89,52 @@ function parseArgs(argv) {
     else if (a === '--verify') args.verify = true;
     else if (a === '--force') args.force = true;
     else if (a === '--dry-run') args.dryRun = true;
+    else if (a === '--classify') args.classify = true;
+    else if (a === '--smoke') args.smoke = true;
     else if (a.startsWith('--lesson=')) args.lesson = a.slice('--lesson='.length);
     else if (a === '--lesson') args.lesson = argv[++i];
     else if (a.startsWith('--only=')) args.only = a.slice('--only='.length);
     else if (a === '--only') args.only = argv[++i];
     else if (a.startsWith('--limit=')) args.limit = parseInt(a.slice('--limit='.length), 10);
     else if (a === '--limit') args.limit = parseInt(argv[++i], 10);
+    else if (a.startsWith('--concurrency=')) args.concurrency = parseInt(a.slice('--concurrency='.length), 10);
+    else if (a === '--concurrency') args.concurrency = parseInt(argv[++i], 10);
     else { console.error('Unknown arg:', a); process.exit(2); }
   }
   return args;
 }
 
 function printHelp() {
-  console.log(`classify-and-translate.mjs — Phase 1 ② ローカル分類・翻訳
+  console.log(`classify-and-translate.mjs — Phase 1 ② ローカル分類・翻訳 / Phase 5 ④ B catalog 分類
 
 使い方:
-  --lesson NN     対象課（必須・例: 01）
-  --verify        既存 vocab_types_lessonNN.json と比較のみ・書き込みなし
-  --force         キャッシュ無視で全件再分類
-  --only A,B,C    指定 word のみ処理
-  --limit N       最大 N 件で打ち切り
-  --dry-run       API を呼ばずに対象一覧だけ表示
+  (A) lesson 駆動 translate+classify（Gemma）:
+    --lesson NN     対象課（例: 01）
+    --verify        既存 vocab_types_lessonNN.json と比較のみ・書き込みなし
+    --force         キャッシュ無視で全件再分類
+    --only A,B,C    指定 word のみ処理
+    --limit N       最大 N 件で打ち切り
+    --dry-run       API を呼ばずに対象一覧だけ表示
+
+  (B) catalog 駆動 vocab_type 分類（Gemini 2.5 Flash）— Phase 5 ④ B:
+    --classify             catalog-driven 分類モードを有効化
+    --smoke                lesson_02 18 件 + N5/N4 高頻度 82 件 = 100 件のみ
+    --limit N              最大 N 件で打ち切り（--smoke と排他ではない）
+    --force                既に vocab_type 付きの entry も再分類
+    --concurrency N        並列 API call 数（既定 ${FLASH_RATE_DEFAULTS.concurrency}）
+    --dry-run              対象一覧と件数のみ表示・API 呼ばない
+    --only word1,word2,... 指定 word のみ処理
+    対象範囲：lesson_01 entries は worktree A 担当のため skip 固定
+
   --help
 
 環境変数（.env 推奨）:
   GEMINI_API_KEY  必須（実 API 呼び出し時のみ）
-  GEMINI_RPM      RPM 上限（既定 ${RATE_DEFAULTS.rpm}）
-  GEMINI_RPD      RPD 上限（既定 ${RATE_DEFAULTS.rpd}）
-  GEMINI_TPM      TPM 概算上限（既定 ${RATE_DEFAULTS.tpm}）
+  GEMINI_RPM      Gemma RPM 上限（既定 ${RATE_DEFAULTS.rpm}）
+  GEMINI_RPD      Gemma RPD 上限（既定 ${RATE_DEFAULTS.rpd}）
+  GEMINI_TPM      Gemma TPM 概算上限（既定 ${RATE_DEFAULTS.tpm}）
+  GEMINI_FLASH_RPM   Flash RPM 上限（既定 ${FLASH_RATE_DEFAULTS.rpm}）
+  GEMINI_FLASH_RPD   Flash RPD 上限（既定 ${FLASH_RATE_DEFAULTS.rpd}）
 `);
 }
 
@@ -344,14 +371,407 @@ function diffEntry(existing, fresh) {
   return { sameVocabType, sameEn, pass: sameVocabType && sameEn };
 }
 
+// ════════════════════════════════════════════════════════════
+// --classify モード（Phase 5 ④ B / catalog-driven / Gemini 2.5 Flash）
+// ════════════════════════════════════════════════════════════
+
+const JLPT_PRIORITY = { N5: 0, N4: 1, N3: 2, N2: 3, N1: 4, unknown: 5 };
+
+function entryJlpt(entry) {
+  return entry?.bySource?.goi_list_raw?.[0]?.jlpt
+      || entry?.bySource?.lesson_01?.[0]?.jlptLevel
+      || entry?.bySource?.lesson_02?.[0]?.jlptLevel
+      || 'unknown';
+}
+function entryGoiNo(entry) {
+  const n = entry?.bySource?.goi_list_raw?.[0]?.no;
+  return n ? parseInt(n, 10) || Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+}
+function entryPos(entry) {
+  return entry?.bySource?.goi_list_raw?.[0]?.pos
+      || entry?.bySource?.lesson_01?.[0]?.pos
+      || DEFAULT_POS;
+}
+function entryEn(entry) {
+  return entry?.bySource?.lesson_02?.[0]?.en
+      || entry?.bySource?.lesson_01?.[0]?.en
+      || null;
+}
+function entryGoiShurui(entry) {
+  return entry?.bySource?.goi_list_raw?.[0]?.goiShurui || null;
+}
+
+// 担当範囲フィルタ：lesson_01 entries は worktree A 担当のため除外
+function isBScope(entry) {
+  return !((entry.lessonRefs || []).includes('lesson_01'));
+}
+
+// smoke 構成：lesson_02 18 + N5/N4 高頻度 82 = 100
+function pickSmokeSet(entries) {
+  const lesson02 = entries.filter(e => (e.lessonRefs || []).includes('lesson_02'));
+  const goiOnly = entries.filter(e =>
+    !(e.lessonRefs || []).length
+    && (e.sourceIds || []).includes('goi_list_raw')
+    && ['N5', 'N4'].includes(entryJlpt(e))
+  );
+  goiOnly.sort((a, b) => {
+    const ja = JLPT_PRIORITY[entryJlpt(a)] ?? 9;
+    const jb = JLPT_PRIORITY[entryJlpt(b)] ?? 9;
+    if (ja !== jb) return ja - jb;
+    return entryGoiNo(a) - entryGoiNo(b);
+  });
+  const remaining = 100 - lesson02.length;
+  return [...lesson02, ...goiOnly.slice(0, remaining)];
+}
+
+function buildFlashPrompt(entry) {
+  const vocabTypeList = VALID_VOCAB_TYPES.join(', ');
+  const word = entry.word;
+  const reading = entry.reading || '';
+  const pos = entryPos(entry);
+  const jlpt = entryJlpt(entry);
+  const en = entryEn(entry);
+  const shurui = entryGoiShurui(entry);
+  const ctx = [
+    `Word:    ${word}`,
+    `Reading: ${reading}`,
+    `POS:     ${pos}`,
+    `JLPT:    ${jlpt}`,
+  ];
+  if (en) ctx.push(`English: ${en}`);
+  if (shurui) ctx.push(`Goi shurui: ${shurui}`);
+
+  return [
+    'You are a Japanese vocabulary classifier for JLPT learners. Do not think out loud. Output only the JSON object.',
+    `Given a Japanese word, choose ONE vocab_type from: [${vocabTypeList}].`,
+    'Also self-rate confidence as "high", "medium", or "low".',
+    '',
+    'Vocab type guide:',
+    '  person          → words for people (医者, 学生, 先生, 会社員, etc.)',
+    '  building        → buildings / facilities (病院, 学校, 銀行, 大学, etc.)',
+    '  concrete_object → tangible items (本, ペン, 財布, 電話, etc.)',
+    '  action_verb     → verbs / actions (食べる, 読む, 飲む, 行く, etc.)',
+    '  adjective       → i-adj / na-adj (大きい, 新しい, 便利, etc.)',
+    '  abstract_concept→ abstract nouns (時間, 気持ち, 意見, etc.)',
+    '  spatial_relation→ location words (上, 下, 右, 左, そば, etc.)',
+    '  demonstrative   → ko-so-a-do words (これ, それ, あれ, どれ, etc.)',
+    '  pronoun         → personal/interrogative pronouns (わたし, あなた, だれ, etc.)',
+    '  interjection    → response/filler words (はい, いいえ, あ, etc.)',
+    '  set_expression  → fixed social phrases (おはよう, いただきます, etc.)',
+    '  adverb          → degree/frequency/manner/time adverbs (とても, いつも, etc.)',
+    '  counter         → counter suffixes (〜本, 〜枚, 〜冊, etc.)',
+    '  time            → time words (〜時, 〜曜日, 季節, etc.)',
+    '  transportation  → vehicles (電車, バス, タクシー, etc.)',
+    '  family          → family terms (父, 母, お父さん, etc.)',
+    '  weather         → weather/nature (雨, 雪, 晴れ, etc.)',
+    '  sensory         → perception verbs (見ます, 聞きます, etc.)',
+    '  other           → anything that doesn\'t fit above',
+    '',
+    'Confidence guide:',
+    '  high   → unambiguous, the word clearly fits one category',
+    '  medium → mostly clear but the category boundary is fuzzy',
+    '  low    → genuinely ambiguous, multiple categories plausible, or you fall back to "other"',
+    '',
+    ...ctx,
+    '',
+    'Return ONLY valid JSON. Example: {"vocab_type": "person", "confidence": "high"}',
+  ].join('\n');
+}
+
+const FLASH_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    vocab_type: { type: 'STRING', enum: VALID_VOCAB_TYPES },
+    confidence: { type: 'STRING', enum: ['high', 'medium', 'low'] },
+  },
+  required: ['vocab_type', 'confidence'],
+};
+
+async function callFlashOnce(entry, apiKey) {
+  const url = `${ENDPOINT_BASE}/${FLASH_MODEL}:generateContent?key=${apiKey}`;
+  const payload = {
+    contents: [{ role: 'user', parts: [{ text: buildFlashPrompt(entry) }] }],
+    generationConfig: {
+      temperature: 0,
+      maxOutputTokens: 256,
+      responseMimeType: 'application/json',
+      responseSchema: FLASH_SCHEMA,
+      thinkingConfig: { thinkingBudget: 0 },
+    },
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const bodyText = await res.text();
+  if (res.status !== 200) {
+    const err = new Error(`HTTP ${res.status}: ${bodyText.slice(0, 300)}`);
+    err.status = res.status;
+    throw err;
+  }
+  const respJson = JSON.parse(bodyText);
+  let text;
+  try {
+    text = respJson.candidates[0].content.parts[0].text.trim();
+  } catch {
+    throw new Error('レスポンス構造が不正: ' + bodyText.slice(0, 200));
+  }
+  // responseSchema 経由でも稀に ```json fence が混入するので念のため剥がす
+  text = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '').trim();
+  const parsed = JSON.parse(text);
+  const vt = String(parsed.vocab_type || '').trim().toLowerCase();
+  const finalVt = VALID_VOCAB_TYPES.includes(vt) ? vt : 'other';
+  const conf = ['high', 'medium', 'low'].includes(parsed.confidence) ? parsed.confidence : 'low';
+  return {
+    vocab_type: finalVt,
+    confidence: conf,
+    fallback: finalVt !== vt,
+    usage: respJson.usageMetadata || null,
+  };
+}
+
+async function classifyFlashWithBackoff(entry, { apiKey, limiter }) {
+  let lastErr;
+  for (let attempt = 0; attempt <= BACKOFF.maxRetries; attempt++) {
+    await limiter.acquire();
+    try {
+      return await callFlashOnce(entry, apiKey);
+    } catch (e) {
+      lastErr = e;
+      const retriable = e.status === 429 || (e.status >= 500 && e.status < 600);
+      if (!retriable || attempt === BACKOFF.maxRetries) throw e;
+      const delay = BACKOFF.baseDelayMs * 2 ** attempt + Math.random() * BACKOFF.jitterMs;
+      process.stderr.write(`  retry ${attempt + 1}/${BACKOFF.maxRetries} after ${Math.round(delay)}ms (status=${e.status})\n`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw lastErr;
+}
+
+async function writeCatalogAtomic(catalog) {
+  const tmp = CATALOG_PATH + '.tmp';
+  await writeFile(tmp, JSON.stringify(catalog, null, 2) + '\n', 'utf8');
+  const { rename } = await import('node:fs/promises');
+  await rename(tmp, CATALOG_PATH);
+}
+
+async function loadWarnings() {
+  try {
+    return JSON.parse(await readFile(WARNINGS_PATH, 'utf8'));
+  } catch (e) {
+    if (e.code === 'ENOENT') return null;
+    throw e;
+  }
+}
+
+async function writeWarnings(warnings, runMeta) {
+  const out = {
+    _meta: {
+      generatedAt: new Date().toISOString(),
+      generator: 'scripts/classify-and-translate.mjs --classify',
+      model: FLASH_MODEL,
+      ...runMeta,
+      warnCount: warnings.length,
+    },
+    warnings,
+  };
+  await writeFile(WARNINGS_PATH, JSON.stringify(out, null, 2) + '\n', 'utf8');
+}
+
+async function runClassifyMode(args) {
+  const catalog = JSON.parse(await readFile(CATALOG_PATH, 'utf8'));
+  const entries = catalog.entries || [];
+
+  // 1) B scope（lesson_01 を除外）
+  let pool = entries.filter(isBScope);
+
+  // 2) smoke 構成（lesson_02 18 + N5/N4 高頻度 82）
+  if (args.smoke) {
+    pool = pickSmokeSet(pool);
+  }
+
+  // 3) --only filter
+  if (args.only) {
+    const set = new Set(args.only.split(',').map(s => s.trim()));
+    pool = pool.filter(e => set.has(e.word));
+  }
+
+  // 4) 既に vocab_type 付きなら skip（--force で無視）
+  if (!args.force) {
+    pool = pool.filter(e => !e.vocab_type);
+  }
+
+  // 5) --limit
+  if (args.limit) pool = pool.slice(0, args.limit);
+
+  const mode = args.smoke ? 'smoke' : 'full';
+  const totalCatalog = entries.length;
+  const bScopeTotal = entries.filter(isBScope).length;
+  const alreadyTyped = entries.filter(e => isBScope(e) && e.vocab_type).length;
+  console.log(`catalog: total=${totalCatalog}, B scope=${bScopeTotal}, already typed=${alreadyTyped}, work=${pool.length}, mode=${mode}${args.force ? '+force' : ''}`);
+
+  if (args.dryRun) {
+    const head = pool.slice(0, 15).map(e => `  - ${e.word}(${e.reading}) [${entryJlpt(e)}] lessonRefs=${JSON.stringify(e.lessonRefs)}`).join('\n');
+    console.log(`先頭 ${Math.min(15, pool.length)} 件:\n${head}`);
+    if (pool.length > 15) console.log(`  ... ${pool.length - 15} more`);
+    return;
+  }
+
+  if (pool.length === 0) {
+    console.log('nothing to do.');
+    return;
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error('ERROR: GEMINI_API_KEY が未設定（.env または環境変数）。--dry-run で対象だけ確認可。');
+    process.exit(1);
+  }
+
+  const rpm = parseInt(process.env.GEMINI_FLASH_RPM || FLASH_RATE_DEFAULTS.rpm, 10);
+  const rpd = parseInt(process.env.GEMINI_FLASH_RPD || FLASH_RATE_DEFAULTS.rpd, 10);
+  const concurrency = args.concurrency || parseInt(process.env.GEMINI_FLASH_CONCURRENCY || FLASH_RATE_DEFAULTS.concurrency, 10);
+
+  const limiter = makeRateLimiter({ rpm, rpd });
+  const today = new Date().toISOString().slice(0, 10);
+
+  // entries[] の index を引くマップ（write-back のため）
+  const indexByKey = new Map();
+  entries.forEach((e, i) => indexByKey.set(e.key, i));
+
+  // 既存 warnings は追記マージ（重複は key+model+run で dedup）。
+  // api_error は transient quota 起因がほとんどなので run 開始時に剥がし、
+  // 今回 retry で成功すれば warnings に残らないようにする。
+  const existingWarnings = await loadWarnings();
+  const warnings = (existingWarnings?.warnings || []).filter(w => w.reason !== 'api_error');
+  const warnKeysSeen = new Set(warnings.filter(w => w.run === mode).map(w => w.key));
+
+  let done = 0, errCount = 0, warnCount = 0;
+  const startedAt = Date.now();
+  const inputUsageTokens = { prompt: 0, candidates: 0, cached: 0 };
+
+  async function processOne(entry) {
+    try {
+      const r = await classifyFlashWithBackoff(entry, { apiKey, limiter });
+      const idx = indexByKey.get(entry.key);
+      entries[idx] = {
+        ...entries[idx],
+        vocab_type: r.vocab_type,
+        vocab_type_meta: {
+          source: FLASH_MODEL,
+          classifiedAt: today,
+          confidence: r.confidence,
+          ...(r.fallback ? { fallback: 'unknown_label_to_other' } : {}),
+        },
+      };
+      if (r.usage) {
+        inputUsageTokens.prompt += r.usage.promptTokenCount || 0;
+        inputUsageTokens.candidates += r.usage.candidatesTokenCount || 0;
+        inputUsageTokens.cached += r.usage.cachedContentTokenCount || 0;
+      }
+      const isWarn = r.confidence === 'low' || r.vocab_type === 'other' || r.fallback;
+      if (isWarn && !warnKeysSeen.has(entry.key)) {
+        warnings.push({
+          key: entry.key,
+          word: entry.word,
+          reading: entry.reading,
+          jlpt: entryJlpt(entry),
+          vocab_type: r.vocab_type,
+          confidence: r.confidence,
+          reason: r.fallback ? 'fallback_to_other' : (r.vocab_type === 'other' ? 'classified_as_other' : 'low_confidence'),
+          run: mode,
+          classifiedAt: today,
+        });
+        warnKeysSeen.add(entry.key);
+        warnCount++;
+      }
+    } catch (e) {
+      errCount++;
+      const key = entry.key;
+      if (!warnKeysSeen.has(key)) {
+        warnings.push({
+          key, word: entry.word, reading: entry.reading,
+          jlpt: entryJlpt(entry),
+          reason: 'api_error',
+          error: String(e.message || e).slice(0, 200),
+          run: mode,
+          classifiedAt: today,
+        });
+        warnKeysSeen.add(key);
+      }
+      process.stderr.write(`  ERROR ${entry.word}: ${String(e.message || e).slice(0, 160)}\n`);
+    } finally {
+      done++;
+      if (done % 25 === 0 || done === pool.length) {
+        const elapsed = (Date.now() - startedAt) / 1000;
+        const rate = done / Math.max(elapsed, 0.001);
+        const eta = (pool.length - done) / Math.max(rate, 0.001);
+        process.stderr.write(`  [${done}/${pool.length}] elapsed=${elapsed.toFixed(0)}s rate=${rate.toFixed(1)}/s eta=${eta.toFixed(0)}s warn=${warnCount} err=${errCount}\n`);
+      }
+      if (done % CHECKPOINT_EVERY === 0) {
+        await writeCatalogAtomic(catalog);
+        await writeWarnings(warnings, { run: mode, partial: true, processed: done, total: pool.length });
+      }
+    }
+  }
+
+  // 並列実行（worker pool パターン）
+  const queue = [...pool];
+  const workers = Array.from({ length: Math.max(1, concurrency) }, async () => {
+    while (queue.length) {
+      const e = queue.shift();
+      if (!e) break;
+      await processOne(e);
+    }
+  });
+  await Promise.all(workers);
+
+  // 最終 write
+  await writeCatalogAtomic(catalog);
+
+  // usage summary
+  const totalPromptTok = inputUsageTokens.prompt;
+  const totalOutTok = inputUsageTokens.candidates;
+  const totalCachedTok = inputUsageTokens.cached;
+  // Gemini 2.5 Flash GA pricing (2025-2026): $0.30/M input uncached, $0.075/M input cached, $2.50/M output
+  const uncachedPromptTok = Math.max(0, totalPromptTok - totalCachedTok);
+  const estCost = uncachedPromptTok / 1e6 * 0.30 + totalCachedTok / 1e6 * 0.075 + totalOutTok / 1e6 * 2.50;
+
+  await writeWarnings(warnings, {
+    run: mode,
+    partial: false,
+    processed: done,
+    total: pool.length,
+    errors: errCount,
+    usageTokens: { prompt: totalPromptTok, output: totalOutTok, cached: totalCachedTok },
+    estimatedCostUsd: Number(estCost.toFixed(4)),
+  });
+
+  const finalCatalogTyped = entries.filter(e => isBScope(e) && e.vocab_type).length;
+  console.log(`\n=== --classify summary (${mode}) ===`);
+  console.log(`processed         : ${done}/${pool.length}`);
+  console.log(`errors            : ${errCount}`);
+  console.log(`warnings written  : ${warnings.length} (in ${WARNINGS_PATH})`);
+  console.log(`B-scope typed now : ${finalCatalogTyped}/${bScopeTotal}`);
+  console.log(`tokens: prompt=${totalPromptTok} (cached=${totalCachedTok}) output=${totalOutTok}`);
+  console.log(`est cost (USD)    : $${estCost.toFixed(4)}`);
+  console.log(`catalog updated   : ${CATALOG_PATH}`);
+}
+
 // ────────────────────────────────────────────────────────────
 // メイン
 // ────────────────────────────────────────────────────────────
 async function main() {
   const args = parseArgs(process.argv);
-  if (args.help || !args.lesson) {
+  if (args.help || (!args.lesson && !args.classify)) {
     printHelp();
     process.exit(args.help ? 0 : 2);
+  }
+
+  if (args.classify) {
+    await loadEnv();
+    return await runClassifyMode(args);
   }
 
   await loadEnv();

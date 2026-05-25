@@ -156,6 +156,53 @@
   関連 memory：worktree 側 `project_v4_0_pivot.md` /
   main 側 `project_v4_0_pivot.md`（同名・worktree 起源情報を main 視点で保持）。
 
+- **2026-05-22 v4.0 実装完了**：worktree image-prompt-plan で v4.0 ガイド本体
+  + build_prompts.py 改修 + invariants 更新を実装し、4 ラウンド・nanobanana
+  48 件・$1.86 で実機検証 → user 視覚 OK「とてもよくなりました」→ main へ
+  ff-merge（commit `1a42cd4` / B hash `2137a8e885ae` → `5338c98aab5d`）。
+  data/images/word_*.png 12 件（role 5 + nationality 7）を v4.0 再生成済。
+  残課題：flag size の国別バラツキ（10-25% / nanobanana 確率揺れ / user
+  手動再生成予定・PHASE_BACKLOG「Phase 4 後 backlog」に記録）。
+  archive：`archive/prompts/master_prompt_design_guide_v3_12.py` +
+  `archive/prompts/image_prompts_lesson01_v3_12.json` に v3.12 系を保全。
+
+- **2026-05-22 v4.0 flag size 残課題 retire**：v4.0 取り込み後の人間レビューで
+  `word_ベトナム人.png` のみ flag size が異常に大（他 11 件は許容内）。user が
+  worktree で `--force` 再生成 → main に手動コピー反映（hash
+  `298b98de2a77` → `971f22c6285d`）。PHASE_BACKLOG「flag size 均一化」項目は
+  retire。今後 lesson 拡張で新規 outlier が出た場合は per-image 対応。
+
+- **2026-05-22 Phase 5 ④ アーキテクチャ pivot：決定論 → Claude Code スキル方式**：
+  worktree example-prompts で Phase 5 ④ worktree A の Q1A / Q2A / Q3B を実装中、
+  user との対話で **build_prompts.py 決定論方式は本来の設計意図と乖離**している
+  ことが判明（GAS 時代の実運用は「Claude-in-chat が普遍ルール従って prompt 書く →
+  importImagePrompts で S 列投入」だった）。Goi_List 17,508 件への自動展開には
+  決定論 + 手書き辞書では原理的に不可能。Claude API（Sonnet）案も検討したが
+  user 指示で **Claude Code スキル `/generate-image-prompt` 方式**に確定（API
+  課金 0・サブスク内・GAS 時代の流れを取り戻す）。worktree A の Q1A
+  （example_sentence inline）/ Q2A（transcribe スクリプト）/ preflight 関数群 /
+  v4.1 hash は保全。Q3B の Python dispatch / render_* / compose_* / classify_person
+  等は dead code 化（v4.1 commit `a830c95` は履歴として保持）。実機検証で得た
+  PERSON_NATIONALITY_HINTS / BUILDING_CUES / OBJECT_SIGNATURES 等の知識は
+  ガイド PART 4 Reference Appendix として転記して保全。Phase 5 ④' = pivot 後の
+  本格実装は新規 fresh worktree session で着手予定。関連 memory：
+  `project_phase5_pivot_to_claude_code_skill.md` /
+  `feedback_skill_over_api_for_prompt_gen.md`。
+
+- 2026-05-23 Phase 5 ④' worktree skill 実装完了：6-PART .md ガイド (manifest hash
+  1ca2f57ad927) + `.claude/skills/generate-image-prompt.md` (4 mode) + preflight
+  切出 `scripts/lib/prompt_preflight.py` + invariants B' 機械検証。lesson_01 smoke
+  PASS (医者)。schedule は Windows schtasks ローカル方式採用（remote /schedule
+  は見送り）。subagent Write が permission denied で全 6 PART を main session で
+  直接 Write した経緯あり (settings.local.json では subagent 解除されない harness 仕様)。
+
+<!-- ↓ 2026-05-25 D 案取り込み: worktree phase4-prompt-plan の v4.0.4 building 経緯。
+     当該作業は main 側 5/22 Phase 5 ④ pivot (Claude Code skill 方式) を knowing せず
+     並行進化したため code (build_prompts.py / guide v4.0.py 改修) は dead = drop。
+     design insight (5-image reference attach / building layout determinism / cyclist
+     pose 6 軸明示 等) は後続 worktree session で PART 1-6 .md へ手動転記予定。
+     取り込みは PNG 6 件 + archive smoke json + registry generated 化のみ。 -->
+
 - **2026-05-24 v4.0.4 building Stage 1 R9-R11 → R12 へ**：worktree image-prompt-plan で
   R9 (person template 同型化 7464 chars) NG → R10 (universal template + STYLE_BIBLE 厳守
   1700 chars) で R9 より悪化 → R11 (pipeline 改修で reference attachment 実装：

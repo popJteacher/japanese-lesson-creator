@@ -1,0 +1,194 @@
+[
+  {
+    "accent_type": 2,
+    "mora_count": 3,
+    "reading_kana": "やすい",
+    "accent_yomigana": "^やす!い",
+    "accent_source": "unidic",
+    "word": "安い"
+  },
+  {
+    "accent_type": 3,
+    "mora_count": 3,
+    "reading_kana": "なのか",
+    "accent_yomigana": "^なのか!",
+    "accent_source": "naist-jdic",
+    "word": "七日"
+  },
+  {
+    "accent_type": 4,
+    "mora_count": 4,
+    "reading_kana": "けしごむ",
+    "accent_yomigana": "^けしごむ!",
+    "accent_source": "naist-jdic",
+    "word": "消しゴム"
+  },
+  {
+    "accent_type": 2,
+    "mora_count": 2,
+    "reading_kana": "ゆき",
+    "accent_yomigana": "^ゆき!",
+    "accent_source": "unidic",
+    "word": "雪"
+  },
+  {
+    "accent_type": 3,
+    "mora_count": 3,
+    "reading_kana": "はつか",
+    "accent_yomigana": "^はつか!",
+    "accent_source": "naist-jdic",
+    "word": "二十日"
+  },
+  {
+    "accent_type": 3,
+    "mora_count": 3,
+    "reading_kana": "ふつか",
+    "accent_yomigana": "^ふつか!",
+    "accent_source": "naist-jdic",
+    "word": "二日"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "はは",
+    "accent_yomigana": "^は!は",
+    "accent_source": "unidic",
+    "word": "母"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "よる",
+    "accent_yomigana": "^よ!る",
+    "accent_source": "unidic",
+    "word": "夜"
+  },
+  {
+    "accent_type": 0,
+    "mora_count": 4,
+    "reading_kana": "らいねん",
+    "accent_yomigana": "^らいねん",
+    "accent_source": "unidic",
+    "word": "来年"
+  },
+  {
+    "accent_type": 3,
+    "mora_count": 3,
+    "reading_kana": "むいか",
+    "accent_yomigana": "^むいか!",
+    "accent_source": "naist-jdic",
+    "word": "六日"
+  },
+  {
+    "accent_type": 2,
+    "mora_count": 2,
+    "reading_kana": "ふく",
+    "accent_yomigana": "^ふく!",
+    "accent_source": "unidic",
+    "word": "服"
+  },
+  {
+    "accent_type": 2,
+    "mora_count": 2,
+    "reading_kana": "くつ",
+    "accent_yomigana": "^くつ!",
+    "accent_source": "unidic",
+    "word": "靴"
+  },
+  {
+    "accent_type": 2,
+    "mora_count": 2,
+    "reading_kana": "いけ",
+    "accent_yomigana": "^いけ!",
+    "accent_source": "unidic",
+    "word": "池"
+  },
+  {
+    "accent_type": 2,
+    "mora_count": 2,
+    "reading_kana": "かわ",
+    "accent_yomigana": "^かわ!",
+    "accent_source": "unidic",
+    "word": "川"
+  },
+  {
+    "accent_type": 2,
+    "mora_count": 2,
+    "reading_kana": "やま",
+    "accent_yomigana": "^やま!",
+    "accent_source": "unidic",
+    "word": "山"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "ねこ",
+    "accent_yomigana": "^ね!こ",
+    "accent_source": "unidic",
+    "word": "猫"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "あめ",
+    "accent_yomigana": "^あ!め",
+    "accent_source": "unidic",
+    "word": "雨"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "あき",
+    "accent_yomigana": "^あ!き",
+    "accent_source": "unidic",
+    "word": "秋"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "はる",
+    "accent_yomigana": "^は!る",
+    "accent_source": "unidic",
+    "word": "春"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 2,
+    "reading_kana": "うみ",
+    "accent_yomigana": "^う!み",
+    "accent_source": "unidic",
+    "word": "海"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 3,
+    "reading_kana": "らじお",
+    "accent_yomigana": "^ら!じお",
+    "accent_source": "unidic",
+    "word": "ラジオ"
+  },
+  {
+    "accent_type": 1,
+    "mora_count": 3,
+    "reading_kana": "てれび",
+    "accent_yomigana": "^て!れび",
+    "accent_source": "unidic",
+    "word": "テレビ"
+  },
+  {
+    "accent_type": 3,
+    "mora_count": 5,
+    "reading_kana": "こんぴゅーた",
+    "accent_yomigana": "^こんぴゅ!ーた",
+    "accent_source": "unidic",
+    "word": "コンピュータ"
+  },
+  {
+    "accent_type": 3,
+    "mora_count": 6,
+    "reading_kana": "まんねんひつ",
+    "accent_yomigana": "^まんね!んひつ",
+    "accent_source": "naist-jdic",
+    "word": "万年筆"
+  }
+]
