@@ -4481,8 +4481,8 @@
       "originalAudioUrl": "https://drive.google.com/uc?id=1K0haYmYHx24nBrCnvYt_DtJ91sx4SZ2I",
       "audioSource": "tts-local-regen",
       "audioLocalizedAt": "2026-05-25",
-      "regenReason": "drive-download accent fix (Neural2 + yomigana SSML)",
-      "naturalness": {
+      "regenReason": "phase α5 延長 fix-up: user audio review (yomigana SSML)",
+      "naturalness_prev": {
         "score": 5,
         "confidence": "high",
         "comments": [],
@@ -5143,7 +5143,10 @@
     },
     "word_何分": {
       "audioUrl": "data/audio/word_何分.mp3",
-      "naturalness": {
+      "audioSource": "tts-local-regen",
+      "audioLocalizedAt": "2026-05-25",
+      "regenReason": "phase α5 延長 fix-up: user audio review (yomigana SSML)",
+      "naturalness_prev": {
         "score": 3,
         "confidence": "high",
         "comments": [
@@ -5151,10 +5154,7 @@
         ],
         "checkedAt": "2026-05-25",
         "model": "gemini-2.5-flash"
-      },
-      "audioSource": "tts-local-regen",
-      "audioLocalizedAt": "2026-05-25",
-      "regenReason": "drive-download accent fix (Neural2 + yomigana SSML)"
+      }
     },
     "word_二": {
       "audioUrl": "data/audio/word_二.mp3",
@@ -5290,16 +5290,16 @@
     },
     "word_寝る": {
       "audioUrl": "data/audio/word_寝る.mp3",
-      "naturalness": {
+      "audioSource": "tts-local-regen",
+      "audioLocalizedAt": "2026-05-25",
+      "regenReason": "odaka yomigana SSML (^ねる!) - user confirmed via neru_diag i variant",
+      "naturalness_prev": {
         "score": 5,
         "confidence": "high",
         "comments": [],
         "checkedAt": "2026-05-25",
         "model": "gemini-2.5-flash"
-      },
-      "audioSource": "tts-local-regen",
-      "audioLocalizedAt": "2026-05-25",
-      "regenReason": "drive-download accent fix (Neural2 + yomigana SSML)"
+      }
     },
     "word_年": {
       "audioUrl": "data/audio/word_年.mp3",
@@ -5342,16 +5342,16 @@
     },
     "word_はい": {
       "audioUrl": "data/audio/word_はい.mp3",
-      "naturalness": {
+      "audioSource": "tts-local-regen",
+      "audioLocalizedAt": "2026-05-25",
+      "regenReason": "phase α5 延長 fix-up: user audio review (yomigana SSML)",
+      "naturalness_prev": {
         "score": 5,
         "confidence": "high",
         "comments": [],
         "checkedAt": "2026-05-25",
         "model": "gemini-2.5-flash"
-      },
-      "audioSource": "tts-local-regen",
-      "audioLocalizedAt": "2026-05-25",
-      "regenReason": "drive-download accent fix (Neural2 + yomigana SSML)"
+      }
     },
     "word_初めまして": {
       "audioUrl": "data/audio/word_初めまして.mp3",
@@ -5706,16 +5706,16 @@
     },
     "word_分": {
       "audioUrl": "data/audio/word_分.mp3",
-      "naturalness": {
+      "audioSource": "tts-local-regen",
+      "audioLocalizedAt": "2026-05-25",
+      "regenReason": "phase α5 延長 fix-up: user audio review (yomigana SSML)",
+      "naturalness_prev": {
         "score": 5,
         "confidence": "high",
         "comments": [],
         "checkedAt": "2026-05-25",
         "model": "gemini-2.5-flash"
-      },
-      "audioSource": "tts-local-regen",
-      "audioLocalizedAt": "2026-05-25",
-      "regenReason": "drive-download accent fix (Neural2 + yomigana SSML)"
+      }
     },
     "word_ページ": {
       "audioUrl": "data/audio/word_ページ.mp3",

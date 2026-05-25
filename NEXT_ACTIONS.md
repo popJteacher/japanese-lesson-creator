@@ -5,10 +5,9 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-25 延長（**Phase α5 延長まで完了** 🆕：OJAD scraper +
-NHK lib + consensus engine 実装 → 57 catalog entries に accent_consensus_override 付与
-→ 416 word audio 一括 regen (戦略 A `--force`)。次セッションは **user 試聴で
-最終チェック → 残 mismatch があれば手動 override → Phase β1 (宿題正解判定) に着手**）
+**最終更新：** 2026-05-25 延長 fix-up（**Phase α5 延長 + user 試聴 fix 5 件完了** 🆕：
+する / はい / 何分 / 寝る / 分 の audio 違和感を user 試聴で確定 → catalog 修正
++ 5 件 regen → 全 OK 判定。**次は Phase β1 (宿題正解判定) 着手**）
 
 ---
 
@@ -16,62 +15,56 @@ NHK lib + consensus engine 実装 → 57 catalog entries に accent_consensus_ov
 
 - **Phase 0 〜 5 ⑤ / α1 / α2 / α3 / α4 / α5 / α5 後半 / α5 延長 完了** ✅
 
-### α5 延長（今回）🆕
+### α5 延長 fix-up (2026-05-25 後半) 🆕
 
-#### 実装
-- `scripts/scrape-ojad.py` — OJAD (https://www.gavo.t.u-tokyo.ac.jp/ojad/)
-  polite scraper (0.6s sleep, 25 件毎 cache 保存)
-- `scripts/lib/yomigana_normalize.py` — 長音正規化 (おう/えい/ょう/ゅう → ー) +
-  連濁剥がし (が→か 等) + ^/! 透過処理
-- `scripts/lib/nhk_lookup.py` — NHK CSV (100k entries) lookup を check-accent-nhk から抽出
-- `scripts/lib/ojad_lookup.py` — OJAD cache strict (kana 完全一致) lookup
+user 試聴で 5 件 NG 判定 → catalog 修正 + regen → 全 OK 確定：
+
+| word | 修正前 | 修正後 (yomigana SSML) | 備考 |
+|---|---|---|---|
+| する | consensus `^す!る` 頭高 | override `^する` 平板 | accent 核なしだが user OK |
+| はい | consensus `^はい` 平板 | override `^は!い` 頭高 | NHK 1 標準 |
+| 何分 | pickCatalogEntry が なにぶん entry を誤選択 | なんふん override `^な!んぷん` | catalog 同表記2読み問題 |
+| 寝る | tts_workaround.usePlainKana (Google default) | override `^ねる!` 尾高 | **5/25 朝に確定したが延長 regen で plain に戻された再発バグ** |
+| 分 | pickCatalogEntry が ぶん entry を誤選択 | ふん override `^ふ!ん` | catalog 同表記2読み問題 |
+
+#### 同表記2読み問題の構造的根本原因
+`pickCatalogEntry` は `word` 完全一致 → accent 付き entry → accent_source !== 'unknown' を優先で選択。
+N5 教材ターゲットの reading (なんふん / ふん) を強制選択するため、不要 entry (なにぶん idx=4856 / ぶん idx=15406) の accent を全 clear して候補から除外する手当を実施。
+**恒久対策（β 以降）**: pickCatalogEntry を lesson_*.json 参照経由の reading 確定に切り替えると安全。
+
+### Phase α5 延長 本体（前回まで）
+
+- `scripts/scrape-ojad.py` — OJAD scraper (0.6s sleep)
+- `scripts/lib/{yomigana_normalize,nhk_lookup,ojad_lookup}.py` — 共通 lib
 - `scripts/build-accent-consensus.py` — 3 ソース合議エンジン
-  - 全 3 一致 → high, no change
-  - NHK == OJAD != UniDic → high, override
-  - 単 source / 部分一致 → med
-  - 3 source disagree → low (UniDic 維持)
-  - raw 値選択: catalog reading と plain kana 一致するソース最優先
-  - NHK lookup strict 化: 単漢字音読み/訓読み 混同回避 (例: 国(こく) vs くに entry)
-
-#### 実行結果
-- OJAD scrape: 416 word 中 389 ok / 22 not_found / 0 errors (5.8 分)
-- Consensus apply: 416 audio 対象に対し
-  - changes_high 22 / changes_med 50 / no_change 355 / review_low 1 / unidic_only 49
-  - 既存 manual override (12 件) は consensus 適用時に skip → 57 entries に
-    accent_consensus_override 付与
+- OJAD scrape: 416 word 中 389 ok / 22 not_found
+- Consensus apply: 57 entries に accent_consensus_override 付与
 - audio 一括 regen: 416 件 (--force, Neural2 + yomigana SSML, naturalness inline)
+- fix-up: 5 件再修正 (上記)
 
-#### precedence (audio 生成時)
+#### precedence (audio 生成時・確定)
 `accent_override (manual)` > `accent_consensus_override` > `accent_yomigana (UniDic raw)` > plain
-- generate-audio-local.mjs / regen-drive-download.mjs 両方で honor 済
-- `--accent-changed` flag を新設 (consensus_override 持つ entry のみ regen 用)
+- generate-audio-local.mjs / regen-drive-download.mjs 両方で honor
 
 ---
 
-### 次セッション着手点：user 試聴 → 必要に応じて手動 override → β1
+### 次セッション着手点：**Phase β1 (宿題正解判定)**
 
-**手順**：
-1. data/audio/word_*.mp3 を ファイラー / ブラウザで適当に試聴
-2. 違和感あれば NHK CSV + OJAD で cross-check (`scripts/check-accent-nhk.py`)
-3. user 判断で手動 override 追加 (`accent_override` で consensus を上書き)
-4. 必要なら `node scripts/regen-drive-download.mjs --accent-changed` で関連だけ regen
-5. 終了したら **Phase β1 (宿題正解判定) 着手**
+audio 確定済。β1 に着手可。
 
-### スナップショット（2026-05-25 延長・コマンドで再導出）
+### スナップショット（2026-05-25 fix-up 後・コマンドで再導出）
 
 ```
 image_registry: pending 440 / generated 17 / rejected 27 / outdated 6 / (none) 1
 image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
 audio_registry:  tts-local-regen 416 / (none) 50 (= 466 total)
-                 word: 416/466 = 今日 2 回目 regen (consensus 反映後)
+                 word: 416/466 (5 件 fix-up 後・全 user OK)
                  sentence: 50/466 は 5/24 のまま (今回触らず)
 vocab_catalog:  17508 entries (schemaVersion 1.2)
-                accent_yomigana 17008 / accent_override 17 / accent_consensus_override 57 🆕
-                accent unknown 500
-                tts_workaround 1 (寝る: usePlainKana)
+                accent_yomigana 17007 / accent_override 22 / accent_consensus_override 53
+                accent unknown 502 (うち 何分(なにぶん)・分(ぶん) 2 件を新たに unknown 化)
+                tts_workaround 0 (寝る usePlainKana 解除)
 ojad cache:     416 entries (389 ok / 22 not_found)
-nhk cross-check: match 274 / mismatch 84 / not_in_nhk 60 / multi_reading 18
-                (※ 一部 mismatch は OJAD 採用済・残りは normalize 後一致)
 ```
 
 ---
@@ -91,6 +84,8 @@ nhk cross-check: match 274 / mismatch 84 / not_in_nhk 60 / multi_reading 18
     per-mora prosody はチョッピー化・pyopenjtalk は HTS 90 年代品質）
 - **ボールペン override** の NHK 新辞典 2016 PDF 検証
   (今日 consensus が `^ぼーるぺん` 平板を提案、manual は `^ぼーる!ぺん` 中高 4 → 要確認)
+- **同表記2読み恒久対策**: pickCatalogEntry を lesson_*.json reading 確定に切替
+  (今回 fix-up は手動で不要 entry の accent を clear したが、本筋ではない)
 - **stash 退避済**: image_prompts_skill.json + vocab_大学.png + vocab_病院.jpg
   (image-prompt-plan worktree からの partial import、3-way merge 待ち)
 
