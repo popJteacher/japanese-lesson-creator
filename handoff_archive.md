@@ -204,3 +204,41 @@
   / verification は build_prompts.py で生成した prompt と smoke prompt の no-API diff 方針。
   関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` (R25-R26 + 本番化 + universal
   rule A-1〜A-11 確定版 update) / 同 `feedback_nanobanana_prompt_design.md` 学び 13 追加。
+
+- **2026-05-25 v4.0.4 building Stage 2 完了 / guide 本体取り込み + invariants B hash 更新 +
+  build_prompts.py building 対応 + no-API verification PASS**：Stage 1 結晶 (A-1〜A-11 +
+  per-vocab-type table 4 採用) を guide に取り込み。
+  (1) `prompts/master_prompt_design_guide_v4_0.py`:
+  `BUILDING_BRAND_VOICE_REF` (image_1 = word_日本人.png) +
+  `BUILDING_ARCHITECTURAL_REF` (image_5 = vocab_病院.jpg) +
+  `BUILDING_UNIVERSAL_RULE_V4_0_4` (A-1〜A-11 multi-paragraph string) 新規。
+  `BUILDING_CUES` 4 採用 entry (学校/大学/デパート/会社) に v4_0_4_* fields 17 種追加
+  (vocab_type_desc / form_desc / signature / accent / accent_targets / label /
+  signboard_location / surroundings_context / surroundings_block /
+  framing_extra (学校 のみ) / activities_block / landscaping_block /
+  type_relevant_refs (3 件 list))。
+  `PROMPT_TEMPLATES["vocabulary_building"]` 全面書き直し (旧 ~1700 chars pale sky-blue
+  full-bleed → 新 ~5100 chars universal rule + per-building 変数 + 5-image reference)。
+  `BACKGROUND_BY_TYPE["building"]` 撤去 + `BUILDING_BACKGROUND_EXACT` constant 削除。
+  (2) `scripts/invariants.mjs`: `BACKGROUND_BY_TYPE.building` 撤去 + C4/C5 で
+  `type === 'building'` / `type !== 'building'` 例外撤去 + `promptGuideExpectedHashPrefix`
+  を旧 `5338c98aab5d` → 新 `078fd0bd9ffe` に更新。
+  (3) `scripts/build_prompts.py`: `render_building(g, entry)` 新規 (返り値 = (prompt,
+  styleReferences) or (None, None) for unmigrated)、`main()` で buildings 反復 +
+  `buildings_skipped` 追跡、`preflight()` に building branch (person 専用 full-body /
+  area% / portrait lens チェック skip)、`PLACEHOLDERS` に v4.0.4 building 17 種追加、
+  出力 JSON entry に `styleReferences: [path, ...]` (5 枚) 付与、出力 path
+  `image_prompts_lesson01_v4_0_4.json` / `coveredVocabTypes: ["person","building"]` /
+  `renderedCounts` + `buildingsSkipped` _meta 追加。
+  (4) `npm run validate` PASS (B 078fd0bd9ffe / C 7 files including v4_0_4.json 15
+  entries / D 55/55 PASS 3 WARN)。
+  (5) **no-API Verification PASS**: `python scripts/build_prompts.py --lesson 1` で
+  15 entries 生成 (12 person + 3 building = 学校 path / 大学 path / デパート path; 病院 +
+  銀行 = 2 件 skip / 未移行)。学校 prompt len=10966 / 大学 len=11212 / デパート len=10323
+  (smoke R25/R26 より長い：universal rule explicit セクション化 + image_5 cross-ref 強化
+  のため)、styleReferences 全件 5 枚正しく付与、placeholder 全消失、
+  [A-1]〜[A-11] / BUILDING SCALE EMPHASIS / BLANK TEXT SURFACES / image_5 病院 anchor
+  全て含む。今後 lesson_02 以降の building (病院/銀行/駅/スーパー) も同型展開で対応可能。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` Stage 2 done section
+  / B hash = 078fd0bd9ffe / 本セッション = WIP commit c9f70e0 (本番化) + 最終 commit
+  (Stage 2)。次セッション = cleanup or 新 lesson 展開 or main ff-merge。

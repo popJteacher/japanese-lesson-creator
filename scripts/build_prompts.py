@@ -624,6 +624,64 @@ def render_person(g, entry, kind, sub):
 
 
 # ─────────────────────────────────────────────────────────────
+# v4.0.4 (2026-05-25): vocab_type=building 対応
+# Stage 1 (R1-R26) 結晶の universal rule + per-building 変数 + 5-image
+# reference attachment を guide BUILDING_UNIVERSAL_RULE_V4_0_4 +
+# BUILDING_CUES[word]["v4_0_4_*"] + BUILDING_BRAND_VOICE_REF +
+# BUILDING_ARCHITECTURAL_REF から組み立てる。
+# 出力 JSON entry には styleReferences: [path, ...] (5 枚) を付与する
+# （generate-images-local.mjs / scripts/lib/nanobanana-client.mjs が
+#  multi-image input として nanobanana API に渡す）。
+# ─────────────────────────────────────────────────────────────
+def render_building(g, entry):
+    """vocab_type=building の prompt と styleReferences を生成。
+    word が BUILDING_CUES に未登録または v4_0_4_label fields が未定義
+    （= 未 Stage 2 migrate の banks / hospitals 等）は (None, None) を返す。
+    """
+    word = entry["word"]
+    cue = g.BUILDING_CUES.get(word)
+    if not cue or "v4_0_4_label" not in cue:
+        return None, None
+    template = g.PROMPT_TEMPLATES["vocabulary_building"]
+    refs = cue["v4_0_4_type_relevant_refs"]
+    if len(refs) != 3:
+        raise ValueError(
+            f"BUILDING_CUES[{word}].v4_0_4_type_relevant_refs must have exactly 3 entries; "
+            f"got {len(refs)}"
+        )
+    subs = [
+        ("{BG_EXACT}",                g.BACKGROUND_BY_TYPE["default"]),
+        ("{BUILDING_UNIVERSAL_RULE}", g.BUILDING_UNIVERSAL_RULE_V4_0_4.rstrip()),
+        ("{VOCAB_TYPE_DESC}",         cue["v4_0_4_vocab_type_desc"]),
+        ("{FORM_DESC}",               cue["v4_0_4_form_desc"]),
+        ("{SIGNATURE}",               cue["v4_0_4_signature"]),
+        ("{ACCENT_TARGETS}",          cue["v4_0_4_accent_targets"]),
+        ("{ACCENT}",                  cue["v4_0_4_accent"]),
+        ("{LABEL}",                   cue["v4_0_4_label"]),
+        ("{SIGNBOARD_LOCATION}",      cue["v4_0_4_signboard_location"]),
+        ("{SIGNBOARD_LOC_SHORT}",     cue["v4_0_4_signboard_location_short"]),
+        ("{SURROUNDINGS_BLOCK}",      cue.get("v4_0_4_surroundings_block", "")),
+        ("{FRAMING_EXTRA}",           cue.get("v4_0_4_framing_extra", "")),
+        ("{ACTIVITIES_BLOCK}",        cue["v4_0_4_activities_block"]),
+        ("{LANDSCAPING_BLOCK}",       cue["v4_0_4_landscaping_block"]),
+        ("{REF2_DESC}",               refs[0]["desc"]),
+        ("{REF3_DESC}",               refs[1]["desc"]),
+        ("{REF4_DESC}",               refs[2]["desc"]),
+    ]
+    prompt = template
+    for k, v in subs:
+        prompt = prompt.replace(k, v)
+    # styleReferences 順: image_1 = brand voice, image_2-4 = type-relevant,
+    # image_5 = architectural anchor （A-5 規律）
+    style_references = (
+        [g.BUILDING_BRAND_VOICE_REF]
+        + [r["path"] for r in refs]
+        + [g.BUILDING_ARCHITECTURAL_REF]
+    )
+    return prompt, style_references
+
+
+# ─────────────────────────────────────────────────────────────
 # Pre-flight invariants（invariants.mjs C 相当）
 # ─────────────────────────────────────────────────────────────
 BG_EXACT  = "soft cream off-white background (warm off-white, NOT pure stark white)"
@@ -635,11 +693,22 @@ RE_PORTRAIT_LENS = re.compile(r"85\s*mm\s+portrait\s+lens", re.IGNORECASE)
 RE_FLAG_OR_NAT   = re.compile(r"flag|nationality|国旗", re.IGNORECASE)
 RE_STRONG_TOKEN  = re.compile(r"\b(must|never|DO NOT)\b")
 
-PLACEHOLDERS = ["[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
-                "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
-                "{CULTURAL_STYLING_HINT}", "{APPARENT_FEATURES_HINT}",
-                "{FLAG_PLACEMENT}",  # v3.12 PART 1.7
-                "{NATIONALITY_EXCEPTION_BLOCK}"]
+PLACEHOLDERS = [
+    # person 用
+    "[TARGET_WORD]", "{CHARACTER_DESCRIPTION}",
+    "{CHARACTER_POSE_AND_EXPRESSION}", "{FLAG_SHAPE_AND_COLORS}",
+    "{CULTURAL_STYLING_HINT}", "{APPARENT_FEATURES_HINT}",
+    "{FLAG_PLACEMENT}",  # v3.12 PART 1.7
+    "{NATIONALITY_EXCEPTION_BLOCK}",
+    # v4.0.4 building 用
+    "{BG_EXACT}", "{BUILDING_UNIVERSAL_RULE}",
+    "{VOCAB_TYPE_DESC}", "{FORM_DESC}", "{SIGNATURE}",
+    "{ACCENT}", "{ACCENT_TARGETS}",
+    "{LABEL}", "{SIGNBOARD_LOCATION}", "{SIGNBOARD_LOC_SHORT}",
+    "{SURROUNDINGS_BLOCK}", "{FRAMING_EXTRA}",
+    "{ACTIVITIES_BLOCK}", "{LANDSCAPING_BLOCK}",
+    "{REF2_DESC}", "{REF3_DESC}", "{REF4_DESC}",
+]
 
 
 def preflight(text, vocab_type, word):
@@ -655,9 +724,13 @@ def preflight(text, vocab_type, word):
             errs.append(f"[C1] {word}: 面積指定 'fills NN% of...' が残存")
         if RE_PORTRAIT_LENS.search(text):
             errs.append(f"[C1] {word}: '85mm portrait lens' が残存")
+    # v4.0.4: building は person 専用チェックを skip（full-body 等は対象外）
+    # 強表現 (must/never) チェックは flag/nationality 文脈のみ。building は universal rule
+    # 内に "must" / "MUST" 多用しているため通過するが、flag 言及がないため C6 は skip。
     if RE_FLAG_OR_NAT.search(text):
         if not RE_STRONG_TOKEN.search(text):
             errs.append(f"[C6] {word}: flag/nationality 文脈に強表現 must/never が無い")
+    # 空文字以外の placeholder 残存を検出（{SURROUNDINGS_BLOCK} 等は空文字置換 OK）
     for p in PLACEHOLDERS:
         if p in text:
             errs.append(f"[PH] {word}: placeholder {p} 未置換")
@@ -708,11 +781,16 @@ def main():
     persons = [v for v in vt_doc.get("vocabulary", []) if v.get("vocab_type") == "person"]
     if not persons:
         sys.exit(f"ABORT: vocab_type=person のエントリが {vocab_types_path} に無い")
+    # v4.0.4 (2026-05-25): vocab_type=building も対象。Stage 2 移行済 (BUILDING_CUES に
+    # v4_0_4_label fields ある) のみレンダリング。未移行 (病院 / 銀行 / 駅 / スーパー 等)
+    # は skip して buildings_skipped に記録。
+    buildings = [v for v in vt_doc.get("vocabulary", []) if v.get("vocab_type") == "building"]
 
     g = load_guide()
     rendered = []
     all_errors = []
     unclassified = []
+    buildings_skipped = []
 
     for entry in persons:
         kind, sub = classify_person(entry["word"])
@@ -730,11 +808,32 @@ def main():
             "prompt":     prompt,
         })
 
+    for entry in buildings:
+        prompt, style_refs = render_building(g, entry)
+        if prompt is None:
+            buildings_skipped.append(entry["word"])
+            continue
+        all_errors.extend(preflight(prompt, "building", entry["word"]))
+        rendered.append({
+            "imageId":         entry["imageId"],
+            "word":            entry["word"],
+            "reading":         entry["reading"],
+            "en":              entry["en"],
+            "vocab_type":      entry["vocab_type"],
+            "styleReferences": style_refs,
+            "prompt":          prompt,
+        })
+
     if unclassified:
         for w in unclassified:
             print(f"  未分類: {w}（PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS に追加が必要）",
                   file=sys.stderr)
         sys.exit(f"ABORT: {len(unclassified)} 件の person が役割/国籍に分類できない。")
+
+    if buildings_skipped:
+        for w in buildings_skipped:
+            print(f"  v4.0.4 未移行 building (skip): {w}（BUILDING_CUES[{w}] に v4_0_4_label fields を追加すれば対象化）",
+                  file=sys.stderr)
 
     if all_errors:
         print(f"=== invariant violations: {len(all_errors)} ===", file=sys.stderr)
@@ -743,36 +842,44 @@ def main():
         sys.exit("ABORT: pre-flight 違反のため書き出しません。")
 
     out_path = args.out or os.path.join(
-        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v4_0.json"
+        ROOT, "data", f"image_prompts_lesson{args.lesson:02d}_v4_0_4.json"
     )
+    person_count = sum(1 for r in rendered if r["vocab_type"] == "person")
+    building_count = sum(1 for r in rendered if r["vocab_type"] == "building")
     out = {
         "_meta": {
             "lessonNo": args.lesson,
-            "guideVersion": "v4.0",
+            "guideVersion": "v4.0.4",
             "guideHashNormalized": guide_hash_lf_normalized(GUIDE_PATH),
             "generatedAt": datetime.date.today().isoformat(),
             "generator": "scripts/build_prompts.py",
             "scriptHash": file_hash(os.path.abspath(__file__)),
             "vocabTypesSource": os.path.relpath(vocab_types_path, ROOT).replace("\\", "/"),
             "vocabTypesMeta": vt_doc.get("_meta", {}),
-            "coveredVocabTypes": ["person"],
-            "notes": ("MVP: vocab_type=person のみ実装。lesson_01 の person 12 件 "
-                      "（役割系5＋国籍系7）。他 vocab_type のエントリは出力に含まない。"
-                      " サブカテゴリ（role/nationality）は scripts/build_prompts.py 内"
-                      " の PERSON_ROLE_LOOKUP / PERSON_NATIONALITY_HINTS で解決する。"
-                      " v4.0 (2026-05-22) major-version pivot: 全国共通 modern daily "
-                      "casual wear + 国旗両手持ち（hand-held flag in both hands in front "
-                      "of the chest）。PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE は退役、"
-                      "PART 1.7 FLAG_PLACEMENT_RULE は簡素化（全員固定 pose）、伝統 "
-                      "silhouette 禁止は universal NO_TRADITIONAL_SILHOUETTE_RULE "
-                      "（ガイド PART 1.1 hard_constraints）で集約。phenotype は引き続き "
-                      "PART 1.5 PHENOTYPE_SPECIFICATION_RULE 経由で word hash deterministic 解決。"),
+            "coveredVocabTypes": ["person", "building"],
+            "renderedCounts": {"person": person_count, "building": building_count},
+            "buildingsSkipped": buildings_skipped,
+            "notes": ("v4.0.4 (2026-05-25): vocab_type=person + vocab_type=building "
+                      "(Stage 2 取り込み済 4 建物 = 学校/大学/デパート/会社) 対応。"
+                      "BUILDING_CUES に v4_0_4_label fields がある建物のみレンダリング。"
+                      "未移行 (病院/銀行/駅/スーパー 等) は buildingsSkipped に記録。"
+                      "building entry は styleReferences: [path, ...] (5 枚 = brand voice "
+                      "+ 3 type-relevant person + architectural anchor 病院) を含み、"
+                      "scripts/generate-images-local.mjs が multi-image input として nanobanana に渡す。"
+                      " --- person side: v4.0 (2026-05-22) major-version pivot 維持。"
+                      "全国共通 modern daily casual wear + 国旗両手持ち（hand-held flag "
+                      "in both hands in front of the chest）。PART 1.6 TRADITIONAL_DRESS_PATTERN_RULE "
+                      "退役、PART 1.7 FLAG_PLACEMENT_RULE 簡素化、伝統 silhouette 禁止は "
+                      "universal NO_TRADITIONAL_SILHOUETTE_RULE で集約。phenotype は PART 1.5 "
+                      "PHENOTYPE_SPECIFICATION_RULE 経由で word hash deterministic 解決。"),
         },
         "vocabulary": rendered,
     }
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"OK: {len(rendered)} entries → {out_path}")
+    print(f"  person:              {person_count} 件")
+    print(f"  building:            {building_count} 件 (skipped: {len(buildings_skipped)} = {buildings_skipped})")
     print(f"  guideHashNormalized: {out['_meta']['guideHashNormalized']}")
     print(f"  vocabTypesSource:    {out['_meta']['vocabTypesSource']}")
     print(f"  Pre-flight invariants: PASS（{len(rendered)} 件全て）")

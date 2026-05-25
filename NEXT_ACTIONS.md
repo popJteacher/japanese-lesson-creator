@@ -5,10 +5,10 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-25（worktree image-prompt-plan で **v4.0.4 building 改修 Stage 1 R25+R26 完了 / 採用 4 件本番化 done**。
-採用：学校 R25 / 大学 R26 / デパート R22 / 会社 R22。production PNG 配置 + registry production entry 4 件 update 済。
-**次は Stage 2 (guide 本体取り込み)**。verification は build_prompts.py で生成した prompt と smoke prompt の diff
-（API 費用なし）方針確定。当日 cap 3/62）
+**最終更新：** 2026-05-25（worktree image-prompt-plan で **v4.0.4 building 改修 Stage 1 + Stage 2 完了**。
+採用 4 件本番化 + guide 本体取り込み done。新 B hash = `078fd0bd9ffe`。
+build_prompts.py で 15 entries (12 person + 3 building) 生成 + invariants 全 PASS。次は cleanup or
+新 lesson の building 同型展開 or main への ff-merge）
 
 ---
 
@@ -17,18 +17,23 @@
 - **Phase 0／1／2／3／4：完了。** ✅
 - **Phase 5 ①／②／③：完了** ✅（catalog + import-lesson 配線済）
 - **v3.12 取り込み：完了** ✅（invariants B hash = `2137a8e885ae`）
-- **v4.0 取り込み：完了** ✅（invariants B hash = `5338c98aab5d`・lesson_01 person 12 件再生成済）
+- **v4.0 取り込み：完了** ✅（旧 invariants B hash = `5338c98aab5d`・lesson_01 person 12 件再生成済）
 - **v4.0.4 building 改修 Stage 1 (smoke R1-R26)：完了** ✅
-  - smoke 100 件 / $3.99 使用済（R1-R11 = 37 件 $1.59 / R12-R24 = 60 件 $2.32 / R25-R26 = 3 件 $0.12）
-  - **採用 4 件：学校 R25 / 大学 R26 / デパート R22 / 会社 R22**
-  - 本番化済：採用 PNG 4 枚を production 名 cp（smoke 版は保持）、registry production entry 4 件 update
-  - R25 で 学校 dominate frame 75%+ + blank text rule（学び 11 対策）
-  - R26 で 大学 cyclist 姿勢明示（前傾 + 両手ハンドル + 両足ペダル on + dynamic motion + image_3 anchor）
-  - **新規学び 10-12** 確立（symmetric form vs perspective 衝突 / blank text 暴走 / per-vocab-type surroundings context）
-  - Phase 6 docs（Flux + 自作 LoRA 切替検討）追記済：docs/MIGRATION_PLAN.md
-  - 詳細経緯：worktree memory `project_v4_0_4_building_stage1.md`
-- **v4.0.4 building 改修 Stage 2 (guide 本体取り込み)：未着手** ← 次セッション最優先
-- **Phase 5 ④：v4.0 完了済だが v4.0.4 building 取り込み後に着手推奨**
+  - smoke 100 件 / $3.99 使用済
+  - 採用 4 件確定：学校 R25 / 大学 R26 / デパート R22 / 会社 R22
+  - 本番化済（cp + production registry entry 4 件 update）
+- **v4.0.4 building 改修 Stage 2 (guide 本体取り込み)：完了** ✅ 🆕
+  - 新 invariants B hash = `078fd0bd9ffe`
+  - `prompts/master_prompt_design_guide_v4_0.py`:
+    - `BUILDING_BRAND_VOICE_REF` + `BUILDING_ARCHITECTURAL_REF` + `BUILDING_UNIVERSAL_RULE_V4_0_4` (A-1〜A-11) 新規
+    - `BUILDING_CUES` 4 採用 entry に v4_0_4_* fields 追加（後方互換のため旧 fields 残置）
+    - `PROMPT_TEMPLATES["vocabulary_building"]` 全面書き直し（旧 pale sky-blue → 新 universal rule + per-building + 5-image ref）
+    - `BACKGROUND_BY_TYPE["building"]` 撤去
+  - `scripts/invariants.mjs`: C4/C5 の building 分岐撤去（全 vocab_type で default cream 統一）
+  - `scripts/build_prompts.py`: `render_building()` 新規 / `main()` で buildings 反復 / preflight に building branch / PLACEHOLDERS 17 個追加
+  - Verification (no API) PASS: `python scripts/build_prompts.py --lesson 1` で 15 entries 生成（12 person + 3 building = 学校/大学/デパート / 病院・銀行 skip = 未移行）
+  - `npm run validate` PASS（B hash 078fd0bd9ffe / C 7 files including v4_0_4.json 15 entries / D 55/55 PASS 3 WARN）
+- **Phase 5 ④：v4.0 完了済だが v4.0.4 取り込み後に着手推奨** ← Stage 2 完了で着手可
 - **Phase 5 ⑤／⑥：未着手** — Phase 5 ④ 完了後
 - **Phase 6（仮）：Flux + 自作 LoRA 切替検討** — lesson 1-3 完了 + 50-100 枚 confirmed カード蓄積後に着手判断
 - **Phase 4 後 backlog**：v3.12 修正候補 1-6 は v4.0 完了で retire 済。残り 436 件本生成 /
@@ -43,88 +48,39 @@
 
 ## active（main 即時）：**なし**
 
-main 即時 active タスクはない。次の active 化は **worktree が Stage 2 を完了して ff-merge してくる** とき。
+main 即時 active タスクはない。次の active 化は **worktree が cleanup 完了して ff-merge してくる** とき。
 
 ---
 
-## 次セッション最優先：image-prompt-plan worktree で Stage 2 着手
+## 次セッション最優先：cleanup or 新 lesson 展開 or main ff-merge
 
-worktree session を立てて v4.0.4 building Stage 2（guide 本体取り込み）に着手する。
-verification は **build_prompts.py 経由で prompt 生成 → smoke 元 prompt と diff 取り（API 費用なし）** 方針確定。
+選択肢:
 
-worktree セッション開始手順（`docs/WORKFLOW.md` § worktree セッション開始時 ＋ 本指示）：
+### (A) Stage 2 後 cleanup（推奨・小作業 ~30 分）
+1. registry 一時 entry 一括 cleanup（R12-R26 で生成された `_smoke_only: true` entry 17 個削除）
+2. `data/images/` の不採用 smoke PNG 削除（採用 4 枚は production 名で配置済・smoke 版 r25/r26/r22 + R12-R24 検証 PNG 計 19 枚削除）
+3. `data/_smoke_v4_0_4_building.json` を `archive/data/` に退避
+4. cleanup commit
 
-```
-cd .claude/worktrees/image-prompt-plan
-git pull --ff-only main          # main 側更新の取り込み（あれば）
-npm run validate                 # baseline 確認（B hash = 5338c98aab5d v4.0 のはず）
-# memory 確認: project_v4_0_4_building_stage1.md 全文 + feedback 学び 1-12
-# Stage 2 着手
-```
+### (B) 新 lesson の building 同型展開（lesson_02 building の v4_0_4_* fields 追加）
+1. `BUILDING_CUES["病院"]` / `["銀行"]` / `["駅"]` / `["スーパー"]` に v4_0_4_* fields 追加
+2. lesson_02 vocab_types_lesson02.json で対象 building を確認
+3. build_prompts.py --lesson 2 で 検証
+4. user 目視で OK なら本番化（実機 ~$0.04 × N 件）
 
-### Stage 2 作業手順（次セッション）
+### (C) main への ff-merge（Stage 1+2 完了の取り込み）
+1. main branch に切替
+2. `git merge --ff-only phase4-prompt-plan` (or worktree から)
+3. main 側の NEXT_ACTIONS / docs を整合化
+4. main の commit 履歴に Stage 1+2 を取り込む
 
-1. **`prompts/master_prompt_design_guide_v4_0.py` に新構造を実装**
-   - `STYLE_BIBLE` に `building_universal_rule` (A-1〜A-10 / 学び 1-12 結晶) + `per_vocab_type_table["building"]` (4 vocab: 学校/大学/デパート/会社 の accent / signature / label / activities / refs / surroundings / palette) を新設
-   - `PROMPT_TEMPLATES["vocabulary_building"]` を 旧版 (pale sky-blue / single signage_text / primary_scene_cue) → 新版 (universal rule + per-building 変数 + reference 5 枚) で全面書き直し
-   - `BACKGROUND_BY_TYPE["building"]` 撤去（default cream に統合）
-   - 旧 building テンプレを `archive/prompts_v4_0_4_pre_building_rewrite/` に退避
-
-2. **`scripts/invariants.mjs` の C4 building 分岐を default cream 期待に更新**
-   - line 49 `BACKGROUND_BY_TYPE.building` 撤去 / line 179 `type === 'building'` 分岐撤去（全 vocab_type が `BACKGROUND_BY_TYPE.default` 期待で統一）
-
-3. **`scripts/build_prompts.py` に vocab_type=building 対応追加**
-   - per-building dict 読み込み（per_vocab_type_table["building"][word]）
-   - `styleReferences: [...]` 自動付与（per_vocab_type_table 参照）
-   - `preflight()` の vocab_type=building 分岐
-
-4. **`npm run validate` で新 B hash 確定**（guide 改修で hash 変動）
-   - 新 B hash を `scripts/invariants.mjs` `EXPECTED_GUIDE_HASH` に更新
-
-5. **Verification (no API)**
-   - `python scripts/build_prompts.py --lesson 1`（building 4 件含む）
-   - 出力された prompt JSON の 学校/大学/デパート/会社 4 entry を、smoke 採用版（R25/R26/R22/R22）と string-diff
-   - 差分が「universal rule 共通部の文字列正規化のみ」レベルなら OK
-   - 大きな差分があれば guide 側を修正 → 再生成 → diff
-
-6. **Stage 2 完了 → 一括 commit**
-   - 本セッションの WIP commit + Stage 2 まとめて
-
-### Stage 1 採用 + universal rule 確定版（Stage 2 で取り込み予定）
-
-**A. 普遍ルール（全 building カード共通 / 学び 1-12 結晶）**
-- A-1. Camera: street-level low-angle 3/4, eye-height, slightly looking up
-- A-2. Framing: close-up（side wings off-frame OK / 上層階 off-frame OK）/ building DOMINATES frame 75%+ vertically
-- A-3. Figures: 4-5 名、each DIFFERENT activity、prominent 1/3 of visible building height
-- A-4. Palette: muted pastel family / Walls = cream off-white / Roof = slate-grey / Accent = per-vocab-type
-- A-5. Reference: 5 枚 = image_1 brand voice (日本人) + image_2-4 type-relevant person + image_5 architectural anchor
-- A-6. Outline: deep slate-navy / no gradients / shadows / 3D / 1:1
-- A-7. Label: single signboard, type 別 English label, ONLY text element
-- A-8. Ground/Pavement: sidewalk/paved ground = cream off-white、subtle outline only
-- A-9. Blank text surfaces: named signboard 以外は全 blank（学び 11）
-- A-10. Surroundings context: per-vocab-type（学び 12）
-- A-11. Cyclist pose: 前傾 + 両手ハンドル + 両足ペダル on + dynamic motion + 7-head proportion + image_3 anchor（R26 学び）
-
-**B. Per-vocab-type table 確定版（Stage 2 で取り込み予定）**
-
-| building | accent | primary signature | label | activities 4 種 | type-relevant refs | surroundings |
-|---|---|---|---|---|---|---|
-| 学校 | warm yellow / sand-cream gold | 中央 clock tower | SCHOOL | 制服学生 entering/walking past/cycling/chatting | 学生 / 大学生 / 先生 | campus |
-| 大学 | sand-stone beige | 石造 gate + sign beam | UNIVERSITY | 大学生 entering/walking past/cycling (前傾 pose)/chatting | 学生 / 大学生 / 先生 | campus（副 academic building OK） |
-| デパート | warm muted tan | display windows + awning + 上層階 (off-frame) | DEPT. STORE | shopper entering/walking past/window-shopping/chatting | 会社員 / アメリカ人 / 韓国人 | urban_corner |
-| 会社 | dull muted blue | glass curtain-wall + lobby (off-frame) | OFFICE | office worker entering/walking past/phone in hand/chatting | 会社員 / アメリカ人 / 韓国人 | urban_corner |
-
-### Stage 2 完了後の cleanup（commit と同時 or 別 commit）
-
-1. registry 一時 entry 一括 cleanup（R12-R26 で生成された 15+ 個の `_smoke_only=true` entry 削除）
-2. data/images/ の不採用 PNG 削除（採用 4 枚は production 名で配置済・smoke 版 r25/r26/r22 等 15+ 枚削除）
-3. `data/_smoke_v4_0_4_building.json` を `archive/data/` に退避（または Stage 2 取り込み参考として保全）
+優先順は user 判断。recommend = (A) cleanup → (C) ff-merge → (B) lesson_02 展開 の順。
 
 ---
 
 ## ブロッカー
 
-- Phase 5 ④ は v4.0 完了済だが、v4.0.4 building Stage 2 後に着手推奨
+- Phase 5 ④ は v4.0 完了済だが、v4.0.4 building Stage 2 後（now done）に着手可
 - Phase 5 ⑤ は ④ 完了に blocked
 - Phase 5 ⑥ は ⑤ 完了に blocked
 - Phase 6 LoRA 切替は lesson 1-3 完了 + spike test PASS が前提
@@ -133,30 +89,15 @@ npm run validate                 # baseline 確認（B hash = 5338c98aab5d v4.0 
 
 ## 当日 cap / wip 状態（次セッション開始時の注意）
 
-- **当日 cap 3/62 使用中**（R25 学校 + R25 大学 + R26 大学 = 3 件 $0.1161）
-- **wip 状態（コミット保留）**：
-  - **本セッション分（WIP commit 候補）**：
-    - `data/_smoke_v4_0_4_building.json`（R26 大学 1 entry 状態）
-    - `data/master_image_registry.json`（R25 学校 + R25 大学 + R26 大学 一時 entry 追加 / production 4 entry update 済）
-    - `data/images/word_学校.png` + `word_大学.png` + `word_デパート.png` + `word_会社.png`（production cp 済）
-    - `data/images/word_学校_r25.png` + `word_大学_r25.png` + `word_大学_r26.png`（smoke 新規）
-    - `data/_meta/imagen_usage.json`（2026-05-25 entry 追加）
-    - `memory/project_v4_0_4_building_stage1.md`（R25-R26 + 採用判定 update 必要）
-    - `memory/feedback_nanobanana_prompt_design.md`（学び 13 = cyclist 姿勢明示の追加検討）
-    - `NEXT_ACTIONS.md`（本ファイル update 済）
-    - `handoff_archive.md`（2026-05-25 R25-R26 + 本番化 entry 追加候補）
-  - **前セッション残（WIP commit に含める）**：
-    - `data/images/` 不採用 PNG 多数（R12-R24 smoke originals）
-    - `data/images/vocab_大学.png` + `vocab_病院.jpg`（user 提供 reference）
-    - Phase 6 docs（前々セッション保留分）
-    - 既 update 済の R12-R24 一時 registry entries（前セッション）
+- **当日 cap 3/62 使用済**（R25 学校 + R25 大学 + R26 大学 = 3 件 $0.1161）
+- **wip 状態**: なし（Stage 1 本番化 = WIP commit c9f70e0 / Stage 2 = 最終 commit 予定）
 
 ---
 
 ## 直近の確定コマンド
 
 ```
-npm run validate                   # invariants A=v7.5 / B=5338c98aab5d(v4.0) / C / D=55/55（3 WARN）PASS
+npm run validate                   # invariants A=v7.5 / B=078fd0bd9ffe(v4.0.4) / C 7 files / D=55/55（3 WARN）PASS
 npm run missing-assets             # image 437 / audio 108
 npm run check-sa                   # Sheets API 疎通
 npm run check-tts-sa               # Cloud TTS API 疎通
@@ -170,7 +111,7 @@ npm run generate-images -- --prompts <path> [--print-prompts | --sync-only | --d
                                   [--backend nanobanana|imagen4]  # 既定 nanobanana
                                   [--limit N] [--max-images N] [--force]
                                   [--out <md>]
-                                  # v4.0.4 R11: prompt JSON 内 styleReferences: [...] で参照画像添付
+                                  # prompt JSON 内 styleReferences: [...] で参照画像添付 (v4.0.4 R11)
                                   # ⚠ FOREGROUND 推奨（2026-05-25 background run で registry + usage NULL 破損例あり）
 npm run validate-audio
 node scripts/_tts-smoke.mjs
@@ -180,11 +121,13 @@ node scripts/diff-registries.mjs <a.json> <b.json>
 npm run classify -- --lesson NN [--verify|--force|--only A,B|--dry-run]
 node scripts/build-catalog.mjs [--dry-run | --verbose]
 npm run import-lesson -- --lesson NN [--dry-run | --verbose]
-python scripts/build_prompts.py --lesson 1       # MVP person のみ（Stage 2 で building 追加予定）
+python scripts/build_prompts.py --lesson 1       # v4.0.4: person 12 + building 3 (学校/大学/デパート) → image_prompts_lesson01_v4_0_4.json
+                                                  # building 出力 entry には styleReferences: [...] (5 枚) 自動付与
+                                                  # 未移行 building (病院/銀行/駅/スーパー) は skip + stderr warn
 ```
 
 参考（再実行不要）：
-- v4.0.4 building Stage 1 R1-R26 経緯：worktree memory `project_v4_0_4_building_stage1.md`
-  / 学び `feedback_nanobanana_prompt_design.md` 学び 1-12 全文
+- v4.0.4 building Stage 1+2 経緯：worktree memory `project_v4_0_4_building_stage1.md`
+  / 学び `feedback_nanobanana_prompt_design.md` 学び 1-13 全文
 
 人間タスク：**なし**（Phase 5 ⑥ まで進めば「Sheet 削除確認」が出現）。

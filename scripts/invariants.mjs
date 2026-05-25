@@ -28,7 +28,7 @@ const ROOT = resolve(__dirname, '..');
 const CANONICAL = {
   gas: resolve(ROOT, 'gas/pipeline.gs'),
   promptGuide: resolve(ROOT, 'prompts/master_prompt_design_guide_v4_0.py'),
-  promptGuideExpectedHashPrefix: '5338c98aab5d', // v4.0 (modern wear + hand-held flag + PART 1.8 FACIAL_FEATURES + PART 1.9 FLAG_SHAPE_DETAIL [invoke 3-layer 方針] + PART 1.10 HEAD_BODY_PROPORTION + 単一 flag staff 対称 grip + 7 国 flag invoke 化) LF 正規化後 SHA256 先頭 12 桁
+  promptGuideExpectedHashPrefix: '078fd0bd9ffe', // v4.0.4 (v4.0 + BUILDING_UNIVERSAL_RULE_V4_0_4 A-1〜A-11 + BUILDING_BRAND_VOICE_REF + BUILDING_ARCHITECTURAL_REF + BUILDING_CUES 4 採用 entry に v4_0_4_* fields 追加 + vocabulary_building template 全面書き直し + BACKGROUND_BY_TYPE["building"] 撤去) LF 正規化後 SHA256 先頭 12 桁。Stage 1 (R1-R26) 結晶。
   // S列プロンプト JSON の置き場（v3.3 で再生成後はここに置く想定）
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
@@ -44,9 +44,12 @@ const CANONICAL = {
 // v3.3 (M-5): C4/C5 は vocab_type 別の背景文字列分岐に対応
 //   default（人物 / 物体 / 抽象等）→ off-white
 //   building（テンプレ B）       → pale sky-blue full-bleed
+// v4.0.4 (2026-05-25): building 専用 pale sky-blue 撤去。Stage 1 (R1-R26) 実機検証で
+//   「全 vocab_type 共通の soft cream off-white」が brand coherence の正解と確定
+//   （学び 6/7: text-only path 限界 + STYLE_BIBLE color_palette rigid の弊害）。
+//   旧 BACKGROUND_BY_TYPE.building 分岐を撤去し default 1 系統に統合。
 const BACKGROUND_BY_TYPE = {
   default:  'soft cream off-white background (warm off-white, NOT pure stark white)',
-  building: 'pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette',
 };
 const BACKGROUND_EXACT = BACKGROUND_BY_TYPE.default; // 後方互換（既存参照用）
 const NOT_TOKEN = 'NOT pure stark white'; // 大文字 NOT が確定。小文字 'not' に揺れていないか
@@ -176,17 +179,17 @@ async function checkSColumnInvariants() {
         continue;
       }
       const type = item.vocab_type ?? item.vocabType ?? '';
-      const expectedBg = type === 'building' ? BACKGROUND_BY_TYPE.building : BACKGROUND_BY_TYPE.default;
+      const expectedBg = BACKGROUND_EXACT;
 
-      // 4. 背景文字列の一字一句一致（vocab_type 別・v3.3 M-5）
+      // 4. 背景文字列の一字一句一致（v4.0.4: 全 vocab_type 共通 default cream off-white）
       if (!prompt.includes(expectedBg)) {
         errors.push(
           `invariants[C4] ${tag}: 背景文字列の一字一句一致違反（type=${type || 'default'}）。`
           + ` 必須: "${expectedBg}"`
         );
       }
-      // 5. NOT 表記の一字一句一致（building は確定色のためトークン揺れ防止不要）
-      if (type !== 'building' && !prompt.includes(NOT_TOKEN)) {
+      // 5. NOT 表記の一字一句一致（v4.0.4: building も含む全 vocab_type で必須）
+      if (!prompt.includes(NOT_TOKEN)) {
         errors.push(
           `invariants[C5] ${tag}: NOT 表記の一字一句一致違反。`
           + ` 必須: "${NOT_TOKEN}"（小文字 not への揺れ禁止）`

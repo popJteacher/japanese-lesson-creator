@@ -893,11 +893,15 @@
 ##   invariants.mjs C4 の BACKGROUND_BY_TYPE と整合する SSOT 定数。
 ##   テンプレート本文の背景文字列はこの定数値を一字一句一致させる。
 ## ─────────────────────────────────────────────────────────────
+## v4.0.4 (2026-05-25): vocab_type="building" 専用の pale sky-blue full-bleed は撤去。
+##   Stage 1 (R1-R26) 実機検証で「全 vocab_type 共通の soft cream off-white」が
+##   brand coherence の上で正解と確定（学び 6/7: text-only path 限界 + STYLE_BIBLE
+##   color_palette rigid の弊害）。旧 BUILDING_BACKGROUND_EXACT 参照は削除済。
+##   旧 vocabulary_building template (pale sky-blue / single signage_text /
+##   primary_scene_cue) は本ファイル内に置換済（コメントで旧版マーカーあり）。
 BACKGROUND_BY_TYPE = {
   "default":  "soft cream off-white background (warm off-white, NOT pure stark white)",
-  "building": "pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette",
 }
-BUILDING_BACKGROUND_EXACT = BACKGROUND_BY_TYPE["building"]
 
 
 STYLE_BIBLE = {
@@ -2824,53 +2828,64 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
   ##     これが空のサイン枠量産＝問題C の主因だった）。
   ##   - [CONSTRAINTS] 許可は英語ラベル1個のみ。RECEPTION/ATM/BANK重複等の
   ##     二次ラテン語・日本語・数字を明示禁止。反クラッター文を追加。
-  ## {SIGNAGE_TEXT}        = BUILDING_CUES[...]["signage_text"]（英語短語）
-  ## {PRIMARY_SCENE_CUE}   = BUILDING_CUES[...]["primary_scene_cue"]（単一キュー）
   ## ─────────────────────────────────────────────
-  "vocabulary_building": """
-[PURPOSE]
-Create a vocabulary card illustration for Japanese language learning materials.
-The building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a [{BUILDING_TYPE}] at a glance.
+  ## v4.0.4 (2026-05-25): Stage 1 (R1-R26) 実機検証で旧 v3.0 テンプレ (pale sky-blue
+  ##   full-bleed / single signage_text / primary_scene_cue) では brand coherence
+  ##   に到達不能と確定（学び 6: text-only path 限界）。新テンプレ = universal rule
+  ##   (A-1〜A-11, BUILDING_UNIVERSAL_RULE_V4_0_4 参照) + per-building 変数
+  ##   (BUILDING_CUES の v4_0_4_* fields) + 5-image reference attachment
+  ##   (BUILDING_BRAND_VOICE_REF + per-building type_relevant_refs + BUILDING_ARCHITECTURAL_REF)。
+  ##   build_prompts.py render_building() が placeholder を substitute し、
+  ##   styleReferences リストを output JSON に自動付与する。
+  ##   旧 {BUILDING_TYPE} / {BUILDING_DESCRIPTION_AND_SCALE} / {SIGNAGE_TEXT} /
+  ##   {PRIMARY_SCENE_CUE} placeholder は廃止、新 placeholder set を使う：
+  ## {VOCAB_TYPE_DESC}        = BUILDING_CUES[...]["v4_0_4_vocab_type_desc"]
+  ## {FORM_DESC}              = BUILDING_CUES[...]["v4_0_4_form_desc"]
+  ## {SIGNATURE}              = BUILDING_CUES[...]["v4_0_4_signature"]
+  ## {ACCENT}                 = BUILDING_CUES[...]["v4_0_4_accent"]
+  ## {ACCENT_TARGETS}         = BUILDING_CUES[...]["v4_0_4_accent_targets"]
+  ## {LABEL}                  = BUILDING_CUES[...]["v4_0_4_label"]
+  ## {SIGNBOARD_LOCATION}     = BUILDING_CUES[...]["v4_0_4_signboard_location"]
+  ## {SIGNBOARD_LOC_SHORT}    = BUILDING_CUES[...]["v4_0_4_signboard_location_short"]
+  ## {SURROUNDINGS_BLOCK}     = BUILDING_CUES[...]["v4_0_4_surroundings_block"] (may be "")
+  ## {FRAMING_EXTRA}          = BUILDING_CUES[...].get("v4_0_4_framing_extra", "") (optional)
+  ## {ACTIVITIES_BLOCK}       = BUILDING_CUES[...]["v4_0_4_activities_block"]
+  ## {LANDSCAPING_BLOCK}      = BUILDING_CUES[...]["v4_0_4_landscaping_block"]
+  ## {REF2_DESC}/{REF3_DESC}/{REF4_DESC} = BUILDING_CUES[...]["v4_0_4_type_relevant_refs"][i]["desc"]
+  ## {BG_EXACT}               = BACKGROUND_BY_TYPE["default"] (universal cream off-white)
+  ## ─────────────────────────────────────────────
+  "vocabulary_building": """\
+Flat vector illustration in a minimalist Japanese textbook style. Color palette is strictly limited to the muted pastel family — dull blues, sand-beiges, soft warm yellows, and soft greys — on a {BG_EXACT}. Use no more than 3-4 distinct facade colors per image beyond the background and the outline ink. Lighting: soft and even, no harsh shadows. Tone: warm, friendly, calm, and inviting — never cold or mechanical.
 
-[SUBJECT]
-The main subject is [{BUILDING_DESCRIPTION_AND_SCALE}].
-Exactly ONE short ENGLISH building-name label, the single word [{SIGNAGE_TEXT}],
-is printed cleanly and legibly on the building's fascia or a small sign above
-the main entrance. This English word is the ONLY text anywhere in the image.
-Do NOT render any Japanese characters, kanji, kana, or any non-Latin script.
-Do NOT render any second word, slogan, address, phone number, or brand name.
+[UNIVERSAL RULE A-1〜A-11 — APPLY ALL]
+{BUILDING_UNIVERSAL_RULE}
 
-[SCENE & ACTION]
-Viewed from a slight three-quarter front angle at eye level, 35mm wide-angle lens equivalent.
-Straight vertical lines, natural perspective with no fisheye distortion.
-A flat pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette.
-The building occupies about 70% of the frame and is centered.
+View (CRITICAL — match image_5 architectural anchor): a street-level low-angle three-quarter perspective. The camera is positioned just outside the entrance area, at adult eye height, slightly looking up at the main entrance and central facade. The main entrance, the central facade, and the primary signature feature sit near the center of the frame. This is NOT a top-down isometric overview and NOT a flat front-only elevation; it is a near, eye-level CLOSE-UP three-quarter view like image_5 (the existing 病院 hospital vocab card).
 
-Single identifying scene cue (use ONLY this one cue — do not add others):
-[{PRIMARY_SCENE_CUE}]
+FRAMING (CRITICAL): close-up framing per universal rule A-2. The building's main entrance, central facade, and primary signature feature fill the frame substantially. The building's visible mass occupies the upper 75-85% of the canvas area, with the top edge of the roofline or building reaching close to the upper 10% of the canvas. The side wings MAY extend beyond the left and right canvas edges (off-frame is encouraged). Do NOT center the entire building small in the canvas with large empty cream space around it.
+{FRAMING_EXTRA}
 
-Keep the composition calm and uncluttered. Render ONLY the building, the single
-English label, and the one scene cue above. Do NOT invent or add any extra
-signs, signboards, banners, posters, billboards, blank framed boards, screens,
-display panels, window lettering, secondary buildings, vehicles, or background
-clutter that is not explicitly described here.
+{SURROUNDINGS_BLOCK}
 
-[STYLE RECIPE — DO NOT CHANGE]
-Minimalist flat vector illustration. Clean continuous black outlines with consistent line weight.
-Completely flat solid color fills only. Color palette: pale sky-blue background,
-deep slate navy outlines, main_color and sub_color tones for the building facade (細部のみ educational_symbol_colors 許可),
-warm amber gold for accent details.
-This should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.
+GROUND / PAVEMENT (CRITICAL — match image_5, per universal rule A-8): the ground / sidewalk / pavement area at the bottom of the image must remain {BG_EXACT}, matching the background color exactly. Do NOT render the ground or sidewalk as slate-grey, blue-grey, or any darker color. The pavement should be indicated by subtle slate-navy outlines only (a single horizontal line marking the curb edge, outlined panels for any visible paving), with the interior fill of the pavement remaining the same cream off-white as the background.
 
-[CONSTRAINTS]
-EXCEPTION (per 資料8, v3.0): EXACTLY ONE short ENGLISH building-name label
-[{SIGNAGE_TEXT}] is permitted — one English word only, small, on the entrance fascia.
-This is the SOLE permitted text. Absolutely NO other text of any kind:
-no Japanese (kanji/kana), no second English word, no "RECEPTION"/"ATM"/"OPEN"
-or any other label, no numbers, no titles, no captions, no decorative symbols
-anywhere else in the image.
-No gradients, no shadows, no 3D effects, no photoreal textures.
-Apply zero ambient lighting, zero drop shadows, zero global illumination.
+Subject: A {VOCAB_TYPE_DESC}, drawn close-up so that the main entrance and central facade dominate the frame per the framing rule above. Form: {FORM_DESC}. Signature feature: {SIGNATURE}. Per-building palette (strictly enforce, per universal rule A-4): cream / off-white facade walls (NOT brick-red, NOT terracotta — facade is light, almost matching the background), {ACCENT} as the single accent color used on {ACCENT_TARGETS}, slate-grey for the roof and any structural detail. No other facade colors.
+
+SIGNBOARD: a single prominent signboard {SIGNBOARD_LOCATION} reads "{LABEL}" in a clear, readable font. The signboard is clearly readable and sized to be naturally legible at the entrance.
+
+BLANK TEXT SURFACES (CRITICAL — match image_5, per universal rule A-9): the {LABEL} signboard {SIGNBOARD_LOC_SHORT} is the ONLY text-bearing element anywhere in the image. Do NOT add other signboards, plaques, billboards, banners, name plates, address plates, bulletin boards, posters, or any other text-bearing surfaces anywhere on the building, perimeter wall, sidewalk, scene, or background structures. All other plaques, walls, gates, doors, windows, and surfaces MUST be LEFT BLANK — no text, no characters, no inscriptions, no symbols that resemble letters, no faux-Latin or faux-cursive squiggles. The single {LABEL} signboard is the unique text element in the entire image.
+
+People in scene (CRITICAL — variety of activities, at PROMINENT foreground scale roughly 1/3 of visible building height, per universal rules A-3 and A-11):
+{ACTIVITIES_BLOCK}
+
+Landscaping: {LANDSCAPING_BLOCK}
+
+Reference image guidance (universal rule A-5 — multi-image input):
+- image_1 (日本人 Japanese person card) anchors the overall brand voice — illustration style, line weight, palette tokens, face style.
+- image_2 ({REF2_DESC}), image_3 ({REF3_DESC}), and image_4 ({REF4_DESC}) are the references for the figures in the scene: match their head-to-body proportion, outfit rendering, line weight, and palette tokens. Figures should be drawn as figures from the same vocabulary card series as image_2 / image_3 / image_4.
+- image_5 (existing 病院 hospital vocab card) is the architectural, compositional, FRAMING, GROUND-COLOR, and CLOSE-UP three-quarter perspective reference. CRITICAL: image_5 demonstrates EXACTLY the visual qualities we want: (a) close-up street-level low-angle three-quarter view, (b) building mass extending toward the canvas edges, (c) cream off-white ground matching the background, (d) restrained 3-color facade palette (light walls + single accent + slate roof/structural grey), (e) figures at prominent foreground scale. Replicate these qualities. Do not copy image_5's subject (this is a {VOCAB_TYPE_DESC}, not a hospital) — only echo its DEPICTION STYLE: framing, perspective, scale, ground color, and palette discipline.
+
+Defined deep slate-navy outlines, no gradients, no shadows, no 3D effects. 1:1 square aspect ratio. Minimalist and elegant overall feel.
 """,
 
   ## ─────────────────────────────────────────────
@@ -3311,7 +3326,51 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ##     可能性があるため）。Template B v3.0 では使用しない。
 ## v3.3: entrance_cue / user_action_cue / surrounding_anchor は
 ##       deprecated。primary_scene_cue が SSOT。新規 lesson から参照しない。
+## v4.0.4 (2026-05-25): Stage 1 (R1-R26) で建物カードの universal rule A-1〜A-11
+##       が確定。Template B 全面改訂（旧 pale sky-blue / single signage_text /
+##       primary_scene_cue → 新 universal rule + per-building 変数 + 5-image
+##       reference attachment）。本テーブルの 4 採用建物 (学校/大学/デパート/会社)
+##       に v4_0_4_* fields を新設。旧 primary_scene_cue / building_scale /
+##       entrance_cue / user_action_cue / surrounding_anchor は後方互換のため残置
+##       するが、新 Template B (vocabulary_building) は v4_0_4_* fields のみを参照。
+##       銀行/病院/駅/スーパー は次の lesson (lesson_02 等) で同型展開予定。
+##       詳細経緯：worktree memory project_v4_0_4_building_stage1.md。
 ## ============================================================
+
+# ─────────────────────────────────────────────────────────────
+# v4.0.4 building 専用 reference 画像 path（全 building カード共通）
+# ─────────────────────────────────────────────────────────────
+# image_1 = brand voice anchor（全 vocab_type で共通の brand voice 担保）
+# image_5 = architectural & framing anchor（建物の構図 / framing / palette discipline）
+# image_2-4 = type-relevant person refs（per-building テーブル参照）
+# Stage 1 (R23-R26) で確立した「在 person カード + vocab_病院.jpg」5 枚 attach の
+# 経済合理性（1 枚 ~$0.0387 + ref 5 枚 × 1290 token × $0.30/M ≈ +$0.002 = +5% 程度）
+# nanobanana multi-image input により text-only path で再現不可能な brand coherence を実現。
+# build_prompts.py の render_building() がこれらを styleReferences リストに自動付与。
+BUILDING_BRAND_VOICE_REF = "data/images/word_日本人.png"
+BUILDING_ARCHITECTURAL_REF = "data/images/vocab_病院.jpg"
+
+# ─────────────────────────────────────────────────────────────
+# v4.0.4 BUILDING UNIVERSAL RULE A-1〜A-11（Stage 1 R1-R26 結晶）
+# ─────────────────────────────────────────────────────────────
+# 学び 1-12 (feedback_nanobanana_prompt_design.md) + R26 cyclist pose 確定版。
+# Template B (vocabulary_building) 内に inline 注入される固定 universal rule 部分。
+# per-building 変数 (form / signature / accent / activities / refs / surroundings)
+# とこの universal rule の組み合わせで 4 採用建物の prompt を構築する。
+# ─────────────────────────────────────────────────────────────
+BUILDING_UNIVERSAL_RULE_V4_0_4 = """\
+[A-1 Camera] street-level low-angle three-quarter perspective at adult eye height, slightly looking up, close to the building.
+[A-2 Framing] close-up framing: the building's main entrance and central facade dominate the canvas, filling at least 75% of the canvas vertically. The building's side wings extend OFF-FRAME beyond the canvas borders. Do NOT try to fit the entire building within the canvas. Do NOT center the building small with empty cream space around it. The building should feel LARGE and IMMEDIATE.
+[A-3 Figures] 4-5 simplified figures, each engaged in a DIFFERENT activity, drawn at PROMINENT foreground scale roughly 1/3 of the visible building height. Variety of postures and activities over identical poses. 7-head adult-young-adult proportion.
+[A-4 Palette] muted pastel family only (dull blues / sand-beiges / soft warm yellows / soft greys). Walls = cream off-white (NOT brick-red, NOT terracotta). Roof = slate-grey. Accent = ONE palette-family color per building (per-vocab-type table). Maximum 3-4 distinct facade colors beyond background and outline ink.
+[A-5 Reference (multi-image input)] image_1 = brand voice anchor (日本人 Japanese person card); image_2-4 = type-relevant person cards (per-building list); image_5 = architectural & framing anchor (病院 hospital vocab card). Aspect-specific cross-reference: "style and brand voice of image_1", "figures drawn similar to image_2-4", "architectural framing and palette discipline of image_5".
+[A-6 Outline] deep slate-navy outlines, no gradients, no shadows, no 3D effects. 1:1 square aspect ratio.
+[A-7 Label] single signboard with the building's English label, this is the ONLY text element in the image.
+[A-8 Ground/Pavement] sidewalk and paved ground = cream off-white matching the background. Pavement indicated by subtle slate-navy outline only (curb edge line, panel outlines), interior fill remains cream. Do NOT render ground/sidewalk as slate-grey, blue-grey, or any darker color.
+[A-9 Blank text surfaces] the named signboard is the ONLY text-bearing element. Do NOT add other signboards, plaques, billboards, banners, name plates, address plates, bulletin boards, posters, or any other text-bearing surfaces. All other plaques, walls, gates, doors, windows, and surfaces MUST be LEFT BLANK — no text, no characters, no inscriptions, no symbols that resemble letters, no faux-Latin or faux-cursive squiggles.
+[A-10 Surroundings] per-vocab-type. Allowed values: "isolated" (病院 / 銀行 / 市役所 等) | "campus" (大学 / 学校: 副 academic building or auxiliary structures OK in middle ground or background) | "urban_corner" (デパート / 会社: implied urban context, perimeter wall/sidewalk continues off-frame) | "urban_street" (駅 等).
+[A-11 Cyclist pose] when a cyclist appears in activities, the cyclist MUST be drawn in DYNAMIC SIDE-VIEW PROFILE in clear motion, NOT a static seated pose. Required: (a) torso leans slightly forward over the handlebars (NOT bolt upright). (b) BOTH hands clearly grip the handlebars (NOT hanging at sides). (c) BOTH feet on the pedals in MID-PEDALING ROTATION — one pedal at bottom of stroke with leg extended downward, the other pedal at top with knee bent forward. Feet must NOT touch the ground; bicycle is in motion. (d) bicycle frame sized correctly for the rider (no clown-bike, no oversized frame). (e) body proportions match image_3 reference (7-head adult-young-adult). (f) optional motion line or hair/clothing sway suggests forward movement.
+"""
 
 BUILDING_CUES = {
 
@@ -3323,7 +3382,25 @@ BUILDING_CUES = {
     "signage_text":       "OFFICE",
     "entrance_cue":       "automatic glass doors with a simple rectangular company nameplate beside the entrance",
     "user_action_cue":    "one office worker in a business suit walking in, another walking out, both carrying briefcases",
-    "surrounding_anchor": "a clean paved walkway and a small potted plant by the entrance door"
+    "surrounding_anchor": "a clean paved walkway and a small potted plant by the entrance door",
+    # v4.0.4 (R22 採用): 新 Template B で使用する universal-rule-compatible fields
+    "v4_0_4_vocab_type_desc": "Japanese mid-rise company office building",
+    "v4_0_4_form_desc":       "five to six stories visible (upper floors MAY extend off-frame), with a glass curtain-wall facade and a clear ground-floor lobby area",
+    "v4_0_4_signature":       "the glass curtain-wall facade with a ground-floor lobby (upper floors off-frame OK)",
+    "v4_0_4_accent":          "dull muted blue",
+    "v4_0_4_accent_targets":  "the lobby canopy, entrance plaque, window frames, and any structural trim",
+    "v4_0_4_label":           "OFFICE",
+    "v4_0_4_signboard_location":       "above the lobby entrance",
+    "v4_0_4_signboard_location_short": "above the lobby entrance",
+    "v4_0_4_surroundings_context":     "urban_corner",
+    "v4_0_4_surroundings_block":       "URBAN CORNER CONTEXT: this is an urban office building. The perimeter wall, sidewalk, and street curb continue off-frame on one side, suggesting urban street continuation. Implied surrounding commercial / office context is acceptable but draw NO other buildings explicitly — only the perimeter and pavement extend beyond the canvas edge.",
+    "v4_0_4_activities_block":         "four or five simplified figures animating the scene, each engaged in a different activity to reflect office everyday life:\n  - one office worker entering through the lobby doors with a briefcase, walking AWAY from the viewer (back of figure visible).\n  - two office workers walking past the entrance along the sidewalk in mid-stride, side view, dressed in business suits.\n  - one office worker walking on the sidewalk in the foreground with a phone in hand (looking at a smartphone screen), side view.\n  - optionally one pair of two workers standing near the entrance engaged in casual conversation.\nOffice workers wear business suits or smart-casual professional clothes.",
+    "v4_0_4_landscaping_block":        "one or two simplified tree silhouettes in planters near the entrance (may be cropped at canvas edges per framing rule). ALL tree silhouettes in the image must be drawn consistently — all as simplified leafy summer trees with rounded foliage masses. Do NOT mix winter bare-branch trees with leafy summer trees. Foreground: the sidewalk extends past the lobby entrance.",
+    "v4_0_4_type_relevant_refs": [
+      {"path": "data/images/word_会社員.png",   "desc": "会社員 office worker card"},
+      {"path": "data/images/word_アメリカ人.png", "desc": "アメリカ人 American person card"},
+      {"path": "data/images/word_韓国人.png",   "desc": "韓国人 Korean person card"},
+    ],
   },
 
   "学校": {
@@ -3334,7 +3411,26 @@ BUILDING_CUES = {
     "signage_text":       "SCHOOL",
     "entrance_cue":       "a prominent school gate with a fence in the foreground",
     "user_action_cue":    "two children in school uniforms — one carrying a randoseru backpack — walking through the gate",
-    "surrounding_anchor": "a small playground area with equipment visible on one side"
+    "surrounding_anchor": "a small playground area with equipment visible on one side",
+    # v4.0.4 (R25 採用 = R23 base + dominate frame 75%+ + blank text rule): 新 Template B fields
+    "v4_0_4_vocab_type_desc": "typical Japanese school building — generic enough to read as a middle school, high school, or general school (NOT specifically an elementary / primary school)",
+    "v4_0_4_form_desc":       "two to three stories total (the side wings MUST extend off-frame), with a low-pitched hipped roof and a central clock tower bearing a simple analog clock face above the main entrance",
+    "v4_0_4_signature":       "the central clock tower with its visible clock face",
+    "v4_0_4_accent":          "soft warm yellow / sand-cream gold",
+    "v4_0_4_accent_targets":  "the entrance door, window trim, signboard, and clock tower base",
+    "v4_0_4_label":           "SCHOOL",
+    "v4_0_4_signboard_location":       "above the main entrance",
+    "v4_0_4_signboard_location_short": "above the main entrance",
+    "v4_0_4_surroundings_context":     "campus",
+    "v4_0_4_surroundings_block":       "",
+    "v4_0_4_framing_extra":             "BUILDING SCALE EMPHASIS: The school building DOMINATES the canvas. The building's visible mass (central facade + clock tower + entrance area + roof) MUST fill AT LEAST 75% of the canvas vertically. The clock tower top should reach the upper 8-12% of the canvas. The building extends edge-to-edge horizontally — its visible side walls touch or cross the left and right canvas edges with the side wings extending OFF-FRAME beyond the canvas borders.",
+    "v4_0_4_activities_block":         "four or five simplified figures animating the scene, each engaged in a different activity to create visual interest and reflect a school's everyday life:\n  - one student entering through the gate, walking AWAY from the viewer toward the building entrance (back of figure visible).\n  - two students walking past the entrance along the sidewalk in mid-stride, side view.\n  - one student or staff member riding a bicycle on the sidewalk in the foreground in a DYNAMIC SIDE-VIEW PROFILE in clear motion (per universal A-11 cyclist pose rule above) — drawn at prominent foreground scale (NOT middleground, NOT shrunken).\n  - optionally one pair of two students standing near the gate engaged in casual conversation.\nEach student wears a simple Japanese school uniform (blazer-style or sailor-style is fine); the staff figure if included wears casual professional clothes. Students carry school backpacks or shoulder bags — NOT randoseru.",
+    "v4_0_4_landscaping_block":        "one or two simplified tree silhouettes near the building (may be cropped at canvas edges per framing rule). ALL tree silhouettes in the image must be drawn consistently — all as simplified leafy summer trees with rounded foliage masses. Do NOT mix winter bare-branch trees with leafy summer trees in the same image; every tree is leafy summer. Foreground: a low cream perimeter wall and an open gate, with the sidewalk leading past the entrance.",
+    "v4_0_4_type_relevant_refs": [
+      {"path": "data/images/word_学生.png",   "desc": "学生 student card"},
+      {"path": "data/images/word_大学生.png", "desc": "大学生 university-student card"},
+      {"path": "data/images/word_先生.png",   "desc": "先生 teacher card"},
+    ],
   },
 
   "銀行": {
@@ -3356,7 +3452,25 @@ BUILDING_CUES = {
     "signage_text":       "UNIVERSITY",
     "entrance_cue":       "a bulletin board with papers posted on it near the entrance path",
     "user_action_cue":    "three young adult students in their 20s in casual clothes with backpacks or laptops walking near the gate",
-    "surrounding_anchor": "a bicycle parking rack with several bikes just inside the gate, a tree-lined walkway"
+    "surrounding_anchor": "a bicycle parking rack with several bikes just inside the gate, a tree-lined walkway",
+    # v4.0.4 (R26 採用 = R25 base + cyclist 姿勢明示): 新 Template B fields
+    "v4_0_4_vocab_type_desc": "Japanese university campus entrance — a substantial stone campus gate (two stone pillars supporting a horizontal sign beam) standing in front of a stately academic building",
+    "v4_0_4_form_desc":       "the stone campus gate in the foreground + a stately academic building behind it (four to five stories visible, with regular rows of rectangular windows)",
+    "v4_0_4_signature":       "the stone campus gate with its horizontal sign beam",
+    "v4_0_4_accent":          "sand-stone beige",
+    "v4_0_4_accent_targets":  "the stone gate pillars, sign beam, and entrance trim",
+    "v4_0_4_label":           "UNIVERSITY",
+    "v4_0_4_signboard_location":       "between the stone gate pillars (the horizontal sign beam)",
+    "v4_0_4_signboard_location_short": "between the stone gate pillars",
+    "v4_0_4_surroundings_context":     "campus",
+    "v4_0_4_surroundings_block":       "CAMPUS CONTEXT: this is a university CAMPUS, not an isolated freestanding building. It is natural and encouraged for one or two additional simplified academic building silhouettes to appear in the middle ground or background behind the main building (smaller in scale, partially occluded by the main facade, drawn in the same cream/slate-grey palette). These are part of the campus context. Do NOT add commercial buildings, residential houses, or any non-academic structures; only secondary academic buildings are allowed in the background.",
+    "v4_0_4_activities_block":         "four or five simplified figures animating the scene, each engaged in a different activity to reflect campus everyday life:\n  - one university student entering through the gate, walking AWAY from the viewer toward the academic building (back of figure visible).\n  - two university students walking past the gate along the sidewalk in mid-stride, side view, carrying backpacks or shoulder bags.\n  - one university student riding a bicycle on the sidewalk in the foreground in a DYNAMIC SIDE-VIEW PROFILE in clear motion (per universal A-11 cyclist pose rule above) — drawn at prominent foreground scale (NOT middleground, NOT shrunken). The CYCLIST WEARS muted blue, soft grey, or sand-beige clothing — NOT warm yellow (warm yellow is reserved for accent surfaces and would clash with the building palette).\n  - optionally one pair of two university students standing near the gate engaged in casual conversation.\nUniversity students wear casual contemporary clothes (jeans, t-shirts, sweaters, light jackets — NOT school uniforms).",
+    "v4_0_4_landscaping_block":        "one or two simplified tree silhouettes near the gate and along the campus walkway (may be cropped at canvas edges per framing rule). ALL tree silhouettes in the image must be drawn consistently — all as simplified leafy summer trees with rounded foliage masses. Do NOT mix winter bare-branch trees with leafy summer trees in the same image; every tree is leafy summer. Foreground: the sidewalk and campus walkway lead through the gate toward the main academic building entrance.",
+    "v4_0_4_type_relevant_refs": [
+      {"path": "data/images/word_学生.png",   "desc": "学生 student card"},
+      {"path": "data/images/word_大学生.png", "desc": "大学生 university-student card"},
+      {"path": "data/images/word_先生.png",   "desc": "先生 teacher card"},
+    ],
   },
 
   "デパート": {
@@ -3367,7 +3481,25 @@ BUILDING_CUES = {
     "signage_text":       "DEPT. STORE",
     "entrance_cue":       "wide elegant display windows on the ground floor showing fashion items and accessories",
     "user_action_cue":    "two shoppers near the entrance, both carrying large shopping bags",
-    "surrounding_anchor": "an escalator faintly visible through the glass facade"
+    "surrounding_anchor": "an escalator faintly visible through the glass facade",
+    # v4.0.4 (R22 採用): 新 Template B fields
+    "v4_0_4_vocab_type_desc": "Japanese mid-rise urban department store building",
+    "v4_0_4_form_desc":       "five to six stories visible (upper floors MAY extend off-frame), with a clear ground-floor with display windows and a horizontal awning above the main entrance",
+    "v4_0_4_signature":       "wide ground-floor display windows with an awning above the main entrance (upper floors off-frame OK)",
+    "v4_0_4_accent":          "warm muted tan",
+    "v4_0_4_accent_targets":  "the awning, signboard, window trim, and entrance door frame",
+    "v4_0_4_label":           "DEPT. STORE",
+    "v4_0_4_signboard_location":       "above the main entrance",
+    "v4_0_4_signboard_location_short": "above the main entrance",
+    "v4_0_4_surroundings_context":     "urban_corner",
+    "v4_0_4_surroundings_block":       "URBAN CORNER CONTEXT: this is an urban commercial building. The perimeter wall, sidewalk, and street curb continue off-frame on one side, suggesting urban street continuation. Implied surrounding urban commercial context is acceptable but draw NO other buildings explicitly — only the perimeter and pavement extend beyond the canvas edge.",
+    "v4_0_4_activities_block":         "four or five simplified figures animating the scene, each engaged in a different activity to reflect a department store's everyday life:\n  - one shopper entering through the main entrance with an empty shopping bag, walking AWAY from the viewer (back of figure visible).\n  - two shoppers walking past the entrance along the sidewalk in mid-stride, side view, one carrying a shopping bag.\n  - one shopper standing near the display window window-shopping (looking at the display), side view.\n  - optionally one pair of two shoppers standing outside engaged in casual conversation.\nShoppers wear contemporary casual or business-casual clothes.",
+    "v4_0_4_landscaping_block":        "one or two simplified tree silhouettes in planters near the entrance (may be cropped at canvas edges per framing rule). ALL tree silhouettes in the image must be drawn consistently — all as simplified leafy summer trees with rounded foliage masses. Do NOT mix winter bare-branch trees with leafy summer trees. Foreground: the sidewalk extends past the main entrance with the display windows.",
+    "v4_0_4_type_relevant_refs": [
+      {"path": "data/images/word_会社員.png",   "desc": "会社員 office worker card"},
+      {"path": "data/images/word_アメリカ人.png", "desc": "アメリカ人 American person card"},
+      {"path": "data/images/word_韓国人.png",   "desc": "韓国人 Korean person card"},
+    ],
   },
 
   "病院": {
