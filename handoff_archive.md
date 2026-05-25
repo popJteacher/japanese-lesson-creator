@@ -167,3 +167,40 @@
   palette + people + aspect-specific cross-ref）へ。Phase 6 (Flux + 自作 LoRA 切替検討) を
   docs/MIGRATION_PLAN.md に追加・着手判断基準 4 条件 + spike スライス案あり。
   関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` / 同 `feedback_nanobanana_prompt_design.md`（学び 1-9）。
+
+- **2026-05-24 v4.0.4 building Stage 1 R12-R24 完了 / R23+R22 採用判定**：R12 (5 軸統合 + A/B
+  比較) で text-only 限界実証 → R13-R20 で minimal palette + 3/4 isometric + low-angle + 人物
+  variety を順次積層 → **R21 (Gemini ヒント取り込み: close-up framing + side wings off-frame
+  + figures prominent 1/3) で学校採用候補確定** → R22 で残り 3 件展開 → R23 で道路色
+  cream 統一 (GROUND/PAVEMENT rule 新設) → R24 (Gemini 3 軸: dramatic 3-point perspective
+  + 街角 continuation + 大きな signboard + ref 切替 image_5=デパート R22) **失敗**：学校
+  building の symmetric institutional form と dramatic perspective が衝突 → 学校 R23 採用
+  継続判定。Stage 1 確定採用 = 学校 R23 / 大学 R23 / デパート R22 / 会社 R22。新規学び 10-12
+  追記 (symmetric form vs perspective 衝突 / blank text 暴走 / per-vocab-type surroundings
+  context)。**user 重要訂正**: 「single freestanding building」universal rule は誤り、大学・
+  学校・デパート・会社では周辺 building/補助施設の描画が自然 → per-vocab-type で柔軟に。
+  R25 (学校サイズ拡大 + 大学微修正: 木一貫 + 人物服 accent 衝突回避) を明日着手後 Stage 2
+  (PROMPT_TEMPLATES["vocabulary_building"] guide 取り込み + invariants B hash 再計算 +
+  build_prompts.py 対応) へ。当日 cap 60/60 上限到達・cost ~$2.32 (R12-R24 で 60 件)。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md`（R12-R24 経緯 + universal
+  rule 確定版 + per-vocab-type table）/ 同 `feedback_nanobanana_prompt_design.md` 学び 10-12。
+
+- **2026-05-25 v4.0.4 building Stage 1 R25-R26 完了 / 採用 4 件確定 + 本番化 done**：R25
+  (学校 = R23 + dominate frame 75%+ + blank text rule / 大学 = R23 + 全樹木 leafy summer +
+  cyclist 服 warm yellow 禁止 + blank text rule + 副 academic building OK) で 2 件生成
+  $0.0774。学校 R25 = user OK 採用、大学 R25 = cyclist 姿勢が「自転車に座っているだけ」の
+  静的不自然姿勢で NG → R26 (R25 + cyclist 姿勢明示: 前傾 torso + 両手ハンドル + 両足ペダル on
+  + dynamic motion + 7-head proportion + image_3 anchor) で再生成 $0.0387、user OK 採用。
+  Stage 1 最終採用 = 学校 R25 / 大学 R26 / デパート R22 / 会社 R22。**本番化済**: 採用 4 PNG
+  を production 名 cp (`data/images/word_学校.png` 他 3 件)、registry production entry 4 件
+  update (generatedAt + promptRef + `_v4_0_4_adopted` 注記)。新規学び 13: cyclist 姿勢は
+  default で不自然になりがち、6 軸明示 specify 必須 (a-f: torso 前傾 / 両手 grip / 両足 pedal
+  on / frame size / 7-head proportion / motion line)。Universal rule A-1〜A-11 結晶
+  (A-11 cyclist pose 新設)。**インシデント**: 最初の generate-images background run で
+  `master_image_registry.json` (240KB) と `data/_meta/imagen_usage.json` (711B) が両方
+  NULL bytes で破損 → Claude file-history `559ab4a0-...@v1` から registry 復元 + usage
+  再構築 → foreground 再実行で成功。教訓: generate-images は必ず foreground 実行。
+  当日 cap 3/62 (R25 2 件 + R26 1 件 = $0.1161)。次セッション = Stage 2 (guide 本体取り込み)
+  / verification は build_prompts.py で生成した prompt と smoke prompt の no-API diff 方針。
+  関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` (R25-R26 + 本番化 + universal
+  rule A-1〜A-11 確定版 update) / 同 `feedback_nanobanana_prompt_design.md` 学び 13 追加。
