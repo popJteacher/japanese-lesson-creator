@@ -8,7 +8,9 @@
 **最終更新：** 2026-05-25（worktree image-prompt-plan で **v4.0.4 building Stage 2 後 cleanup 完了**。
 smoke entry 22 件 + smoke PNG 22 枚削除 + `_smoke_v4_0_4_building.json` archive 化。
 残 registry entry 491 / B hash `078fd0bd9ffe` 不変 / validate PASS。
-worktree は ff-merge 待ち状態）
+⚠ **ff-merge 不可能を発見** — main が merge-base から 23 commit 先行 (Phase α1-α4 音声 QC + accent + Phase 5 ④/⑤)。
+worktree は 6 commit 先行。両方が独立に進化 → 3-way merge or rebase が必要。
+user 「main 側と一度相談」判断で merge は保留。次セッションは main 側で状態整理してから合流戦略を立てる）
 
 ---
 
@@ -56,23 +58,56 @@ main 即時 active タスクはない。次の active 化は **worktree が ff-m
 
 ---
 
-## 次セッション最優先：main への ff-merge or 新 lesson 展開
+## 次セッション最優先：main↔worktree 合流戦略の決定（user 相談待ち）
 
-選択肢:
+### 状況（2026-05-25 検出）
 
-### (C) main への ff-merge（推奨・Stage 1+2+cleanup 一括取り込み）
-1. main branch に切替
-2. `git merge --ff-only phase4-prompt-plan` (worktree から)
-3. main 側の NEXT_ACTIONS / docs を整合化
-4. main の commit 履歴に Stage 1+2+cleanup を取り込む（`ed83027` まで）
+- **merge-base**: `1a42cd4 feat(phase4): v4.0 major-version pivot`
+- **main 先行 23 commit** (新しい順):
+  - `b4340dc feat(phase-α4): Drive 291 件のローカル化 (WAV→ffmpeg loudnorm→MP3)`
+  - `f5bdf75 feat(phase-α3-後半): integrity gate + accent_override 機構 + 175 件再生成`
+  - `d476293 feat(phase-α3-前半): UniDic+naist-jdic ハイブリッド抽出 + 17508 件 yomigana`
+  - `1096953 discover(phase-α2): 日本語アクセント指定は IPA でなく yomigana 記法のみ`
+  - `6178dc7 docs(phase-α3): NEXT_ACTIONS を A 方針 (UniDic + LLM cross-check + override) に書き換え`
+  - `72238f5 feat(phase-α2): QC を loudnorm のみに簡素化 + 120 件本走`
+  - `4de9c5a feat(phase-α1): 音声自然さ QC 実装 + 55 件 smoke 完了`
+  - `c152a19 feat(phase5-⑤後半): import-lesson examples 対応 + 再生成 pipeline + マニュアル 2 本`
+  - `5b79a84 docs: SKILLS_MANUAL.md 新規追加`
+  - `4f0f244 feat(phase5-⑤): /export-skill-prompts skill + lesson_02 例文 5 件 smoke`
+  - ... 他 13 件 (phase5-④/⑤ + skill 系統)
+- **worktree 先行 6 commit**: f1a9236 / 950dcfd / c9f70e0 / ef3f228 / ed83027 / 4fbb148
+- **main 側に未 commit 変更**: `M data/image_prompts_skill.json` + 多数の untracked (vocab_大学.png / vocab_病院.jpg / nhk_counter_accent.json / scripts/check-accent-nhk.py / scripts/test-tts-accent-rendering.mjs / tmp/ 配下)
 
-### (B) 新 lesson の building 同型展開（lesson_02 building の v4_0_4_* fields 追加）
-1. `BUILDING_CUES["病院"]` / `["銀行"]` / `["駅"]` / `["スーパー"]` に v4_0_4_* fields 追加
-2. lesson_02 vocab_types_lesson02.json で対象 building を確認
-3. build_prompts.py --lesson 2 で 検証
-4. user 目視で OK なら本番化（実機 ~$0.04 × N 件）
+### 予想される conflict 領域
 
-優先順は user 判断。recommend = (C) ff-merge → (B) lesson_02 展開 の順。
+- `scripts/invariants.mjs`（worktree が B hash 078fd0bd9ffe + C4/C5 building 分岐撤去 ↔ main が Phase 5 ④' で B' 系統追加？）
+- `data/master_image_registry.json`（worktree が大幅編集 / main 側でも vocab_大学/vocab_病院 追加されている → registry も触っている可能性）
+- `NEXT_ACTIONS.md`（main 専属違反: worktree が編集 / WORKFLOW.md の conflict policy = main 側採用）
+- `data/lesson_*.json`（Phase 5 ⑤ で例文追加 / worktree は触っていない＝conflict なしのはず）
+- main 側 untracked PNG（`vocab_大学.png` / `vocab_病院.jpg`）と worktree 削除済 smoke PNG の関係要確認
+
+### 選択肢
+
+#### (α) worktree を main に rebase 後 ff-merge
+- worktree 側で `git rebase main` → conflict 解決 → 線形履歴を保つ
+- 6 commit を書き換えるため commit hash 変わる
+
+#### (β) main で 3-way merge commit
+- main 側で `git merge phase4-prompt-plan` → conflict 解決 → merge commit
+- worktree の commit hash を保つ / 履歴は分岐＋合流
+
+#### (γ) main 側で状態整理してから合流
+- まず main の未 commit 変更 (image_prompts_skill / accent 系) を commit or stash
+- main 側 NEXT_ACTIONS の現状把握
+- 改めて (α) or (β) を選ぶ
+
+**user 判断: (γ)「main 側と一度相談」**。次セッション main 側で状態整理 → 合流戦略確定。
+
+### 並行 backlog（merge 後）
+
+- (B) 新 lesson の building 同型展開（lesson_02 building の v4_0_4_* fields 追加）
+  - `BUILDING_CUES["病院"]` / `["銀行"]` / `["駅"]` / `["スーパー"]` に v4_0_4_* fields 追加
+  - build_prompts.py --lesson 2 で検証 → user 目視 OK で本番化（実機 ~$0.04 × N 件）
 
 ---
 
