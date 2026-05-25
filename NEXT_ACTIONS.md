@@ -92,13 +92,17 @@ data/images:    +6 PNG (vocab_大学.png / vocab_病院.jpg / word_{デパート
   (今日 consensus が `^ぼーるぺん` 平板を提案、manual は `^ぼーる!ぺん` 中高 4 → 要確認)
 - **同表記2読み恒久対策**: pickCatalogEntry を lesson_*.json reading 確定に切替
   (今回 fix-up は手動で不要 entry の accent を clear したが、本筋ではない)
-- **次の worktree session の宿題**: `phase4-prompt-plan` worktree で
-  (a) `git merge main` (or rebase) で skill pivot を取り込む (conflict は全 main 採用、
-  worktree の build_prompts.py / guide v4.0.py 改修は破棄)、
-  (b) v4.0.4 design insight (5-image reference attach / building layout determinism /
-  cyclist pose 6 軸明示 等) を `prompts/guide/part1-6.md` に手動転記、
-  (c) main に ff-merge。
-  worktree branch は **削除しない**（design insight 参照源）。
+- **次の worktree session の宿題** (a)(e)(f) は 2026-05-25 hybrid (3) で完了:
+  - **完了済**: (a) `git merge main` (commit 9f0458f, worktree 6 commit hash 保持・
+    全 main 採用で resolve / drop 確定) / (e) 採用 4 件 production PNG 維持 /
+    (f) main に ff-merge (9f0458f が main HEAD)
+  - **次回**: (b) design insight (A-1〜A-11 universal rule / per-building 4 件
+    テーブル / 学び 1-13 / 5-image reference attach / cyclist pose 6 軸) を
+    `prompts/guide/part1-6.md` に手動転記 → (c) Python guide
+    (master_prompt_design_guide_v4_0.py) + render_building() 廃棄 →
+    (d) invariants.mjs 旧 B 行 (promptGuideExpectedHashPrefix) 撤去 / B' のみ
+    残す ((c) と連動)。
+  worktree branch (phase4-prompt-plan) は **削除しない**（design insight 参照源）。
   詳細 memory: `project_worktree_v4_0_4_obsolete_under_skill_pivot.md`
 
 ### 触らない既知制約
