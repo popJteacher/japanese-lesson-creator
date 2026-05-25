@@ -393,6 +393,10 @@ section.lesson-section p { margin: 0 0 12px; }
   display: flex; align-items: center; justify-content: center;
   font-size: 3rem; color: var(--color-text-muted);
 }
+.vocab-check .vocab-item .word-line {
+  display: flex; align-items: center; gap: 6px;
+  justify-content: center;
+}
 .vocab-check .vocab-item .word {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-h3);
@@ -458,8 +462,70 @@ section.lesson-section p { margin: 0 0 12px; }
   color: var(--color-text-muted);
 }
 
+/* ── β1 採点 UI ── */
+.exercise .judge-controls {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.exercise .judge-btn {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-small);
+  padding: 6px 14px;
+  background: var(--color-background-surface);
+  color: var(--color-ui-primary-dark);
+  border: 2px solid var(--color-ui-primary);
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  min-height: 36px;
+}
+.exercise .judge-btn:hover { background: var(--color-background-subtle); }
+.exercise .judge-btn.judge-check { color: #fff; background: var(--color-ui-primary); }
+.exercise .judge-btn.judge-check:hover { background: var(--color-ui-primary-hover); }
+.exercise .judge-feedback {
+  min-height: 1.6em;
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  font-size: 1.4rem;
+  margin-top: 4px;
+}
+.exercise .judge-feedback.correct { color: #2a7a3e; }
+.exercise .judge-feedback.wrong   { color: #c0392b; }
+.exercise .answer-input.is-correct {
+  border-bottom-color: #2a7a3e;
+  background: #eaf6ee;
+}
+.exercise .answer-input.is-wrong {
+  border-bottom-color: #c0392b;
+  background: #fbeaea;
+}
+.exercise .judge-answer-list {
+  background: var(--color-ui-accent-muted);
+  border-radius: var(--border-radius-small);
+  padding: 10px 14px;
+  font-size: var(--font-size-small);
+  width: 100%;
+  margin-top: 4px;
+}
+.exercise .judge-answer-list .answer-list-label {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ui-primary-dark);
+  margin-bottom: 4px;
+}
+.exercise .judge-answer-list ul {
+  list-style: none; padding: 0; margin: 0;
+}
+.exercise .judge-answer-list li {
+  padding: 2px 0;
+  color: var(--color-text-main);
+}
+
 @media print {
   .toolbar { display: none; }
+  .exercise .judge-controls,
+  .exercise .judge-feedback,
+  .exercise .judge-answer-list { display: none !important; }
   body { background: #fff; }
   main { padding-top: 0; }
 }
@@ -510,6 +576,98 @@ section.lesson-section p { margin: 0 0 12px; }
       } catch (e) {
         console.warn('[homework] audio init failed:', e && e.message);
       }
+    });
+  });
+
+  /* β1 採点: data-answers を持つ .exercise 単位で
+     答え合わせ / もう一度 / 正解を表示 を制御。 */
+  function normalize(s) {
+    /* 末尾の「。」「.」と前後 whitespace（全角・半角）を除去。
+       中の表記揺れ（ふりがな / 漢字 / さん有無）は正規化しない（user 指定）。 */
+    return String(s == null ? '' : s)
+      .replace(/[\\u3000\\s]+/g, '')
+      .replace(/[。\\.]+$/, '');
+  }
+  function matchAny(userInputs, answerSets) {
+    for (var i = 0; i < answerSets.length; i++) {
+      var row = answerSets[i];
+      if (row.length !== userInputs.length) continue;
+      var ok = true;
+      for (var j = 0; j < row.length; j++) {
+        if (normalize(row[j]) !== normalize(userInputs[j])) { ok = false; break; }
+      }
+      if (ok) return true;
+    }
+    return false;
+  }
+  function perInputCorrectness(userInputs, answerSets) {
+    /* 各 input が「いずれかの正解組のその位置」に一致しているか。
+       ○の input は緑、×の input は赤。 */
+    var flags = userInputs.map(function(){ return false; });
+    for (var i = 0; i < answerSets.length; i++) {
+      var row = answerSets[i];
+      if (row.length !== userInputs.length) continue;
+      for (var j = 0; j < row.length; j++) {
+        if (normalize(row[j]) === normalize(userInputs[j])) flags[j] = true;
+      }
+    }
+    return flags;
+  }
+  document.querySelectorAll('.exercise[data-answers]').forEach(function(ex){
+    var answers;
+    try { answers = JSON.parse(ex.getAttribute('data-answers')); }
+    catch (e) { console.warn('[homework] answers parse failed', e); return; }
+    if (!Array.isArray(answers) || answers.length === 0) return;
+
+    var inputs = Array.prototype.slice.call(ex.querySelectorAll('.answer-input'));
+    var checkBtn = ex.querySelector('.judge-check');
+    var retryBtn = ex.querySelector('.judge-retry');
+    var showBtn  = ex.querySelector('.judge-show');
+    var feedback = ex.querySelector('.judge-feedback');
+    var answerList = ex.querySelector('.judge-answer-list');
+
+    function clearInputState() {
+      inputs.forEach(function(i){ i.classList.remove('is-correct','is-wrong'); });
+      feedback.classList.remove('correct','wrong');
+      feedback.textContent = '';
+    }
+
+    if (checkBtn) checkBtn.addEventListener('click', function(){
+      var values = inputs.map(function(i){ return i.value; });
+      var allOk = matchAny(values, answers);
+      var flags = perInputCorrectness(values, answers);
+      inputs.forEach(function(inp, idx){
+        inp.classList.remove('is-correct','is-wrong');
+        inp.classList.add(flags[idx] ? 'is-correct' : 'is-wrong');
+      });
+      feedback.classList.remove('correct','wrong');
+      if (allOk) {
+        feedback.classList.add('correct');
+        feedback.textContent = '○ 正解！';
+        retryBtn.style.display = 'none';
+      } else {
+        feedback.classList.add('wrong');
+        feedback.textContent = '× もう一度';
+        retryBtn.style.display = '';
+      }
+    });
+
+    if (retryBtn) retryBtn.addEventListener('click', function(){
+      /* もう一度: ×だった input だけクリアして集中させる。
+         正解済みの input は残す（部分正解を保持）。 */
+      inputs.forEach(function(inp){
+        if (inp.classList.contains('is-wrong')) inp.value = '';
+      });
+      clearInputState();
+      retryBtn.style.display = 'none';
+      var firstWrong = inputs.find(function(i){ return i.value === ''; });
+      if (firstWrong) firstWrong.focus();
+    });
+
+    if (showBtn) showBtn.addEventListener('click', function(){
+      var visible = answerList.style.display !== 'none';
+      answerList.style.display = visible ? 'none' : '';
+      showBtn.textContent = visible ? '正解を表示' : '正解を隠す';
     });
   });
 })();
@@ -640,14 +798,60 @@ section.lesson-section p { margin: 0 0 12px; }
     const PH_INPUT = '';
     const withPh = tplText.replace(/[_＿]{2,}/g, PH_INPUT);
     const rubied = ruby(withPh);
-    return rubied.split(PH_INPUT).join('<input type="text" placeholder="">');
+    return rubied.split(PH_INPUT).join('<input type="text" placeholder="" class="answer-input" autocomplete="off">');
+  }
+
+  /** β1 正解抽出 — examples[] から template ごとに「許容される正解配列」を作る。
+   *  返り値は array<array<string>>（複数の有効な正解組）。 */
+  /** namedCharacters の occupation/nationality に "——" のようなプレースホルダーが
+   *  入っているケースを除外する（lesson_01 ケリーさんの occupation 等）。 */
+  function isMeaningfulAttr(s) {
+    if (typeof s !== 'string') return false;
+    return s.replace(/[\s—\-–]/g, '').length > 0;
+  }
+  function extractAnswersP1(charName, examples, charObj) {
+    const RE = /^(\S+?)さんは(\S+?)です。?$/;
+    const out = [];
+    const seen = new Set();
+    for (const ex of examples || []) {
+      const m = (ex.sentence || '').match(RE);
+      if (!m) continue;
+      if (m[1] !== charName) continue;
+      if (seen.has(m[2])) continue;
+      seen.add(m[2]);
+      out.push([charName, m[2]]);
+    }
+    if (charObj) {
+      if (isMeaningfulAttr(charObj.occupation)  && !seen.has(charObj.occupation))  { out.push([charName, charObj.occupation]);  seen.add(charObj.occupation); }
+      if (isMeaningfulAttr(charObj.nationality) && !seen.has(charObj.nationality)) { out.push([charName, charObj.nationality]); seen.add(charObj.nationality); }
+    }
+    return out;
+  }
+
+  function extractAnswersP2Question(charName, charObj) {
+    /* lesson_01 の p2 examples は「＿さんは＿ですか。」形式の文を含まないので、
+     * namedCharacters の occupation/nationality から作る。 */
+    const out = [];
+    if (charObj && isMeaningfulAttr(charObj.occupation))  out.push([charName, charObj.occupation]);
+    if (charObj && isMeaningfulAttr(charObj.nationality)) out.push([charName, charObj.nationality]);
+    return out;
+  }
+
+  function extractAnswersP3(charName, buildingWord, occupation) {
+    return [
+      [charName, buildingWord, occupation],
+      [charName, '東西' + buildingWord, occupation],
+    ];
   }
 
   /** 1 つの練習エクササイズの HTML を組み立てる。
    *  images: [{ url, alt, label? }] の配列。1 件 → 単独画像、2 件 → 横並びで「＋」結合。
    *  audioUrl: 音声 URL or null (null は disabled ボタン)。
    *  audioLabel: ツールチップ用ラベル。 */
-  function exerciseHtml({ index, images, templateHtml, audioUrl, audioLabel }) {
+  /** answers: array<array<string>> — 各要素は 1 組の正解（input 数と同じ長さ）。
+   *  any-match で○判定。null/undefined/[] のときは判定 UI を出さない（β1 で正解未定義の問題用）。
+   *  answerLabel: 「正解を表示」 で表示する説明（"鈴木さんは先生です。" 等）— 省略時は answers から自動合成。 */
+  function exerciseHtml({ index, images, templateHtml, audioUrl, audioLabel, answers, answerLabel }) {
     const isPair = images.length >= 2;
     const wrapperCls = 'hint-images' + (isPair ? '' : ' single');
     let imagesHtml = '';
@@ -677,15 +881,45 @@ section.lesson-section p { margin: 0 0 12px; }
     } else {
       imagesHtml = `<div class="${wrapperCls}"><span class="img-fallback">🖼️</span></div>`;
     }
+    const hasJudge = Array.isArray(answers) && answers.length > 0;
+    const answersJson = hasJudge ? esc(JSON.stringify(answers)) : '';
+    const judgeUi = hasJudge ? `
+        <div class="judge-controls">
+          <button type="button" class="judge-btn judge-check">${esc('答え合わせ')}</button>
+          <button type="button" class="judge-btn judge-retry" style="display:none">${esc('もう一度')}</button>
+          <button type="button" class="judge-btn judge-show">${esc('正解を表示')}</button>
+        </div>
+        <div class="judge-feedback" aria-live="polite"></div>
+        <div class="judge-answer-list" style="display:none">${answerListHtml(answers, answerLabel)}</div>
+    ` : '';
+    /* β1: 例文・練習問題の音声は保留中のため出力しない。語彙チェックカードのみ
+     * 音声ボタンを残す。再開する際は audioBtnHtml(audioUrl, audioLabel, ...) を戻す。 */
     return `
-      <div class="exercise hint-exercise">
+      <div class="exercise hint-exercise"${hasJudge ? ` data-answers="${answersJson}"` : ''}>
         ${imagesHtml}
         <div class="question">
           <strong>${index}.</strong> ${templateHtml}
-          ${audioBtnHtml(audioUrl, audioLabel, 'audio-btn-inline')}
         </div>
+        ${judgeUi}
       </div>
     `;
+  }
+
+  /** 正解候補リストの表示 HTML を作る。
+   *  answers: [[name, predicate], ...]
+   *  answerLabel: 「鈴木さんは○○です。」のような template — {0},{1},... で置換 */
+  function answerListHtml(answers, answerLabel) {
+    if (!Array.isArray(answers) || answers.length === 0) return '';
+    const items = answers.map((row) => {
+      let line;
+      if (answerLabel) {
+        line = answerLabel.replace(/\{(\d+)\}/g, (_, i) => esc(row[+i] || ''));
+      } else {
+        line = row.map(esc).join(' / ');
+      }
+      return `<li>${line}</li>`;
+    }).join('');
+    return `<div class="answer-list-label">${esc('正解の例：')}</div><ul>${items}</ul>`;
   }
 
   /** patterns[].practiceImageSource に応じて練習問題群の HTML を生成する。
@@ -704,18 +938,31 @@ section.lesson-section p { margin: 0 0 12px; }
       if (chars.length === 0) return '';
 
       if (source === 'namedCharacters') {
-        return chars.map((c, i) => exerciseHtml({
-          index: i + 1,
-          images: [{
-            url: imgUrl(c.imageId, registryEntries, 256),
-            alt: c.name || '',
-            label: c.name || '',
-          }],
-          templateHtml,
-          /* キャラクター名の音声(将来仕様・現状は audio registry に未収録 → グレーアウト) */
-          audioUrl: audioUrlOf('char_' + (c.name || '').replace('さん', ''), audioRegistry),
-          audioLabel: '人物名を聞く',
-        })).join('');
+        return chars.map((c, i) => {
+          const charNameShort = (c.name || '').replace('さん', '');
+          /* β1: pat.id で答えロジック分岐。p1 は examples からも拾える。p2 は質問形式で
+           * lesson_01 examples に該当形式が無いため namedCharacters fallback のみ。 */
+          const answers = (pat.id === 'p2')
+            ? extractAnswersP2Question(charNameShort, c)
+            : extractAnswersP1(charNameShort, pat.examples, c);
+          const answerLabel = (pat.id === 'p2')
+            ? '{0}さんは{1}ですか。'
+            : '{0}さんは{1}です。';
+          return exerciseHtml({
+            index: i + 1,
+            images: [{
+              url: imgUrl(c.imageId, registryEntries, 256),
+              alt: c.name || '',
+              label: c.name || '',
+            }],
+            templateHtml,
+            /* キャラクター名の音声(将来仕様・現状は audio registry に未収録 → グレーアウト) */
+            audioUrl: audioUrlOf('char_' + charNameShort, audioRegistry),
+            audioLabel: '人物名を聞く',
+            answers,
+            answerLabel,
+          });
+        }).join('');
       }
 
       /* namedCharacters+vocab: pattern.examples の文字列を直接データソースとする(v2.11.4 修正)。
@@ -740,7 +987,7 @@ section.lesson-section p { margin: 0 0 12px; }
         if (!m) continue;
         const charNameShort = m[1];   /* 例: '鈴木' / 'リン' / 'タノム' (さん の前まで) */
         const buildingWord  = m[2];   /* 例: '病院' / '学校' (東西 を除いた語彙名) */
-        /* m[3] は職業だが、今回は画像/imageId 解決に使わない(将来の追加情報として保持可) */
+        const occupation    = m[3];   /* 例: '医者' / '先生' / '会社員' */
 
         const charObj = chars.find((c) => c && c.name && c.name.startsWith(charNameShort));
         const buildingObj = buildings.find((w) => w && w.word === buildingWord);
@@ -759,6 +1006,8 @@ section.lesson-section p { margin: 0 0 12px; }
           templateHtml,
           audioUrl: audioUrlOf(buildingObj.audioId || bImgId, audioRegistry),
           audioLabel: '語彙の音声を聞く',
+          answers: extractAnswersP3(charNameShort, buildingWord, occupation),
+          answerLabel: '{0}さんは{1}の{2}です。',
         }));
       }
       return out.join('');
@@ -767,14 +1016,19 @@ section.lesson-section p { margin: 0 0 12px; }
     /* デフォルト = vocabulary: その文型(またはshareVocabWith先)の語彙 1 件ごと 1 問 */
     const words = collectVocabForPattern(lesson, pat);
     if (words.length === 0) return '';
+    /* β1: blanks 数 = template 内の '＿＿' 出現数。1 個なら answer = [[word]]。
+     * 2 個以上は語彙のみでは答えを組めないので judge UI を出さない。 */
+    const blankCount = (tpl.pattern.match(/[_＿]{2,}/g) || []).length;
     return words.map((w, i) => {
       const imgId = w.imageId || ('word_' + (w.word || ''));
+      const answers = (blankCount === 1 && w.word) ? [[w.word]] : null;
       return exerciseHtml({
         index: i + 1,
         images: [{ url: imgUrl(imgId, registryEntries, 256), alt: w.word || '', label: w.word || '' }],
         templateHtml,
         audioUrl: audioUrlOf(w.audioId || imgId, audioRegistry),
         audioLabel: (w.word || '') + ' を聞く',
+        answers,
       });
     }).join('');
   }
@@ -783,18 +1037,15 @@ section.lesson-section p { margin: 0 0 12px; }
     const pat = (lesson.patterns || []).find((p) => p.id === t.patternId);
     if (!pat) return '';
 
-    /* 例文リスト (音声ボタンつき) */
+    /* 例文リスト — 例文音声は保留中（pyopenjtalk/AivisSpeech 試用待ち）のため
+     * β1 では再生ボタンを出さない。再開する際は audioBtnHtml を戻す。 */
     const examples = (pat.examples || []).map((ex) => {
       const url = imgUrl(ex.imageId, registryEntries, 256);
-      const audioUrl = audioUrlOf(ex.audioId || ('sentence_' + (ex.imageId || '')), audioRegistry);
       return `
         <div class="example-row">
           <span class="no">${esc(ex.no || '')}</span>
           <div class="text">
-            <div class="sentence">
-              ${ruby(ex.sentence || '')}
-              ${audioBtnHtml(audioUrl, '例文を聞く', 'audio-btn-inline')}
-            </div>
+            <div class="sentence">${ruby(ex.sentence || '')}</div>
             ${ex.sentenceEn ? `<div class="en en-text">${esc(ex.sentenceEn)}</div>` : ''}
           </div>
           ${imgHtml(url, ex.no || '', 'example-img')}
@@ -830,7 +1081,7 @@ section.lesson-section p { margin: 0 0 12px; }
     `;
   }
 
-  function buildVocabSection(lesson, session, registryEntries) {
+  function buildVocabSection(lesson, session, registryEntries, audioRegistry) {
     const vocab = lesson.vocabulary;
     if (!vocab || !vocab.byPattern) return '';
     const teachIds = new Set((session.teach || []).map((t) => t.patternId));
@@ -840,20 +1091,23 @@ section.lesson-section p { margin: 0 0 12px; }
     if (groups.length === 0) return '';
 
     const items = groups.flatMap(([_, group]) => group.words || []).map((w) => {
-      const url = imgUrl(w.imageId || ('word_' + (w.word || '')), registryEntries, 256);
-      const imgHtml = url
+      const imgId = w.imageId || ('word_' + (w.word || ''));
+      const url = imgUrl(imgId, registryEntries, 256);
+      const cardImg = url
         ? `<img src="${esc(url)}" alt="${esc(w.word)}" loading="eager" decoding="async" onerror="this.outerHTML='&lt;span class=img-fallback&gt;🖼️&lt;/span&gt;'">`
         : `<span class="img-fallback">🖼️</span>`;
+      const audioUrl = audioUrlOf(w.audioId || imgId, audioRegistry);
       // 語彙カードの読み (.reading) は HTML に直書きしない。
       // 漢字部分はふりがなトグルが管理する <ruby> 経由でのみ表示する。
       // 単語カードの英語は英語トグルに連動して表示/非表示 (.en-text を付ける)。
       return `
         <div class="vocab-item">
-          ${imgHtml}
-          <div>
+          ${cardImg}
+          <div class="word-line">
             <div class="word">${ruby(w.word || '')}</div>
-            ${w.en ? `<span class="en en-text">${esc(w.en)}</span>` : ''}
+            ${audioBtnHtml(audioUrl, (w.word || '') + ' を聞く', 'audio-btn-inline')}
           </div>
+          ${w.en ? `<span class="en en-text">${esc(w.en)}</span>` : ''}
         </div>
       `;
     }).join('');
@@ -934,7 +1188,7 @@ ${HOMEWORK_CSS}
   </div>
 
   ${buildCover(session, lesson)}
-  ${buildVocabSection(lesson, session, registryEntries)}
+  ${buildVocabSection(lesson, session, registryEntries, audioRegistry)}
   ${patternSections}
   ${buildReflectSection(session, lessonsByNo)}
 </main>
