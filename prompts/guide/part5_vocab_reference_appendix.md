@@ -481,23 +481,44 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 
 ## 5.10 BUILDING_CUES
 
-> [Template B `vocabulary_building`](part4_prompt_templates.md#template-b-vocabulary_building) で使用する 8 建物 × {building_type, building_scale, primary_scene_cue, signage_text}。
-> v3.0 改訂：`signage_text` を「英語短語」に全件変更（日本語は文字化け確定のため）。`primary_scene_cue` を新設（旧 entrance_cue / user_action_cue / surrounding_anchor は deprecated）。
-> v3.3：deprecated 3 フィールドは後方互換のためテーブル下部に併記。
+> [Template B `vocabulary_building`](part4_prompt_templates.md#template-b-vocabulary_building) で使用する 8 建物のデータ。
+> v4.0.4 (2026-05-25) building 全面改訂：worktree image-prompt-plan の R1-R26 実機検証で確立した「universal cream background + 5-image reference attachment + universal rule A-1〜A-11 + per-vocab-type 4 件テーブル」設計に移行。学校 R25 / 大学 R26 / デパート R22 / 会社 R22 を採用版として本番化済。
+> v4.0.4 fields は [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) と対応して per-building 変数を埋める。
+> 旧 v3.0 fields（building_type / building_scale / primary_scene_cue / signage_text）は後方互換と未移行 building（銀行 / 病院 / 駅 / スーパー）の現行 prompt 生成で残置。
 
-### 会社
+### Reference image constants (v4.0.4)
+
+全 building カード共通の reference image anchor：
+
+| constant | path | 役割 |
+|---|---|---|
+| `BUILDING_BRAND_VOICE_REF` | `data/images/word_日本人.png` | image_1 anchor — brand voice / illustration tone / palette family / line weight |
+| `BUILDING_ARCHITECTURAL_REF` | `data/images/vocab_病院.jpg` | image_5 anchor — architectural framing / close-up composition / building dominance ratio |
+
+`image_2〜4` は per-building の `type_relevant_refs`（下記 v4_0_4 entry 内）から 3 件選ぶ。skill は計 5 枚を nanobanana チャットに添付して生成する（[PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-112-building_reference_attachment_rule)）。
+
+### 学校 (v4.0.4 採用版 R25)
+
+#### v4.0.4 fields
 
 | 項目 | 値 |
 |---|---|
-| building_type | `company office` |
-| building_scale | `a mid-sized modern office building, not a skyscraper` |
-| primary_scene_cue | `automatic glass entrance doors with one office worker in a business suit walking in, carrying a briefcase` |
-| signage_text | `OFFICE` |
-| ~~entrance_cue~~ (retired v4.0) | `automatic glass doors with a simple rectangular company nameplate beside the entrance` |
-| ~~user_action_cue~~ (retired v4.0) | `one office worker in a business suit walking in, another walking out, both carrying briefcases` |
-| ~~surrounding_anchor~~ (retired v4.0) | `a clean paved walkway and a small potted plant by the entrance door` |
+| `vocab_type_desc` | `school` |
+| `form_desc` | `a 2-3 story low-rise Japanese institutional school building with cream off-white walls, a slate-grey hip roof, and a central clock tower with a circular clock face that breaks the roofline at the building's vertical axis of symmetry` |
+| `signature` | `the central clock tower with a circular clock face — the primary signature feature that identifies the building as a school at a glance` |
+| `accent` | `warm yellow / sand-cream gold (a soft warm yellow within the muted pastel family — never saturated, never primary yellow)` |
+| `accent_targets` | `accent color appears on: the clock tower trim, the entrance door frame, and the signboard frame — NOT on the main wall (walls stay cream)` |
+| `label` | `SCHOOL` |
+| `signboard_location` | `a single small rectangular signboard mounted on the wall directly above the main entrance, oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent warm yellow / sand-cream gold` |
+| `signboard_location_short` | `above the main entrance` |
+| `surroundings_context` | `campus` |
+| `surroundings_block` | `a campus context: an auxiliary low-rise gymnasium or annex building is partially visible at the edge of the frame as a secondary mass (smaller / less detailed than the primary school), with a cream off-white sidewalk in front of the entrance and a few neat low shrubs flanking the entrance path. NO other freestanding buildings beyond the primary + one auxiliary. NO billboards, NO street vehicles, NO traffic signs.` |
+| `framing_extra` | `BUILDING SCALE EMPHASIS: the school building DOMINATES the frame vertically — the clock tower top reaches the upper 8-12% of the canvas, the building edge-to-edge spans the horizontal frame, side wings extend off-frame at left and right. The building occupies 75% or more of the vertical canvas height. Figures are prominent at approximately 1/3 of the visible building height but do NOT shrink to background scale.` |
+| `activities_block` | `4 figures in school uniforms, each engaged in a DIFFERENT activity at the school entrance: (1) one student entering the school gate from the sidewalk, body angled toward the entrance; (2) one student walking past in mid-stride along the sidewalk parallel to the building facade; (3) one student cycling on the sidewalk in the foreground — bicycle pose MUST follow [PART 1.13 A-11 cyclist pose specification](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) (torso leans forward, both hands grip handlebars, both feet on pedals in mid-pedaling rotation, NOT sitting upright with feet on ground); (4) two students chatting as a standing pair near the gate, both facing each other with natural posture. All figures wear school uniforms (white shirt + dark trousers or dark skirt + dark blazer optional) with the cyclist NOT wearing a warm yellow jacket (avoid accent color collision with the building accent).` |
+| `landscaping_block` | `flanking the entrance path: 2-3 leafy summer trees with rounded canopies in muted warm green, drawn flat-vector style. NO flowers in pots, NO decorative urns, NO benches with text.` |
+| `type_relevant_refs` | `["data/images/word_学生.png", "data/images/word_大学生.png", "data/images/word_先生.png"]` |
 
-### 学校
+#### v3.0 fields (legacy / 未使用化 v4.0.4)
 
 | 項目 | 値 |
 |---|---|
@@ -506,16 +527,28 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `a prominent school gate in the foreground with two children in school uniforms — one with a randoseru backpack — walking through it` |
 | signage_text | `SCHOOL` |
 
-### 銀行
+### 大学 (v4.0.4 採用版 R26)
+
+#### v4.0.4 fields
 
 | 項目 | 値 |
 |---|---|
-| building_type | `bank` |
-| building_scale | `a small to medium neighborhood bank branch — NOT a corporate skyscraper` |
-| primary_scene_cue | `a single ATM unit beside the entrance door with one customer using it` |
-| signage_text | `BANK` |
+| `vocab_type_desc` | `university` |
+| `form_desc` | `a 2-3 story university academic building with cream off-white walls, a slate-grey roof, and a stone-built campus gate at the front with vertical pillars and a horizontal stone sign beam above the gateway` |
+| `signature` | `the stone-built campus gate with vertical pillars and the horizontal stone sign beam — the primary signature feature that identifies the building as a university at a glance` |
+| `accent` | `sand-stone beige (a warm desaturated beige within the muted pastel family — evokes academic gravitas)` |
+| `accent_targets` | `accent color appears on: the campus gate pillars, the stone sign beam, and the signboard frame — NOT on the main wall (walls stay cream)` |
+| `label` | `UNIVERSITY` |
+| `signboard_location` | `a single small rectangular signboard mounted on the horizontal sign beam above the campus gate, oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent sand-stone beige` |
+| `signboard_location_short` | `on the sign beam above the campus gate` |
+| `surroundings_context` | `campus (secondary academic building partially visible OK — 学び 12)` |
+| `surroundings_block` | `a campus context: a secondary academic building of similar palette and roof slope is partially visible at the edge of the frame as a smaller secondary mass (less detailed than the primary), with a cream off-white sidewalk in front of the gate. NO other freestanding buildings beyond the primary + one secondary. NO billboards, NO street vehicles, NO traffic signs.` |
+| `framing_extra` | `null` (default A-2 close-up framing applies — no extra emphasis needed because the campus gate signature is read at standard scale)` |
+| `activities_block` | `4 figures in university-student casual wear, each engaged in a DIFFERENT activity at the campus gate: (1) one student entering through the gate from the sidewalk, body angled toward the entrance; (2) one student walking past in mid-stride along the sidewalk parallel to the gate, carrying a backpack; (3) one student cycling on the sidewalk in the foreground — bicycle pose MUST follow [PART 1.13 A-11 cyclist pose specification](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4); the cyclist MUST NOT wear a warm yellow jacket (avoid accent color collision); (4) two students chatting as a standing pair near the gate, both facing each other with natural posture. All figures wear modern student casual (jacket + neat trousers / skirt + sneakers).` |
+| `landscaping_block` | `flanking the gate path: 2-3 leafy summer trees with rounded canopies in muted warm green — all trees in leafy summer state (no winter bare branches, no autumn foliage). NO flowers in pots, NO decorative urns.` |
+| `type_relevant_refs` | `["data/images/word_学生.png", "data/images/word_大学生.png", "data/images/word_先生.png"]` |
 
-### 大学
+#### v3.0 fields (legacy / 未使用化 v4.0.4)
 
 | 項目 | 値 |
 |---|---|
@@ -524,7 +557,28 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `two young adult students in their 20s with backpacks walking through the campus gate` |
 | signage_text | `UNIVERSITY` |
 
-### デパート
+### デパート (v4.0.4 採用版 R22)
+
+#### v4.0.4 fields
+
+| 項目 | 値 |
+|---|---|
+| `vocab_type_desc` | `department store` |
+| `form_desc` | `a 5-6 story urban mid-rise department store building with cream off-white walls and a slate-grey roofline; the upper floors extend off-frame at the top edge so only the ground floor and the next 2-3 floors are visible in close-up framing` |
+| `signature` | `the 1st floor display windows showing fashion items + a small awning above the main entrance — the primary signature feature that identifies the building as a department store at a glance` |
+| `accent` | `warm muted tan (a soft warm tan within the muted pastel family — evokes upscale commercial warmth)` |
+| `accent_targets` | `accent color appears on: the awning, the display window frames, and the signboard frame — NOT on the main wall (walls stay cream)` |
+| `label` | `DEPT. STORE` |
+| `signboard_location` | `a single small rectangular signboard mounted on the wall directly above the main entrance (between the awning and the 2nd floor windows), oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent warm muted tan` |
+| `signboard_location_short` | `above the main entrance, between the awning and the 2nd floor` |
+| `surroundings_context` | `urban_corner` |
+| `surroundings_block` | `an urban corner context: an adjacent commercial building of similar palette and roof slope is partially visible at the side edge of the frame (smaller / less detailed than the primary), with a cream off-white sidewalk in front of the entrance and a curbside lane edge visible at the bottom. NO other freestanding buildings beyond the primary + one adjacent. NO billboards, NO street vehicles in motion, NO traffic signs with text.` |
+| `framing_extra` | `null` (default A-2 close-up framing — upper floors off-frame at top edge is intrinsic to this vocab type)` |
+| `activities_block` | `4 figures in modern urban casual wear, each engaged in a DIFFERENT activity at the department store entrance: (1) one shopper entering the main entrance from the sidewalk, carrying an empty shopping bag, body angled toward the entrance; (2) one shopper walking past in mid-stride along the sidewalk parallel to the facade, carrying a filled shopping bag; (3) one shopper window-shopping at the 1st floor display window, body facing the display in side-view; (4) two shoppers chatting as a standing pair outside the entrance, both facing each other with natural posture. All figures wear modern urban casual (light jacket + neat trousers / dress + loafers or sneakers).` |
+| `landscaping_block` | `flanking the entrance: 1-2 leafy summer trees with rounded canopies in muted warm green in narrow tree-pit planters along the sidewalk edge. NO flowers in pots, NO decorative urns.` |
+| `type_relevant_refs` | `["data/images/word_会社員.png", "data/images/word_アメリカ人.png", "data/images/word_韓国人.png"]` |
+
+#### v3.0 fields (legacy / 未使用化 v4.0.4)
 
 | 項目 | 値 |
 |---|---|
@@ -533,7 +587,50 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `wide elegant ground-floor display windows showing fashion items, with one shopper carrying a shopping bag near the entrance` |
 | signage_text | `DEPT. STORE` |
 
-### 病院
+### 会社 (v4.0.4 採用版 R22)
+
+#### v4.0.4 fields
+
+| 項目 | 値 |
+|---|---|
+| `vocab_type_desc` | `company office` |
+| `form_desc` | `a 5-6 story urban mid-rise office building with cream off-white walls and a slate-grey roofline; the upper floors extend off-frame at the top edge so only the ground floor lobby and the next 2-3 floors are visible in close-up framing` |
+| `signature` | `the ground-floor glass curtain-wall lobby + entrance doors — the primary signature feature that identifies the building as a company office at a glance` |
+| `accent` | `dull muted blue (a desaturated soft blue within the muted pastel family — evokes corporate calm)` |
+| `accent_targets` | `accent color appears on: the glass curtain-wall framing, the entrance door frame, and the signboard frame — NOT on the main wall (walls stay cream)` |
+| `label` | `OFFICE` |
+| `signboard_location` | `a single small rectangular signboard mounted on the wall directly above the main entrance (between the lobby curtain-wall and the 2nd floor windows), oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent dull muted blue` |
+| `signboard_location_short` | `above the main entrance, between the lobby and the 2nd floor` |
+| `surroundings_context` | `urban_corner` |
+| `surroundings_block` | `an urban corner context: an adjacent commercial building of similar palette is partially visible at the side edge of the frame (smaller / less detailed than the primary), with a cream off-white sidewalk in front of the entrance and a curbside lane edge visible at the bottom. NO other freestanding buildings beyond the primary + one adjacent. NO billboards, NO street vehicles in motion, NO traffic signs with text.` |
+| `framing_extra` | `null` (default A-2 close-up framing — upper floors off-frame at top edge is intrinsic to this vocab type)` |
+| `activities_block` | `4 figures in business attire, each engaged in a DIFFERENT activity at the office entrance: (1) one office worker entering the lobby from the sidewalk, carrying a briefcase, body angled toward the entrance; (2) one office worker walking past in mid-stride along the sidewalk parallel to the facade, wearing a suit; (3) one office worker walking with a phone held to the ear in mid-conversation, body in side-view; (4) two office workers chatting as a standing pair outside the entrance, both facing each other with natural posture. All figures wear modern business attire (suit + tie / blazer + neat trousers + loafers).` |
+| `landscaping_block` | `flanking the entrance: 1-2 leafy summer trees with rounded canopies in muted warm green in narrow tree-pit planters along the sidewalk edge. NO flowers in pots, NO decorative urns.` |
+| `type_relevant_refs` | `["data/images/word_会社員.png", "data/images/word_アメリカ人.png", "data/images/word_韓国人.png"]` |
+
+#### v3.0 fields (legacy / 未使用化 v4.0.4)
+
+| 項目 | 値 |
+|---|---|
+| building_type | `company office` |
+| building_scale | `a mid-sized modern office building, not a skyscraper` |
+| primary_scene_cue | `automatic glass entrance doors with one office worker in a business suit walking in, carrying a briefcase` |
+| signage_text | `OFFICE` |
+
+### 銀行 (v4.0.4 移行待ち)
+
+> 未移行：v4.0.4 fields 未付与。現状は v3.0 fields で v3.0 Template B 経由で生成される（背景 = pale sky-blue / single primary_scene_cue）。lesson_02 以降で v4.0.4 fields を付与予定（[PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) per-building specification 手順を参照）。
+
+| 項目 | 値 |
+|---|---|
+| building_type | `bank` |
+| building_scale | `a small to medium neighborhood bank branch — NOT a corporate skyscraper` |
+| primary_scene_cue | `a single ATM unit beside the entrance door with one customer using it` |
+| signage_text | `BANK` |
+
+### 病院 (v4.0.4 移行待ち / image_5 architectural anchor として使用中)
+
+> 未移行：v4.0.4 fields 未付与。**ただし `data/images/vocab_病院.jpg` は全 building カードの image_5 architectural reference として現役（学校 / 大学 / デパート / 会社 4 件の生成に使用済）**。
 
 | 項目 | 値 |
 |---|---|
@@ -542,7 +639,7 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `a covered entrance canopy with a wheelchair ramp and a clearly visible red cross symbol on the facade` |
 | signage_text | `HOSPITAL` |
 
-### 駅
+### 駅 (v4.0.4 移行待ち)
 
 | 項目 | 値 |
 |---|---|
@@ -551,7 +648,7 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `ticket gates visible through the open entrance with one commuter walking in` |
 | signage_text | `STATION` |
 
-### スーパー
+### スーパー (v4.0.4 移行待ち)
 
 | 項目 | 値 |
 |---|---|

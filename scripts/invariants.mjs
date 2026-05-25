@@ -42,7 +42,7 @@ const CANONICAL = {
     resolve(ROOT, 'prompts/guide/part5_vocab_reference_appendix.md'),
     resolve(ROOT, 'prompts/guide/part6_output_instructions.md'),
   ],
-  guideManifestExpectedHashPrefix: '1ca2f57ad927', // v5.0 初版 — 6 ファイル個別 hash を連結再 sha256
+  guideManifestExpectedHashPrefix: '0673ca2d537e', // v5.0 + v4.0.4 building 取り込み (2026-05-25 / worktree phase4-prompt-plan ff-merge) — PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE + PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4 (A-1〜A-11 + 13 学び) + PART 3.2 building v4.0.4 design + PART 4 Template B 5-image reference (17 placeholders) + PART 2 BACKGROUND_BY_TYPE.building → legacy 専用化 + PART 5.10 BUILDING_CUES 4 件に v4_0_4_* fields + PART 6 C5 v4.0.4 採用 building も NOT_TOKEN 必須化
   // S列プロンプト JSON の置き場
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
@@ -57,11 +57,15 @@ const CANONICAL = {
 // 6 不変条件の文字列定数
 // v3.3 (M-5): C4/C5 は vocab_type 別の背景文字列分岐に対応
 //   default（人物 / 物体 / 抽象等）→ off-white
-//   building（テンプレ B）       → pale sky-blue full-bleed
+//   building（テンプレ B / v3.0 legacy）→ pale sky-blue full-bleed
+// v4.0.4 (2026-05-25): building の採用 4 件は default cream に統合
+//   building 未移行 4 件（銀行 / 病院 / 駅 / スーパー）のみ legacy sky-blue を維持
 const BACKGROUND_BY_TYPE = {
   default:  'soft cream off-white background (warm off-white, NOT pure stark white)',
   building: 'pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette',
 };
+// v4.0.4 採用 building（universal cream BG / 5-image reference / A-1〜A-11 適用）
+const BUILDING_V4_0_4_WORDS = new Set(['学校', '大学', 'デパート', '会社']);
 const BACKGROUND_EXACT = BACKGROUND_BY_TYPE.default; // 後方互換（既存参照用）
 const NOT_TOKEN = 'NOT pure stark white'; // 大文字 NOT が確定。小文字 'not' に揺れていないか
 const FORBIDDEN_PERSON_AREA = /fills\s+\d+\s*[-–]?\s*\d*\s*%\s+of\s+the\s+image\s+area/i;
@@ -212,6 +216,10 @@ async function checkSColumnInvariants() {
       warns.push(`invariants[C] ${name}: vocabulary[] が空または無い`);
       continue;
     }
+    // v4.0.4: skill 出力 (mode='skill') と build_prompts.py 出力 (mode='lesson01' 等) で
+    // building 検査ルールを分岐する。skill mode では v4.0.4 採用 4 件は cream BG / 未移行 4 件は sky-blue。
+    // build_prompts.py 出力は v3.0 path で生成された旧 artifact のため、全 building を sky-blue 扱い。
+    const isSkillArtifact = (doc._meta?.mode === 'skill');
     for (const item of items) {
       const tag = `${name}:${item.imageId ?? item.word ?? '?'}`;
       const prompt = String(item.prompt ?? '');
@@ -220,17 +228,20 @@ async function checkSColumnInvariants() {
         continue;
       }
       const type = item.vocab_type ?? item.vocabType ?? '';
-      const expectedBg = type === 'building' ? BACKGROUND_BY_TYPE.building : BACKGROUND_BY_TYPE.default;
+      const word = item.word ?? '';
+      // v4.0.4: skill mode かつ採用 4 件 → universal cream / それ以外の building → legacy sky-blue
+      const isLegacyBuilding = type === 'building' && !(isSkillArtifact && BUILDING_V4_0_4_WORDS.has(word));
+      const expectedBg = isLegacyBuilding ? BACKGROUND_BY_TYPE.building : BACKGROUND_BY_TYPE.default;
 
-      // 4. 背景文字列の一字一句一致（vocab_type 別・v3.3 M-5）
+      // 4. 背景文字列の一字一句一致（vocab_type 別・v3.3 M-5 / v4.0.4 で skill 採用 building 分岐）
       if (!prompt.includes(expectedBg)) {
         errors.push(
-          `invariants[C4] ${tag}: 背景文字列の一字一句一致違反（type=${type || 'default'}）。`
+          `invariants[C4] ${tag}: 背景文字列の一字一句一致違反（type=${type || 'default'}${type === 'building' ? (isLegacyBuilding ? ' / v3.0 legacy' : ' / v4.0.4 skill 採用') : ''}）。`
           + ` 必須: "${expectedBg}"`
         );
       }
-      // 5. NOT 表記の一字一句一致（building は確定色のためトークン揺れ防止不要）
-      if (type !== 'building' && !prompt.includes(NOT_TOKEN)) {
+      // 5. NOT 表記の一字一句一致（legacy building は確定 sky-blue のため skip / v4.0.4 skill 採用 building は cream BG なので必須）
+      if (!isLegacyBuilding && !prompt.includes(NOT_TOKEN)) {
         errors.push(
           `invariants[C5] ${tag}: NOT 表記の一字一句一致違反。`
           + ` 必須: "${NOT_TOKEN}"（小文字 not への揺れ禁止）`

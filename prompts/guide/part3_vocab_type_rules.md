@@ -49,32 +49,115 @@
 
 ## 3.2 building (vocab_type = building)
 
-### Aspect ratio / framing
+> v4.0.4 (2026-05-25) 全面改訂：worktree image-prompt-plan の R1-R26 実機検証で確立した「universal cream background + 5-image reference attachment + universal rule A-1〜A-11 + per-vocab-type 4 件テーブル」設計に移行。Stage 1 採用 4 件（学校 R25 / 大学 R26 / デパート R22 / 会社 R22）は本仕様で本番化済。
+>
+> 旧 v3.0 design（pale sky-blue background / 70% frame / single primary_scene_cue / text-only generation）は未移行 4 件（銀行 / 病院 / 駅 / スーパー）で残置。v4.0.4 移行時に下記新仕様に統一する。
+
+### v4.0.4 採用 4 件 (学校 / 大学 / デパート / 会社)
+
+#### Aspect ratio / framing
+
+- 1:1 square
+- Close-up framing — building does NOT fit entirely within frame; side wings extend off-frame, mid-rise の上層階も off-frame OK
+- BUILDING DOMINATES frame 75-85% vertically (R25 学校 validation で確定した dominance 閾値)
+- Top of primary signature feature reaches upper 8-12% of canvas
+- Figures prominent at approximately 1/3 of visible building height
+
+詳細は [PART 1.13 A-2 Framing](part1_universal_rules.md#a-2-framing) 参照。
+
+#### Camera
+
+- Street-level low-angle 3/4 at adult eye-height (~1.6m)
+- Rotated 30-45 degrees off the building's primary facade
+- Close to building, looking slightly UP
+- NOT isometric top-down, NOT bird's-eye, NOT elevation drawing
+
+詳細は [PART 1.13 A-1 Camera](part1_universal_rules.md#a-1-camera) 参照。
+
+#### Background / Walls / Palette
+
+- 背景 = `soft cream off-white background (warm off-white, NOT pure stark white)` = `BG_EXACT_CREAM`（[PART 2 STYLE_BIBLE.color_palette.background](part2_style_bible.md#color_palette) と一致）
+- Walls = cream off-white（CONSTANT 全 building 共通）
+- Roof = slate-grey（CONSTANT 全 building 共通）
+- Accent = ONE color per vocab_type from muted pastel family（PER-VOCAB-TYPE）
+  - 学校 = warm yellow / sand-cream gold
+  - 大学 = sand-stone beige
+  - デパート = warm muted tan
+  - 会社 = dull muted blue
+
+詳細は [PART 1.13 A-4 Palette](part1_universal_rules.md#a-4-palette) 参照。BACKGROUND_BY_TYPE.building は v4.0.4 で撤去済（全 vocab_type が universal cream に統合）。
+
+#### Reference images (5-image attachment)
+
+- image_1 = `data/images/word_日本人.png` (brand voice anchor / constant)
+- image_2-4 = per-building from [PART 5.10 BUILDING_CUES[X].type_relevant_refs](part5_vocab_reference_appendix.md#510-building_cues)
+- image_5 = `data/images/vocab_病院.jpg` (architectural & framing anchor / constant)
+
+詳細は [PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-112-building_reference_attachment_rule) 参照。
+
+#### Signage rules (single English signboard)
+
+- Exactly ONE English signboard with building name (SCHOOL / UNIVERSITY / DEPT. STORE / OFFICE)
+- Signboard location is per-vocab-type（[PART 5.10 signboard_location field](part5_vocab_reference_appendix.md#510-building_cues)）
+- 信号 cue は a single label only — 旧 v3.0 の `primary_scene_cue` 単一 cue 制約は v4.0.4 では `{ACTIVITIES_BLOCK}` (4-figure variety) に置き換え
+- 全 surface blank rule（[PART 1.13 A-9](part1_universal_rules.md#a-9-blank-text-surfaces)）厳守：signboard 以外の全 surface は text-free
+
+#### Figures (4-5 名 different activities)
+
+- 4-5 figures in scene, each engaged in a DIFFERENT activity（[PART 5.10 activities_block](part5_vocab_reference_appendix.md#510-building_cues) 参照）
+- Activity types: entering / walking past mid-stride / cycling / chatting / window-shopping / phone-walking 等
+- Cyclist は 6-axis pose specification（[PART 1.13 A-11](part1_universal_rules.md#a-11-cyclist-pose-when-cyclist-is-in-activities_block)）必須
+
+#### Surroundings (per-vocab-type context)
+
+- isolated / campus / urban_corner / urban_street の 4 種から per-vocab-type 選択
+  - 学校 = campus（auxiliary gymnasium / annex 描画 OK）
+  - 大学 = campus（secondary academic building 描画 OK）
+  - デパート = urban_corner（adjacent commercial building 描画 OK）
+  - 会社 = urban_corner（adjacent commercial building 描画 OK）
+
+詳細は [PART 1.13 A-10 Surroundings context](part1_universal_rules.md#a-10-surroundings-context-per-vocab-type) 参照。
+
+#### Ground / Pavement
+
+- Sidewalk and paved ground = cream off-white (NOT slate-grey, NOT asphalt-dark)
+- Subtle slate-navy outline only（curb edge / paving joint）
+
+詳細は [PART 1.13 A-8 Ground / Pavement](part1_universal_rules.md#a-8-ground--pavement) 参照。
+
+#### Universal rule reference
+
+[Template B](part4_prompt_templates.md#template-b-vocabulary_building) は `{BUILDING_UNIVERSAL_RULE}` placeholder で [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) 本文を inline 展開する（A-1〜A-11 全文）。skill は per-building 変数（{ACCENT} / {SIGNATURE} / {ACTIVITIES_BLOCK} / {SURROUNDINGS_BLOCK} 等）を PART 5.10 BUILDING_CUES から解決して埋める。
+
+### 未移行 4 件 (銀行 / 病院 / 駅 / スーパー)
+
+> v4.0.4 fields 未付与。当面 v3.0 path で生成される（次の旧 v3.0 仕様）。lesson_02 以降で BUILDING_CUES に v4_0_4_* fields を追加した時点で v4.0.4 採用 4 件と同じ path に統合する。
+
+#### Aspect ratio / framing (v3.0)
 
 - 1:1 square
 - Building occupies about 70% of frame, centered
 
-### Camera
+#### Camera (v3.0)
 
 - Slight three-quarter front angle at eye level
 - 35mm wide-angle lens equivalent
 - Natural perspective, no fisheye distortion
 - Straight vertical lines
 
-### Background note
+#### Background note (v3.0)
 
 - 背景は `pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette`
 - これは `BG_EXACT_SKYBLUE`（[PART 2 BACKGROUND_BY_TYPE](part2_style_bible.md#background_by_type) / [PART 6 preflight C4](part6_output_instructions.md#65-preflight-invariants-mechanical-gates) 必須一致）
 
-### Signage rules
+#### Signage rules (v3.0)
 
-v3.0 全面改訂：
 - **Exactly ONE short ENGLISH building-name label** — small, on entrance fascia
 - `{SIGNAGE_TEXT}` は [`BUILDING_CUES[X].signage_text`](part5_vocab_reference_appendix.md#510-building_cues)（英語値のみ）
 - 日本語（kanji/kana）・第 2 英単語・RECEPTION/ATM/OPEN 等の二次ラベル・数字 すべて禁止
 - 旧「上 1/3 typography 用余白」指示は v3.0 で削除（GAS オーバーレイの責務だった機構が廃止）
 
-### Scene cue selection
+#### Scene cue selection (v3.0)
 
 - 単一 `[{PRIMARY_SCENE_CUE}]`（[`BUILDING_CUES[X].primary_scene_cue`](part5_vocab_reference_appendix.md#510-building_cues)）
 - 複数 cue 並置や架空の二次サイン・看板・banner 等は明示禁止（反クラッター原則）

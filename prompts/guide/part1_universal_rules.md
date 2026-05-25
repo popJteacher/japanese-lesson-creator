@@ -678,3 +678,236 @@ Per country, the cultural_styling_hint may specify a 2-option footwear choice us
 ### enforcement
 
 `PERSON_NATIONALITY_HINTS` の各国 `cultural_styling_hint` 内に footwear 行を含める（v4.0 全 7 国に inline 追加済・[PART 5.2](part5_vocab_reference_appendix.md#52-person_nationality_hints) 参照）。`ROLE_BASED_GENERIC_PROFILES` の `outfit_hints` も同様に footwear 行を含めるべきだが、role の場合は garment signature 優先のため必須化していない（v4.1+ で再評価候補）。
+
+---
+
+## PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE
+
+> Building カードの 5-image reference attachment 規律（v4.0.4 新規・2026-05-25）。
+> v4.0.4 building 改修 R1-R11 (worktree image-prompt-plan / 24+ smoke 検証) で「text-only path は cross-vocab-type style coherence に根本的限界がある」ことが実証された。person カード確定後の brand voice を text 経由で building に継承させようとすると、どんなに巧妙な text design を組んでも到達できない品質ラインがある（R9 ~6500 chars person 同型化 / R10 ~1500 chars universal template 厳守 → 共に user 「全然良くない」「悪化している」評価）。user 手動で person カード reference を nanobanana チャットに添付すると「圧倒的にほしい画像のイメージにマッチ」評価。本ルールはこの発見を pipeline に固定化する。
+
+### Scope
+
+- `vocab_type == "building"` の全カード（v4.0.4 採用 4 件 + 今後の移行 4 件）。
+- person / object / 他 vocab_type には適用しない（person カードは style 世代 0 として reference なしで生成、building 以降は person 確定品を anchor として参照する設計）。
+
+### Principle
+
+```
+Building vocabulary cards are generated with EXACTLY 5 reference images attached to the nanobanana request. Text-only prompt paths systematically fail to inherit the brand voice (palette family / line weight / illustration tone / warmth) established by person cards — even with explicit STYLE_BIBLE references in the prompt body. nanobanana is a multimodal LLM, and in-context style transfer from attached reference images achieves a level of brand coherence that text alone cannot reach. The 5 references are structured by ROLE (image_1 = brand voice anchor / image_2-4 = type-relevant person refs / image_5 = architectural & framing anchor), and the text prompt cross-references each by ROLE rather than treating them as a flat set.
+```
+
+### rule_a — five-image structure (fixed roles)
+
+```
+Every building card request MUST attach EXACTLY 5 reference images in the following ordered roles:
+
+(image_1) BRAND_VOICE_REF = data/images/word_日本人.png — the brand voice anchor card.
+  Role: style / line weight / palette family / illustration tone / brand warmth.
+  Same image for all building cards (PART 5.10 BUILDING_BRAND_VOICE_REF constant).
+
+(image_2) TYPE_RELEVANT_REF_A = per-building, drawn from PART 5.10 BUILDING_CUES[X].type_relevant_refs[0].
+  Role: type-relevant person figure to inform the figures-in-scene activity_block
+  (学校/大学 → 学生 / デパート・会社 → 会社員).
+
+(image_3) TYPE_RELEVANT_REF_B = per-building, drawn from PART 5.10 BUILDING_CUES[X].type_relevant_refs[1].
+  Role: second type-relevant person figure (different role / nationality / age).
+
+(image_4) TYPE_RELEVANT_REF_C = per-building, drawn from PART 5.10 BUILDING_CUES[X].type_relevant_refs[2].
+  Role: third type-relevant person figure.
+
+(image_5) ARCHITECTURAL_REF = data/images/vocab_病院.jpg — the architectural & framing anchor.
+  Role: street-level close-up framing / building-dominates-frame composition / sidewalk
+  cream off-white convention / slate-grey roof + cream wall palette demonstration.
+  Same image for all building cards (PART 5.10 BUILDING_ARCHITECTURAL_REF constant).
+  v4.0.4 design note: 病院 was selected because R12-R21 smoke validation showed 病院's
+  composition is the closest match to the close-up framing + figures-prominent
+  + building-dominates-frame trinity that defines the v4.0.4 building visual standard.
+  Once another building is graduated to v4.0.4 production, image_5 MAY be swapped
+  to a building of the same vocab_type for architectural specificity (e.g.,
+  デパート refs → vocab_デパート.png) — but until then, 病院 is the universal anchor.
+```
+
+### rule_b — aspect-specific cross-reference (学び 9)
+
+```
+In the text prompt body, reference each image by ROLE and ASPECT — NOT as a flat list of "all attached images". Generic phrasing like "match the illustration style of the attached references" is sub-optimal because nanobanana cannot determine which aspect to transfer from which image. Specific aspect-by-aspect cross-references work better:
+
+- "Inspired by the STYLE AND BRAND VOICE of image_1 (the Japanese-person card)"
+- "Figures drawn SIMILAR TO those in image_2 (the student card), image_3 (the university-student card), and image_4 (the teacher card)"
+- "ARCHITECTURAL ELEMENTS, CLOSE-UP FRAMING, and SIDEWALK PALETTE inspired by image_5 (the hospital building card)"
+- "Echoing the line weight and outline style of image_1 (the brand voice anchor)"
+
+This aspect-specific addressing raises transfer accuracy because nanobanana interprets each reference as carrying a specific signal rather than averaging across the 5-image set.
+```
+
+### rule_c — placeholder set
+
+```
+Template B (vocabulary_building) MUST expose 5-image-related placeholders that the skill fills from PART 5.10 BUILDING_CUES per-building data:
+
+- {REF1_DESC} = "the Japanese-person card (brand voice anchor)" — constant across buildings
+- {REF2_DESC} = per-building, derived from type_relevant_refs[0]
+- {REF3_DESC} = per-building, derived from type_relevant_refs[1]
+- {REF4_DESC} = per-building, derived from type_relevant_refs[2]
+- {REF5_DESC} = "the hospital building card (architectural & framing anchor)" — constant across buildings
+
+The skill output JSON includes a `styleReferences: [path, ...]` array (5 absolute paths) per building entry. The image generation backend (nanobanana via scripts/lib/nanobanana-client.mjs) attaches these as `referenceImages: [{bytes, mimeType}, ...]`. The Imagen 4 backend ignores `styleReferences` with a warning (not supported by Imagen 4 API).
+```
+
+### rule_d — cost / economics
+
+```
+Reference image attachment adds approximately +$0.0008 per building card (4 type-relevant refs × ~1290 tokens × $0.30/M ≈ $0.0008 over the base $0.0387 per generation = +2% overhead). Economically negligible compared to the text-only quality gap demonstrated in R9-R11 smoke validation.
+
+Long-term consideration (v5.0+): the reference-attachment approach is in-context style transfer = pseudo-LoRA. Once a stable style is accumulated, custom LoRA training on a Flux backbone can drop per-image cost from $0.0387 to $0.001-0.005 while preserving brand voice. See `docs/MIGRATION_PLAN.md` Phase 6 for the LoRA migration spike plan.
+```
+
+### enforcement
+
+- `scripts/lib/nanobanana-client.mjs`: `referenceImages: [{bytes, mimeType}]` 引数 (v4.0.4 R11 で実装済)
+- `scripts/generate-images-local.mjs`: `loadReferenceImages()` helper / per-target `styleReferences` 配列流入 / `styleRefs: total N 件 attached` log / imagen4 backend では warning 出して無視 (v4.0.4 R11 で実装済)
+- Skill output: per-building entry に `styleReferences: [absolute path, ...]` (5 件) を必ず付与する
+- 未移行 building（銀行 / 病院 / 駅 / スーパー）は当面 v3.0 path 経由で生成（reference なし・旧 Template B pale sky-blue 背景）。lesson_02 以降で v4.0.4 fields 付与時に reference attachment へ移行する
+
+---
+
+## PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4
+
+> Building カード普遍ルール A-1〜A-11（v4.0.4 新規・2026-05-25）。
+> worktree image-prompt-plan の Stage 1 R1-R26 実機検証（63 件 / ~$2.44）で結晶した「全 building カード共通の不変原則」。R23 で A-1〜A-9 確定、R24 で A-10 確定、R26 で A-11 確定。Stage 1 採用 4 件（学校 R25 / 大学 R26 / デパート R22 / 会社 R22）はすべて本ルール準拠で生成され、user 試聴で全 OK 評価を得た。
+
+### Scope
+
+- `vocab_type == "building"` の全カード。
+- 本ルールは [Template B vocabulary_building](part4_prompt_templates.md#template-b-vocabulary_building) の `[SCENE & ACTION]` セクションに `{BUILDING_UNIVERSAL_RULE}` placeholder として inline 展開される。
+
+### A-1. Camera
+
+```
+Camera: street-level low-angle 3/4, positioned at adult eye-height (roughly 1.6m above ground), rotated approximately 30-45 degrees off the building's primary facade. Camera position is CLOSE to the building (not a distant overview), looking slightly UP at the building. This is NOT an isometric top-down view, NOT a bird's-eye overhead view, NOT a true elevation drawing — it is a pedestrian's eye-level perspective from the sidewalk in front of the building.
+```
+
+### A-2. Framing
+
+```
+Framing: CLOSE-UP — the building does NOT fit entirely within the frame. Side wings extend off-frame at left and right; upper floors may extend off-frame at the top edge depending on the vocab type (mid-rise buildings = 上層階 off-frame 必須). The composition focuses on the main entrance + the central facade + the primary signature feature (clock tower / gate / display windows / lobby curtain-wall — see PART 5.10 per-building signature field).
+
+BUILDING DOMINATES the frame: the building occupies 75-85% of the canvas vertically, with the building edge-to-edge spanning the horizontal frame. The top of the most prominent signature feature (clock tower top / gate sign beam / 上層階 cutoff) reaches the upper 8-12% of the canvas. (R25 学校 validation: dominance 75%+ vertically is the threshold below which the building reads as background and the figures take over the frame; this is undesirable for building cards.)
+```
+
+### A-3. Figures
+
+```
+Figures: 4-5 people in the scene, EACH engaged in a DIFFERENT activity (see PART 5.10 per-building activities_block for the 4 activity slots). Figures are PROMINENT — approximately 1/3 of the visible building height. Figures do NOT shrink to background scale. Figures do NOT crowd to the center (they are distributed across the entrance + sidewalk + foreground).
+
+NEVER render all 4-5 figures with identical activities (e.g., all entering) — the scene must read as "everyday life around the building" with natural activity variety. v4.0.4 学び 8: figures in the scene serve three functions simultaneously — (1) brand voice anchor (person-card brand voice transfers via figure parts), (2) context cue (figure role reinforces building type identity), (3) scale standardization (figure-to-building scale ratio makes building scale legible).
+```
+
+### A-4. Palette
+
+```
+Palette: muted pastel family — dull blues / sand-beiges / soft warm yellows / soft greys. All palette choices stay within the muted pastel band; saturated primary colors are PROHIBITED.
+
+Walls: cream off-white (PART 2 STYLE_BIBLE.color_palette.background) — CONSTANT across all 8 buildings, NOT per-vocab-type. This is the universal v4.0.4 wall convention.
+Roof: slate-grey (deep slate navy with a slate-grey wash) — CONSTANT across all 8 buildings.
+Accent: ONE color per vocab_type, drawn from the muted pastel family — PER-VOCAB-TYPE (see PART 5.10 BUILDING_CUES[X].accent and accent_targets).
+
+v4.0.4 学び 7: STYLE_BIBLE.color_palette.main_color (= muted warm blue) is NOT enforced as a building facade color — that constraint was tested in R10 and produced cool/mechanical buildings that broke user-validated warmth. Per-building accent variation within the muted pastel family preserves brand coherence while restoring per-vocab-type identity.
+```
+
+### A-5. Reference (5-image attachment)
+
+```
+Reference: 5 attached images (see [PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE](#part-112-building_reference_attachment_rule) for the full ROLE structure):
+  image_1 = brand voice anchor (日本人 person card, constant)
+  image_2-4 = type-relevant person refs (per PART 5.10 type_relevant_refs)
+  image_5 = architectural & framing anchor (vocab_病院.jpg, constant until graduation)
+
+Text prompt cross-references each image BY ROLE AND ASPECT (per PART 1.12 rule_b learn-9 aspect-specific cross-reference).
+```
+
+### A-6. Outline / Style
+
+```
+Outline: deep slate-navy continuous line weight (same as person card outline convention). NO gradients, NO shadows, NO 3D effects, NO photoreal textures, NO ambient lighting, NO drop shadows. Aspect ratio 1:1 square (same as person card). Iconization level 2 (flat design) for figures + iconization level 3 (detailed flat) for building signature features — building structure carries texture hints (display window mullions, clock tower numerals as abstract shapes, glass curtain-wall grid) but maintains the flat vector style.
+```
+
+### A-7. Label / Signage
+
+```
+Label: a single ENGLISH signboard with the building name (SCHOOL / UNIVERSITY / DEPT. STORE / OFFICE — see PART 5.10 BUILDING_CUES[X].label). The signboard is mounted at the per-building signboard_location (see PART 5.10 signboard_location field). The signboard is the ONLY text-bearing surface in the entire image (per A-9 blank text surfaces rule). NO Japanese kanji / kana, NO second English word, NO RECEPTION / ATM / OPEN secondary labels, NO street numbers, NO phone numbers — ONLY the single English building-name label.
+```
+
+### A-8. Ground / Pavement
+
+```
+Ground / Pavement (R23 で確定): sidewalk and paved ground are CREAM OFF-WHITE — the same palette token as the building walls and the canvas background. The sidewalk has a SUBTLE slate-navy outline only (curb edge / paving joint suggestions); NEVER slate-grey, NEVER blue, NEVER asphalt-dark.
+
+Default nanobanana behavior renders sidewalks as slate-grey or asphalt-dark unless explicitly overridden — this rule MUST be inline-stated in every building prompt to suppress the default. The cream sidewalk convention preserves the warm overall palette and matches the user-validated 病院 architectural reference (image_5).
+```
+
+### A-9. Blank text surfaces
+
+```
+Blank text surfaces (R23-R25 で確定): ONLY the single English building-name signboard (per A-7) bears text in the entire image. ALL OTHER plaques, walls, gates, surfaces, address plates, bulletin boards, name plates, billboards, banners, posters, window lettering, vehicle markings, and any other surface that could conceivably bear text MUST be left BLANK — no text, no characters, no inscriptions, no symbols resembling letters, no decorative glyphs.
+
+v4.0.4 学び 11: nanobanana default behavior, when given a single signboard specification, often adds additional text-bearing surfaces (R23 学校 produced an unspecified "EREARR"-like plaque in the lower-right corner). This rule MUST be inline-stated in every building prompt with the comprehensive enumeration "no other signboards, no plaques, no billboards, no banners, no name plates, no address plates, no bulletin boards, no any other text-bearing surfaces".
+```
+
+### A-10. Surroundings context (per-vocab-type)
+
+```
+Surroundings context (R24 で確定 / 学び 12): the PRIMARY building (vocab subject) is ONE building, but contextual surrounding buildings MAY be included depending on the vocab type's natural urban / campus context. The per-vocab-type surroundings_context field (PART 5.10) selects from:
+
+- "isolated"     = single building, NO surrounding buildings (default for 病院 / 銀行 / 駅 / スーパー when graduated)
+- "campus"       = primary building + ONE auxiliary academic building (gymnasium / annex) partially visible at frame edge (学校 / 大学)
+- "urban_corner" = primary building + ONE adjacent commercial building partially visible at frame edge + curbside lane edge (デパート / 会社)
+- "urban_street" = primary building + multiple adjacent buildings of similar palette (reserved for future urban-street vocab types)
+
+v4.0.4 学び 12: forcing "single freestanding building" universally (as in R1-R11) produces unnatural compositions for デパート (commercial mid-rise wants urban context) and 大学 (campus expects auxiliary buildings). Per-vocab-type surroundings selection restores natural composition without breaking the single-primary-subject principle.
+
+When surrounding buildings are present, they MUST be: (a) smaller / less detailed than the primary, (b) of similar muted pastel palette family, (c) BLANK on all surfaces (no text per A-9), (d) at the edge of the frame (NOT central).
+```
+
+### A-11. Cyclist pose (when cyclist is in activities_block)
+
+```
+Cyclist pose (R26 で確定 / 学び 13): when a cyclist is included in the activities_block (currently 学校 / 大学), the cyclist's pose MUST be explicitly specified with the following 6 axes — default nanobanana cyclist rendering produces an unnatural "sitting upright on a stationary bicycle" pose that breaks the scene's liveliness:
+
+(a) Torso leans slightly forward over the handlebars in a natural riding posture (NOT sitting bolt upright).
+(b) BOTH hands clearly grip the handlebars (NOT hanging at the sides, NOT loose, NOT one hand off).
+(c) BOTH feet are firmly on the pedals in MID-PEDALING ROTATION — one pedal at bottom of stroke with leg extended downward, the other pedal at top with knee bent forward (classic active-pedaling pose). Feet MUST NOT touch the ground; the bicycle is in motion.
+(d) Bicycle frame sized correctly for the rider (no clown-bike with oversized wheels, no undersized frame).
+(e) Body proportions well-balanced — 7-head adult-young-adult proportion (per PART 1.10 HEAD_BODY_PROPORTION_RULE) matching the type_relevant_ref person card (image_3 大学生 reference for 学校 / 大学).
+(f) Optional motion line OR hair / clothing sway suggests forward movement.
+
+Generalization to other dynamic activities: 学び 13's underlying principle (nanobanana default-renders dynamic actions as unstable joint integrations) likely applies to other dynamic activities — jumping / pointing / writing / cooking. As new building cards add new activity types, the analogous 6-axis explicit specification should be developed per-activity rather than relying on default rendering.
+```
+
+### Lessons learned applied / cross-references
+
+本 universal rule は v4.0 + v4.0.4 building Stage 1 R1-R26 実機検証で発見された 13 の学びの結晶。学び 1-3 は person カードに適用済（PART 1.9 FLAG_SHAPE_DETAIL_RULE / PART 1.10 HEAD_BODY_PROPORTION_RULE / PART 1.4 PROMPT_LITERALIZATION_AVOIDANCE_RULE）。学び 4-13 は building カードに適用 + 本 PART 1.13 + PART 1.12 に集約：
+
+| 学び | 内容 | 適用箇所 |
+|---|---|---|
+| 1 | invoke + minimal anchor + NO_TEXT 3-layer for fixed symbols | [PART 1.9 FLAG_SHAPE_DETAIL_RULE](#part-19-flag_shape_detail_rule) |
+| 2 | role-signature が child proportion bias を誘発 | [PART 1.10 HEAD_BODY_PROPORTION_RULE](#part-110-head_body_proportion_rule) |
+| 3 | strong word (MUST / NEVER) でも nanobanana は確率揺れで破る | [PART 1.4 rule_c](#part-14-prompt_literalization_avoidance_rule) |
+| 4 | 過剰規律窒息 ⇄ 過剰簡素化 両極端とも品質破壊 | A-1〜A-11 全体（~5100 chars / universal rule inline invoke 構造） |
+| 5 | person template skeleton は他 vocab_type に同型転用可能 | [Template B](part4_prompt_templates.md#template-b-vocabulary_building) PURPOSE / SUBJECT / SCENE & ACTION / STYLE RECIPE / CONSTRAINTS 5-section |
+| 6 | text-only path は cross-vocab-type style coherence に根本的限界 | [PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE](#part-112-building_reference_attachment_rule) |
+| 7 | STYLE_BIBLE.color_palette 単一 facade 色 厳守は rigid 過ぎる | A-4 palette（per-vocab-type accent variation） |
+| 8 | per-building 人物変数は brand voice anchor + context cue 両立 | A-3 figures（4-5 名 different activities） |
+| 9 | cross-reference は aspect 別 specific が有効 | [PART 1.12 rule_b](#part-112-building_reference_attachment_rule) |
+| 10 | symmetric institutional form は dramatic 3 点透視と衝突 | A-1 camera（low-angle 3/4 close-up に統一・dramatic perspective は強制しない） |
+| 11 | signboard 配置明示で他の text-bearing surface が暴走 | A-9 blank text surfaces |
+| 12 | 「single freestanding building」universal は不自然 | A-10 surroundings context（per-vocab-type） |
+| 13 | cyclist 姿勢は default で不自然・明示 specify 必須 | A-11 cyclist pose 6 軸 |
+
+### enforcement
+
+- [Template B vocabulary_building](part4_prompt_templates.md#template-b-vocabulary_building) の `[SCENE & ACTION]` セクションで `{BUILDING_UNIVERSAL_RULE}` placeholder として inline 展開
+- A-1〜A-11 はテキストとして本ルール本文を Template B に注入する（外部参照ではなく inline 展開）
+- Per-vocab-type 変数（`{ACCENT}` / `{SIGNATURE}` / `{ACTIVITIES_BLOCK}` / `{SURROUNDINGS_BLOCK}` 等）は PART 5.10 BUILDING_CUES per-building entry から skill が解決して埋める
+- 未移行 building（銀行 / 病院 / 駅 / スーパー）は当面本ルール適用外（v3.0 path で生成）。lesson_02 以降で v4.0.4 fields を BUILDING_CUES に追加した時点で本ルール適用に移行する

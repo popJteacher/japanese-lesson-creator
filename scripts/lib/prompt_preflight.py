@@ -34,11 +34,15 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", newline="")
 
 # ─────────────────────────────────────────────────────────────
-# 期待値定数（v4.0 / v4.1 ガイド由来）
+# 期待値定数（v4.0 / v4.1 / v4.0.4 ガイド由来）
 # ─────────────────────────────────────────────────────────────
 BG_EXACT_CREAM = "soft cream off-white background (warm off-white, NOT pure stark white)"
 BG_EXACT_SKYBLUE = "pale sky-blue background"
 NOT_TOKEN = "NOT pure stark white"
+
+# v4.0.4 building 採用 4 件（universal cream BG / 5-image reference / A-1〜A-11 適用）
+# 未移行 building（銀行 / 病院 / 駅 / スーパー）は legacy v3.0 pale sky-blue 経路
+BUILDING_V4_0_4_WORDS = frozenset({"学校", "大学", "デパート", "会社"})
 
 # ─────────────────────────────────────────────────────────────
 # 検出用正規表現
@@ -54,9 +58,19 @@ RE_STRONG_TOKEN = re.compile(r"\b(must|never|DO NOT)\b")
 RE_PLACEHOLDER_REMAIN = re.compile(r"\[\{[A-Z_]+\}\]|\{[A-Z_]+\}")
 
 
-def _expected_bg(template_kind):
-    """template_kind ごとの BG 期待値を返す。"""
-    return BG_EXACT_SKYBLUE if template_kind == "building" else BG_EXACT_CREAM
+def _is_legacy_building(template_kind, word):
+    """v3.0 legacy path で生成する building かどうか（pale sky-blue BG / C5 skip）。"""
+    return template_kind == "building" and word not in BUILDING_V4_0_4_WORDS
+
+
+def _expected_bg(template_kind, word):
+    """template_kind + word ごとの BG 期待値を返す。
+
+    v4.0.4: building の採用 4 件は cream / 未移行 4 件は legacy sky-blue。
+    """
+    if _is_legacy_building(template_kind, word):
+        return BG_EXACT_SKYBLUE
+    return BG_EXACT_CREAM
 
 
 def preflight(text, template_kind, word):
@@ -67,16 +81,17 @@ def preflight(text, template_kind, word):
         template_kind: vocab_type 文字列 ("person" / "building" / ...) または
             "example_sentence"
         word: エラーメッセージに含める identifier（word / imageId）
+            building の場合は v4.0.4 採用 4 件か未移行 4 件かの判定にも使う
 
     Returns:
         list[str]: 違反メッセージ list。空 list なら PASS。
     """
     errs = []
-    bg_expected = _expected_bg(template_kind)
+    bg_expected = _expected_bg(template_kind, word)
     if bg_expected not in text:
         errs.append(f"[C4] {word}: background string 不一致（必須: '{bg_expected}'）")
-    # NOT pure stark white は cream BG template にのみ必須
-    if template_kind != "building" and NOT_TOKEN not in text:
+    # NOT pure stark white は cream BG path（= non-legacy）にのみ必須
+    if not _is_legacy_building(template_kind, word) and NOT_TOKEN not in text:
         errs.append(f"[C5] {word}: NOT-token 不一致（必須: '{NOT_TOKEN}'）")
     if template_kind == "person":
         if not RE_FULLBODY.search(text):

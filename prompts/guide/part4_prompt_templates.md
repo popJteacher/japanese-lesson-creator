@@ -112,7 +112,125 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 
 ## Template B: vocabulary_building
 
+> v4.0.4 (2026-05-25) 全面改訂：worktree image-prompt-plan の R1-R26 実機検証で確立した universal cream background + 5-image reference attachment + universal rule A-1〜A-11 + per-vocab-type 4 件テーブル 設計に移行。
+> Stage 1 採用 4 件（学校 R25 / 大学 R26 / デパート R22 / 会社 R22）は本テンプレートで本番化済。
+> v3.0 旧テンプレ（pale sky-blue background / 70% frame / single primary_scene_cue）は未移行 4 件（銀行 / 病院 / 駅 / スーパー）向けに本セクション末尾に Legacy として残置。
+
+### Template B (v4.0.4 — 採用 4 件用)
+
+```
+[PURPOSE]
+Create a vocabulary card illustration for Japanese language learning materials.
+The building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a [{VOCAB_TYPE_DESC}] at a glance.
+Echoing the style and brand voice of the 5 attached reference images per PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE:
+- image_1 ({REF1_DESC}) = brand voice / line weight / palette family / illustration tone anchor
+- image_2 ({REF2_DESC}) = type-relevant person reference A
+- image_3 ({REF3_DESC}) = type-relevant person reference B
+- image_4 ({REF4_DESC}) = type-relevant person reference C
+- image_5 ({REF5_DESC}) = architectural & close-up framing anchor
+
+[SUBJECT]
+The primary subject is {FORM_DESC}.
+The primary signature feature is {SIGNATURE} — render this feature clearly and prominently
+so that a learner identifies the building as a [{VOCAB_TYPE_DESC}] from this signature alone.
+Accent color: {ACCENT} — applied to {ACCENT_TARGETS}; walls remain cream off-white;
+roof remains slate-grey.
+A single ENGLISH signboard with the building name "{LABEL}" is mounted {SIGNBOARD_LOCATION}.
+This signboard is the ONLY text-bearing surface anywhere in the image.
+
+[SCENE & ACTION]
+{BUILDING_UNIVERSAL_RULE}
+
+(The universal rule above expands [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4]
+A-1 Camera through A-11 Cyclist pose inline. The per-building variables
+{ACCENT}, {SIGNATURE}, {LABEL}, {SIGNBOARD_LOCATION}, {SURROUNDINGS_BLOCK},
+{ACTIVITIES_BLOCK}, {LANDSCAPING_BLOCK}, and {FRAMING_EXTRA} are resolved
+by the skill from PART 5.10 BUILDING_CUES[X] for the target word.)
+
+Surroundings: {SURROUNDINGS_BLOCK}
+
+{FRAMING_EXTRA}
+
+Figures in scene: {ACTIVITIES_BLOCK}
+
+Landscaping: {LANDSCAPING_BLOCK}
+
+ASPECT RATIO: The output image MUST be 1:1 SQUARE — equal width and height
+(e.g., 1024×1024). DO NOT output 16:9 widescreen, 4:3 landscape, 3:4 vertical,
+9:16 portrait, or any other ratio.
+
+Background: {BG_EXACT} — the canvas background color (visible only in the small
+strip above the building roofline and any narrow vertical strips at the canvas edge).
+NEVER use pale sky-blue, NEVER use a graduated sky background.
+The cream off-white background is the universal v4.0.4 convention shared with all
+other vocab_types — no per-vocab-type background overrides.
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with consistent line weight.
+Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white),
+deep slate navy outlines, slate-grey roof, {ACCENT} for accent details on {ACCENT_TARGETS}.
+This should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+EXCEPTION (per PART 1.13 A-7): EXACTLY ONE short ENGLISH building-name label
+"{LABEL}" is permitted — one English word (or short multi-word label like "DEPT. STORE"),
+small, mounted {SIGNBOARD_LOC_SHORT}. This is the SOLE permitted text.
+BLANK TEXT SURFACES RULE (PART 1.13 A-9): Absolutely NO other text of any kind anywhere
+in the image — no Japanese (kanji/kana), no second English word, no "RECEPTION" / "ATM" /
+"OPEN" / "WELCOME" / "MENU" or any other label, no numbers, no titles, no captions,
+no street numbers, no phone numbers, no decorative symbols that resemble letters.
+All other plaques, walls, gates, doors, vehicles, surfaces, address plates,
+bulletin boards, name plates, billboards, banners, posters, window lettering MUST
+be left BLANK. nanobanana default behavior often adds spurious text-bearing
+surfaces — this constraint MUST override that default.
+
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
+```
+
+**Used for**: `vocab_type = "building"` AND `word` has v4.0.4 fields in [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)（学校 / 大学 / デパート / 会社）
+**Aspect ratio**: 1:1
+**Rule references**: [PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-112-building_reference_attachment_rule), [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4), [PART 2 color_palette](part2_style_bible.md#color_palette), [PART 3.2 building](part3_vocab_type_rules.md#32-building-vocab_type--building), [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)
+
+**Placeholders (v4.0.4 — 17 種)**:
+
+| placeholder | source |
+|---|---|
+| `{VOCAB_TYPE_DESC}` | PART 5.10 BUILDING_CUES[X].vocab_type_desc |
+| `{FORM_DESC}` | PART 5.10 BUILDING_CUES[X].form_desc |
+| `{SIGNATURE}` | PART 5.10 BUILDING_CUES[X].signature |
+| `{ACCENT}` | PART 5.10 BUILDING_CUES[X].accent |
+| `{ACCENT_TARGETS}` | PART 5.10 BUILDING_CUES[X].accent_targets |
+| `{LABEL}` | PART 5.10 BUILDING_CUES[X].label |
+| `{SIGNBOARD_LOCATION}` | PART 5.10 BUILDING_CUES[X].signboard_location |
+| `{SIGNBOARD_LOC_SHORT}` | PART 5.10 BUILDING_CUES[X].signboard_location_short |
+| `{SURROUNDINGS_BLOCK}` | PART 5.10 BUILDING_CUES[X].surroundings_block |
+| `{FRAMING_EXTRA}` | PART 5.10 BUILDING_CUES[X].framing_extra（null の場合は省略） |
+| `{ACTIVITIES_BLOCK}` | PART 5.10 BUILDING_CUES[X].activities_block |
+| `{LANDSCAPING_BLOCK}` | PART 5.10 BUILDING_CUES[X].landscaping_block |
+| `{REF1_DESC}` | constant: "the Japanese-person card / brand voice anchor" |
+| `{REF2_DESC}` | per-building: derived from BUILDING_CUES[X].type_relevant_refs[0] |
+| `{REF3_DESC}` | per-building: derived from BUILDING_CUES[X].type_relevant_refs[1] |
+| `{REF4_DESC}` | per-building: derived from BUILDING_CUES[X].type_relevant_refs[2] |
+| `{REF5_DESC}` | constant: "the hospital building card / architectural & close-up framing anchor" |
+| `{BUILDING_UNIVERSAL_RULE}` | PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4 全文 inline 展開 (A-1〜A-11) |
+| `{BG_EXACT}` | constant: `soft cream off-white background (warm off-white, NOT pure stark white)` = [PART 6.5 BG_EXACT_CREAM](part6_output_instructions.md#65-preflight-invariants-mechanical-gates) |
+
+**styleReferences (output JSON field)**:
+```json
+"styleReferences": [
+  "data/images/word_日本人.png",
+  "<image_2 absolute path from type_relevant_refs[0]>",
+  "<image_3 absolute path from type_relevant_refs[1]>",
+  "<image_4 absolute path from type_relevant_refs[2]>",
+  "data/images/vocab_病院.jpg"
+]
+```
+
+### Template B (v3.0 Legacy — 未移行 4 件用 / 銀行 / 病院 / 駅 / スーパー)
+
 > v3.0 全面改訂（問題 B/C/内部矛盾を恒久解決）：看板を「英語短語ラベル 1 個」に確定、単一シーンキュー、反クラッター。
+> v4.0.4 移行待ち。lesson_02 以降で BUILDING_CUES に v4_0_4_* fields を追加した時点で本 Legacy テンプレートから上記 v4.0.4 テンプレートに移行する。
 
 ```
 [PURPOSE]
@@ -160,9 +278,9 @@ No gradients, no shadows, no 3D effects, no photoreal textures.
 Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ```
 
-**Used for**: `vocab_type = "building"`
+**Used for**: `vocab_type = "building"` AND word does NOT have v4.0.4 fields in PART 5.10 BUILDING_CUES（銀行 / 病院 / 駅 / スーパー）
 **Aspect ratio**: 1:1
-**Rule references**: [PART 2 STYLE_BIBLE](part2_style_bible.md#background_by_type), [PART 3.2 building](part3_vocab_type_rules.md#32-building), [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)
+**Rule references**: [PART 2 STYLE_BIBLE](part2_style_bible.md#background_by_type) (BG_EXACT_SKYBLUE for legacy), [PART 3.2 building (未移行 4 件)](part3_vocab_type_rules.md#未移行-4-件-銀行--病院--駅--スーパー), [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)
 **Placeholders**: `[{BUILDING_TYPE}]`, `[{BUILDING_DESCRIPTION_AND_SCALE}]`, `[{SIGNAGE_TEXT}]`, `[{PRIMARY_SCENE_CUE}]`
 
 ---
@@ -647,9 +765,25 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 |---|---|---|
 | `{CHARACTER_DESCRIPTION}` | role / nationality lookup | [PART 5.1](part5_vocab_reference_appendix.md#51-person_role_lookup) / [5.2](part5_vocab_reference_appendix.md#52-person_nationality_hints) / [5.8](part5_vocab_reference_appendix.md#58-role_based_generic_profiles) |
 | `{CHARACTER_POSE_AND_EXPRESSION}` | role-default | [PART 5.8](part5_vocab_reference_appendix.md#58-role_based_generic_profiles) |
-| `[{BUILDING_DESCRIPTION_AND_SCALE}]` | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) |
-| `[{SIGNAGE_TEXT}]` | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) |
-| `[{PRIMARY_SCENE_CUE}]` | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) |
+| `[{BUILDING_DESCRIPTION_AND_SCALE}]` (v3.0 legacy) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) building_scale |
+| `[{SIGNAGE_TEXT}]` (v3.0 legacy) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) signage_text |
+| `[{PRIMARY_SCENE_CUE}]` (v3.0 legacy) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) primary_scene_cue |
+| `{VOCAB_TYPE_DESC}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) vocab_type_desc |
+| `{FORM_DESC}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) form_desc |
+| `{SIGNATURE}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) signature |
+| `{ACCENT}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) accent |
+| `{ACCENT_TARGETS}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) accent_targets |
+| `{LABEL}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) label |
+| `{SIGNBOARD_LOCATION}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) signboard_location |
+| `{SIGNBOARD_LOC_SHORT}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) signboard_location_short |
+| `{SURROUNDINGS_BLOCK}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) surroundings_block |
+| `{FRAMING_EXTRA}` (v4.0.4 / optional) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) framing_extra |
+| `{ACTIVITIES_BLOCK}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) activities_block |
+| `{LANDSCAPING_BLOCK}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) landscaping_block |
+| `{REF2_DESC}`, `{REF3_DESC}`, `{REF4_DESC}` (v4.0.4) | building lookup | [PART 5.10](part5_vocab_reference_appendix.md#510-building_cues) type_relevant_refs |
+| `{REF1_DESC}`, `{REF5_DESC}` (v4.0.4) | constant | [PART 1.12](part1_universal_rules.md#part-112-building_reference_attachment_rule) rule_a (BRAND_VOICE_REF / ARCHITECTURAL_REF) |
+| `{BUILDING_UNIVERSAL_RULE}` (v4.0.4) | universal rule inline | [PART 1.13](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) A-1〜A-11 full text |
+| `{BG_EXACT}` (v4.0.4) | constant | [PART 6.5](part6_output_instructions.md#65-preflight-invariants-mechanical-gates) BG_EXACT_CREAM |
 | `{OBJECT_DESCRIPTION}`, `{VISUAL_SIGNATURE}`, `{MATERIAL_TEXTURE_HINT}` | object lookup | [PART 5.11](part5_vocab_reference_appendix.md#511-object_signatures) |
 | `{CONCEPT_DEFINITION}`, `{VISUAL_METAPHOR}`, `{EMOTIONAL_TONE}`, `{COMPOSITION_MOOD}`, `{COLOR_TONE_ADJUSTMENT}` | abstract lookup | [PART 5.13](part5_vocab_reference_appendix.md#513-abstract_metaphors) |
 | `{CAMERA_SETUP}`, `[{SPATIAL_POSITION}]` | spatial grid pattern | [PART 5.12](part5_vocab_reference_appendix.md#512-spatial_grid_patterns) |

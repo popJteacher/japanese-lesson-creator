@@ -5,12 +5,15 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-25 延長 fix-up + worktree D 案取り込み（**Phase α5 fix-up
-+ worktree phase4-prompt-plan v4.0.4 building の成果物のみ取り込み完了** 🆕：
-audio 5 件確定 + PNG 6 件 + registry 整合化。code 部分 (build_prompts.py /
-guide v4.0.py 改修) は skill pivot で obsolete のため drop。**次は Phase β1
-(宿題正解判定) 着手 ／ 並行で worktree session が design insight を
-PART 1-6 .md へ手動転記**）
+**最終更新：** 2026-05-25 v4.0.4 design insight skill 化完了（**worktree
+phase4-prompt-plan で v4.0.4 building design insight を PART 1-6 .md に手動転記完了** 🆕：
+PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE + PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4
+(A-1〜A-11 + 13 学び) + PART 3.2 building v4.0.4 design + PART 4 Template B
+5-image reference (17 placeholders) + PART 5.10 BUILDING_CUES 4 件 v4_0_4_* fields
++ PART 2 BACKGROUND_BY_TYPE.building → legacy 専用化 + PART 6 + preflight.py
+v4.0.4 採用 building も BG_EXACT_CREAM + NOT_TOKEN 必須化 + invariants.mjs B' hash
+更新 (0673ca2d537e) + skill mode/legacy mode の分岐検査。main へ ff-merge 完了。
+**次は Phase β1 (宿題正解判定) 着手**）
 
 ---
 
@@ -60,7 +63,7 @@ audio 確定済。β1 に着手可。
 ```
 image_registry: pending 439 / generated 40 / approved 5 / outdated 6 / (none) 1
                 (worktree D 案で rejected 27 件を消化: 22→generated + 5→approved)
-image_prompts_skill.json: 30 entries / guideManifestHash 1ca2f57ad927
+image_prompts_skill.json: 30 entries / guideManifestHash 0673ca2d537e
 audio_registry:  tts-local-regen 416 / (none) 50 (= 466 total)
                  word: 416/466 (5 件 fix-up 後・全 user OK)
                  sentence: 50/466 は 5/24 のまま (今回触らず)
@@ -92,14 +95,10 @@ data/images:    +6 PNG (vocab_大学.png / vocab_病院.jpg / word_{デパート
   (今日 consensus が `^ぼーるぺん` 平板を提案、manual は `^ぼーる!ぺん` 中高 4 → 要確認)
 - **同表記2読み恒久対策**: pickCatalogEntry を lesson_*.json reading 確定に切替
   (今回 fix-up は手動で不要 entry の accent を clear したが、本筋ではない)
-- **次の worktree session の宿題**: `phase4-prompt-plan` worktree で
-  (a) `git merge main` (or rebase) で skill pivot を取り込む (conflict は全 main 採用、
-  worktree の build_prompts.py / guide v4.0.py 改修は破棄)、
-  (b) v4.0.4 design insight (5-image reference attach / building layout determinism /
-  cyclist pose 6 軸明示 等) を `prompts/guide/part1-6.md` に手動転記、
-  (c) main に ff-merge。
-  worktree branch は **削除しない**（design insight 参照源）。
-  詳細 memory: `project_worktree_v4_0_4_obsolete_under_skill_pivot.md`
+- **同表記2読み恒久対策の β 以降タスク化**: pickCatalogEntry を lesson_*.json reading 確定に
+  切替（α5 延長 fix-up で手動 catalog 修正したが本筋ではない）
+- **lesson_02 以降の v4.0.4 building 移行**: 病院 / 銀行 / 駅 / スーパー の v4_0_4_* fields を
+  PART 5.10 BUILDING_CUES に追加（Stage 2 同型展開・採用 4 件と同じ universal rule A-1〜A-11 適用）
 
 ### 触らない既知制約
 - LUFS ERROR 28 件（短尺 audio × loudnorm R128 統合 400ms 窓の構造問題）
@@ -172,9 +171,7 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 ## ブロッカー / 並行
 
 - β/γ/δ/ε：blocker なし
-- worktree `phase4-prompt-plan`：guide 修正中（並行・干渉なし）
-  - main 側で 23 commits 進化 (Phase 5 ④/⑤ + α1-α5 延長)、worktree 側で 6 commits
-    → ff-merge 不可能、3-way merge or rebase 必要 (要別セッション)
+- worktree `phase4-prompt-plan`：design insight 転記完了 → main へ ff-merge 済み（2026-05-25）
 
 ---
 
@@ -182,7 +179,7 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ```
 # 検証
-npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=1ca2f57ad927 / C / D / D' 各 PASS
+npm run validate                   # A=v7.5 / B=891b73f5ae2d / B'=0673ca2d537e / C / D / D' 各 PASS
 
 # Audio 再生成
 node scripts/regen-drive-download.mjs --accent-changed     # consensus 持つ entry のみ
