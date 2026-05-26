@@ -68,31 +68,52 @@ slide_html.js:  γ2 改修 12 ブロック（user 試聴中）
 γ2 の改修は user 試聴中。視聴後に「採用 / 戻す / さらに調整」を確定する。
 そのうえで以下 2 件の新規 work が user 要望として残っています:
 
-### 🆕 (a) 課マスター作成チェックリスト新設
+### 🆕 (a) 課マスター作成 skill suite（モジュラー型）新設
 
 **動機**：今回 POS 線 (`examples[].highlight`) と intro_activity 素材
 (`flow[].materialNeeds[].type / count`) という 2 つの「lesson_NN.json に
 書かないとテンプレートが動かない」フィールドが増えた。
-スキーマ仕様（[docs/REFERENCE.md §6](docs/REFERENCE.md#L178)）には
-JSON フィールド一覧はあるが、authoring **作業手順**（何を埋め、何を確認すれば
-完成か）が無い。次の課を作るたびに登録漏れリスク。
+過去に確定した 14 ルール
+([archive/handoffs/lesson_master_rules_handoff_v2.md §3](archive/handoffs/lesson_master_rules_handoff_v2.md#L75))
+と **Step 1a〜1e 作業順序** (C-9) はあるが、人間が手で守る運用 → 漏れリスク。
+受動的な checklist md より、能動的に問い・自動補完する skill が上位互換。
 
-**実装**：`docs/AUTHORING_CHECKLIST.md` を新設。1 ページ、必須項目を
-チェックリスト形式で列挙:
+**設計方針**：1 つの巨大対話 skill ではなく、**5 つの短時間 skill** の suite に分解。
+教師は PDF を読みながら自分のエディタで JSON を編集し、各段階で skill を
+呼んで機械チェック・自動補完を受ける。中断・再開が自然、失敗時の影響範囲が狭い。
 
-- `_meta`: lessonVersion / formatVersion / changes 追記
-- `lesson`: no / title / topic / level / target / _recommendedDuration /
-  **targetStudentLevel** (新規・後述)
-- `patterns[]`: id / pattern / label / grammarConcept / jlptLevel / canDo(En) /
-  vocabCount / examples / practiceTemplates
-- `patterns[].examples[]`: no / sentence / sentenceEn / imageId / imageRole /
-  audioId / isAnchor / **highlight?**（POS 線を出すなら追加）
-- `vocabulary.byPattern[].words[]`: word / reading / en / jlptLevel /
-  isFirstAppearance / vocabType / imageRole / imageId / audioId
-- `flow[]`: intro_activity 系には **`materialNeeds[]`** を必ず付与:
-  - `type`: `auto_generated_vocab` / `teacher_photo` (+ `count`) /
-    `world_map` / `special_slide` / `reused_from` / `none`
-- `namedCharacters[]`: name / occupation / nationality / imageId
+| Phase | skill | 役割 | 実行時間 | 人間関与 |
+|---|---|---|---|---|
+| 1 | `/lesson-scaffold NN` | 空 lesson_NN.json 骨格生成 (全必須 field placeholder + 14 ルール解説併記) | < 5 秒 | なし |
+| 2 | `/lesson-fill-vocab NN` | `vocabulary.byPattern[].words[]` の jlptLevel / _inheritedFromLessonX を vocab_catalog + 他課から自動補完 | 1 分 | 不足のみ確認 |
+| 3 | `/lesson-suggest-activities NN` | jlptLevel + patternId で activity_catalog を絞り込み候補提示 | 30 秒 | activityId 選択のみ |
+| 4 | `/lesson-build-registry NN` | lesson_NN.json から master_image_registry / master_audio_registry pending 自動生成 | 30 秒 | なし |
+| 5 | `/lesson-check NN` | npm run validate + 14 ルール準拠 lint + 不足項目レポート | 30 秒 | レポート確認 |
+
+**置き場所**：`.claude/skills/lesson-{name}.md`（既存 `generate-image-prompt.md` と同階層）
+
+**実装順序**：
+- Phase 1 MVP (1 セッション)：`/lesson-scaffold NN` のみ
+- Phase 2 (+1 セッション)：`/lesson-check NN` + `/lesson-fill-vocab NN`
+- Phase 3 (+1 セッション)：`/lesson-suggest-activities NN` + `/lesson-build-registry NN`
+- **Phase 4 (最後・user 要望)：`docs/SKILLS_MANUAL.md` に skill suite の全体像
+  + 使用フロー + 14 ルール出典の対応表を追記**（モジュラーで全体像が
+  複雑になるため、まとめ docs を最後に出す）
+
+**14 ルール準拠の自動化マッピング**（参考）：
+
+| ルール | 何で守るか |
+|---|---|
+| A-1 PDF 照合先行 | `/lesson-scaffold` の冒頭で「PDF 読みましたか Y/N」確認のみ。実際の PDF reading は人間 |
+| A-2/A-3 固有名詞 | `/lesson-check` で namedCharacters[] と examples の整合を lint |
+| A-4 canDo 「〜できる」 | `/lesson-check` で正規表現 `できる$` チェック |
+| A-5/A-6 vocabType/imageRole | scaffold で enum 候補を placeholder にコメントで提示 |
+| B-5 語彙 3 点セット | `/lesson-fill-vocab` で自動補完 |
+| B-6 practiceTemplates ≥2 | `/lesson-check` で配列長 lint |
+| B-7 materialNeeds 必須対象 | `/lesson-check` で intro_activity / main_activity に必須化 lint |
+| C-9 Step 1a-1e 順序 | scaffold の field 出力順序を 1a→1e に合わせる |
+| C-10 changes に理由必須 | `/lesson-check` で `changes[].reason` 存在 lint |
+| C-11 formatVersion / lessonVersion 分離 | scaffold で両方 placeholder 出力 |
 
 ### 🆕 (b) lesson に `targetStudentLevel` を導入 + level-aware 生成
 
@@ -149,7 +170,8 @@ Phase γ  スライド完成
   γ1     音声再生（homework .audio-btn 機構を移植）  ← user 都合で後送り
   γ2     デザイン微修正  ← 大半着手 / user 視聴中・要確定 🆕
 Phase X (γ2 派生・user 要望)
-  X-a    Authoring checklist 新設 (docs/AUTHORING_CHECKLIST.md)  ← 最優先 🆕
+  X-a    課マスター作成 skill suite (lesson-scaffold/check/fill-vocab/
+         suggest-activities/build-registry + SKILLS_MANUAL.md 更新) ← 最優先 🆕
   X-b    lesson.targetStudentLevel 導入 + level-aware 生成        🆕
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
@@ -203,7 +225,18 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 - γ/δ/ε：blocker なし
 - worktree `phase4-prompt-plan`：design insight 転記完了 → main へ ff-merge 済み
-  (commit 5b12e93 + 8796634)
+  (commit 5b12e93 + 8796634)。**今後のマスタープロンプトガイド修正用に削除しない方針確定**
+- **main は origin/main から 3 commit ahead**（5b12e93 / 8796634 / 3e4a58e）。
+  次セッション開始時に push 判断（CLAUDE.md 「push は明示許可制」）
+- **不変条件 hash**：`scripts/invariants.mjs` の `guideManifestExpectedHashPrefix` は
+  `0673ca2d537e`。今後 `prompts/guide/part1-6.md` を変更する人は invariants.mjs の
+  hash も合わせて更新必須
+- **building skill dispatch**：`BUILDING_V4_0_4_WORDS = {学校, 大学, デパート, 会社}`
+  は `_meta.mode === 'skill'` 出力時のみ BG=CREAM + NOT_TOKEN 必須化（preflight.py +
+  invariants.mjs 両方に定数定義）。未移行 4 件（銀行/病院/駅/スーパー）は v3.0 legacy 経路
+- **Template B 2 系統**：`part4_prompt_templates.md` に v4.0.4 採用版（17 placeholders +
+  5-image reference）と v3.0 Legacy 版が併記。skill 側は part5 BUILDING_CUES の
+  `v4_0_4_*` fields 有無で dispatch
 
 ---
 
