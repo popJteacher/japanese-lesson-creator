@@ -5,17 +5,19 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-26 Phase γ2 スライドデザイン大幅改修 (試行) 🆕
-（**slide_html.js テンプレートを 14 件改修**: ruby マージ閾値 / 例文画像統一 /
-POS 線 explicit-only / カードプレゼンター (grid+zoom) / 自然フロー page スクロール /
-teacher_photo N スロット化 等。詳細は下記）
+**最終更新：** 2026-05-26 Phase X-a 課マスター作成 skill suite **Phase 2 完了** 🆕
+（`/lesson-check NN` + `/lesson-fill-vocab NN` 実装。14 ルール lint
+(A-2/A-3/A-4/A-5/A-6/B-5/B-6/B-7/B-8/B-9/C-10/C-11) + inheritance / jlpt 自動補完）
 
 ---
 
 ## 現在地
 
 - **Phase 0 〜 5 ⑤ / α1 〜 α5 延長 / α5 fix-up / β1 / v4.0.4 skill 化 完了** ✅
-- **Phase γ2 スライドデザイン微修正 大半着手** 🆕（user 視聴中・要確定）
+- **Phase γ2 スライドデザイン微修正 大半着手**（user 視聴中・要確定）
+- **Phase X-a Phase 1 + Phase 2 完了** 🆕
+  - X-a-1: `/lesson-scaffold NN`（seed mode 第3課で実視確認 PASS）
+  - X-a-2: `/lesson-check NN` + `/lesson-fill-vocab NN`（lesson_01/02 で smoke PASS）
 
 ### この回の γ2 改修内容 (2026-05-26) 🆕
 
@@ -68,52 +70,53 @@ slide_html.js:  γ2 改修 12 ブロック（user 試聴中）
 γ2 の改修は user 試聴中。視聴後に「採用 / 戻す / さらに調整」を確定する。
 そのうえで以下 2 件の新規 work が user 要望として残っています:
 
-### 🆕 (a) 課マスター作成 skill suite（モジュラー型）新設
+### 🆕 (a) 課マスター作成 skill suite（モジュラー型）
 
-**動機**：今回 POS 線 (`examples[].highlight`) と intro_activity 素材
-(`flow[].materialNeeds[].type / count`) という 2 つの「lesson_NN.json に
-書かないとテンプレートが動かない」フィールドが増えた。
-過去に確定した 14 ルール
-([archive/handoffs/lesson_master_rules_handoff_v2.md §3](archive/handoffs/lesson_master_rules_handoff_v2.md#L75))
-と **Step 1a〜1e 作業順序** (C-9) はあるが、人間が手で守る運用 → 漏れリスク。
-受動的な checklist md より、能動的に問い・自動補完する skill が上位互換。
+**Phase 1 + Phase 2 完了** 🆕
 
-**設計方針**：1 つの巨大対話 skill ではなく、**5 つの短時間 skill** の suite に分解。
-教師は PDF を読みながら自分のエディタで JSON を編集し、各段階で skill を
-呼んで機械チェック・自動補完を受ける。中断・再開が自然、失敗時の影響範囲が狭い。
+| Phase | skill | ファイル | 状態 |
+|---|---|---|---|
+| 1 | `/lesson-scaffold NN` | [.claude/skills/lesson-scaffold.md](.claude/skills/lesson-scaffold.md) + [scripts/lib/lesson-scaffold.mjs](scripts/lib/lesson-scaffold.mjs) + [scripts/lib/lesson-scaffold-pdf.py](scripts/lib/lesson-scaffold-pdf.py) | ✅ 完了 |
+| 2 | `/lesson-check NN` | [.claude/skills/lesson-check.md](.claude/skills/lesson-check.md) + [scripts/lib/lesson-check.mjs](scripts/lib/lesson-check.mjs) | ✅ 完了 🆕 |
+| 2 | `/lesson-fill-vocab NN` | [.claude/skills/lesson-fill-vocab.md](.claude/skills/lesson-fill-vocab.md) + [scripts/lib/lesson-fill-vocab.mjs](scripts/lib/lesson-fill-vocab.mjs) | ✅ 完了 🆕 |
+| 3 | `/lesson-suggest-activities NN` | jlptLevel + patternId で activity_catalog 絞り込み候補提示 | 未着手 |
+| 3 | `/lesson-build-registry NN` | lesson_NN.json から master_image_registry / master_audio_registry pending 自動生成 | 未着手 |
+| 4 | `docs/SKILLS_MANUAL.md` | skill suite の全体像 + 使用フロー + 14 ルール出典の対応表 | 未着手 |
 
-| Phase | skill | 役割 | 実行時間 | 人間関与 |
-|---|---|---|---|---|
-| 1 | `/lesson-scaffold NN` | 空 lesson_NN.json 骨格生成 (全必須 field placeholder + 14 ルール解説併記) | < 5 秒 | なし |
-| 2 | `/lesson-fill-vocab NN` | `vocabulary.byPattern[].words[]` の jlptLevel / _inheritedFromLessonX を vocab_catalog + 他課から自動補完 | 1 分 | 不足のみ確認 |
-| 3 | `/lesson-suggest-activities NN` | jlptLevel + patternId で activity_catalog を絞り込み候補提示 | 30 秒 | activityId 選択のみ |
-| 4 | `/lesson-build-registry NN` | lesson_NN.json から master_image_registry / master_audio_registry pending 自動生成 | 30 秒 | なし |
-| 5 | `/lesson-check NN` | npm run validate + 14 ルール準拠 lint + 不足項目レポート | 30 秒 | レポート確認 |
+**X-a-1 (scaffold)** 実装済の挙動:
+- `/lesson-scaffold NN [--patterns p1,p2,p3] [--force] [--no-pdf]`
+- empty mode (PDF なし placeholder) / seed mode (PDF を PyMuPDF → vision 抽出 → cache)
+- 14 ルール自動保証 B-6 (practiceTemplates ≥2) / B-7 (intro_act/main_act materialNeeds) /
+  C-9 (1a→1e) / C-11 (formatVersion/lessonVersion)
+- **2026-05-26 第3課で seed mode 実視確認 PASS** (title / patterns 6 件 / vocab 4 group 16 語 /
+  namedCharacter 1 件 / mainActivity playerSteps 3 件すべて vision 抽出成功)
+- 検証 artifact `data/lesson_03.json` は意図的に削除 (seed cache は保持・gitignore 済)
 
-**置き場所**：`.claude/skills/lesson-{name}.md`（既存 `generate-image-prompt.md` と同階層）
+**X-a-2 (check + fill-vocab)** 実装済の挙動 🆕:
+- `/lesson-check NN [--json]`: schema 検査 (validate.mjs) + 14 ルール lint (A-2/A-3/A-4/
+  A-5/A-6/B-5/B-6/B-7/B-8/B-9/C-10/C-11) + TODO 全文字列 scan。ERROR/WARN/TODO 別出力
+- `/lesson-fill-vocab NN [--apply] [--json]`: 過去課からの inheritance マーク +
+  vocab_catalog からの jlptLevel 補完。**既存ユーザー値は上書きしない**。dry-run 既定
+- 実適用は `--apply` 明示時のみ (CLAUDE.md「教育内容の確定は人間に報告してから」遵守)
 
-**実装順序**：
-- Phase 1 MVP (1 セッション)：`/lesson-scaffold NN` のみ
-- Phase 2 (+1 セッション)：`/lesson-check NN` + `/lesson-fill-vocab NN`
-- Phase 3 (+1 セッション)：`/lesson-suggest-activities NN` + `/lesson-build-registry NN`
-- **Phase 4 (最後・user 要望)：`docs/SKILLS_MANUAL.md` に skill suite の全体像
-  + 使用フロー + 14 ルール出典の対応表を追記**（モジュラーで全体像が
-  複雑になるため、まとめ docs を最後に出す）
+**X-a-2 で見つかった既存課題** (本セッションでは未修正・user 判断待ち):
+- lesson_01 p1/p3 / lesson_02 p4: `practiceTemplates` 1 件のみ (B-6 違反)
+  → v2.11.4 で意図的に削減された経緯あり。ルール側 or lesson 側どちらを更新するか要決定
+- lesson_01 p2 / lesson_02 p1/p3/p4: `canDo` 複数文 (A-4 文数 WARN)
+  → 1 文制約はルール建前。lesson 側の詳細記述を残すなら A-4 文数を WARN のまま運用継続でも OK
+- lesson_02 病院: `_inheritedFromLessonX: "lesson_01"` 欠落
+  → `/lesson-fill-vocab 02 --apply` で補完可能 (dry-run 確認済・user 判断で適用)
 
-**14 ルール準拠の自動化マッピング**（参考）：
+**X-a 改善候補** (skill md 強化・優先度低):
+- scaffold seed 抽出を拡張: PDF ホワイトボード板書 → `practiceTemplates` seed /
+  「教え方の例」section → intro_activity 候補紐付け / 注意・プラスα 抽出
+- check lint で `_comment` field 内の "TODO" を除外する filter (現状は人間メモも拾う)
 
-| ルール | 何で守るか |
-|---|---|
-| A-1 PDF 照合先行 | `/lesson-scaffold` の冒頭で「PDF 読みましたか Y/N」確認のみ。実際の PDF reading は人間 |
-| A-2/A-3 固有名詞 | `/lesson-check` で namedCharacters[] と examples の整合を lint |
-| A-4 canDo 「〜できる」 | `/lesson-check` で正規表現 `できる$` チェック |
-| A-5/A-6 vocabType/imageRole | scaffold で enum 候補を placeholder にコメントで提示 |
-| B-5 語彙 3 点セット | `/lesson-fill-vocab` で自動補完 |
-| B-6 practiceTemplates ≥2 | `/lesson-check` で配列長 lint |
-| B-7 materialNeeds 必須対象 | `/lesson-check` で intro_activity / main_activity に必須化 lint |
-| C-9 Step 1a-1e 順序 | scaffold の field 出力順序を 1a→1e に合わせる |
-| C-10 changes に理由必須 | `/lesson-check` で `changes[].reason` 存在 lint |
-| C-11 formatVersion / lessonVersion 分離 | scaffold で両方 placeholder 出力 |
+**PDF 運用**：
+- 教科書 PDF (第2-30課) は `data/sources/pdfs/` に user が手動コピー (gitignore 済)
+  - 例: `cp ~/Downloads/第*.pdf data/sources/pdfs/`
+- seed 抽出 cache は `data/lesson_seed_cache/` に蓄積 (gitignore 済)
+- PDF 不在の課は empty mode に自動 fallback
 
 ### 🆕 (b) lesson に `targetStudentLevel` を導入 + level-aware 生成
 
@@ -170,8 +173,11 @@ Phase γ  スライド完成
   γ1     音声再生（homework .audio-btn 機構を移植）  ← user 都合で後送り
   γ2     デザイン微修正  ← 大半着手 / user 視聴中・要確定 🆕
 Phase X (γ2 派生・user 要望)
-  X-a    課マスター作成 skill suite (lesson-scaffold/check/fill-vocab/
-         suggest-activities/build-registry + SKILLS_MANUAL.md 更新) ← 最優先 🆕
+  X-a    課マスター作成 skill suite                                ← 進行中
+    X-a-1  /lesson-scaffold NN (empty + PDF seed mode)             ✅ 完了
+    X-a-2  /lesson-check + /lesson-fill-vocab                       ✅ 完了 🆕
+    X-a-3  /lesson-suggest-activities + /lesson-build-registry     次セッション
+    X-a-4  docs/SKILLS_MANUAL.md (suite まとめ)
   X-b    lesson.targetStudentLevel 導入 + level-aware 生成        🆕
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
