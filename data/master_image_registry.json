@@ -35,9 +35,10 @@
       "v1.4 (2026-05-12): タスク 15 追補。GAS Q-IP1 FULL で vocab 12 件が再生成されたため、v7 JSON との整合性を取るために registry の vocab_医者 等 12 エントリの imageUrl / generatedAt / promptRef を更新。status: approved は維持(画像内容は同一意図のため再レビュー不要)。",
       "v1.7 (2026-05-14): lesson_01 v2.10 同期 + 画像生成27件 URL 反映。(1) 新規追加: vocab_大学生 + 国籍7語(日本人/中国人/アメリカ人/韓国人/ブラジル人/ベトナム人/スペイン人)。(2) 新規追加: char_鈴木/リン/ケリー/キム/タノム (type: named_character_card・prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES 参照)。(3) vocab_病院: firstLesson 2->1, usedInLessons [2]->[1,2], status pending->generated。(4) ex_L01_001〜015 の sentence/patternId/slot を lesson_01.json v2.10 に整合化。ex_L01_001〜005 は outdated→generated に復活(_outdated_* メタ削除)、URL は char_鈴木/リン/キム imageRef からコピー。(5) 27エントリ全て status: generated, imageUrl 入力済み。promptRef は既存値維持。(6) ex_L01_010, ex_L01_014 は変更なし(指示通り)。totalEntries: 57 -> 70。",
       "v1.8 (2026-05-17): lesson_02.json v2.11.3 同期。L02 語彙 15件追加 (word_病院は L01 既存のためスキップ)。totalEntries: 71 -> 86 (world_map の static_asset を含む実態カウントに修正)。",
-      "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。"
+      "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。",
+      "v1.10 (2026-05-26): ローカル環境移行後 Drive アクセス不可となった 29 件 (ex_L01_*, char_*, vocab_*/word_*) を pending 化。元 URL は originalImageUrl に退避。今後 skill pipeline で再生成予定。"
     ],
-    "lastModified": "2026-05-25"
+    "lastModified": "2026-05-26"
   },
   "entries": {
     "word_医者": {
@@ -72,15 +73,18 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "pending",
       "images": [
         {
           "imageId": "vocab_男の人_001",
           "filename": "vocab_男の人.png",
-          "imageUrl": "https://drive.google.com/uc?id=199QBibC-xVpB9dAkdPMnbJeZQjzslibY",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#vocab_男の人",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=199QBibC-xVpB9dAkdPMnbJeZQjzslibY",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -94,15 +98,18 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "pending",
       "images": [
         {
           "imageId": "vocab_女の人_001",
           "filename": "vocab_女の人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1HXB9idYXA_kpxCkrsRyMgSRgw19kjsd5",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#vocab_女の人",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1HXB9idYXA_kpxCkrsRyMgSRgw19kjsd5",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -116,15 +123,18 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "pending",
       "images": [
         {
           "imageId": "vocab_外国人_001",
           "filename": "vocab_外国人.png",
-          "imageUrl": "https://drive.google.com/uc?id=1eAznq5nrWPcJ_OAtpQa4yUr522irip3z",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#vocab_外国人",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1eAznq5nrWPcJ_OAtpQa4yUr522irip3z",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -204,15 +214,18 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "pending",
       "images": [
         {
           "imageId": "vocab_会社_001",
           "filename": "vocab_会社.png",
-          "imageUrl": "https://drive.google.com/uc?id=1ILWJWlZLp0mBZnloJDPnrkOIRzozGFh3",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#vocab_会社",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1ILWJWlZLp0mBZnloJDPnrkOIRzozGFh3",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -249,15 +262,18 @@
       "usedInLessons": [
         1
       ],
-      "status": "approved",
+      "status": "pending",
       "images": [
         {
           "imageId": "vocab_銀行_001",
           "filename": "vocab_銀行.png",
-          "imageUrl": "https://drive.google.com/uc?id=1UOSOptVLPr19HyMbqmLTt99_Y463-CKA",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#vocab_銀行",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1UOSOptVLPr19HyMbqmLTt99_Y463-CKA",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -314,15 +330,18 @@
       "sentence": "鈴木さんは先生です。",
       "sentenceEn": "Suzuki-san is a teacher.",
       "slot": "文型①の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_001_img",
           "filename": "ex_01.png",
-          "imageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v6.json#ex_01",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -333,15 +352,18 @@
       "sentence": "リンさんは大学生です。",
       "sentenceEn": "Lin-san is a university student.",
       "slot": "文型①の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_002_img",
           "filename": "ex_02.png",
-          "imageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v6.json#ex_02",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -352,15 +374,18 @@
       "sentence": "キムさんは会社員です。",
       "sentenceEn": "Kim-san is a company employee.",
       "slot": "文型①の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_003_img",
           "filename": "ex_03.png",
-          "imageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v6.json#ex_03",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -371,15 +396,18 @@
       "sentence": "鈴木さんは日本人です。",
       "sentenceEn": "Suzuki-san is Japanese.",
       "slot": "文型①の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_004_img",
           "filename": "ex_04.png",
-          "imageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v6.json#ex_04",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -390,15 +418,18 @@
       "sentence": "リンさんは中国人です。",
       "sentenceEn": "Lin-san is Chinese.",
       "slot": "文型①の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_005_img",
           "filename": "ex_05.png",
-          "imageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v6.json#ex_05",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -409,15 +440,18 @@
       "sentence": "リンさんですか。",
       "sentenceEn": "Is it Lin-san?",
       "slot": "文型②の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_006_img",
           "filename": "ex_06.png",
-          "imageUrl": "https://drive.google.com/uc?id=1CGtmOEGYE50VdSL3B2KALF4EOxiTcU2D",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v6.json#ex_06",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1CGtmOEGYE50VdSL3B2KALF4EOxiTcU2D",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -428,15 +462,18 @@
       "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
       "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
       "slot": "文型②の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_007_img",
           "filename": "ex_L01_007.png",
-          "imageUrl": "https://drive.google.com/uc?id=1jzopxeGVBDKY-G_fA3NbQq0uVtHyI7E0",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_007",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1jzopxeGVBDKY-G_fA3NbQq0uVtHyI7E0",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -447,15 +484,18 @@
       "sentence": "先生ですか。→ はい、先生です。／いいえ、先生じゃありません。",
       "sentenceEn": "Are you a teacher? → Yes, I am. / No, I'm not.",
       "slot": "文型②の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_008_img",
           "filename": "ex_L01_008.png",
-          "imageUrl": "https://drive.google.com/uc?id=1yiFbtrDBEUYTtmILEMKxs455DHaMNzk-",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_008",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1yiFbtrDBEUYTtmILEMKxs455DHaMNzk-",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -466,15 +506,18 @@
       "sentence": "韓国人ですか。→ はい、韓国人です。／いいえ、韓国人じゃありません。",
       "sentenceEn": "Are you Korean? → Yes, I am. / No, I'm not.",
       "slot": "文型②の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_009_img",
           "filename": "ex_L01_009.png",
-          "imageUrl": "https://drive.google.com/uc?id=1Je4Xs2x8Mj4ykvpDsKwWbByREo7Q-htC",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_009",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1Je4Xs2x8Mj4ykvpDsKwWbByREo7Q-htC",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -485,15 +528,18 @@
       "sentence": "だれですか。→ キムさんです。",
       "sentenceEn": "Who is it? → It's Kim-san.",
       "slot": "文型②の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_010_img",
           "filename": "ex_L01_010.png",
-          "imageUrl": "https://drive.google.com/uc?id=1U4J36JFAC4wiDFvWW5D6cjYCy8PZzBKu",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_010",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1U4J36JFAC4wiDFvWW5D6cjYCy8PZzBKu",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -504,15 +550,18 @@
       "sentence": "タノムさんは東西病院の医者です。",
       "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
       "slot": "文型③の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_011_img",
           "filename": "ex_L01_011.png",
-          "imageUrl": "https://drive.google.com/uc?id=1UcdPe7IDRNVXlMGLcGBkIA3hluMfruR6",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_011",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1UcdPe7IDRNVXlMGLcGBkIA3hluMfruR6",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -523,15 +572,18 @@
       "sentence": "鈴木さんは東西学校の先生です。",
       "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
       "slot": "文型③の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_012_img",
           "filename": "ex_L01_012.png",
-          "imageUrl": "https://drive.google.com/uc?id=1YYylkJntE8yd-Msw2jwIhyBzaaQPEzSM",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_012",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1YYylkJntE8yd-Msw2jwIhyBzaaQPEzSM",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -542,15 +594,18 @@
       "sentence": "キムさんは東西銀行の会社員です。",
       "sentenceEn": "Kim-san is an employee at Tozai Bank.",
       "slot": "文型③の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_013_img",
           "filename": "ex_L01_013.png",
-          "imageUrl": "https://drive.google.com/uc?id=1YtimJ7AR-r1dTN7ncm9Lo4W7L9Ekp9Ke",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_013",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1YtimJ7AR-r1dTN7ncm9Lo4W7L9Ekp9Ke",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -561,15 +616,18 @@
       "sentence": "リンさんは東西大学の学生です。",
       "sentenceEn": "Lin-san is a student at Tozai University.",
       "slot": "文型③の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_014_img",
           "filename": "ex_L01_014.png",
-          "imageUrl": "https://drive.google.com/uc?id=1dkHWEVvU6jICcdZCfUn77e71Dak70tBl",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_014",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1dkHWEVvU6jICcdZCfUn77e71Dak70tBl",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -580,15 +638,18 @@
       "sentence": "キムさんは東西デパートの会社員です。",
       "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
       "slot": "文型③の例文",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "ex_L01_015_img",
           "filename": "ex_L01_015.png",
-          "imageUrl": "https://drive.google.com/uc?id=1cEREo2m4obffIo30UO5YQZuY6cVsHrg-",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v7.json#ex_L01_015",
-          "generatedAt": "2026-05-12",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1cEREo2m4obffIo30UO5YQZuY6cVsHrg-",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -845,15 +906,18 @@
         1,
         2
       ],
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "vocab_病院_001",
           "filename": "vocab_病院.png",
-          "imageUrl": "https://drive.google.com/uc?id=14Rh6jYvAreesi8eSRZdkAtoT6fF954EX",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson2.json#vocab_病院",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=14Rh6jYvAreesi8eSRZdkAtoT6fF954EX",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -1435,15 +1499,18 @@
         "ex_L01_012"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "char_鈴木_001",
           "filename": "char_鈴木.png",
-          "imageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v8.json#char_鈴木",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -1468,15 +1535,18 @@
         "ex_L01_014"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "char_リン_001",
           "filename": "char_リン.png",
-          "imageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v8.json#char_リン",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -1495,15 +1565,18 @@
       ],
       "usedInExamples": [],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "char_ケリー_001",
           "filename": "char_ケリー.png",
-          "imageUrl": "https://drive.google.com/uc?id=1kxKhZES02SgWDjG7eHdXU9DwJWXzDIer",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v8.json#char_ケリー",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1kxKhZES02SgWDjG7eHdXU9DwJWXzDIer",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -1527,15 +1600,18 @@
         "ex_L01_015"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "char_キム_001",
           "filename": "char_キム.png",
-          "imageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v8.json#char_キム",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -1556,15 +1632,18 @@
         "ex_L01_011"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "char_タノム_001",
           "filename": "char_タノム.png",
-          "imageUrl": "https://drive.google.com/uc?id=19QQBmsB6vpvm_1lLrDSVi31FxdFdXX_x",
+          "imageUrl": null,
           "promptRef": "image_prompts_lesson1_v8.json#char_タノム",
-          "generatedAt": "2026-05-14",
-          "regenerate": false
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=19QQBmsB6vpvm_1lLrDSVi31FxdFdXX_x",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -2154,14 +2233,17 @@
       "reading": "あかい",
       "en": "red",
       "context": "vocabulary_adjective",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "word_赤い_001",
           "filename": "word_赤い.png",
-          "imageUrl": "https://drive.google.com/uc?id=1EacBgBKinl3CicMDAUY0RTXo53miO3BP",
-          "generatedAt": "2026-05-21",
-          "regenerate": false
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1EacBgBKinl3CicMDAUY0RTXo53miO3BP",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -2171,14 +2253,17 @@
       "reading": "あかるい",
       "en": "bright",
       "context": "vocabulary_adjective",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "word_明るい_001",
           "filename": "word_明るい.png",
-          "imageUrl": "https://drive.google.com/uc?id=1Q7Q611jPa1O9s_qEbQrheoZhXamrQNw1",
-          "generatedAt": "2026-05-21",
-          "regenerate": false
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1Q7Q611jPa1O9s_qEbQrheoZhXamrQNw1",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },
@@ -2188,14 +2273,17 @@
       "reading": "あき",
       "en": "autumn",
       "context": "vocabulary_abstract_concept",
-      "status": "generated",
+      "status": "pending",
       "images": [
         {
           "imageId": "word_秋_001",
           "filename": "word_秋.png",
-          "imageUrl": "https://drive.google.com/uc?id=1kQoCEfiiMt36KAZSUwT1cQn3fLsj5Uai",
-          "generatedAt": "2026-05-21",
-          "regenerate": false
+          "imageUrl": null,
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1kQoCEfiiMt36KAZSUwT1cQn3fLsj5Uai",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
         }
       ]
     },

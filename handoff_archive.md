@@ -314,3 +314,23 @@
   - 文字間バランス: ruby + ruby の隣接詰めルールが助詞密着の元凶 (trial が先に発見)
   - スライド見切れ: 16:9 固定 / overflow:hidden を局所解除し container-type:inline-size +
     min-height:85vh + sticky 制御バー (creator-main は構造が違うため min-height: 100vh - 64px に翻訳)
+
+## 2026-05-26 (γ2 視聴確定 + ローカル環境移行 Drive orphan pending 化)
+
+- **γ2 全 12 ブロック user 視聴 OK** (5/26)。残り 2 件 (slide padding 縮小 + POS 線
+  explicit-only) もコード解説後 OK 確定。NEXT_ACTIONS の「確定仕様 γ2」セクションへ移設。
+- **ローカル環境移行発覚**：master_image_registry の 29 件 (ex_L01_*×15 + char_*×5
+  + vocab/word_*×9) が Drive URL 残置。SA `sheets-reader@gen-lang-client-...` が
+  Drive 上の files にアクセス権なし (smoke test で確認・2 ファイルとも File not found)。
+- **方針確定 (user)**：Drive 救出ではなく **pending 化して skill pipeline で再生成**。
+  `scripts/pend-drive-orphan-images.mjs` で 29 件 mutation 適用。
+  - status=generated/approved → pending
+  - imageUrl Drive URL → null
+  - originalImageUrl で元 URL 保全 (traceability)
+  - pendedReason='drive-orphaned', pendedAt=2026-05-26
+- **次セッション着手**：X-a-4 SKILLS_MANUAL.md / X-b targetStudentLevel / X-c 例文+
+  例文画像 revision (29 件再生成と統合)。X-c で ex_L01_* と char_* は強依存 (同一
+  portrait) のため一括設計推奨。
+- **DL script 試作したが削除**：`scripts/download-drive-images.mjs` を audio 版から
+  作成・dry-run/smoke は動作確認したが Drive アクセス不可で本走不能 → YAGNI で削除。
+  将来 Drive 共有が設定された場合は audio script から再生成可能。

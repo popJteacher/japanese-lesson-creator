@@ -5,26 +5,26 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-26 Phase X-a 課マスター作成 skill suite **Phase 3 完了** 🆕
-（`/lesson-suggest-activities NN` + `/lesson-build-registry NN` 実装。
-lesson_01/02 で smoke PASS。残り Phase 4 = `docs/SKILLS_MANUAL.md` のみ）
+**最終更新：** 2026-05-26 γ2 スライド改修 **user 視聴 OK で全 12 ブロック確定** 🆕
+＋ローカル環境移行: Drive 画像 29 件は SA アクセス不可のため **pending 化**（skill で再生成予定）
 
 ---
 
 ## 現在地
 
 - **Phase 0 〜 5 ⑤ / α1 〜 α5 延長 / α5 fix-up / β1 / v4.0.4 skill 化 完了** ✅
-- **Phase γ2 スライドデザイン微修正 大半着手**（user 視聴中・要確定）
-- **Phase X-a Phase 1+2+3 完了** 🆕
+- **Phase γ2 スライドデザイン微修正 全 12 ブロック user 視聴 OK** ✅ 🆕
+- **Phase X-a Phase 1+2+3 完了**
   - X-a-1: `/lesson-scaffold NN`（seed mode 第3課で実視確認 PASS）
   - X-a-2: `/lesson-check NN` + `/lesson-fill-vocab NN`（lesson_01/02 で smoke PASS）
   - X-a-3: `/lesson-suggest-activities NN` + `/lesson-build-registry NN`
-    （lesson_01/02 で smoke PASS） 🆕
+    （lesson_01/02 で smoke PASS）
 
-### スナップショット（2026-05-26 X-a-3 完了直後・コマンドで再導出）
+### スナップショット（2026-05-26 Drive orphan pending 化直後・コマンドで再導出）
 
 ```
-image_registry: pending 439 / generated 40 / approved 5 / outdated 6 / (none) 1
+image_registry: pending 468 / generated 16 / outdated 6 / (none) 1 (drive=0/local=16)
+                ↑ 29 件 Drive orphan を pending 化 (ex_L01_*×15 + char_*×5 + vocab/word_*×9)
 image_prompts_skill.json: 30 entries / guideManifestHash 0673ca2d537e
 audio_registry:  tts-local-regen 416 / (none) 50 (= 466 total)
                  word 416/466 全 user OK / sentence 50/466 は 5/24 のまま
@@ -32,18 +32,17 @@ vocab_catalog:  17508 entries (schemaVersion 1.2)
                 accent unknown 502 / tts_workaround 0
 ojad cache:     416 entries (389 ok / 22 not_found)
 guide manifest: PART 1-6 .md 6 file / hash 0673ca2d537e
-slide_html.js:  γ2 改修 12 ブロック（user 試聴中）
-git:            main = origin/main 同期済 (push 完了)
+slide_html.js:  γ2 改修 12 ブロック user 視聴 OK
+git:            main は origin/main の 1 commit 先行（γ2 commit 未 push）
 ```
 
 ---
 
 ## active
 
-### 次セッション着手点：**γ2 確定 + X-a-4 SKILLS_MANUAL.md + JLPT level-aware 生成**
+### 次セッション着手点：**X-a-4 SKILLS_MANUAL.md + JLPT level-aware 生成 + 例文/例文画像 revision**
 
-γ2 の改修は user 試聴中。視聴後に「採用 / 戻す / さらに調整」を確定する。
-そのうえで以下 3 件が残：
+γ2 全 12 ブロック視聴確定済（5/26）。残り 3 件＋新規 1 件：
 
 ### 🆕 (a) 課マスター作成 skill suite（モジュラー型）
 
@@ -109,7 +108,17 @@ JLPT メタは既に存在するが生成側で参照していない:
 
 優先度：**X-a-4 (SKILLS_MANUAL) > (b-1)(b-2) > (b-3)**
 
-### β1 残課題 / γ1 / γ2 残作業
+### 🆕 (c) 例文 / 例文画像 revision + 画像 29 件再生成
+
+**動機**：(1) lesson_01 視聴で「例文を見直したい」意向あり。(2) `targetStudentLevel`
+導入 (X-b) 後は kanji jlptLevel 制約も入るため例文文面ごと再設計対象。
+(3) ローカル環境移行で Drive 上の 29 件 (ex_L01_*×15 + char_*×5 + vocab/word_*×9)
+が SA アクセス不可となり pending 化済 (5/26)。再生成タイミングと統合できる。
+
+**順序**：例文 revision → image_prompts skill で再生成 → 画像配置 → registry generated 化。
+ex_L01_* と char_* は強い依存関係 (同一 portrait) なので一括設計推奨。
+
+### β1 残課題 / γ1 残作業
 
 - **lesson_02 以降の β1 検証**：lesson_02 の practiceImageSource / 答え抽出
   ロジック未検証。lesson_02 で patterns を見て必要なら拡張
@@ -142,14 +151,15 @@ Phase β  宿題完成
   β1 ✅ 正解判定 (D)・homework_html.js 改修・user 試聴 OK
 Phase γ  スライド完成
   γ1     音声再生（homework .audio-btn 機構を移植）  ← user 都合で後送り
-  γ2     デザイン微修正  ← 大半着手 / user 視聴中・要確定
+  γ2     デザイン微修正  ← 全 12 ブロック視聴 OK ✅
 Phase X (γ2 派生・user 要望)
   X-a    課マスター作成 skill suite                                ← 進行中
     X-a-1  /lesson-scaffold NN (empty + PDF seed mode)             ✅ 完了
     X-a-2  /lesson-check + /lesson-fill-vocab                       ✅ 完了
-    X-a-3  /lesson-suggest-activities + /lesson-build-registry     ✅ 完了 🆕
+    X-a-3  /lesson-suggest-activities + /lesson-build-registry     ✅ 完了
     X-a-4  docs/SKILLS_MANUAL.md (suite まとめ)                    次セッション
   X-b    lesson.targetStudentLevel 導入 + level-aware 生成
+  X-c    例文 / 例文画像 revision + 29 件 (Drive orphan) 再生成    🆕
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
   δ2     applicability メタデータ 57 件 (H Stage 2)  ← user 教育判断・最重
@@ -163,17 +173,28 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ## 確定仕様
 
-### γ2 スライド変更（試行・user 確定待ち）
+### γ2 スライド変更（user 視聴 OK で確定 5/26）
 
 - 例文 anchor 画像列：`minmax(0, 440px)` で 16:9 約 440×248px、grid item の 1.6 倍程度
+  - ※将来 example image に char / vocab 画像が混入する場合の aspect 柔軟性は要対応
 - POS 線：`examples[].highlight` 明示時のみ。自動 は/が 分割は廃止
-- パターンボックス：文型スライドから削除（タイトル重複解消の試行）
+  → AUTHORING_CHECKLIST.md で必須項目化対象
+- パターンボックス：文型スライドから削除（タイトル重複解消）
 - カードプレゼンター：grid + click-to-zoom（カルーセル廃止）。vocab / building /
   named-character すべてに適用
 - スライド：`min-height: calc(100vh - 64px)` 自然フロー + page スクロール
+- slide padding 縮小 + 画像 max-height 引き締め：自然フロー化と対。
+  slide-body 36/60/76px、通常カード画像 max-height 40vh、語彙 160px、anchor 440px
 - teacher_photo：`qa_card_pair` で N スロット横並び（`materialNeeds[].count` 可変・
   デフォルト 4）+ 文型ボックス削除（pedagogy）
 - ruby マージ：2 漢字以下のみ単一 ruby、3 漢字以上は分割
+
+### ローカル環境移行: Drive orphan pending 化 (5/26 確定)
+
+- Drive 画像 29 件 (ex_L01_*×15 + char_*×5 + vocab/word_*×9) は SA アクセス不可
+- registry mutation: `imageUrl=null` / `status='pending'` / `originalImageUrl` 保全
+- 再生成は X-c (例文 revision と統合) で実施。当面 lesson_01 view は 29 件 broken
+- script: `scripts/pend-drive-orphan-images.mjs --apply`（再現用に保存）
 
 ### β1 宿題正解判定 (D) — 実装済
 
