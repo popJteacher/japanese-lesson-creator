@@ -331,17 +331,13 @@
       "sentenceEn": "Suzuki-san is a teacher.",
       "slot": "文型①の例文",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_001_img",
-          "filename": "ex_01.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v6.json#ex_01",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796486Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_001.png"
         }
       ]
     },
@@ -353,17 +349,13 @@
       "sentenceEn": "Lin-san is a university student.",
       "slot": "文型①の例文",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_002_img",
-          "filename": "ex_02.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v6.json#ex_02",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796525Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_002.png"
         }
       ]
     },
@@ -375,17 +367,13 @@
       "sentenceEn": "Kim-san is a company employee.",
       "slot": "文型①の例文",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_003_img",
-          "filename": "ex_03.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v6.json#ex_03",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796535Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_003.png"
         }
       ]
     },
@@ -397,17 +385,13 @@
       "sentenceEn": "Suzuki-san is Japanese.",
       "slot": "文型①の例文",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_004_img",
-          "filename": "ex_04.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v6.json#ex_04",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796543Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_004.png"
         }
       ]
     },
@@ -419,17 +403,13 @@
       "sentenceEn": "Lin-san is Chinese.",
       "slot": "文型①の例文",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_005_img",
-          "filename": "ex_05.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v6.json#ex_05",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796549Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_005.png"
         }
       ]
     },
@@ -441,17 +421,13 @@
       "sentenceEn": "Is it Lin-san?",
       "slot": "文型②の例文 (2-1 アンカー)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_006_img",
-          "filename": "ex_06.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v6.json#ex_06",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1CGtmOEGYE50VdSL3B2KALF4EOxiTcU2D",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796555Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_006.png"
         }
       ]
     },
@@ -463,17 +439,13 @@
       "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
       "slot": "文型②の例文 (2-2)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_007_img",
-          "filename": "ex_L01_007.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_007",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1jzopxeGVBDKY-G_fA3NbQq0uVtHyI7E0",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796561Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_007.png"
         }
       ]
     },
@@ -485,17 +457,13 @@
       "sentenceEn": "Who is it?",
       "slot": "文型②の例文 (2-3 Q 単独)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_008_img",
-          "filename": "ex_L01_008.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_008",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1yiFbtrDBEUYTtmILEMKxs455DHaMNzk-",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796567Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_008.png"
         }
       ]
     },
@@ -507,17 +475,13 @@
       "sentenceEn": "It's Kim-san.",
       "slot": "文型②の例文 (2-4 A 単独)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_009_img",
-          "filename": "ex_L01_009.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_009",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1Je4Xs2x8Mj4ykvpDsKwWbByREo7Q-htC",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796573Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_009.png"
         }
       ]
     },
@@ -529,17 +493,13 @@
       "sentenceEn": "Are you a teacher?",
       "slot": "文型②の例文 (2-5 Q 単独)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_010_img",
-          "filename": "ex_L01_010.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_010",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1U4J36JFAC4wiDFvWW5D6cjYCy8PZzBKu",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796579Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_010.png"
         }
       ]
     },
@@ -1389,18 +1349,15 @@
         "ex_L01_012"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "pending",
+      "status": "generated",
       "images": [
         {
           "imageId": "char_鈴木_001",
           "filename": "char_鈴木.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v8.json#char_鈴木",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1FoisDpJjH1gMBuBuulpNhebYZtRrBaLW",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageUrl": "data/images/char_鈴木.png",
+          "promptRef": "_xc_targets.json#char_鈴木",
+          "generatedAt": "2026-05-26",
+          "regenerate": false
         }
       ]
     },
@@ -1425,18 +1382,15 @@
         "ex_L01_014"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "pending",
+      "status": "generated",
       "images": [
         {
           "imageId": "char_リン_001",
           "filename": "char_リン.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v8.json#char_リン",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1BP-IV4zj0m2pNEagX-PuloQmD0A9B5f1",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageUrl": "data/images/char_リン.png",
+          "promptRef": "_xc_targets.json#char_リン",
+          "generatedAt": "2026-05-26",
+          "regenerate": false
         }
       ]
     },
@@ -1455,18 +1409,15 @@
       ],
       "usedInExamples": [],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "pending",
+      "status": "generated",
       "images": [
         {
           "imageId": "char_ケリー_001",
           "filename": "char_ケリー.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v8.json#char_ケリー",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1kxKhZES02SgWDjG7eHdXU9DwJWXzDIer",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageUrl": "data/images/char_ケリー.png",
+          "promptRef": "_xc_targets.json#char_ケリー",
+          "generatedAt": "2026-05-26",
+          "regenerate": false
         }
       ]
     },
@@ -1490,18 +1441,15 @@
         "ex_L01_015"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "pending",
+      "status": "generated",
       "images": [
         {
           "imageId": "char_キム_001",
           "filename": "char_キム.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v8.json#char_キム",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1Gc19QLsZK32N62TxMPcpC5BG48O8qDKF",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageUrl": "data/images/char_キム.png",
+          "promptRef": "_xc_targets.json#char_キム",
+          "generatedAt": "2026-05-26",
+          "regenerate": false
         }
       ]
     },
@@ -1522,18 +1470,15 @@
         "ex_L01_011"
       ],
       "profileSource": "prompts/master_prompt_design_guide_v2_4.py#NAMED_CHARACTER_PROFILES",
-      "status": "pending",
+      "status": "generated",
       "images": [
         {
           "imageId": "char_タノム_001",
           "filename": "char_タノム.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v8.json#char_タノム",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=19QQBmsB6vpvm_1lLrDSVi31FxdFdXX_x",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageUrl": "data/images/char_タノム.png",
+          "promptRef": "_xc_targets.json#char_タノム",
+          "generatedAt": "2026-05-26",
+          "regenerate": false
         }
       ]
     },
@@ -8318,17 +8263,13 @@
       "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
       "slot": "文型③の例文 (3-1)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_014_img",
-          "filename": "ex_L01_014.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_014",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1UcdPe7IDRNVXlMGLcGBkIA3hluMfruR6",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796606Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_014.png"
         }
       ]
     },
@@ -8340,17 +8281,13 @@
       "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
       "slot": "文型③の例文 (3-2)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_015_img",
-          "filename": "ex_L01_015.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_015",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1YYylkJntE8yd-Msw2jwIhyBzaaQPEzSM",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796612Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_015.png"
         }
       ]
     },
@@ -8362,17 +8299,13 @@
       "sentenceEn": "Kim-san is an employee at Tozai Bank.",
       "slot": "文型③の例文 (3-3)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_016_img",
-          "filename": "ex_L01_016.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_016",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1YtimJ7AR-r1dTN7ncm9Lo4W7L9Ekp9Ke",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796618Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_016.png"
         }
       ]
     },
@@ -8384,17 +8317,13 @@
       "sentenceEn": "Lin-san is a student at Tozai University.",
       "slot": "文型③の例文 (3-4 アンカー)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_017_img",
-          "filename": "ex_L01_017.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_017",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1dkHWEVvU6jICcdZCfUn77e71Dak70tBl",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796623Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_017.png"
         }
       ]
     },
@@ -8406,17 +8335,13 @@
       "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
       "slot": "文型③の例文 (3-5)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_018_img",
-          "filename": "ex_L01_018.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_018",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1cEREo2m4obffIo30UO5YQZuY6cVsHrg-",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796629Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_018.png"
         }
       ]
     },
@@ -8428,16 +8353,13 @@
       "sentenceEn": "Yes, I am a teacher. / No, I am not a teacher.",
       "slot": "文型②の例文 (2-6 A セット)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_011_img",
-          "filename": "ex_L01_011.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_011",
-          "generatedAt": null,
-          "regenerate": false,
-          "pendedReason": "v2.12-new-separation",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796586Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_011.png"
         }
       ]
     },
@@ -8449,16 +8371,13 @@
       "sentenceEn": "Are you Korean?",
       "slot": "文型②の例文 (2-7 Q 単独)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_012_img",
-          "filename": "ex_L01_012.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_012",
-          "generatedAt": null,
-          "regenerate": false,
-          "pendedReason": "v2.12-new-separation",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796593Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_012.png"
         }
       ]
     },
@@ -8470,16 +8389,13 @@
       "sentenceEn": "Yes, I am Korean. / No, I am not Korean.",
       "slot": "文型②の例文 (2-8 A セット)",
       "status": "pending",
-      "images": [
+      "images": [],
+      "_xc_history": [
         {
-          "imageId": "ex_L01_013_img",
-          "filename": "ex_L01_013.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_013",
-          "generatedAt": null,
-          "regenerate": false,
-          "pendedReason": "v2.12-new-separation",
-          "pendedAt": "2026-05-26"
+          "event": "text_only_v1_archived",
+          "at": "2026-05-26T12:02:48.796599Z",
+          "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
+          "archivedPath": "data/images/_xc_text_only_v1/ex_L01_013.png"
         }
       ]
     }

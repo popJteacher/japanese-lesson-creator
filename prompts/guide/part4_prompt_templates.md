@@ -289,12 +289,29 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 
 > v4.1 (2026-05-22) Phase 5 ④ Q1 A：v4.0 universal rules（PART 1.8 FACIAL_FEATURES / PART 1.10 HEAD_BODY_PROPORTION / FOOTWEAR_RULE）を `vocabulary_person` 同様に inline 追加。
 > v4.0.5 (2026-05-26)：[PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-114-person_reference_attachment_rule) の `[REFERENCE]` セクションを追加。sentence 内に NAMED_CHARACTER が登場する場合のみ、対応 portrait を 1〜4 枚 attach し identity transfer を行う。NAMED_CHARACTER 不在の例文では `[REFERENCE]` セクション自体を出力しない（skill が分岐）。
+> v4.0.6 (2026-05-26 X-c)：[PART 3.9 v4.0.6 5 subsections](part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level) 反映：
+>   1. **[STRICT LAYOUT DIRECTIVE] ブロックを [PURPOSE] 直下に新設** (16:9 default-1:1 drift 防止)
+>   2. **[SUBJECT] は REFERENCE attached 時 lean form** (衣装重複削除)
+>   3. **{SYMBOL_PERMISSION_CLAUSE}** placeholder 化 (symbol 不要例文では explicit 禁止文に切替・skill が分岐)
+>   4. **{SCENE_DESCRIPTION} は role action + horizontal anchor** を含む (PART 3.9 scene_action_focus / affiliation_indoor)
 
 ```
 [PURPOSE]
 Create an example sentence illustration for Japanese language learning materials.
 The image must clearly convey the grammatical relationship in the sentence:
 [{SENTENCE_JP}] ({SENTENCE_EN})
+The viewer must instantly read the sentence's grammatical core (role identity /
+affiliation / question / affirmation-negation) from the visualized action — not
+from the absence of conflicting cues.
+
+[STRICT LAYOUT DIRECTIVE]
+ASPECT RATIO: MUST be 16:9 widescreen landscape (horizontal orientation). DO NOT
+crop into a square 1:1 frame, NOT 4:3 landscape, NOT 3:4 vertical, NOT 9:16
+portrait. To enforce the 16:9 layout, the scene's background elements MUST
+extend horizontally from the left edge to the right edge of the frame — see the
+[SCENE & ACTION] block below for the specific horizontal anchor (whiteboard /
+wide desk / building facade / 2-panel vertical divider). nanobanana defaults to
+1:1; this directive is the primary counterweight.
 
 [REFERENCE]
 (This section is emitted ONLY when the sentence contains one or more NAMED_CHARACTERs from PART 5.9 NAMED_CHARACTER_PROFILES. If no NAMED_CHARACTER is detected, the entire [REFERENCE] section is omitted by the skill.)
@@ -302,6 +319,11 @@ The image must clearly convey the grammatical relationship in the sentence:
 
 [SUBJECT]
 {CHARACTER_DESCRIPTIONS}
+(When a NAMED_CHARACTER portrait is attached above, the [CHARACTER_DESCRIPTIONS]
+text MUST be lean — name the role + portrait reference only, and rely on image_N
+for face / hair / outfit / build / phenotype. See [PART 3.9 reference_redundancy_avoidance](part3_vocab_type_rules.md#reference_redundancy_avoidance-v406-新規) — duplicating outfit details in text while ALSO attaching the portrait
+causes nanobanana to reflect both half-heartedly, producing identity drift.)
+
 FACIAL FEATURES RULE (v4.0 PART 1.8): Every character figure in the image MUST
 clearly show all four primary facial features — eyes (with visible pupils, not
 blank circles), eyebrows (simple curved or angled lines above the eyes), nose
@@ -331,6 +353,18 @@ at-home or indoor context. If the composition crops feet out of frame
 
 [SCENE & ACTION]
 {SCENE_DESCRIPTION}
+The {SCENE_DESCRIPTION} above MUST satisfy three conditions
+(per [PART 3.9 scene_action_focus / affiliation_indoor / aspect_ratio_enforcement rule_b](part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level)):
+  (a) the named character (if any) is performing their canonical ROLE ACTION
+      (teaching at podium / studying at lecture desk / working at office desk /
+      examining patient at consultation desk / serving at counter / etc.) — NOT
+      just standing as an identity card,
+  (b) for affiliation sentences (〜の〜), the scene is set INDOORS at the named
+      institution with the role action happening inside — NOT the character
+      standing in front of an outdoor building,
+  (c) the background includes at least ONE horizontally-stretching anchor
+      element (wide whiteboard / long desk row / institution interior wall /
+      2-panel divider) that spans the frame edge-to-edge in the 16:9 layout.
 The characters' actions and relationship must make the sentence meaning visually obvious without any text.
 {VISUAL_SYMBOL_IF_NEEDED}
 
@@ -348,7 +382,18 @@ warm amber gold accents for emphasis.
 This should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.
 
 [CONSTRAINTS]
-No text, no letters, no numbers, no purely decorative symbols inside the image. VISUAL_SYMBOLS entries (question mark / checkmark / X mark / arrow) ARE PERMITTED when {VISUAL_SYMBOL_IF_NEEDED} is populated.
+No text, no letters, no numbers, no purely decorative symbols inside the image.
+{SYMBOL_PERMISSION_CLAUSE}
+(SYMBOL_PERMISSION_CLAUSE is one of two forms per [PART 3.9 visual_symbol_restriction](part3_vocab_type_rules.md#visual_symbol_restriction-v406-新規):
+  • SYMBOL-USING example: "VISUAL_SYMBOLS entries (question mark / checkmark /
+    X mark / arrow) ARE PERMITTED — but ONLY exactly the symbols specified in
+    {VISUAL_SYMBOL_IF_NEEDED} above. nanobanana MUST NEVER add any additional
+    floating symbols, arrows, circles, or geometric shapes encircling characters
+    or the scene."
+  • NO-SYMBOL example: "ABSOLUTELY NO floating symbols of any kind — no question
+    marks, no checkmarks, no X marks, no arrows, no circles, no geometric shapes
+    encircling characters, no callout balloons. The scene must communicate
+    without any symbolic overlay.")
 No gradients, no shadows, no 3D effects, no photoreal textures.
 Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ```
@@ -356,7 +401,7 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 **Used for**: `vocab_type = "example_sentence"`（lesson-level、語彙ではない）
 **Aspect ratio**: 16:9
 **Rule references**: [PART 1.5 PHENOTYPE](part1_universal_rules.md#part-15-phenotype_specification_rule), [PART 1.8 FACIAL_FEATURES](part1_universal_rules.md#part-18-facial_features_rule), [PART 1.10 HEAD_BODY_PROPORTION](part1_universal_rules.md#part-110-head_body_proportion_rule), [PART 1.11 FOOTWEAR](part1_universal_rules.md#part-111-footwear_rule), [PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-114-person_reference_attachment_rule), [PART 3.9 example_sentence](part3_vocab_type_rules.md#39-example_sentence), [PART 5.9 NAMED_CHARACTER_PROFILES](part5_vocab_reference_appendix.md#59-named_character_profiles), [PART 5.14 VISUAL_SYMBOLS](part5_vocab_reference_appendix.md#514-visual_symbols)
-**Placeholders**: `[{SENTENCE_JP}]`, `{SENTENCE_EN}`, `{CHARACTER_DESCRIPTIONS}`, `{SCENE_DESCRIPTION}`, `{VISUAL_SYMBOL_IF_NEEDED}`, `{COMPOSITION_NOTES}`, `{NAMED_CHARACTER_REFERENCES}` (v4.0.5 / [PART 1.14](part1_universal_rules.md#part-114-person_reference_attachment_rule); the entire `[REFERENCE]` section is omitted when no NAMED_CHARACTER is detected)
+**Placeholders**: `[{SENTENCE_JP}]`, `{SENTENCE_EN}`, `{CHARACTER_DESCRIPTIONS}`, `{SCENE_DESCRIPTION}`, `{VISUAL_SYMBOL_IF_NEEDED}`, `{COMPOSITION_NOTES}`, `{NAMED_CHARACTER_REFERENCES}` (v4.0.5 / [PART 1.14](part1_universal_rules.md#part-114-person_reference_attachment_rule); the entire `[REFERENCE]` section is omitted when no NAMED_CHARACTER is detected), `{SYMBOL_PERMISSION_CLAUSE}` (v4.0.6 / [PART 3.9 visual_symbol_restriction](part3_vocab_type_rules.md#visual_symbol_restriction-v406-新規); skill が symbol-using / no-symbol で 2 form を分岐 emit)
 
 **styleReferences (output JSON field)**: 0-4 paths drawn from PART 5.9 NAMED_CHARACTER_PROFILES `portraitPath` field per character detected in `{SENTENCE_JP}`. Empty array `[]` when no NAMED_CHARACTER appears. Same `referenceImages: [{bytes, mimeType}, ...]` attachment mechanism as PART 1.12 building — `nanobanana-client.mjs` is unchanged.
 ```json

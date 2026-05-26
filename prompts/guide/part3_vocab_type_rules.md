@@ -518,6 +518,7 @@ position（上・下・中・前・後ろ・右・左・となり・間）ごと
 ## 3.9 example_sentence (no vocab_type — lesson-level)
 
 > `vocab_type` 不要。lesson_NN.json の `patterns[].examples[]` 全件に Template C を適用。
+> **v4.0.6 (2026-05-26 X-c)**：lesson_01 ex_L01_* 18 件の text-only 一陣失敗 + Gemini 第二意見を踏まえて 5 つの subsection を追加（aspect_ratio_enforcement / scene_action_focus / affiliation_indoor / visual_symbol_restriction / reference_redundancy_avoidance）。これらは Template C 経由の全 lesson 共通規律。
 
 ### Aspect ratio / framing
 
@@ -530,6 +531,150 @@ position（上・下・中・前・後ろ・右・左・となり・間）ごと
 - Eye-level
 - Simple minimal background with only essential context
 - Main characters clearly separated from background in visual contrast
+
+### aspect_ratio_enforcement (v4.0.6 新規)
+
+> Template C は 16:9 だが、nanobanana / gemini-2.5-flash-image は **画像生成 API として aspect ratio パラメータを持たず、テキスト directive にも 1:1 default bias がある**。`Wide 16:9 shot` の 1 行だけでは default に倒れる。lesson_01 X-c v1 text-only 一陣 18 件全件で 16:9 → 1:1 drift が発生し、X-c-7 PoC を毀損した。
+
+```
+Strict 16:9 enforcement requires (a) a dedicated [STRICT LAYOUT DIRECTIVE] block placed
+HIGH in the prompt (between [PURPOSE] and [REFERENCE]) and (b) a horizontally-stretching
+background element described in [SCENE & ACTION] that explicitly spans left-to-right.
+Text-only ratio request without a background anchor is insufficient — nanobanana collapses
+to its native 1:1 bias.
+```
+
+#### rule_a — STRICT LAYOUT DIRECTIVE block (位置 + 文言)
+
+[Template C](part4_prompt_templates.md#template-c-example_sentence) は `[PURPOSE]` 直下に以下のブロックを必ず emit する：
+
+```
+[STRICT LAYOUT DIRECTIVE]
+ASPECT RATIO: MUST be 16:9 widescreen landscape (horizontal orientation). DO NOT crop
+into a square 1:1 frame, NOT 4:3 landscape, NOT 3:4 vertical, NOT 9:16 portrait. To
+enforce the 16:9 layout, the scene's background elements MUST extend horizontally
+from the left edge to the right edge of the frame — see the [SCENE & ACTION] block
+below for the specific horizontal anchors. nanobanana defaults to 1:1; this directive
+is the primary counterweight.
+```
+
+#### rule_b — horizontally-stretching anchor in [SCENE & ACTION]
+
+各 example の `{SCENE_DESCRIPTION}` に「画面の左端から右端まで横方向に伸びる」背景要素を**必ず**含める：
+
+| 種類 | 横方向 anchor 例 |
+|---|---|
+| 教室シーン | wide blank whiteboard / blackboard spanning across the left half |
+| オフィス／カウンター | wide desk surface or counter spanning horizontally |
+| 屋外建物前 | building facade running along the left half (close-up framing) |
+| 大学・講堂 | long lecture-hall desk row running horizontally |
+| 病院診察室 | wide consultation desk + medical equipment shelf in horizontal layout |
+| 2-panel Q/A | full-width vertical divider line splitting 16:9 frame into 2 equal panels |
+
+#### rule_c — strong words
+
+`MUST`, `DO NOT`, `NEVER` を使う（[PART 1.4 rule_c](part1_universal_rules.md#part-14-prompt_literalization_avoidance_rule)）。`should` / `may` は 16:9 で禁止。
+
+### scene_action_focus (v4.0.6 新規)
+
+> 例文画像の教育的価値は「sentence の文法関係が一目でわかる」ことにある。Identity card 風の立ち姿だけでは sentence 内容と画像が乖離する（例：「鈴木さんは先生です」を ホワイトボード横で立つだけの絵にすると「ここは教室」としか伝わらず「鈴木さんは教師」が確定しない）。
+
+```
+For every example_sentence, the [SCENE_DESCRIPTION] MUST anchor the sentence's grammatical
+or semantic core in a ROLE-SPECIFIC ACTION rather than a passive standing pose. The viewer
+must read the sentence purpose from the action, not from the absence of conflicting cues.
+```
+
+#### Per-role canonical actions (推奨参照表)
+
+| role (PART 5.8 role_key) | canonical action | accompanying scene anchor |
+|---|---|---|
+| teacher | standing at a teacher's podium / chalk in hand at blackboard / gesturing toward whiteboard | wide blank whiteboard or blackboard along left half |
+| student | seated at lecture-hall desk with open notebook and pen in hand / taking notes / raising hand | long horizontal lecture desk surface + chair |
+| company_employee | seated at office desk with PC monitor and documents / typing / standing with briefcase at office entrance | wide office desk + flat-panel monitor |
+| doctor | standing in consultation room facing patient/viewer / one hand on stethoscope / examining a clipboard | wide consultation desk + medical chart on flat panel |
+| foreigner / learner | with open phrasebook in hands speaking to a Japanese person / at a station information board | minimal urban or classroom context spanning horizontally |
+
+#### Identity-only exception
+
+文の主旨が **nationality / identity** （例：「鈴木さんは日本人です」「リンさんは中国人です」）の場合は、role action を維持しつつ phenotype が一目でわかる構図を選ぶ：
+- 同 role の他例文と「同じスタジオ・別カット」風に、より character 主体のフレーミング（建物より人物に寄る）
+- 但し国旗 prop は禁止（[PART 6.4 ROLE_ANTI_FLAG_BLOCK](part6_output_instructions.md#role_anti_flag_block) は named character / role 系の標準）
+
+### affiliation_indoor (v4.0.6 新規)
+
+> 〜の〜（institution の role）パターン（lesson_01 p3）は「キャラが建物の前に立つ立ち姿」ではなく **「その建物の中で職務を遂行している」** シーンで描く。建物前立ち姿は **location 意味（〜にいます）** に誤読される。
+
+```
+For sentences expressing professional affiliation (〜は〜の〜です), the scene MUST be set
+INDOORS at the institution, with the character actively performing their role within
+that institution's recognizable interior. The institution-character relationship reads as
+"this person works/studies/treats AT this institution" — NOT "this person stands in front
+of this institution".
+```
+
+#### 実装テーブル
+
+| 文型例 | 建物 | 屋内シーン | 識別要素 (建物種別) |
+|---|---|---|---|
+| 〜は〜病院の医者です | hospital | 診察室 (consultation room) | 診察デスク + 医療チャート (flat panel) + 検査ベッド shadow |
+| 〜は〜学校の先生です | school | 教室 (classroom) | wide blackboard + 教壇 + 並ぶ生徒 desk silhouette |
+| 〜は〜銀行の会社員です | bank | 銀行業務オフィス | カウンター + 計算機 + 電卓 + 受付窓口 silhouette |
+| 〜は〜大学の学生です | university | 講義室 (lecture hall) | 長卓 + 教科書 + 講義スクリーン (blank) |
+| 〜は〜デパートの会社員です | department store | 売り場フロア入口 | カウンター + 商品棚 silhouette + ガラス展示窓 |
+
+text-only 出力でも nanobanana が「屋外建物 + 立ち姿」に倒れる bias を回避するため、prompt 本文に必ず `INDOOR scene set inside ...` と明示する。
+
+### visual_symbol_restriction (v4.0.6 新規)
+
+> 例文によっては question mark / checkmark / X mark / arrow を使うが、**「symbol を出して良い」という許可文言を全 example に常駐させると nanobanana が「何かマークを入れろ」と過剰解釈して floating arrow / encircling shape を捏造する** (lesson_01 ex_L01_016 で実証された)。symbol 必要例文だけに permission を限定し、不要例文は明示的に禁止する。
+
+```
+The "VISUAL_SYMBOLS ARE PERMITTED" clause in [CONSTRAINTS] MUST be emitted ONLY when the
+example explicitly needs a question mark / checkmark / X mark / arrow. For example_sentences
+that do not use any symbol (declarative statements, affiliation statements, simple identity
+statements), the clause MUST be replaced with an explicit prohibition of all floating
+symbols, encircling shapes, and abstract overlays.
+```
+
+#### Symbol 使用パターン分類
+
+| sentence パターン | symbol | [CONSTRAINTS] 出力 |
+|---|---|---|
+| 〜です（declarative） | なし | `ABSOLUTELY NO floating symbols of any kind — no question marks, no checkmarks, no X marks, no arrows, no circles, no geometric shapes encircling the scene, no callout balloons.` |
+| 〜ですか（question） | symbol_red question mark | `VISUAL_SYMBOLS entries ARE PERMITTED — but ONLY the single large question mark specified above. nanobanana MUST NEVER add additional floating symbols, arrows, circles, or shapes encircling the character.` |
+| はい〜／いいえ〜（2-panel) | green checkmark + red X | 2-panel divider + 各 panel に 1 symbol。「ONLY exactly two symbols (one ✓, one ✗)」と明示。 |
+| identification reveal | optional small arrow | symbol 必要時のみ permission, 不要時は禁止。 |
+
+### reference_redundancy_avoidance (v4.0.6 新規)
+
+> [PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-114-person_reference_attachment_rule) で portrait を attach した場合、[SUBJECT] 内で **衣装・髪・顔の詳細を再記述すると nanobanana が image と text 指示の間で矛盾を起こし、結果として両方を中途半端に reflect する**。
+
+```
+When a NAMED_CHARACTER portrait is attached via [REFERENCE], the [SUBJECT] section
+MUST be lean — describe WHO is in the scene (role + name reference) and the rendering
+intent (e.g., posture, expression baseline), but DO NOT duplicate the outfit / hair /
+face details. Those are inherited from the attached portrait per [PART 1.14 rule_b].
+```
+
+#### rule_a — lean [SUBJECT] form
+
+```
+Character in scene: <role description> (<NAMED_CHARACTER name reference>, per attached
+portrait image_N). The portrait reference governs face structure, hair, outfit details,
+build, and phenotype. This block specifies only role contextualization and any scene-
+specific posture/expression that differs from the portrait's default.
+```
+
+#### rule_b — scene-deviation override
+
+scene が portrait と異なる outfit / activity を要求する場合（例：portrait は teaching context だが scene は holiday context）、[SUBJECT] で **明示的に override** する：
+
+```
+NOTE: while the attached portrait shows <character> in <portrait-outfit>, this scene
+requires <scene-outfit>. Preserve FACE STRUCTURE, HAIR, BUILD, and PHENOTYPE from the
+portrait; replace OUTFIT to match this scene only.
+```
 
 ### Composition: CHARACTER_DESCRIPTIONS + SCENE
 

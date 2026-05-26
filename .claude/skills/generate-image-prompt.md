@@ -144,6 +144,18 @@ words = candidates[:limit]
 
 検出件数 0 のとき（例：「だれですか。→ キムさんです。」のように Q だけの分離型で NAMED_CHARACTER 不在の場合）、出力 prompt 本文から `[REFERENCE]` セクション全体を skill が削除する。`styleReferences: []` のままで `image_prompts_skill.json` に記録する。
 
+**v4.0.6 (2026-05-26 X-c) 仕様** — [PART 3.9 example_sentence 5 subsections](../../prompts/guide/part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level) を skill が遵守して prompt を組み立てる：
+
+1. **`[STRICT LAYOUT DIRECTIVE]` 必須**：[PURPOSE] 直下に Template C の v4.0.6 STRICT directive ブロックを必ず emit（16:9 default-1:1 drift 防止）。
+2. **`{SCENE_DESCRIPTION}` の 3 条件**：(a) NAMED_CHARACTER の canonical role action を含む、(b) affiliation 文 (〜の〜) は屋内シーン、(c) horizontally-stretching anchor を含む。skill が文型を判定して per-pattern recipe を適用：
+   - **identity card (〜は[role/nationality]です)**：role action canonical (teacher = at podium, student = at desk, etc.)
+   - **question (〜ですか)**：被質問者が canonical role action 中で、question mark が 1 つだけフロート
+   - **2-panel hai/iie**：縦割り divider が 16:9 全幅、各 panel に 1 symbol
+   - **affiliation (〜は〜の〜です)**：屋内 (consultation room / classroom / office desk / lecture hall / store counter) で role action
+3. **`{SYMBOL_PERMISSION_CLAUSE}` の 2 form 分岐**：visual_symbol が必要な例文 (question / 2-panel) は permission 文、それ以外 (declarative / affiliation / identity) は **explicit 禁止** 文。
+4. **`{CHARACTER_DESCRIPTIONS}` lean form**：portrait reference が attach されている場合、衣装・髪・顔の詳細を再記述しない（reference に identity transfer を委ねる）。role context + posture intent のみ書く。
+5. **scene-deviation override**：scene が portrait と異なる outfit/activity を要求する場合のみ explicit override 文を [SUBJECT] に追記。
+
 #### `mode = explicit`
 
 `--words` で渡された word を catalog で lookup して vocab_type を解決。catalog に無い word は ABORT。

@@ -42,7 +42,7 @@ const CANONICAL = {
     resolve(ROOT, 'prompts/guide/part5_vocab_reference_appendix.md'),
     resolve(ROOT, 'prompts/guide/part6_output_instructions.md'),
   ],
-  guideManifestExpectedHashPrefix: '15bd5fbf566b', // v4.0.5 person reference attachment + sceneCharacters union (2026-05-26 / X-c) — PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE 新設 (NAMED_CHARACTER detect → portrait 1-4 枚 attach / cross-example same-character coherence) + detection algorithm に sentence + sceneCharacters[] の union 追加（主語省略文の addressee 明示） + PART 5.9 NAMED_CHARACTER_PROFILES に portraitPath field 追加 (5 entries + Reference image constants table) + PART 4 Template C [REFERENCE] section + {NAMED_CHARACTER_REFERENCES} placeholder + styleReferences output field。前 hash: 0673ca2d537e (v5.0 + v4.0.4 building) / a05d8907534a (X-c 中間)
+  guideManifestExpectedHashPrefix: 'c821d13e646e', // v4.0.6 example_sentence 5 universal subsections + Template C 改修 (2026-05-26 / X-c v2 / Gemini review 反映) — PART 3.9 に aspect_ratio_enforcement / scene_action_focus / affiliation_indoor / visual_symbol_restriction / reference_redundancy_avoidance の 5 subsection 新設 + PART 4 Template C に [STRICT LAYOUT DIRECTIVE] ブロック新設 + {SYMBOL_PERMISSION_CLAUSE} placeholder 化 (symbol-using / no-symbol で 2 form 分岐) + [SUBJECT] lean form 指示 + skill md lesson-examples flow に v4.0.6 仕様追加。前 hash: 15bd5fbf566b (X-c v1 / v4.0.5 PERSON_REFERENCE_ATTACHMENT_RULE) / 0673ca2d537e (v5.0 + v4.0.4 building)
   // S列プロンプト JSON の置き場
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
