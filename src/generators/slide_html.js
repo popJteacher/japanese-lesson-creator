@@ -94,7 +94,10 @@ html, body {
   color: var(--color-text-main);
   font-family: var(--font-family-sans);
   line-height: var(--line-height-normal);
-  width: 100vw; height: 100vh; overflow: hidden;
+  /* 旧: width:100vw; height:100vh; overflow:hidden で「1スライド=1ビューポート」固定だった。
+     現: スライドが縦に伸びる方針に変更したので、html/body は自由に縦スクロールできるように
+     高さ固定と overflow:hidden を解除する。 */
+  min-height: 100vh;
 }
 
 /* ── ふりがな (ruby) ─────────────────────────────────────
@@ -116,11 +119,11 @@ ruby rt {
      ruby ボックスが横に大きく膨らむのを抑える。 */
   letter-spacing: -0.05em;
 }
-/* 隣接 ruby 同士が rt 幅で広がっても、視覚的に同じ語の一部として見えるよう
-   左マージンを少しだけマイナスにする (kuromoji の分割マージで吸収しきれないケース対策)。 */
-ruby + ruby {
-  margin-left: -0.15em;
-}
+/* かつて "ruby + ruby { margin-left: -0.15em }" で隣接 ruby を視覚的に詰めて
+   いたが、CSS 隣接兄弟結合子 "+" はテキストノードを無視するため
+   "<ruby>漢字</ruby>の<ruby>漢字</ruby>" 構造でも適用され、「の／な／を／が」
+   を挟む箇所まで詰めてしまい助詞が後続漢字に密着する副作用があった (trial で同
+   症状を確認・削除で解決)。隣接 ruby の rt overhang は許容する。 */
 ruby rp { display: none; }
 /* #3: ふりがな OFF — display:none !important で flex 子要素等の特定セレクタにも勝つ */
 body.no-ruby ruby rt,
@@ -135,13 +138,16 @@ body.no-en .en-text { display: none !important; }
 
 /* スライド本体 */
 .slide {
-  position: absolute; inset: 0;
   display: none;
   flex-direction: column;
-  padding: 60px 80px 100px;
+  /* padding-bottom 76px: 下部 fixed ナビゲーション (slide-nav 64px) と被らない最小値。 */
+  padding: 36px 60px 76px;
   background: var(--color-background-primary);
-  /* slide 全体は overflow:hidden。スクロールは .slide-body 内で行う。 */
-  overflow: hidden;
+  /* スライドは「最低でも 1 ビューポート分の高さ」を取りつつ、コンテンツが多ければ縦に伸びる。
+     縦に伸びた場合は page (body) 側がスクロールする。slide-body 内 overflow ではなく page スクロール
+     にしたのは、半端な位置でカードが切れる見切れを根絶するため (trial プロジェクトと同方針)。 */
+  min-height: calc(100vh - 64px);
+  /* overflow: visible (default) — 親で切られない */
 }
 .slide.active { display: flex; }
 
@@ -202,13 +208,10 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   font-size: var(--font-size-body);
   display: flex; flex-direction: column;
   /* 全スライドでコンテンツを上揃え (flex-start) に統一する。
-     垂直中央揃え (safe center) を使うとスライドごとに余白量が変わって
-     タイトル下のスペースがバラバラになるため。スクロールは overflow-y: auto で対応。 */
+     overflow は visible (default) — はみ出した分は親 (.slide) が縦に伸び、page がスクロールする。 */
   justify-content: flex-start;
   align-items: flex-start;
-  gap: var(--gap-section);
-  min-height: 0;
-  overflow-y: auto;
+  gap: var(--gap-loose);
 }
 .slide-body p { margin: 0; }
 /* ul / li は箇条点を出さず、スライドタイトルと同じ左端 (slide-body のコンテンツ先頭) から始める。
@@ -564,20 +567,6 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   margin-bottom: var(--gap-tight);
 }
 
-/* ── 表紙の語彙プレビュー行 (3〜4 語を横並び・幅 120px・中央揃え) ──── */
-.cover-vocab-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: var(--gap-normal);
-  margin-top: var(--gap-section);
-  flex-wrap: wrap;
-}
-.cover-vocab-row .vocab-card {
-  width: 120px;
-  flex: 0 0 120px;
-}
-
 /* ── 語彙カードグリッド (intro_activity 等) ──── */
 .vocab-grid {
   display: grid;
@@ -594,17 +583,21 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   text-align: center;
   box-shadow: var(--shadow-default);
 }
+/* 1:1 アスペクトは保ちつつ、縦が伸びすぎないよう max-height で 160px 上限。
+   ノートPC 768〜900px の縦解像度でスクロール無しに収まる目安。 */
 .vocab-card img {
   width: 100%; aspect-ratio: 1;
+  max-height: 160px;
   object-fit: contain;
   background: var(--color-background-subtle);
   border-radius: var(--border-radius-small);
   margin-bottom: var(--gap-normal);
 }
 .vocab-card .image-fallback {
-  font-size: 4rem;
+  font-size: 3rem;
   display: block;
   width: 100%; aspect-ratio: 1;
+  max-height: 160px;
   background: var(--color-background-subtle);
   border-radius: var(--border-radius-small);
   margin-bottom: var(--gap-normal);
@@ -736,18 +729,100 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   margin-top: var(--gap-tight);
 }
 
+/* ── カードプレゼンター (一覧グリッド + クリックでズーム) ──
+   vocab-card / building-card / named-character-card いずれにも適用可能 */
+.vocab-presenter {
+  width: 100%;
+  max-width: 1400px;
+  min-width: 0; /* flex / grid 子要素として shrink できるよう保証 (見切れ防止) */
+}
+.vp-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--gap-normal);
+  width: 100%;
+  min-width: 0;
+}
+.vp-item {
+  cursor: zoom-in;
+  transition: transform 0.1s;
+  min-width: 0;
+}
+.vp-item:hover {
+  transform: translateY(-2px);
+}
+
+/* ズームオーバーレイ — position:fixed で slide コンテナの外まで広がる。
+   z-index は slide のナビゲーション (z-index 既定 0) より大きい値を必ず確保。 */
+.vp-zoom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--padding-xl);
+}
+.vp-zoom[hidden] { display: none; }
+.vp-zoom-card {
+  background: var(--color-background-surface);
+  border-radius: var(--border-radius-large);
+  padding: var(--padding-lg);
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+}
+/* zoom 内ではカード自体の装飾はリセットして純粋な拡大表示 */
+.vp-zoom-card .vocab-card,
+.vp-zoom-card .building-card,
+.vp-zoom-card .named-character-card {
+  padding: 0;
+  box-shadow: none;
+}
+.vp-zoom-card .vocab-card img,
+.vp-zoom-card .vocab-card .image-fallback,
+.vp-zoom-card .building-card img,
+.vp-zoom-card .building-card .image-fallback,
+.vp-zoom-card .named-character-card img,
+.vp-zoom-card .named-character-card .image-fallback {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  max-height: 440px;
+}
+.vp-zoom-card .vocab-card .word,
+.vp-zoom-card .named-character-card .char-name {
+  font-size: var(--font-size-heading);
+}
+.vp-zoom-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #fff;
+  border-radius: 999px;
+  width: 44px; height: 44px;
+  font-size: 1.6rem; line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-main);
+}
+
 /* ── example スライド: アンカー大カード + その他グリッド ── */
 .example-slide-body {
   gap: var(--gap-loose);
 }
 .example-anchor-card {
   display: grid;
-  grid-template-columns: 38% 1fr;
-  gap: var(--gap-section);
+  /* anchor (代表例文) は grid item (4列の各セル ~270px) より明確に大きく見せたい。
+     画像列を最大 440px → 16:9 比で約 248px 縦 → grid item の 1.6 倍程度のスケール感。 */
+  grid-template-columns: minmax(0, 440px) 1fr;
+  gap: var(--gap-loose);
   background: var(--color-background-surface);
   border-radius: var(--border-radius-large);
   border-left: 6px solid var(--color-ui-accent);
-  padding: var(--padding-lg);
+  padding: var(--padding-md);
   box-shadow: var(--shadow-strong);
   align-items: center;
   width: 100%;
@@ -759,16 +834,11 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   justify-content: center;
   gap: var(--gap-tight);
 }
-.example-anchor-card .anchor-mark {
-  font-size: var(--font-size-caption);
-  color: var(--color-ui-accent);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.05em;
-}
+/* line-height: loose — POS 下線 + ふりがな が次行と被るのを防ぐ */
 .example-anchor-card .sentence {
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-loose);
 }
 .example-anchor-card .sentence-en {
   font-size: var(--font-size-body-small);
@@ -796,7 +866,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
 .example-grid-item .sentence {
   font-size: var(--font-size-body-small);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-loose);
 }
 .example-grid-item .sentence-en {
   font-size: var(--font-size-caption);
@@ -841,15 +911,15 @@ body.no-en .slide-title:has(+ .slide-title-en) {
 .named-character-card img {
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-height: 220px;
+  max-height: 160px;
   object-fit: contain;
   background: var(--color-background-subtle);
   border-radius: var(--border-radius-small);
 }
 .named-character-card .image-fallback {
-  font-size: 4rem;
+  font-size: 3rem;
   display: flex; align-items: center; justify-content: center;
-  width: 100%; aspect-ratio: 1 / 1; max-height: 220px;
+  width: 100%; aspect-ratio: 1 / 1; max-height: 160px;
   background: var(--color-background-subtle);
   border-radius: var(--border-radius-small);
 }
@@ -872,23 +942,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
 }
 .world-map-area {
   width: 100%;
-}
-.world-map-placeholder {
-  display: flex; align-items: center; gap: var(--gap-loose);
-  background: var(--color-ui-primary-muted);
-  border: 2px dashed var(--color-ui-primary);
-  border-radius: var(--border-radius-medium);
-  padding: var(--padding-md);
-  color: var(--color-text-subtle);
-}
-.world-map-placeholder .ph-icon { font-size: 2rem; }
-.world-map-placeholder .ph-label {
-  font-size: var(--font-size-body-small);
-  font-weight: var(--font-weight-medium);
-}
-.world-map-placeholder .ph-label.en-text {
-  font-size: var(--font-size-caption);
-  color: var(--color-text-muted);
+  display: flex; justify-content: center;
 }
 
 /* レイアウト 2: qa_card_pair (キャラ1 + パターンボックス + 教師写真) */
@@ -910,7 +964,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
 .qa-pattern {
   padding: var(--padding-md) var(--padding-lg);
   border-radius: var(--border-radius-medium);
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-bold);
   border: 2px solid;
 }
@@ -926,24 +980,133 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   background: var(--color-pos-noun-bg);
   border-color: var(--color-pos-noun-border);
 }
-.teacher-photo-placeholder {
-  display: flex; align-items: center; gap: var(--gap-loose);
+/* ── 教師持込素材スロット (Drag & Drop + ←/→ カルーセル) ──
+   lesson_NN.json の materialNeeds[].type === 'world_map' / 'teacher_photo' のときだけ描画。
+   空状態は破線枠で drop を促す。画像 1+ 枚で .has-images クラス付与 → カルーセル表示。 */
+.teacher-asset-slot {
+  position: relative;
   background: var(--color-background-subtle);
-  border: 2px dashed var(--color-text-muted);
+  border: 2px dashed var(--color-ui-primary);
   border-radius: var(--border-radius-medium);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.teacher-asset-slot.drag-over {
+  background: var(--color-ui-primary-muted);
+  border-style: solid;
+}
+.teacher-asset-slot--world_map {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 880px;
+}
+.teacher-asset-slot--teacher_photo {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  /* qa-photo-row のセル幅一杯まで広げる (max-width 制約は外す)。
+     セル幅自体は qa-photo-row の grid-template-columns で制御。 */
+}
+
+/* qa_card_pair で teacher_photo が指定された場合の 4 枚 (or count 枚) 横並びレイアウト。
+   --photo-count はインライン style から渡される (デフォルト 4)。 */
+.qa-photo-row {
+  display: grid;
+  grid-template-columns: repeat(var(--photo-count, 4), 1fr);
+  gap: var(--gap-loose);
+  width: 100%;
+  max-width: 1400px;
+}
+.teacher-asset-slot .tas-empty {
+  display: flex; flex-direction: column; align-items: center; gap: var(--gap-tight);
   padding: var(--padding-md);
   color: var(--color-text-subtle);
-  width: 100%;
-  max-width: 1200px;
+  text-align: center;
 }
-.teacher-photo-placeholder .ph-icon { font-size: 2rem; }
-.teacher-photo-placeholder .ph-label {
+.teacher-asset-slot .tas-empty .ph-icon { font-size: 2.5rem; }
+.teacher-asset-slot .tas-empty .ph-label {
   font-size: var(--font-size-body-small);
   font-weight: var(--font-weight-medium);
 }
-.teacher-photo-placeholder .ph-label.en-text {
+.teacher-asset-slot .tas-empty .ph-label.en-text,
+.teacher-asset-slot .tas-empty .ph-hint.en-text {
   font-size: var(--font-size-caption);
   color: var(--color-text-muted);
+}
+.teacher-asset-slot .tas-empty .ph-hint {
+  margin-top: var(--gap-tight);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+.teacher-asset-slot.has-images { border-style: solid; cursor: default; }
+.teacher-asset-slot.has-images .tas-empty { display: none; }
+.teacher-asset-slot .tas-stage {
+  display: none;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.teacher-asset-slot.has-images .tas-stage { display: block; }
+.teacher-asset-slot .tas-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  background: var(--color-background-subtle);
+}
+.teacher-asset-slot .tas-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.85);
+  color: var(--color-text-main);
+  border: 1px solid var(--color-text-subtle);
+  border-radius: 999px;
+  width: 40px; height: 40px;
+  font-size: 1.5rem; line-height: 1;
+  cursor: pointer;
+}
+.teacher-asset-slot .tas-nav:hover { background: #fff; }
+.teacher-asset-slot .tas-prev { left: 8px; }
+.teacher-asset-slot .tas-next { right: 8px; }
+.teacher-asset-slot .tas-counter {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: var(--font-size-caption);
+  padding: 2px 10px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.teacher-asset-slot .tas-add,
+.teacher-asset-slot .tas-clear {
+  position: absolute; top: 8px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--color-text-subtle);
+  border-radius: var(--border-radius-small);
+  font-size: var(--font-size-caption);
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.teacher-asset-slot .tas-add { right: 8px; }
+.teacher-asset-slot .tas-clear { right: 80px; }
+/* 1 枚しかないときは ←/→ を hide */
+.teacher-asset-slot.single .tas-nav,
+.teacher-asset-slot.single .tas-counter { display: none; }
+
+/* 画像表示中はボタン類 (←/→・追加・クリア・カウンタ) を hover/focus した時だけ出す。
+   ずっとボタンが乗っていると画像本体が見えづらいため。
+   opacity 0 にすると DOM に残るので keyboard tab で focus-within も拾える。 */
+.teacher-asset-slot.has-images .tas-nav,
+.teacher-asset-slot.has-images .tas-add,
+.teacher-asset-slot.has-images .tas-clear,
+.teacher-asset-slot.has-images .tas-counter {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.teacher-asset-slot.has-images:hover .tas-nav,
+.teacher-asset-slot.has-images:hover .tas-add,
+.teacher-asset-slot.has-images:hover .tas-clear,
+.teacher-asset-slot.has-images:hover .tas-counter,
+.teacher-asset-slot.has-images:focus-within .tas-nav,
+.teacher-asset-slot.has-images:focus-within .tas-add,
+.teacher-asset-slot.has-images:focus-within .tas-clear,
+.teacher-asset-slot.has-images:focus-within .tas-counter {
+  opacity: 1;
 }
 
 /* レイアウト 3: attribute_expansion (キャラ + buildings + 短→長) */
@@ -959,10 +1122,12 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   gap: var(--gap-section);
   align-items: center;
 }
+.attr-row > * { min-width: 0; } /* grid 子の overflow 抑制 */
 .attr-buildings {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--gap-normal);
+  min-width: 0;
 }
 .attr-expansion-text {
   display: flex; flex-direction: column;
@@ -999,6 +1164,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
 }
 .building-card img {
   width: 100%; aspect-ratio: 1;
+  max-height: 140px;
   object-fit: contain;
   background: var(--color-background-subtle);
   border-radius: var(--border-radius-small);
@@ -1008,6 +1174,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   font-size: 3rem;
   display: flex; align-items: center; justify-content: center;
   width: 100%; aspect-ratio: 1;
+  max-height: 140px;
   background: var(--color-background-subtle);
   border-radius: var(--border-radius-small);
   margin-bottom: var(--gap-normal);
@@ -1128,6 +1295,8 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     counter.textContent = (idx + 1) + ' / ' + slides.length;
     prev.disabled = idx === 0;
     next.disabled = idx === slides.length - 1;
+    // 縦に長いスライドだと前のスクロール位置が残るので、ページ先頭に戻す。
+    window.scrollTo({ top: 0, behavior: 'auto' });
     location.hash = 's' + (idx + 1);
   }
   prev.addEventListener('click', function(){ show(idx - 1); });
@@ -1212,6 +1381,132 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     // 古いブラウザのフォールバック: ある程度待ってから実行
     setTimeout(alignLeading, 500);
   }
+
+  // 教師素材スロット外に drop されたファイルをブラウザが開きに行く (= スライドが消える) のを抑止。
+  // 各スロットの drop ハンドラは個別に画像を取り込むため、ここでは page 全体の default を消すだけ。
+  document.addEventListener('dragover', function(e){ e.preventDefault(); });
+  document.addEventListener('drop',     function(e){ e.preventDefault(); });
+
+  // ── 教師持込素材スロットの Drag & Drop + カルーセル ──────────────
+  // 1 スロットに複数画像を drop / 選択して、←/→ ボタンと N/M カウンタで切替。
+  // 画像 URL は object URL を都度生成 (DataURL 化しない: 大容量画像対策)。スライド離脱時にもメモリ上に
+  // 残るが、HTML を閉じれば全解放されるので明示的 revoke はしない (ユーザー混乱回避優先)。
+  document.querySelectorAll('.teacher-asset-slot').forEach(function(slot){
+    var images = [];   // [{ url, name }]
+    var current = 0;
+    var stage    = slot.querySelector('.tas-stage');
+    var imgEl    = slot.querySelector('.tas-img');
+    var prevBtn  = slot.querySelector('.tas-prev');
+    var nextBtn  = slot.querySelector('.tas-next');
+    var counterI = slot.querySelector('.tas-i');
+    var counterN = slot.querySelector('.tas-n');
+    var addBtn   = slot.querySelector('.tas-add');
+    var clearBtn = slot.querySelector('.tas-clear');
+
+    function render(){
+      if (images.length === 0) {
+        slot.classList.remove('has-images', 'single');
+        stage.hidden = true;
+        return;
+      }
+      stage.hidden = false;
+      slot.classList.add('has-images');
+      slot.classList.toggle('single', images.length === 1);
+      if (current >= images.length) current = images.length - 1;
+      if (current < 0) current = 0;
+      imgEl.src = images[current].url;
+      imgEl.alt = images[current].name || '';
+      counterI.textContent = (current + 1);
+      counterN.textContent = images.length;
+    }
+
+    function addFiles(fileList){
+      var added = 0;
+      for (var i = 0; i < fileList.length; i++) {
+        var f = fileList[i];
+        if (!f || !f.type || f.type.indexOf('image/') !== 0) continue;
+        images.push({ url: URL.createObjectURL(f), name: f.name });
+        added++;
+      }
+      if (added > 0) { current = images.length - added; render(); }
+    }
+
+    function pickFiles(){
+      // detached の input.click() が黙って無視されるブラウザ対策で一旦 DOM に置く。
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.multiple = true;
+      input.style.position = 'fixed';
+      input.style.left = '-9999px';
+      input.addEventListener('change', function(){
+        if (input.files) addFiles(input.files);
+        if (input.parentNode) input.parentNode.removeChild(input);
+      });
+      document.body.appendChild(input);
+      input.click();
+    }
+
+    // 空状態クリック・追加ボタンで file picker
+    slot.addEventListener('click', function(e){
+      // stage 内のボタン押下時は picker を開かない (個別ハンドラに任せる)
+      if (e.target.closest('.tas-nav, .tas-counter, .tas-clear')) return;
+      if (e.target.closest('.tas-add') || !slot.classList.contains('has-images')) {
+        pickFiles();
+      }
+    });
+
+    // Drag & Drop
+    slot.addEventListener('dragover', function(e){ e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', function(){ slot.classList.remove('drag-over'); });
+    slot.addEventListener('drop', function(e){
+      e.preventDefault();
+      slot.classList.remove('drag-over');
+      if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+    });
+
+    // カルーセル ←/→ (1 枚しかない時は wrap せず無視)
+    prevBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (images.length === 0) return;
+      current = (current - 1 + images.length) % images.length;
+      render();
+    });
+    nextBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (images.length === 0) return;
+      current = (current + 1) % images.length;
+      render();
+    });
+    clearBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      images = []; current = 0; render();
+    });
+  });
+
+  // ── カードプレゼンター: グリッド一覧 + クリックでオーバーレイ拡大 ──
+  // vocab-card / building-card / named-character-card いずれも対応。
+  // vp-item の最初の子要素 (= カード本体) を zoom 内にクローンして表示。
+  document.querySelectorAll('.vocab-presenter').forEach(function(vp){
+    var items = Array.prototype.slice.call(vp.querySelectorAll('.vp-item'));
+    var zoom    = vp.querySelector('.vp-zoom');
+    var zoomCard = vp.querySelector('.vp-zoom-card');
+    var zoomClose = vp.querySelector('.vp-zoom-close');
+
+    items.forEach(function(el){
+      el.addEventListener('click', function(){
+        var card = el.firstElementChild;
+        if (!card) return;
+        zoomCard.innerHTML = '';
+        // close ボタンは zoomCard の外に置く設計だが zoomCard 内に再追加するため復元しておく
+        zoomCard.appendChild(card.cloneNode(true));
+        zoom.hidden = false;
+      });
+    });
+    if (zoom) zoom.addEventListener('click', function(e){
+      if (e.target === zoom || e.target === zoomClose) zoom.hidden = true;
+    });
+  });
 })();
 `;
 
@@ -1225,46 +1520,17 @@ body.no-en .slide-title:has(+ .slide-title-en) {
       .replace(/"/g, '&quot;');
   }
 
-  // 例文の主語(は/が の前)と述語(は/が の後)を分割する簡易ヒューリスティック。
-  // 文頭が「はい」「ははは」等の場合に誤検出しないよう、index 0 はスキップして最初の は/が を探す。
-  // predicate の末尾に句点や疑問符が付いていれば highlight 範囲から外して trailing として返す。
-  // 該当する助詞が見つからない場合は null を返す(ハイライトせず通常表示)。
-  function splitForHighlight(sentence) {
-    if (typeof sentence !== 'string' || sentence.length < 2) return null;
-    let idx = -1;
-    for (let i = 1; i < sentence.length; i++) {
-      const c = sentence[i];
-      if (c === 'は' || c === 'が') { idx = i; break; }
-    }
-    if (idx === -1) return null;
-    let predicate = sentence.slice(idx + 1);
-    let trailing = '';
-    // 末尾の終止記号 (。．?？!！) を span 外に出す。
-    const trailMatch = predicate.match(/[。．？\?！!]+$/);
-    if (trailMatch) {
-      trailing = trailMatch[0];
-      predicate = predicate.slice(0, predicate.length - trailing.length);
-    }
-    return {
-      subject: sentence.slice(0, idx),       // 「は/が の前まで」(ユーザー仕様)
-      particle: sentence[idx],                // は or が (ハイライトなしで挿入)
-      predicate: predicate,                   // 助詞の後 (= 名詞+です/だ・句点除く)
-      trailing: trailing,                     // 句点/疑問符など (span の外に出す)
-    };
-  }
-
-  // 例文 sentence をハイライト付きで描画する。
-  // ex.highlight (subject/predicate) が data 側にあれば優先、なければ splitForHighlight で自動分割。
+  // 例文 sentence を POS ハイライト (主語ゴールド / 述語青) 付きで描画する。
+  // POS 線は examples[].highlight が lesson_NN.json で明示されているときだけ引く。
+  // かつて「は/が で自動分割」する heuristic を使っていたが、
+  // 「だれですか。→ キムさんです。」のような は/が 無し文や「これはわたしの本ですか」のような
+  // 助詞位置が直感と一致しない文で線が予想外の位置に出る問題があったため explicit-only に変更。
   function renderSentenceWithHighlight(ex) {
     const sentence = ex.sentence || '';
     const h = ex.highlight;
-    if (h && (h.subject || h.predicate)) {
-      const tr = h.trailing || '';
-      return `<span class="highlight-subject">${ruby(h.subject || '')}</span>${h.particle ? ruby(h.particle) : ''}<span class="highlight-predicate">${ruby(h.predicate || '')}</span>${tr ? ruby(tr) : ''}`;
-    }
-    const split = splitForHighlight(sentence);
-    if (!split) return ruby(sentence);
-    return `<span class="highlight-subject">${ruby(split.subject)}</span>${ruby(split.particle)}<span class="highlight-predicate">${ruby(split.predicate)}</span>${split.trailing ? ruby(split.trailing) : ''}`;
+    if (!h || (!h.subject && !h.predicate)) return ruby(sentence);
+    const tr = h.trailing || '';
+    return `<span class="highlight-subject">${ruby(h.subject || '')}</span>${h.particle ? ruby(h.particle) : ''}<span class="highlight-predicate">${ruby(h.predicate || '')}</span>${tr ? ruby(tr) : ''}`;
   }
 
   // ふりがな化 — kuromoji が初期化済みなら全漢字に ruby 付与、未初期化なら辞書ベース、
@@ -1482,34 +1748,16 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   }
 
   // ── 各スライドの本文 HTML ────────────────────────────────────────────
-  function coverSlide(session, lesson, registryEntries) {
+  function coverSlide(session, lesson, _registryEntries) {
     const l = lesson.lesson || {};
     const s = session.session || {};
     const dateStr = s.date ? `<div class="cover-date">${esc(s.date)}</div>` : '';
     const studentStr = s.studentId ? `<div class="cover-student">${ruby('学習者')}: ${esc(s.studentId)}</div>` : '';
-    // 課の語彙から最初の 3〜4 語を取り出してプレビュー的に表示する。
-    // 全 patterns の vocabulary を flat にし、最大 4 語まで採用。
-    let coverVocabHtml = '';
-    if (lesson.vocabulary && lesson.vocabulary.byPattern) {
-      const allWords = [];
-      Object.values(lesson.vocabulary.byPattern).forEach((g) => {
-        if (Array.isArray(g.words)) allWords.push(...g.words);
-      });
-      const previewWords = allWords.slice(0, 4);
-      if (previewWords.length > 0) {
-        coverVocabHtml = `
-          <div class="cover-vocab-row">
-            ${previewWords.map((w) => vocabCardHtml(w, registryEntries)).join('')}
-          </div>
-        `;
-      }
-    }
     return `
       <h1 class="slide-title">${ruby('第' + (l.no || '?') + '課')}: ${ruby(l.title || '')}</h1>
       <div class="slide-body" style="justify-content:flex-start;">
         <div class="cover-topic">${ruby(l.topic || '')}</div>
         ${dateStr}${studentStr}
-        ${coverVocabHtml}
       </div>
     `;
   }
@@ -1597,26 +1845,82 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     `;
   }
 
-  function renderCharacterCardGridLayout(characters, registryEntries) {
-    if (!characters || characters.length === 0) {
-      return `<p style="color: var(--color-text-muted);">${ruby('(namedCharacters 未定義)')}</p>`;
-    }
-    const cards = characters.map((c) => characterCardHtml(c, registryEntries)).join('');
+  // 教師持込素材 (世界地図 / 教師写真) のスロット HTML。
+  // lesson_NN.json の materialNeeds[].type に 'world_map' / 'teacher_photo' があるときだけ描画。
+  // 空状態は破線枠で Drag & Drop を促す。画像を 1 枚以上 drop すると、自動でカルーセル化し
+  // ←/→ ボタンと N/M カウンタが表示される。複数画像で「次の人物・次の地図」と切り替える運用。
+  function teacherAssetSlotHtml(kind) {
+    const isMap = kind === 'world_map';
+    const icon = isMap ? '🌏' : '📷';
+    const labelJa = isMap ? '世界地図(国旗付き)' : '教師が用意した写真';
+    const labelEn = isMap ? 'World Map (with flags)' : "Teacher's prepared photo";
+    const hintJa = '画像をここにドロップ (複数可)';
+    const hintEn = 'Drop image(s) here (multiple OK)';
     return `
-      <div class="char-grid">${cards}</div>
-      <div class="world-map-area">
-        <div class="world-map-placeholder">
-          <span class="ph-icon">🌏</span>
-          <span class="ph-label">${ruby('世界地図(国旗付き)')}</span>
-          <span class="ph-label en-text">World Map (with flags)</span>
+      <div class="teacher-asset-slot teacher-asset-slot--${esc(kind)}" data-kind="${esc(kind)}">
+        <div class="tas-empty">
+          <span class="ph-icon">${icon}</span>
+          <span class="ph-label">${ruby(labelJa)}</span>
+          <span class="ph-label en-text">${esc(labelEn)}</span>
+          <span class="ph-hint">${ruby(hintJa)}</span>
+          <span class="ph-hint en-text">${esc(hintEn)}</span>
+        </div>
+        <div class="tas-stage" hidden>
+          <button type="button" class="tas-nav tas-prev" aria-label="prev">←</button>
+          <img class="tas-img" alt="">
+          <button type="button" class="tas-nav tas-next" aria-label="next">→</button>
+          <div class="tas-counter"><span class="tas-i">1</span>/<span class="tas-n">1</span></div>
+          <button type="button" class="tas-add" aria-label="add">+ ${ruby('追加')}</button>
+          <button type="button" class="tas-clear" aria-label="clear">× ${ruby('クリア')}</button>
         </div>
       </div>
     `;
   }
 
-  function renderQaCardPairLayout(characters, slideDisplay, registryEntries) {
+  // materialNeeds[] に指定 type が含まれていれば true。
+  function hasMaterialNeed(materialNeeds, type) {
+    if (!Array.isArray(materialNeeds)) return false;
+    return materialNeeds.some((m) => m && m.type === type);
+  }
+  // materialNeeds[] から指定 type のエントリ全体を返す (count など追加メタを読むため)。
+  function getMaterialNeed(materialNeeds, type) {
+    if (!Array.isArray(materialNeeds)) return null;
+    return materialNeeds.find((m) => m && m.type === type) || null;
+  }
+
+  function renderCharacterCardGridLayout(characters, materialNeeds, registryEntries) {
+    if (!characters || characters.length === 0) {
+      return `<p style="color: var(--color-text-muted);">${ruby('(namedCharacters 未定義)')}</p>`;
+    }
+    const presenter = renderCardPresenter(
+      characters.map((c) => characterCardHtml(c, registryEntries))
+    );
+    const mapSlot = hasMaterialNeed(materialNeeds, 'world_map')
+      ? `<div class="world-map-area">${teacherAssetSlotHtml('world_map')}</div>`
+      : '';
+    return `
+      ${presenter}
+      ${mapSlot}
+    `;
+  }
+
+  function renderQaCardPairLayout(characters, slideDisplay, materialNeeds, registryEntries) {
     const firstChar = (characters && characters[0]) || null;
     const pd = (slideDisplay && slideDisplay.patternDisplay) || {};
+    // materialNeeds に teacher_photo が指定されていれば、横並び 4 スロット (枚数は count で可変) を
+    // 描画する。文型ボックス (〜ですか / はい〜です / いいえ〜じゃありません) は intro 段階での先回り
+    // 開示になり elicit を壊すため、teacher_photo モードでは表示しない (指示文 intro-explain は親側で残る)。
+    const photoNeed = getMaterialNeed(materialNeeds, 'teacher_photo');
+    if (photoNeed) {
+      const count = Math.max(1, Math.min(12, photoNeed.count || 4));
+      const slots = Array.from({ length: count }, () => teacherAssetSlotHtml('teacher_photo')).join('');
+      return `
+        <div class="qa-photo-row" style="--photo-count: ${count}">
+          ${slots}
+        </div>
+      `;
+    }
+    // 旧来動作: teacher_photo 指定が無い場合は named-character-card + 文型ボックスを維持。
     return `
       <div class="qa-pair">
         <div class="qa-card-col">
@@ -1627,11 +1931,6 @@ body.no-en .slide-title:has(+ .slide-title-en) {
           ${pd.affirmative ? `<div class="qa-pattern qa-yes">${ruby(pd.affirmative)}</div>` : ''}
           ${pd.negative ? `<div class="qa-pattern qa-no">${ruby(pd.negative)}</div>` : ''}
         </div>
-      </div>
-      <div class="teacher-photo-placeholder">
-        <span class="ph-icon">📷</span>
-        <span class="ph-label">${ruby('教師が用意した写真をここに表示')}</span>
-        <span class="ph-label en-text">Teacher's prepared photo here</span>
       </div>
     `;
   }
@@ -1648,12 +1947,15 @@ body.no-en .slide-title:has(+ .slide-title-en) {
       }
     }
     const exp = (slideDisplay && slideDisplay.expansionDisplay) || {};
+    const buildingsHtml = buildings.length > 0
+      ? renderCardPresenter(buildings.map((w) => buildingCardHtml(w, registryEntries)))
+      : `<span style="color: var(--color-text-muted);">${ruby('(building 語彙なし)')}</span>`;
     return `
       <div class="attr-expansion">
         <div class="attr-row">
           ${firstChar ? characterCardHtml(firstChar, registryEntries) : ''}
           <div class="attr-buildings">
-            ${buildings.map((w) => buildingCardHtml(w, registryEntries)).join('') || `<span style="color: var(--color-text-muted);">${ruby('(building 語彙なし)')}</span>`}
+            ${buildingsHtml}
           </div>
         </div>
         ${(exp.shortForm || exp.longForm) ? `
@@ -1686,7 +1988,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
         (g) => (g.patternIds || []).includes(patternRef)
       );
       if (group && Array.isArray(group.words) && group.words.length > 0) {
-        vocabCards = `<div class="vocab-grid">${group.words.map((w) => vocabCardHtml(w, registryEntries)).join('')}</div>`;
+        vocabCards = renderCardPresenter(group.words.map((w) => vocabCardHtml(w, registryEntries)));
       }
     }
     return `
@@ -1722,13 +2024,14 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     const instr = (catalogEntry.slideDisplay && catalogEntry.slideDisplay.instructionText) || {};
     const characters = (lesson && Array.isArray(lesson.namedCharacters)) ? lesson.namedCharacters : [];
 
+    const materialNeeds = entry && entry.materialNeeds;
     let layoutHtml;
     if (layout === 'qa_card_pair') {
-      layoutHtml = renderQaCardPairLayout(characters, catalogEntry.slideDisplay, registryEntries);
+      layoutHtml = renderQaCardPairLayout(characters, catalogEntry.slideDisplay, materialNeeds, registryEntries);
     } else if (layout === 'attribute_expansion') {
       layoutHtml = renderAttributeExpansionLayout(characters, lesson, patternRef, catalogEntry.slideDisplay, registryEntries);
     } else {
-      layoutHtml = renderCharacterCardGridLayout(characters, registryEntries);
+      layoutHtml = renderCharacterCardGridLayout(characters, materialNeeds, registryEntries);
     }
 
     const instructionHtml = (instr.ja || instr.en) ? `
@@ -1871,50 +2174,68 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   }
 
   function patternIntroSlide(pat, lesson, registryEntries) {
-    // Stage 6-5: パターンボックス(スロット式カラーコーディング)+ canDo(小さく)+ 語彙カードグリッド。
+    // Stage 6-5: パターンボックス(スロット式カラーコーディング)+ canDo(小さく)+ 語彙プレゼンター。
     // 表示しない: practiceTemplates / cautionNote / plusAlpha / conversationPhrases
     const labelEn = pat.label_en || formatGrammarConcept(pat.grammarConcept, pat.jlptLevel);
     const vocabPatId = pat.shareVocabWith || pat.id;
     const vocabWords = getVocabForPattern(lesson, vocabPatId);
-    const vocabGrid = vocabWords.length > 0
-      ? `<div class="vocab-grid pattern-vocab-grid">${vocabWords.map((w) => vocabCardHtml(w, registryEntries)).join('')}</div>`
+    const vocabPresenter = vocabWords.length > 0
+      ? renderVocabPresenter(vocabWords, registryEntries)
       : '';
     return `
       <h2 class="slide-title">${ruby(pat.label || pat.pattern || '')}</h2>
       ${labelEn ? `<div class="slide-title-en en-text">${esc(labelEn)}</div>` : ''}
       <div class="slide-body">
-        ${renderPatternBox(pat.label || pat.pattern || '')}
         ${(pat.canDo || pat.canDoEn) ? `
         <div class="ja-en-pair pattern-cando">
           ${pat.canDo ? `<p class="cando-text">${ruby(pat.canDo)}</p>` : ''}
           ${pat.canDoEn ? `<p class="cando-text-en en-text">${esc(pat.canDoEn)}</p>` : ''}
         </div>` : ''}
-        ${vocabGrid}
+        ${vocabPresenter}
       </div>
     `;
   }
 
+  // カードプレゼンター — 任意のカード HTML 群を「一覧グリッド + クリック拡大オーバーレイ」で表示。
+  // 元は vocab-card 専用だったが、building-card / named-character-card にも使えるよう汎用化。
+  // 各 cardHtml が独立した DOM 要素を返すことだけ前提とする (中身の class 名は問わない)。
+  function renderCardPresenter(cardsHtml) {
+    const items = cardsHtml.map((html, i) => `<div class="vp-item" data-idx="${i}">${html}</div>`).join('');
+    return `
+      <div class="vocab-presenter" data-mode="grid">
+        <div class="vp-list">${items}</div>
+        <div class="vp-zoom" hidden>
+          <div class="vp-zoom-card"></div>
+          <button type="button" class="vp-zoom-close" aria-label="close">×</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 後方互換のラッパー: 既存の patternIntroSlide からはこちらを呼ぶ。
+  function renderVocabPresenter(words, registryEntries) {
+    return renderCardPresenter(words.map((w) => vocabCardHtml(w, registryEntries)));
+  }
+
   function exampleSummarySlide(pat, registryEntries) {
-    // Stage 6-6: アンカー例文(isAnchor:true)を 16:9大カード、その他を 4列グリッド(16:9サムネイル) で表示。
-    // 画像アスペクト比は imageRole で切替: 'scene' = 16:9 / それ以外('vocab_person' 等) = 1:1。
+    // アンカー例文(isAnchor:true)を 16:9 大カード、その他を 4 列グリッド(16:9 サムネイル) で表示。
+    // 画像は imageRole に関わらず全て 16:9 で統一 (vocab_person 系の 1:1 が混ざると不揃いに見える)。
     const examples = pat.examples || [];
     const anchor = examples.find((ex) => ex.isAnchor === true);
     const others = examples.filter((ex) => ex.isAnchor !== true);
 
     function imgEl(ex, sizeHint) {
       const url = imgUrl(ex.imageId, registryEntries, sizeHint);
-      const aspect = (ex.imageRole === 'scene') ? 'aspect-16x9' : 'aspect-1x1';
       if (url) {
-        return `<div class="ex-img ${aspect}"><img src="${esc(url)}" alt="" loading="eager" decoding="async" onerror="this.outerHTML='&lt;span class=img-fallback&gt;🖼️&lt;/span&gt;'"></div>`;
+        return `<div class="ex-img aspect-16x9"><img src="${esc(url)}" alt="" loading="eager" decoding="async" onerror="this.outerHTML='&lt;span class=img-fallback&gt;🖼️&lt;/span&gt;'"></div>`;
       }
-      return `<div class="ex-img ${aspect}"><span class="img-fallback">🖼️</span></div>`;
+      return `<div class="ex-img aspect-16x9"><span class="img-fallback">🖼️</span></div>`;
     }
 
     const anchorHtml = anchor ? `
       <div class="example-anchor-card">
         ${imgEl(anchor, 800)}
         <div class="text">
-          <div class="anchor-mark">★ ${ruby('代表例文')}</div>
           <div class="sentence">${renderSentenceWithHighlight(anchor)}</div>
           ${anchor.sentenceEn ? `<div class="sentence-en en-text">${esc(anchor.sentenceEn)}</div>` : ''}
         </div>

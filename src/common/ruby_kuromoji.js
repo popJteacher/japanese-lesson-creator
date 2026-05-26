@@ -44,6 +44,12 @@
     for (const ch of s) if (isKanji(ch)) return true;
     return false;
   }
+  function countKanji(s) {
+    if (!s) return 0;
+    let n = 0;
+    for (const ch of s) if (isKanji(ch)) n++;
+    return n;
+  }
   function isHiraOrKata(ch) {
     if (!ch) return false;
     const c = ch.charCodeAt(0);
@@ -156,10 +162,23 @@
           out += tokenToRuby(surface, readingHira);
         }
       } else {
-        // 2 個以上 & 全トークンに読みあり → 単一 ruby にマージ
+        // 2 個以上 & 全トークンに読みあり → 閾値付きマージ。
+        // 結合後の漢字数が 2 以下なら 1 つの ruby にまとめ、3 以上ならトークンごとに分割する。
+        // 理由: 「職業」(2字) のような短い複合語はマージしないと rt 幅で base 間に隙間ができるが、
+        //       「東西病院」(4字) のような長い複合語をマージすると ruby が改行不能ブロックになり、
+        //       次行に院だけ送る…ができず、行末で大きくはみ出す/押し出される。
         const surf = buf.map((t) => t.surface_form || '').join('');
-        const read = buf.map((t) => katakanaToHiragana(t.reading || '')).join('');
-        out += '<ruby>' + escapeHtml(surf) + '<rt>' + escapeHtml(read) + '</rt></ruby>';
+        const totalKanji = countKanji(surf);
+        if (totalKanji <= 2) {
+          const read = buf.map((t) => katakanaToHiragana(t.reading || '')).join('');
+          out += '<ruby>' + escapeHtml(surf) + '<rt>' + escapeHtml(read) + '</rt></ruby>';
+        } else {
+          for (const t of buf) {
+            const surface = t.surface_form || '';
+            const readingHira = katakanaToHiragana(t.reading || '');
+            out += tokenToRuby(surface, readingHira);
+          }
+        }
       }
       buf = [];
     }

@@ -289,3 +289,28 @@
   関連 memory：worktree 側 `project_v4_0_4_building_stage1.md` Stage 2 done section
   / B hash = 078fd0bd9ffe / 本セッション = WIP commit c9f70e0 (本番化) + 最終 commit
   (Stage 2)。次セッション = cleanup or 新 lesson 展開 or main ff-merge。
+
+## 2026-05-26 (γ2 スライドデザイン大幅改修・user 視聴中)
+
+- **slide_html.js + ruby_kuromoji.js を 12 ブロック改修** (試行・user 確定待ち):
+  (1) ruby + ruby 隣接マージ削除 (の/な/を/が 密着解消・trial 同症状)
+  (2) cover から vocab プレビュー削除 (3) 例文 ★代表例文 文字削除・画像 16:9 統一・anchor 440px に拡大・行間 loose
+  (4) POS 線を examples[].highlight 明示時のみ (自動 は/が 分割廃止)
+  (5) 文型ボックス削除 (タイトル重複) (6) vocab-presenter (grid+zoom) を全カード適用
+  (7) スライド絶対配置 → 自然フロー + page スクロール (trial 方針移植・カード見切れ根絶)
+  (8) teacher_photo / world_map placeholder を materialNeeds drive + Drag&Drop + ←/→ + ホバー時のみボタン
+  (9) qa_card_pair: teacher_photo 時 N スロット横並び + 文型ボックス削除 (intro pedagogy)
+  (10) ruby マージ 2 漢字閾値 (東西病院 → 東西+病院 で改行可能化)
+  (11) slide padding 縮小 + 各カード画像 max-height 引き締め
+  (12) Drag&Drop document-level preventDefault + file input を DOM 経由でクリック (detached input.click 黙殺対応)
+- **user 要望 (次セッション宿題)**：
+  (a) docs/AUTHORING_CHECKLIST.md を新設し、POS 線 (examples[].highlight) と
+      intro_activity 素材 (flow[].materialNeeds[].type / count) を必須項目化。
+  (b) lesson.targetStudentLevel (N5〜N1 enum) を新設し、生成側で kanji jlptLevel
+      > targetStudentLevel の漢字を ふりがな強制 ON / 上級語マーク等。
+- **教育的所見**：intro_activity の段階で文型ボックスを表示するのは elicit を壊す
+  (先に答えを見せている形)。qa_card_pair の文型ボックス削除はこの原則に基づく恒久判断。
+- **trial プロジェクト所見の移植 (read-only 参照のみ)**：
+  - 文字間バランス: ruby + ruby の隣接詰めルールが助詞密着の元凶 (trial が先に発見)
+  - スライド見切れ: 16:9 固定 / overflow:hidden を局所解除し container-type:inline-size +
+    min-height:85vh + sticky 制御バー (creator-main は構造が違うため min-height: 100vh - 64px に翻訳)
