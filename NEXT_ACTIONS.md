@@ -33,7 +33,7 @@ vocab_catalog:  17508 entries (schemaVersion 1.2)
 ojad cache:     416 entries (389 ok / 22 not_found)
 guide manifest: PART 1-6 .md 6 file / hash 0673ca2d537e
 slide_html.js:  γ2 改修 12 ブロック user 視聴 OK
-git:            main は origin/main の 1 commit 先行（γ2 commit 未 push）
+git:            main = origin/main 同期済（5/26 push 完了）
 ```
 
 ---
