@@ -5,130 +5,99 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-26 X-d: 復習機能拡充 + intro_activity fallback バグ修正 🆕
+**最終更新：** 2026-05-26 X-c: v4.0.5 PERSON_REFERENCE_ATTACHMENT_RULE + lesson_01 p2 分離型再構成 🆕
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ / α1 〜 α5 延長 / α5 fix-up / β1 / v4.0.4 skill 化 完了** ✅
-- **Phase γ2 スライドデザイン微修正 全 12 ブロック user 視聴 OK** ✅
-- **Phase X-a 全 4 ステップ完了** ✅
-  - X-a-1: `/lesson-scaffold NN`（seed mode 第3課で実視確認 PASS）
-  - X-a-2: `/lesson-check NN` + `/lesson-fill-vocab NN`（lesson_01/02 で smoke PASS）
-  - X-a-3: `/lesson-suggest-activities NN` + `/lesson-build-registry NN`
-    （lesson_01/02 で smoke PASS）
-  - X-a-4: [docs/LESSON_SKILLS_MANUAL.md](docs/LESSON_SKILLS_MANUAL.md) 起草
-    （5 skill 概要表 + 14 ルール出典対応 + 典型ワークフロー）
-- **Phase X-d 着地** 🆕（復習機能 + intro_activity fallback テンプレ修正）
-  - reviewSlide: canDo-item テンプレ再利用 → 「今日の目標」と統一デザイン。ボックス内はパターン文字列 + 代表例文 (isAnchor:true 画像 + 文) のみ
-  - form.js: 「復習する文型」UI セクション追加 (selectedReviewPatterns Set → session.review[])
-  - intro_activity fallback バグ修正: 未実装 layout 名 (lesson_02 の 5 種) が character_card_grid にフォールバックして namedCharacters 5 人が暴露されていた問題を解消
-  - renderMaterialDrivenLayout 新設: materialNeeds[].type 駆動の汎用 grid (vocab card / 教師写真スロット / 補助スライドスロット)
-  - pedagogy ルール準拠: patternDisplay 非表示 + m.description 非表示 (memory feedback-intro-activity-no-pattern)
-  - material-driven-layout に width: 100% 明示 → slide-body の align-items: flex-start で縮まずに vp-list grid が横並びになる
-- **Phase X-b 部分着地**（furigana 強制 ON は断念、メタと pill 機構のみ採用）
-  - `lesson.targetStudentLevel: "N5"|"N4"|"N3"|"N2"|"N1"` enum 新設 → lesson_01/02 に "N5" 付与
-  - validator: enum チェック追加（未設定で WARN、不正値で ERROR）
-  - slide_html.js: vocab card 上級語 pill 機構（word.jlptLevel > targetStudentLevel で右上 orange pill 自動発火・lesson_01/02 では発火 0、将来課用の地ならし）
-  - **断念**: kanji × JLPT level マップ + force class による「トグル OFF でも超過 kanji の furigana を残す」機能（CSS specificity・ブラウザキャッシュ・kuromoji 連携など複数要因あり得るが、実視で残らず・優先度低のため削除）
+- **Phase 0 〜 5 ⑤ / α1 〜 β1 / γ2 / X-a 全 4 / X-b 部分 / X-d 完了** ✅
+- **Phase X-c 文書・データ整備完了** ✅ 🆕（画像生成は次セッション着手）
+  - **v4.0.5 PERSON_REFERENCE_ATTACHMENT_RULE 機構化** (PART 1.12 building の人物版・cross-example same-character coherence)
+    - [PART 1.14 新設](prompts/guide/part1_universal_rules.md): scope / Principle / rule_a (per-character 1-image) / rule_b (ROLE+ASPECT cross-ref) / rule_c (placeholders) / rule_d (cost) / Detection algorithm (sentence + sceneCharacters union)
+    - [PART 5.9 NAMED_CHARACTER_PROFILES 拡張](prompts/guide/part5_vocab_reference_appendix.md): 各 entry に `portraitPath` field 追加 (5 entries) + Reference image constants table 新設
+    - [Template C 改修](prompts/guide/part4_prompt_templates.md): `[REFERENCE]` section + `{NAMED_CHARACTER_REFERENCES}` placeholder + styleReferences output JSON field
+    - [generate-image-prompt skill md 改修](.claude/skills/generate-image-prompt.md): `mode=lesson-examples` 新規追加・NAMED_CHARACTER detection (sentence + sceneCharacters union) ロジック
+    - invariants.mjs guide manifest hash 更新: `0673ca2d537e` → `15bd5fbf566b`
+  - **lesson_01.json v2.12 (lessonVersion 1.2)** — [scripts/_xc_lesson01_p2_separation.py](scripts/_xc_lesson01_p2_separation.py)
+    - patterns[p2].examples を 5 件 → **8 件**に分離型再構成: 旧 2-3(Q+A)/2-4(Q+肯定+否定)/2-5(Q+肯定+否定) を Q と A 別 example に分割
+    - anchor を 旧 2-4(先生ですか) → **新 2-1(リンさんですか)** に戻す (PDF p.6 文型 2-1 原典回帰)
+    - patterns[p3].examples の imageId/audioId を **ex_L01_011..015 → ex_L01_014..018** に shift
+    - 全 examples (p1+p2+p3 = 18 件) に `sceneCharacters[]` field 追加 (主語省略文の addressee 明示用)
+    - **キャラ分布**: リン 4 / 鈴木 4 / キム 5 / タノム 1 / なし 1(p2-3 だれですか)
+  - **master_image_registry.json renumber** — [scripts/_xc_registry_p2_renumber.py](scripts/_xc_registry_p2_renumber.py)
+    - ex_L01 entries: 15 → **18 件**: 新規 ex_L01_011/012/013 (p2 拡張 2-6/2-7/2-8) + ex_L01_014-018 (p3 shift)
+    - 旧 p3 entry (011-015) は内部 imageId / filename / promptRef 含めて完全 rename
 
-### スナップショット（2026-05-26 X-b 部分着地直後・コマンドで再導出）
+### スナップショット（2026-05-26 X-c 着地直後・コマンドで再導出）
 
 ```
-image_registry: pending 469 / generated 16 / outdated 6 / (none) 1 (drive=0/local=16)
-                ↑ 29 件 Drive orphan を pending 化 (ex_L01_*×15 + char_*×5 + vocab/word_*×9)
-image_prompts_skill.json: 30 entries / guideManifestHash 0673ca2d537e
-audio_registry:  tts-local-regen 416 / (none) 50 (= 466 total)
-                 word 416/466 全 user OK / sentence 50/466 は 5/24 のまま
-vocab_catalog:  17508 entries (schemaVersion 1.2)
-                accent unknown 502 / tts_workaround 0
-ojad cache:     416 entries (389 ok / 22 not_found)
-guide manifest: PART 1-6 .md 6 file / hash 0673ca2d537e
-slide_html.js:  γ2 改修 12 ブロック user 視聴 OK + vocab pill 機構 (X-b 発火 0)
-lesson_NN.json: targetStudentLevel="N5" 追加 (lesson_01/02)
-LUFS:           ERROR 20 / WARN 80（439/459 PASS）← 構造上既知制約
-git:            main = origin/main 同期済（5/26 push 完了）
+image_registry:  generated 16 / pending 471 / outdated 6 / (none) 1 = total 494
+                 ↑ ex_L01_* 15 → 18 件 (p2 8 件化・p3 shift)
+                 ↑ char_* 6 件 (鈴木/リン/キム/タノム/ケリー/einstein_style) は pending 維持
+image_prompts_skill.json: 30 entries / guideManifestHash 15bd5fbf566b (X-c update 前は 0673ca2d537e)
+                          ↑ PART 1.14 + PART 4 Template C 改修 + PART 5.9 portraitPath 反映済
+audio_registry:  466 entries / 459 active (X-c で変化なし)
+vocab_catalog:   17508 entries (schemaVersion 1.2・X-c で変化なし)
+LUFS:            ERROR 20 / WARN 80 (439/459 PASS)← 構造上既知制約
+git:             main = 8a6be89 (X-d)・X-c の commit は未作成
 ```
 
 ---
 
 ## active
 
-### 次セッション着手点：**X-c (例文 revision + 29 件再生成)** または X-b 残（生成プロンプト側の level 連動）
+### 次セッション着手点：**X-c 画像生成 (char_* → ex_L01_*)**
 
-γ2 全 12 ブロック視聴確定済（5/26）+ X-a 全 4 ステップ完了（5/26）+ X-b 部分着地（5/26）。
-X-b の見た目側 (b-2 furigana 強制) は断念。残りは X-c と (b-3 生成プロンプト側の超過漢字置換) の 2 件、
-**X-c > (b-3)** 想定（例文の再設計が先で、それを受けてプロンプト側ガードを入れる順序）。
+文書・データ整備は完了したので、次は画像生成の実行。
+**順序**: char_* portrait 6 件を先に生成・確定 → その portrait を reference として ex_L01_* 18 件を生成 (PART 1.14 自動 attachment)。
 
-### (a) 課マスター作成 skill suite（モジュラー型）✅ 全完了
+#### 手順 (a) char_* portrait 6 件生成
 
-| Phase | skill | ファイル | 状態 |
-|---|---|---|---|
-| 1 | `/lesson-scaffold NN` | [.claude/skills/lesson-scaffold.md](.claude/skills/lesson-scaffold.md) + [scripts/lib/lesson-scaffold.mjs](scripts/lib/lesson-scaffold.mjs) + [scripts/lib/lesson-scaffold-pdf.py](scripts/lib/lesson-scaffold-pdf.py) | ✅ |
-| 2 | `/lesson-check NN` | [.claude/skills/lesson-check.md](.claude/skills/lesson-check.md) + [scripts/lib/lesson-check.mjs](scripts/lib/lesson-check.mjs) | ✅ |
-| 2 | `/lesson-fill-vocab NN` | [.claude/skills/lesson-fill-vocab.md](.claude/skills/lesson-fill-vocab.md) + [scripts/lib/lesson-fill-vocab.mjs](scripts/lib/lesson-fill-vocab.mjs) | ✅ |
-| 3 | `/lesson-suggest-activities NN` | [.claude/skills/lesson-suggest-activities.md](.claude/skills/lesson-suggest-activities.md) + [scripts/lib/lesson-suggest-activities.mjs](scripts/lib/lesson-suggest-activities.mjs) | ✅ |
-| 3 | `/lesson-build-registry NN` | [.claude/skills/lesson-build-registry.md](.claude/skills/lesson-build-registry.md) + [scripts/lib/lesson-build-registry.mjs](scripts/lib/lesson-build-registry.mjs) | ✅ |
-| 4 | [docs/LESSON_SKILLS_MANUAL.md](docs/LESSON_SKILLS_MANUAL.md) | skill suite の全体像 + 使用フロー + 14 ルール出典対応表 | ✅ 🆕 |
+| char | portraitPath | profile (PART 5.9) |
+|---|---|---|
+| char_鈴木 | data/images/char_鈴木.png | 40s-50s 日本人男性教師 / navy or charcoal business suit |
+| char_リン | data/images/char_リン.png | 20s 中国人女性大学生 / casual smart top + jeans + backpack |
+| char_ケリー | data/images/char_ケリー.png | 30s-40s 米国人女性教師 / smart casual blouse + cardigan |
+| char_キム | data/images/char_キム.png | 20s 韓国人男性会社員 / slim rectangular glasses + business casual |
+| char_タノム | data/images/char_タノム.png | 20s ベトナム人男性医者 / white doctor's coat + stethoscope |
+| char_einstein_style | data/images/char_einstein_style.png | (lesson_02 用・X-c スコープ外・pending 維持) |
 
-**X-a で見つかった既存課題** (要 user 判断・優先度低):
+skill 起動: `/generate-image-prompt mode=explicit --words 鈴木,リン,キム,タノム,ケリー`
+※ vocab_catalog に NAMED_CHARACTER として entry がない場合、まず character_asset として catalog 登録が必要。
 
-- L2 主活動 `act_belongings_qa` は `prerequisitePatterns` 部分 satisfied (1/2)
-  でも score 235 で top — 教科書 origin が強く効いている。問題ないが scoring 重みの
-  見直し余地あり (現状はそのまま運用可)
-- master_image_registry に `word_時計` と `vocab_時計` が両方 entry 化されている
-  (legacy convention と new convention の重複)。data 整合の問題で skill の問題では
-  ない。気になれば手で旧 entry を outdated 化
+#### 手順 (b) ex_L01_* 18 件 prompt 生成
 
-**X-a 改善候補** (skill md 強化・優先度低):
+skill 起動: `/generate-image-prompt mode=lesson-examples --lesson 01`
+- 自動的に PART 1.14 detection (sentence + sceneCharacters union) で NAMED_CHARACTER 検出
+- styleReferences[] に portraitPath を自動 push
+- Template C で [REFERENCE] section を render (NAMED_CHARACTER 不在の ex_L01_008「だれですか」は省略)
 
-- scaffold seed 抽出を拡張: PDF ホワイトボード板書 → `practiceTemplates` seed /
-  「教え方の例」section → intro_activity 候補紐付け / 注意・プラスα 抽出
-- check lint で `_comment` field 内の "TODO" を除外する filter (現状は人間メモも拾う)
-- build-registry: 既存 entry の `naturalness` / `images[].imageUrl` を見て、
-  「画像/音声 generated 済だが lesson が参照していない」detect 機能 (孤立 detect)
+#### 手順 (c) 画像生成 + 配置 + registry generated 化
 
-### (b-3) 生成プロンプト側で超過漢字を平易表現に置換 — δ 以降
-
-X-b 着地後の残：例文・指示文の語彙選定 (生成プロンプト) 側に `targetStudentLevel`
-を渡し、超過漢字を平易表現に置換するロジック。X-c 後に着手予定。
-
-参考: X-b は (b-1) lesson.targetStudentLevel enum 新設 + (b-2) 内 vocab card pill 機構までを採用。
-(b-2) の furigana 強制 ON 部分は実視で残らず断念（コード削除済み）。
-
-### 🆕 (c) 例文 / 例文画像 revision + 画像 29 件再生成
-
-**動機**：(1) lesson_01 視聴で「例文を見直したい」意向あり。(2) `targetStudentLevel`
-導入 (X-b) 後は kanji jlptLevel 制約も入るため例文文面ごと再設計対象。
-(3) ローカル環境移行で Drive 上の 29 件 (ex_L01_*×15 + char_*×5 + vocab/word_*×9)
-が SA アクセス不可となり pending 化済 (5/26)。再生成タイミングと統合できる。
-
-**順序**：例文 revision → image_prompts skill で再生成 → 画像配置 → registry generated 化。
-ex_L01_* と char_* は強い依存関係 (同一 portrait) なので一括設計推奨。
+- nanobanana で 18 件生成 (chain=true で skill 内一気通貫も可)
+- data/images/ 配下に配置
+- registry status を pending → generated に更新
 
 ### β1 残課題 / γ1 残作業
 
-- **lesson_02 以降の β1 検証**：lesson_02 の practiceImageSource / 答え抽出
-  ロジック未検証。lesson_02 で patterns を見て必要なら拡張
-- **複数 practiceTemplates 対応**：現コードは `practiceTemplates[0]` のみ render
-  （lesson_01 p2 は 3 templates あるが先頭のみ）
-- **γ1 (スライド音声移植)**：user は γ2 デザインを優先したため後送り。
-  homework の .audio-btn 機構を slide_html.js に移植
+- **lesson_02 以降の β1 検証**：lesson_02 の practiceImageSource / 答え抽出ロジック未検証
+- **複数 practiceTemplates 対応**：現コードは `practiceTemplates[0]` のみ render (lesson_01 p2 は v2.12 で 1 template / p1/p3 は 1 件・lesson-check の B-6 ERROR は p1/p3 が ≥2 必須を満たさない既存問題)
+- **γ1 (スライド音声移植)**：homework の .audio-btn 機構を slide_html.js に移植
 
 ### 並行待機
 
-- **例文 audio の再検討**：AivisSpeech 試用 or 商用 (Azure/ElevenLabs) 検証
-  - 50 sentence audio は 5/24 のまま、homework UI からは消した状態
+- **例文 audio の再検討**：AivisSpeech 試用 or 商用 (Azure/ElevenLabs) 検証。p2 拡張で sentence audio が 5 → 8 件 + p1/p3 で計 18 件 (旧 15 → 新 18) になり再録対象
 - **ボールペン override** の NHK 新辞典 2016 PDF 検証
-  (consensus `^ぼーるぺん` 平板 vs manual `^ぼーる!ぺん` 中高 4)
 - **同表記2読み恒久対策**：`pickCatalogEntry` を lesson_*.json reading 確定に切替
-- **lesson_02 以降の v4.0.4 building 移行**：病院 / 銀行 / 駅 / スーパー を
-  PART 5.10 BUILDING_CUES に追加（v3.0 legacy → v4.0.4 採用）
+- **lesson_02 以降の v4.0.4 building 移行**：病院 / 銀行 / 駅 / スーパー を PART 5.10 BUILDING_CUES に追加
+- **PART 1.14 v4.0.5 PoC 後の判定**: ex_L01_* 生成・user 実視で identity consistency 評価 → 結果次第で lesson_02 以降に展開
+- **(b-3) 生成プロンプト側で超過漢字を平易表現に置換**: X-c 完了後に着手 (元 NEXT_ACTIONS 並行待機項目)
 
 ### 触らない既知制約
 
 - LUFS ERROR 20 件（短尺 audio × loudnorm R128 統合 400ms 窓の構造問題）
+- lesson-check B-6 (p1/p3 practiceTemplates ≥2 必須)・B-8 (pattern minutes 8 分 > 7 上限) は既存問題で X-c とは独立
 
 ---
 
@@ -143,74 +112,62 @@ Phase γ  スライド完成
   γ2     デザイン微修正  ← 全 12 ブロック視聴 OK ✅
 Phase X (γ2 派生・user 要望)
   X-a    課マスター作成 skill suite                                ✅ 全完了
-    X-a-1  /lesson-scaffold NN (empty + PDF seed mode)             ✅ 完了
-    X-a-2  /lesson-check + /lesson-fill-vocab                       ✅ 完了
-    X-a-3  /lesson-suggest-activities + /lesson-build-registry     ✅ 完了
-    X-a-4  docs/LESSON_SKILLS_MANUAL.md (suite まとめ)             ✅ 完了 🆕
   X-b    lesson.targetStudentLevel + 上級語 pill 機構             ✅ 部分着地
-    (b-1)  enum 新設 + lesson_01/02 付与 + validator               ✅ 完了
-    (b-2)  vocab card 上級語 pill (発火 0/lesson_01/02)            ✅ 完了
-    (b-2') furigana 強制 ON (force class)                          ❌ 実視で残らず断念・削除
-    (b-3)  生成プロンプト側で超過漢字を平易表現に置換              X-c 後
-  X-d    復習機能 + intro_activity fallback テンプレ修正           ✅ 着地 🆕
-    (d-1)  reviewSlide canDo-item 統一 + form.js review UI         ✅ 完了
-    (d-2)  intro_activity 未実装 layout fallback materialNeeds 駆動 ✅ 完了
-  X-c    例文 / 例文画像 revision + 29 件 (Drive orphan) 再生成    次セッション
+  X-d    復習機能 + intro_activity fallback テンプレ修正           ✅ 着地
+  X-c    例文 revision + 21 件 (Drive orphan) 再生成 + v4.0.5 PERSON ref 機構化
+    X-c-1  PART 1.14 + PART 5.9 portraitPath + Template C [REFERENCE]  ✅ 完了 🆕
+    X-c-2  lesson_01 p2 分離型再構成 (5→8) + sceneCharacters[] + p3 shift ✅ 完了 🆕
+    X-c-3  master_image_registry.json renumber (15→18 件 + sentence)   ✅ 完了 🆕
+    X-c-4  char_* portrait 6 件生成 (除 einstein_style)                次セッション
+    X-c-5  /generate-image-prompt mode=lesson-examples --lesson 01    次セッション
+    X-c-6  画像配置 + registry generated 化 + 実視                     次セッション
+    X-c-7  user 実視 OK で v4.0.5 PoC 確定 (NG なら roll-back 判断)    次セッション
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
   δ2     applicability メタデータ 57 件 (H Stage 2)  ← user 教育判断・最重
   δ3     recommender.js + form UI 統合 (H Stage 3)
 Phase ε  統合テスト・リリース判断（1 セッション）
-  ε1     end-to-end 動作確認
-  ε2     docs 整理 + 例文 audio 再検討
 ```
 
 ---
 
 ## 確定仕様
 
+### v4.0.5 PERSON_REFERENCE_ATTACHMENT_RULE (X-c 確定 / 2026-05-26)
+
+- **対象**: `vocab_type == "example_sentence"` で sentence または `sceneCharacters[]` に NAMED_CHARACTER を含むカード
+- **検出**: sentence string match + `examples[].sceneCharacters[]` の UNION (PART 1.14 detection algorithm)
+- **attach 数**: 1-4 件 per request (5+ は warning + 切り捨て)
+- **portraitPath**: PART 5.9 NAMED_CHARACTER_PROFILES の各 entry に登録済 (5 件)
+- **enforcement**: `nanobanana-client.mjs` 既存の `referenceImages` 機構を流用 (変更不要)
+- **guide manifest hash**: `15bd5fbf566b` (前: `0673ca2d537e`)
+
 ### γ2 スライド変更（user 視聴 OK で確定 5/26）
 
 - 例文 anchor 画像列：`minmax(0, 440px)` で 16:9 約 440×248px、grid item の 1.6 倍程度
-  - ※将来 example image に char / vocab 画像が混入する場合の aspect 柔軟性は要対応
 - POS 線：`examples[].highlight` 明示時のみ。自動 は/が 分割は廃止
-  → AUTHORING_CHECKLIST.md で必須項目化対象
 - パターンボックス：文型スライドから削除（タイトル重複解消）
-- カードプレゼンター：grid + click-to-zoom（カルーセル廃止）。vocab / building /
-  named-character すべてに適用
+- カードプレゼンター：grid + click-to-zoom（カルーセル廃止）
 - スライド：`min-height: calc(100vh - 64px)` 自然フロー + page スクロール
-- slide padding 縮小 + 画像 max-height 引き締め：自然フロー化と対。
-  slide-body 36/60/76px、通常カード画像 max-height 40vh、語彙 160px、anchor 440px
-- teacher_photo：`qa_card_pair` で N スロット横並び（`materialNeeds[].count` 可変・
-  デフォルト 4）+ 文型ボックス削除（pedagogy）
+- teacher_photo：`qa_card_pair` で N スロット横並び (デフォルト 4)
 - ruby マージ：2 漢字以下のみ単一 ruby、3 漢字以上は分割
-
-### ローカル環境移行: Drive orphan pending 化 (5/26 確定)
-
-- Drive 画像 29 件 (ex_L01_*×15 + char_*×5 + vocab/word_*×9) は SA アクセス不可
-- registry mutation: `imageUrl=null` / `status='pending'` / `originalImageUrl` 保全
-- 再生成は X-c (例文 revision と統合) で実施。当面 lesson_01 view は 29 件 broken
-- script: `scripts/pend-drive-orphan-images.mjs --apply`（再現用に保存）
 
 ### β1 宿題正解判定 (D) — 実装済
 
 - 採点タイミング：即時（設問ごと判定 + visual ○×）
 - 不正解時：「もう一度」で × input のみクリア・○ 済み保持
 - 正解参照：「正解を表示」ボタン トグル
-- 正解ソース：examples[] 正規表現抽出 + namedCharacters fallback
 - 判定粒度：複数解 any-match で○、per-input 緑/赤、句読点・空白無視
-- 音声配置：語彙チェックカードのみ（例文・練習問題は audio 再検討待ちで保留）
 
 ### accent precedence (Phase α5 延長確定)
 
-`accent_override (manual)` > `accent_consensus_override` >
-`accent_yomigana (UniDic raw)` > plain text fallback
+`accent_override (manual)` > `accent_consensus_override` > `accent_yomigana (UniDic raw)` > plain text fallback
 
 ### v4.0.4 building design (skill 化済 / 採用 4 件)
 
 - 採用版：学校 R25 / 大学 R26 / デパート R22 / 会社 R22
-- universal rule A-1〜A-11 ([part1_universal_rules.md PART 1.13](prompts/guide/part1_universal_rules.md))
-- 5-image reference attachment (image_1=brand voice / 2-4=type-relevant person / 5=architectural)
+- universal rule A-1〜A-11 (PART 1.13)
+- 5-image reference attachment (PART 1.12)
 - 未移行 4 件 (銀行 / 病院 / 駅 / スーパー) は v3.0 legacy path
 
 ---
@@ -219,16 +176,10 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 - γ/δ/ε：blocker なし
 - worktree `phase4-prompt-plan`：design insight 転記完了 → main へ ff-merge 済み
-  (commit 5b12e93 + 8796634)。**今後のマスタープロンプトガイド修正用に削除しない方針確定**
-- **不変条件 hash**：`scripts/invariants.mjs` の `guideManifestExpectedHashPrefix` は
-  `0673ca2d537e`。今後 `prompts/guide/part1-6.md` を変更する人は invariants.mjs の
-  hash も合わせて更新必須
-- **building skill dispatch**：`BUILDING_V4_0_4_WORDS = {学校, 大学, デパート, 会社}`
-  は `_meta.mode === 'skill'` 出力時のみ BG=CREAM + NOT_TOKEN 必須化（preflight.py +
-  invariants.mjs 両方に定数定義）。未移行 4 件（銀行/病院/駅/スーパー）は v3.0 legacy 経路
-- **Template B 2 系統**：`part4_prompt_templates.md` に v4.0.4 採用版（17 placeholders +
-  5-image reference）と v3.0 Legacy 版が併記。skill 側は part5 BUILDING_CUES の
-  `v4_0_4_*` fields 有無で dispatch
+- **不変条件 hash**：`scripts/invariants.mjs` の `guideManifestExpectedHashPrefix` は `15bd5fbf566b` (X-c で更新済)
+- **building skill dispatch**：`BUILDING_V4_0_4_WORDS = {学校, 大学, デパート, 会社}` は `_meta.mode === 'skill'` 出力時のみ BG=CREAM + NOT_TOKEN 必須化
+- **Template B 2 系統**：`part4_prompt_templates.md` に v4.0.4 採用版と v3.0 Legacy 版が併記。skill 側は part5 BUILDING_CUES の `v4_0_4_*` fields 有無で dispatch
+- **Template C v4.0.5**: `[REFERENCE]` section は NAMED_CHARACTER 検出時のみ skill が emit、不在時は省略
 
 ---
 
@@ -236,7 +187,11 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 
 ```
 # 検証
-npm run validate                # A=v7.5 / B=891b73f5ae2d / B'=0673ca2d537e / C / D / D' PASS
+npm run validate                # A=v7.5 / B=891b73f5ae2d / B'=15bd5fbf566b (X-c update) / C / D / D' PASS
+
+# X-c 画像生成 (次セッション着手)
+/generate-image-prompt mode=explicit --words 鈴木,リン,キム,タノム,ケリー   # char_* portrait 5 件
+/generate-image-prompt mode=lesson-examples --lesson 01                      # ex_L01_* 18 件 (PART 1.14 自動 attach)
 
 # 課マスター作成 skill suite (manual invoke)
 /lesson-scaffold NN [--patterns p1,p2,p3] [--force] [--no-pdf]
@@ -247,30 +202,13 @@ npm run validate                # A=v7.5 / B=891b73f5ae2d / B'=0673ca2d537e / C 
 
 # スライド γ2 動作確認
 python -m http.server 8766 --bind 127.0.0.1   # http://127.0.0.1:8766/ で index.html
-# JSON タブ → data/session_001.json → スライド HTML DL → 開く
-
-# Audio 再生成
-node scripts/regen-drive-download.mjs --accent-changed
-node scripts/regen-drive-download.mjs --force
-npm run generate-audio
-
-# Accent consensus (UniDic + NHK + OJAD)
-python scripts/scrape-ojad.py --audio-only
-python scripts/build-accent-consensus.py --apply --audio-only
-
-# 自然さ QC（個別）
-node scripts/check-audio-naturalness.mjs --force --only ID1,ID2
-
-# 画像
-ls tmp/skill_prompts/
-npm run generate-images -- --prompts data/image_prompts_skill.json --sync-only
 ```
 
 ---
 
 ## 関連ドキュメント
 
-- [docs/LESSON_SKILLS_MANUAL.md](docs/LESSON_SKILLS_MANUAL.md) — 課マスター作成 5 skill suite マニュアル 🆕
+- [docs/LESSON_SKILLS_MANUAL.md](docs/LESSON_SKILLS_MANUAL.md) — 課マスター作成 5 skill suite マニュアル
 - [docs/SKILLS_MANUAL.md](docs/SKILLS_MANUAL.md) — 画像 prompt 系 skill マニュアル
 - [docs/MANUAL_image_generation.md](docs/MANUAL_image_generation.md) — 手動画像生成の段取り
 - [docs/MANUAL_word_example_state.md](docs/MANUAL_word_example_state.md) — どこに何があるか / status の見方
@@ -279,5 +217,6 @@ npm run generate-images -- --prompts data/image_prompts_skill.json --sync-only
 - [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md) — Phase 0〜5 全体ロードマップ
 - [docs/PHASE_BACKLOG.md](docs/PHASE_BACKLOG.md) — 退避中項目
 - [docs/design_ojad_nhk_consensus.md](docs/design_ojad_nhk_consensus.md) — α5 延長 consensus 設計
-- [prompts/guide/part1_universal_rules.md](prompts/guide/part1_universal_rules.md) — universal rules
+- [prompts/guide/part1_universal_rules.md](prompts/guide/part1_universal_rules.md) — universal rules (PART 1.12 building + 🆕 PART 1.14 person)
+- [prompts/guide/part5_vocab_reference_appendix.md](prompts/guide/part5_vocab_reference_appendix.md) — NAMED_CHARACTER_PROFILES (portraitPath 追加済)
 - [design_brief.md](design_brief.md) — ツール設計書
