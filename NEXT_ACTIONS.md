@@ -5,7 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-26 X-b 部分着地（targetStudentLevel メタ + vocab pill 機構のみ採用、furigana 強制 ON は実視で残らず断念 → 削除） 🆕
+**最終更新：** 2026-05-26 X-d: 復習機能拡充 + intro_activity fallback バグ修正 🆕
 
 ---
 
@@ -20,7 +20,14 @@
     （lesson_01/02 で smoke PASS）
   - X-a-4: [docs/LESSON_SKILLS_MANUAL.md](docs/LESSON_SKILLS_MANUAL.md) 起草
     （5 skill 概要表 + 14 ルール出典対応 + 典型ワークフロー）
-- **Phase X-b 部分着地** 🆕（furigana 強制 ON は断念、メタと pill 機構のみ採用）
+- **Phase X-d 着地** 🆕（復習機能 + intro_activity fallback テンプレ修正）
+  - reviewSlide: canDo-item テンプレ再利用 → 「今日の目標」と統一デザイン。ボックス内はパターン文字列 + 代表例文 (isAnchor:true 画像 + 文) のみ
+  - form.js: 「復習する文型」UI セクション追加 (selectedReviewPatterns Set → session.review[])
+  - intro_activity fallback バグ修正: 未実装 layout 名 (lesson_02 の 5 種) が character_card_grid にフォールバックして namedCharacters 5 人が暴露されていた問題を解消
+  - renderMaterialDrivenLayout 新設: materialNeeds[].type 駆動の汎用 grid (vocab card / 教師写真スロット / 補助スライドスロット)
+  - pedagogy ルール準拠: patternDisplay 非表示 + m.description 非表示 (memory feedback-intro-activity-no-pattern)
+  - material-driven-layout に width: 100% 明示 → slide-body の align-items: flex-start で縮まずに vp-list grid が横並びになる
+- **Phase X-b 部分着地**（furigana 強制 ON は断念、メタと pill 機構のみ採用）
   - `lesson.targetStudentLevel: "N5"|"N4"|"N3"|"N2"|"N1"` enum 新設 → lesson_01/02 に "N5" 付与
   - validator: enum チェック追加（未設定で WARN、不正値で ERROR）
   - slide_html.js: vocab card 上級語 pill 機構（word.jlptLevel > targetStudentLevel で右上 orange pill 自動発火・lesson_01/02 では発火 0、将来課用の地ならし）
@@ -145,6 +152,9 @@ Phase X (γ2 派生・user 要望)
     (b-2)  vocab card 上級語 pill (発火 0/lesson_01/02)            ✅ 完了
     (b-2') furigana 強制 ON (force class)                          ❌ 実視で残らず断念・削除
     (b-3)  生成プロンプト側で超過漢字を平易表現に置換              X-c 後
+  X-d    復習機能 + intro_activity fallback テンプレ修正           ✅ 着地 🆕
+    (d-1)  reviewSlide canDo-item 統一 + form.js review UI         ✅ 完了
+    (d-2)  intro_activity 未実装 layout fallback materialNeeds 駆動 ✅ 完了
   X-c    例文 / 例文画像 revision + 29 件 (Drive orphan) 再生成    次セッション
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)

@@ -1206,6 +1206,67 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   margin-top: 4px;
 }
 
+/* ── Issue 2 修正 (2026-05-26): material-driven layout (intro_activity fallback)
+   未実装 layout 名 (lesson_02 の 5 種など) を materialNeeds 駆動で描画する汎用 grid。
+   pedagogy ルール (memory: feedback-intro-activity-no-pattern) に従い、
+   素材スロットだけを縦に並べる (文型・教師向けメモは表示しない)。
+   slide-body は align-items: flex-start のため、width: 100% を明示しないと
+   内容に合わせて縮み、子の vp-list grid が 1 列化してしまう (横並び不能)。 */
+.material-driven-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-section);
+  width: 100%;
+}
+.material-driven-layout .mdl-block {
+  display: block;
+  width: 100%;
+}
+.material-driven-layout .mdl-asset-row {
+  display: grid;
+  grid-template-columns: repeat(var(--photo-count, 4), minmax(0, 1fr));
+  gap: var(--gap-loose);
+}
+
+/* ── Issue 1 拡張 (2026-05-26): review スライドの代表例文表示 ──
+   reviewSlide は canDo-item テンプレ (introGoalsSlide と同じ) を再利用するため、
+   ボックス・ラベル・テキストの CSS は共通利用。ここでは canDo-item 内部に追加する
+   「代表例文 (16:9 画像 + 文)」の部分だけスタイル定義する。 */
+.canDo-item .review-anchor {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) 1fr;
+  gap: var(--gap-loose);
+  margin-top: var(--gap-normal);
+  align-items: center;
+}
+.canDo-item .review-anchor img,
+.canDo-item .review-anchor .image-fallback {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: var(--color-background-subtle);
+  border-radius: var(--border-radius-small);
+}
+.canDo-item .review-anchor .image-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+.canDo-item .review-anchor-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.canDo-item .review-anchor-ja {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-main);
+}
+.canDo-item .review-anchor-en {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+
 /* ── まとめスライドのアンカー例文 ────────────────────────── */
 .summary-item .summary-anchor {
   margin-top: 6px;
@@ -1661,7 +1722,7 @@ body.no-en .slide-title:has(+ .slide-title-en) {
 
       switch (entry.type) {
         case 'review':
-          slides.push({ stage, type: 'review', html: reviewSlide(entry, lessonsByNo) });
+          slides.push({ stage, type: 'review', html: reviewSlide(entry, lessonsByNo, registryEntries) });
           break;
 
         case 'intro_slide':
@@ -1798,20 +1859,51 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     `;
   }
 
-  function reviewSlide(entry, lessonsByNo) {
+  // Issue 1 拡張 (2026-05-26): patternId ごとに「ラベル + canDo + 代表例文 1 枚(画像つき)」を表示。
+  // デザインテンプレートは introGoalsSlide (今日の目標) と統一する:
+  // canDo-list (縦並び gap 8px) > canDo-item (白ボックス + accent border + shadow) を再利用。
+  // 内部に代表例文 (画像 + 文) を加える。これでどの patternId を選んでも一貫した見た目になる。
+  // 代表例文は patterns[].examples[].isAnchor === true で 1 件指定済 (validator 強制)。
+  function reviewSlide(entry, lessonsByNo, registryEntries) {
     const patIds = entry.patterns || [];
     const items = patIds.map((pid) => {
       const lesson = lessonsByNo[entry.sourceLesson];
       const pat = lesson && (lesson.patterns || []).find((p) => p.id === pid);
-      const label = pat ? `${pat.label || pat.pattern}${pat.canDo ? ' — ' + pat.canDo : ''}` : pid;
-      const labelEn = pat && pat.canDoEn ? pat.canDoEn : '';
-      return `<li>${ruby(label)}${labelEn ? `<div class="en-text" style="font-size: var(--font-size-body-small); color: var(--color-text-muted);">${esc(labelEn)}</div>` : ''}</li>`;
+      if (!pat) return `<div class="canDo-item">${esc(pid)}</div>`;
+      const label = pat.label || pat.pattern || '';
+      // 代表例文 (isAnchor:true) を 1 件取得
+      const anchor = (pat.examples || []).find((e) => e && e.isAnchor === true);
+      let anchorHtml = '';
+      if (anchor) {
+        const imgU = anchor.imageId ? imgUrl(anchor.imageId, registryEntries, 512) : null;
+        const imgPart = imgU
+          ? `<img src="${esc(imgU)}" alt="${esc(anchor.sentence || '')}" loading="lazy" decoding="async" onerror="this.outerHTML='&lt;span class=image-fallback&gt;🖼️&lt;/span&gt;'">`
+          : `<span class="image-fallback">🖼️</span>`;
+        anchorHtml = `
+          <div class="review-anchor">
+            ${imgPart}
+            <div class="review-anchor-text">
+              <div class="review-anchor-ja">${ruby(anchor.sentence || '')}</div>
+              ${anchor.sentenceEn ? `<div class="review-anchor-en en-text">${esc(anchor.sentenceEn)}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }
+      // テンプレ仕様 (2026-05-26 user 確定): ボックス内には「パターン文字列 (大) + 代表例文」のみ。
+      // 「第N課 pX:」プレフィックス・canDo・英語ラベルは全部出さない (情報過剰)。
+      // パターン文字列を canDo-text 位置 (大文字) に置き、見た目の階層を「目標スライド」と統一。
+      return `
+        <div class="canDo-item">
+          <div class="canDo-text">${ruby(label)}</div>
+          ${anchorHtml}
+        </div>
+      `;
     }).join('');
     return `
       <h2 class="slide-title">${ruby('復習')}</h2>
       <div class="slide-title-en en-text">Review</div>
       <div class="slide-body">
-        <ul>${items || `<li>${ruby('(復習項目なし)')}</li>`}</ul>
+        <div class="canDo-list">${items || `<div>${ruby('(復習項目なし)')}</div>`}</div>
       </div>
     `;
   }
@@ -1886,10 +1978,21 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   // 空状態は破線枠で Drag & Drop を促す。画像を 1 枚以上 drop すると、自動でカルーセル化し
   // ←/→ ボタンと N/M カウンタが表示される。複数画像で「次の人物・次の地図」と切り替える運用。
   function teacherAssetSlotHtml(kind) {
-    const isMap = kind === 'world_map';
-    const icon = isMap ? '🌏' : '📷';
-    const labelJa = isMap ? '世界地図(国旗付き)' : '教師が用意した写真';
-    const labelEn = isMap ? 'World Map (with flags)' : "Teacher's prepared photo";
+    // 2026-05-26: special_slide kind を追加 (intro_activity の materialDriven layout 用)
+    let icon, labelJa, labelEn;
+    if (kind === 'world_map') {
+      icon = '🌏';
+      labelJa = '世界地図(国旗付き)';
+      labelEn = 'World Map (with flags)';
+    } else if (kind === 'special_slide') {
+      icon = '🗒️';
+      labelJa = '補助スライド';
+      labelEn = 'Supplementary slide';
+    } else {
+      icon = '📷';
+      labelJa = '教師が用意した写真';
+      labelEn = "Teacher's prepared photo";
+    }
     const hintJa = '画像をここにドロップ (複数可)';
     const hintEn = 'Drop image(s) here (multiple OK)';
     return `
@@ -1938,6 +2041,89 @@ body.no-en .slide-title:has(+ .slide-title-en) {
       ${presenter}
       ${mapSlot}
     `;
+  }
+
+  // Issue 2 修正用: 未実装 layout 名の汎用フォールバック (2026-05-26)
+  // materialNeeds[].type を見て、人物画像で埋めずに各 type に応じた素材を出す。
+  //
+  // pedagogy ルール (memory: feedback-intro-activity-no-pattern):
+  //   - intro_activity に target 文型を視覚表示しない (elicit → formalize → practice を壊さない)
+  //   - したがって slideDisplay.patternDisplay (question/affirmative/negative) は描画しない
+  //   - materialNeeds[].description は教師向けメモなので学習者向けスライドには出さない
+  //   - 出すのは「素材スロット (絵カード / 写真スロット / 補助スライドスロット)」のみ
+  //   - 学習者向け指示文は slideDisplay.instructionText を introActivitySlide 側で表示済み
+  //
+  // 描画優先順:
+  //   1. auto_generated_vocab → lesson.vocabulary から逆引きして vocab card grid
+  //      (keywords[] が指定されていれば word に一致するもののみフィルタ)
+  //   2. teacher_real_object / teacher_photo → 教師写真スロット
+  //   3. world_map → 世界地図スロット
+  //   4. special_slide / special_handout → 補助スライドスロット
+  //   5. named_character_card → named characters (明示指定時のみ。fallback では非表示)
+  function renderMaterialDrivenLayout(materialNeeds, lesson, patternRef, slideDisplay, registryEntries) {
+    const blocks = [];
+    const needs = Array.isArray(materialNeeds) ? materialNeeds : [];
+
+    // pattern 用 vocab を lesson 側から取得 (auto_generated_vocab の keywords でフィルタ可能)
+    function vocabsForPattern(filterWords) {
+      if (!lesson || !lesson.vocabulary || !lesson.vocabulary.byPattern) return [];
+      const words = [];
+      for (const g of Object.values(lesson.vocabulary.byPattern)) {
+        if (!g || !Array.isArray(g.words)) continue;
+        if (patternRef && Array.isArray(g.patternIds) && !g.patternIds.includes(patternRef)) continue;
+        for (const w of g.words) words.push(w);
+      }
+      if (!filterWords || filterWords.length === 0) return words;
+      const fset = new Set(filterWords);
+      const filtered = words.filter((w) => fset.has(w.word) || fset.has(w.reading));
+      return filtered.length > 0 ? filtered : words; // フィルタで 0 件になったら全件にフォールバック
+    }
+
+    for (const m of needs) {
+      if (!m || !m.type) continue;
+      switch (m.type) {
+        case 'auto_generated_vocab': {
+          const words = vocabsForPattern(m.keywords);
+          if (words.length > 0) {
+            blocks.push(`<div class="mdl-block">${renderCardPresenter(words.map((w) => vocabCardHtml(w, registryEntries)))}</div>`);
+          }
+          break;
+        }
+        case 'teacher_real_object':
+        case 'teacher_photo': {
+          const count = Math.max(1, Math.min(8, m.count || 4));
+          const slots = Array.from({ length: count }, () => teacherAssetSlotHtml('teacher_photo')).join('');
+          blocks.push(`<div class="mdl-block mdl-asset-row" style="--photo-count: ${count}">${slots}</div>`);
+          break;
+        }
+        case 'world_map': {
+          blocks.push(`<div class="mdl-block">${teacherAssetSlotHtml('world_map')}</div>`);
+          break;
+        }
+        case 'special_slide':
+        case 'special_handout': {
+          blocks.push(`<div class="mdl-block">${teacherAssetSlotHtml('special_slide')}</div>`);
+          break;
+        }
+        case 'named_character_card': {
+          const chars = (lesson && Array.isArray(lesson.namedCharacters)) ? lesson.namedCharacters : [];
+          const filter = Array.isArray(m.characters) ? new Set(m.characters) : null;
+          const targets = filter ? chars.filter((c) => filter.has(c.name)) : chars;
+          if (targets.length > 0) {
+            blocks.push(`<div class="mdl-block">${renderCardPresenter(targets.map((c) => characterCardHtml(c, registryEntries)))}</div>`);
+          }
+          break;
+        }
+        default:
+          // 未知 type は無視 (将来追加時に case 増設)
+          break;
+      }
+    }
+
+    if (blocks.length === 0) {
+      return `<p style="color: var(--color-text-muted);">${ruby('(intro_activity 素材データなし)')}</p>`;
+    }
+    return `<div class="material-driven-layout">${blocks.join('')}</div>`;
   }
 
   function renderQaCardPairLayout(characters, slideDisplay, materialNeeds, registryEntries) {
@@ -2066,8 +2252,14 @@ body.no-en .slide-title:has(+ .slide-title-en) {
       layoutHtml = renderQaCardPairLayout(characters, catalogEntry.slideDisplay, materialNeeds, registryEntries);
     } else if (layout === 'attribute_expansion') {
       layoutHtml = renderAttributeExpansionLayout(characters, lesson, patternRef, catalogEntry.slideDisplay, registryEntries);
-    } else {
+    } else if (layout === 'character_card_grid') {
       layoutHtml = renderCharacterCardGridLayout(characters, materialNeeds, registryEntries);
+    } else {
+      // Issue 2 修正 (2026-05-26): 未実装 layout 名 (lesson_02 の 5 種など) は従来
+      // character_card_grid に fallback していたが、結果として named_character が
+      // 全スライドに大量表示される問題があった (人物画像偏り)。
+      // materialNeeds 駆動の汎用 grid に変更し、各 type ごとに正しい素材を出す。
+      layoutHtml = renderMaterialDrivenLayout(materialNeeds, lesson, patternRef, catalogEntry.slideDisplay, registryEntries);
     }
 
     const instructionHtml = (instr.ja || instr.en) ? `

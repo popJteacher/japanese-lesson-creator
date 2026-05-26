@@ -335,6 +335,15 @@
   作成・dry-run/smoke は動作確認したが Drive アクセス不可で本走不能 → YAGNI で削除。
   将来 Drive 共有が設定された場合は audio script から再生成可能。
 
+## 2026-05-26 (X-d: 復習機能 + intro_activity fallback テンプレ修正)
+
+- **復習機能 reviewSlide 拡充**: 旧来「パターンラベル一覧」だけで抽象的すぎたところを、canDo-item (「今日の目標」と同テンプレ) を再利用し「パターン文字列 (大) + 代表例文 (isAnchor:true 画像 + 文)」表示に変更。user 確定の最小仕様: pattern label プレフィックス・canDo・英訳ラベルは全部削除。
+- **form.js review UI 追加**: 「復習する文型 (任意)」セクションを文型選択直下に新設。selectedReviewPatterns Set → buildSession() で session.review[] に出力。
+- **intro_activity fallback バグ修正**: lesson_02 の intro_activity 6 個は catalog 上 5 種類の layout 名を持つが slide_html.js 側で未実装だったため `character_card_grid` にフォールバック → lesson_02.namedCharacters (鈴木・リン・キム・タノム・ケリー) 5 人画像が全スライドに暴露されていた問題。renderMaterialDrivenLayout を新設し materialNeeds[].type 駆動 (vocab card / 教師写真スロット / 補助スライドスロット) に変更。
+- **pedagogy ルール再徹底**: 私 (Claude) が renderMaterialDrivenLayout 初版で `slideDisplay.patternDisplay` と `materialNeeds[].description` を学習者向けスライドに描画して user 指摘 → 削除。memory `feedback_intro_activity_no_pattern.md` の How to apply を一般化 (新規 layout 関数にも適用)。新規 memory `feedback_teacher_notes_not_on_learner_slides.md` を追加。
+- **material-driven-layout 横並びバグ修正**: `slide-body` の `align-items: flex-start` で flex item の幅が auto → `.material-driven-layout` が内容に縮み、子の `vp-list` grid が 1 列化していた。`width: 100%` を明示して全幅展開。
+- **テスト用 session 残置**: `data/session_l02_with_review.json` — lesson_02 全文型 teach + lesson_01 全文型 review。X-c などで再利用可能。
+
 ## 2026-05-26 (X-b 部分着地 — furigana 強制 ON は断念)
 
 - **X-b 採用**: `lesson.targetStudentLevel` enum (N5..N1) 新設・lesson_01/02 に "N5" 付与・

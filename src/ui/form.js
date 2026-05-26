@@ -42,6 +42,7 @@
   const dateEl = document.getElementById('form-date');
   const durationEl = document.getElementById('form-duration');
   const patternsListEl = document.getElementById('patterns-list');
+  const reviewPatternsListEl = document.getElementById('review-patterns-list');
   const activitiesListEl = document.getElementById('activities-list');
   const filterLevelEl = document.getElementById('filter-level');
   const filterStageEl = document.getElementById('filter-stage');
@@ -58,6 +59,7 @@
   let allActivities = [];
   // 選択状態
   const selectedPatterns = new Set(); // key: "lessonNo:patternId"
+  const selectedReviewPatterns = new Set(); // key: "lessonNo:patternId" — Issue 1 (2026-05-26)
   const selectedActivities = new Set(); // value: activityId
   // フィルタ状態
   let levelFilter = 'all';
@@ -142,6 +144,35 @@
       label.appendChild(cb);
       label.appendChild(text);
       patternsListEl.appendChild(label);
+    });
+  }
+
+  // Issue 1 (2026-05-26): 復習する文型のチェックボックス UI。
+  // selectedReviewPatterns Set を更新し、buildSession() で session.review[] に組み込む。
+  // 単に listing するだけで自動コピー機能は無し (前回 session を覚える仕組みが無いため)。
+  function renderReviewPatterns() {
+    if (!reviewPatternsListEl) return;
+    reviewPatternsListEl.innerHTML = '';
+    allPatterns.forEach((p) => {
+      const key = `${p.lessonNo}:${p.patternId}`;
+      const label = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = key;
+      cb.checked = selectedReviewPatterns.has(key);
+      cb.addEventListener('change', () => {
+        if (cb.checked) selectedReviewPatterns.add(key);
+        else selectedReviewPatterns.delete(key);
+        rebuildStages();
+        renderStages();
+        updateTotal();
+      });
+      const text = document.createElement('span');
+      const circle = CIRCLE_NUMS[p.indexInLesson] || `(${p.indexInLesson + 1})`;
+      text.textContent = `第${p.lessonNo}課${circle} ${p.label}${p.level ? `(${p.level})` : ''}`;
+      label.appendChild(cb);
+      label.appendChild(text);
+      reviewPatternsListEl.appendChild(label);
     });
   }
 
@@ -449,6 +480,15 @@
       minutes: 0, // 個別 minutes は使わず、flow.activity の minutes を全体時間とする
     }));
 
+    // review[] — Issue 1 (2026-05-26): 復習する文型を session.review に出力
+    const review = [];
+    allPatterns.forEach((p) => {
+      const key = `${p.lessonNo}:${p.patternId}`;
+      if (selectedReviewPatterns.has(key)) {
+        review.push({ lessonNo: p.lessonNo, patternId: p.patternId });
+      }
+    });
+
     // session オブジェクト
     // 注: flow[] は生成しない。main.js で常に FlowSynthesizer.synthesize() 経由で
     //     lesson_NN.json の flow[] (SSOT) を解決し resolvedFlow として下流に渡す。
@@ -468,7 +508,7 @@
         status: 'planned',
       },
       teach,
-      review: [],
+      review,
       skipFlowIds: [],
       introActivityOverrides: [],
       mainActivities,
@@ -564,6 +604,7 @@
     durationEl.addEventListener('input', updateTotal);
 
     renderPatterns();
+    renderReviewPatterns();
     renderFilters();
     renderActivities();
     rebuildStages();

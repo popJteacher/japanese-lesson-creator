@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "formatVersion": "1.0",
+    "description": "Issue 1+2 動作確認用: lesson_02 全文型を teach + lesson_01 全文型を review に入れて、(a) 復習スライドの代表例文表示と (b) intro_activity の materialNeeds 駆動 fallback の両方を確認できる session。",
+    "createdAt": "2026-05-26"
+  },
+  "session": {
+    "id": "S_L02_REVIEW_TEST",
+    "no": 997,
+    "studentId": "T",
+    "date": "2026-05-26",
+    "duration": 60,
+    "status": "planned",
+    "note": "Issue 1+2 確認用"
+  },
+  "teach": [
+    { "lessonNo": 2, "patternId": "p1", "isNew": true },
+    { "lessonNo": 2, "patternId": "p2", "isNew": true },
+    { "lessonNo": 2, "patternId": "p3", "isNew": true },
+    { "lessonNo": 2, "patternId": "p4", "isNew": true },
+    { "lessonNo": 2, "patternId": "p5", "isNew": true },
+    { "lessonNo": 2, "patternId": "p6", "isNew": true }
+  ],
+  "review": [
+    { "lessonNo": 1, "patternId": "p1" },
+    { "lessonNo": 1, "patternId": "p2" },
+    { "lessonNo": 1, "patternId": "p3" }
+  ],
+  "mainActivities": [],
+  "activity": {
+    "proposerEnabled": false,
+    "selectedId": null,
+    "engine": "gemini"
+  },
+  "output": {
+    "titlePrefix": "S_L02_REVIEW_TEST",
+    "studentIdInFilename": "T"
+  }
+}
