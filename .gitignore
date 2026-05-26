@@ -21,6 +21,14 @@ Thumbs.db
 # /export-skill-prompts の出力（手動投入用 .txt・派生物・user 環境依存）
 tmp/skill_prompts/
 
+# /lesson-scaffold が読む教科書 PDF（著作権物・リポジトリ追跡しない）
+# user は ~/Downloads から data/sources/pdfs/ に手動コピーする運用。
+data/sources/pdfs/
+# /lesson-scaffold の seed 抽出 cache（PDF 由来の派生物・user 環境依存）
+data/lesson_seed_cache/
+# PDF を PNG に展開した中間生成物
+tmp/pdf_pages/
+
 # tmp/ 配下の smoke artifacts（mp3 / log）は履歴に残さない。
 # 例外：α3 で参照する PoC スクリプトと小型 JSON は明示的に tracked。
 tmp/*.mp3
