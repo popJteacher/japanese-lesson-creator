@@ -50,6 +50,7 @@
     "title": "こ・そ・あ・ど",
     "topic": "指示詞(代名詞・連体詞)・所有・疑問詞(何/どれ/どの)",
     "level": "初級前半(Lv.1)",
+    "targetStudentLevel": "N5",
     "target": "完全初心者(ひらがな学習済み・第1課完了)、年齢混在(子ども・中高生・大学生・社会人)、マンツーマン・オンライン",
     "_recommendedDuration": 50,
     "_recommendedDuration_note": "標準授業時間(分)の目安値(reference only)。session_NNN.json の session.duration で実時間を指定する(session 値が常に優先・D-優先1)。第2課は全6文型網羅のため、1セッションで全部を扱うのは困難。教師は session で teach[] を組み合わせて分割する(例: session_X = p1+p2 / session_Y = p3+p4 / session_Z = p5+p6)。",

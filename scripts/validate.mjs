@@ -48,6 +48,8 @@ const WORD_REQUIRED = [
 const EX_IMAGE_ID_RE = /^ex_L\d{2}_\d{3}$/;
 const EX_AUDIO_ID_RE = /^sentence_ex_L\d{2}_\d{3}$/;
 const LESSON_FILE_RE = /^lesson_\d{2}\.json$/;
+const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
+const JLPT_RANK = { N5: 5, N4: 4, N3: 3, N2: 2, N1: 1 };
 
 async function findLessonFiles() {
   const all = await readdir(DATA_DIR);
@@ -65,6 +67,14 @@ function checkLesson(path, doc, errors, warns) {
   if (meta.lessonVer) err('_meta.lessonVer は誤名。lessonVersion に統一する');
   if (!meta.lastModified) err(`_meta.lastModified 不在（${meta.lastUpdated ? '誤名 lastUpdated が存在' : ''}）`);
   if (meta.lastUpdated) err('_meta.lastUpdated は誤名。lastModified に統一する');
+
+  // 2b. lesson.targetStudentLevel (X-b 導入): N5..N1 enum (推奨フィールド)
+  const lessonNode = doc.lesson ?? {};
+  if (lessonNode.targetStudentLevel == null) {
+    warn('lesson.targetStudentLevel 不在 (X-b 導入推奨フィールド・"N5"〜"N1" enum)');
+  } else if (!JLPT_LEVELS.includes(lessonNode.targetStudentLevel)) {
+    err(`lesson.targetStudentLevel が不正値: ${JSON.stringify(lessonNode.targetStudentLevel)} (期待: N5/N4/N3/N2/N1)`);
+  }
 
   // 3-7. patterns / examples
   const patterns = Array.isArray(doc.patterns) ? doc.patterns : [];

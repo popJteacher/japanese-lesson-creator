@@ -5,8 +5,7 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-26 X-a-4 `docs/LESSON_SKILLS_MANUAL.md` 起草完了 🆕
-（5 skill suite + 14 ルール出典 + 典型ワークフロー / 既存 SKILLS_MANUAL.md は画像 prompt 系のまま温存）
+**最終更新：** 2026-05-26 X-b 部分着地（targetStudentLevel メタ + vocab pill 機構のみ採用、furigana 強制 ON は実視で残らず断念 → 削除） 🆕
 
 ---
 
@@ -14,15 +13,20 @@
 
 - **Phase 0 〜 5 ⑤ / α1 〜 α5 延長 / α5 fix-up / β1 / v4.0.4 skill 化 完了** ✅
 - **Phase γ2 スライドデザイン微修正 全 12 ブロック user 視聴 OK** ✅
-- **Phase X-a 全 4 ステップ完了** ✅ 🆕
+- **Phase X-a 全 4 ステップ完了** ✅
   - X-a-1: `/lesson-scaffold NN`（seed mode 第3課で実視確認 PASS）
   - X-a-2: `/lesson-check NN` + `/lesson-fill-vocab NN`（lesson_01/02 で smoke PASS）
   - X-a-3: `/lesson-suggest-activities NN` + `/lesson-build-registry NN`
     （lesson_01/02 で smoke PASS）
   - X-a-4: [docs/LESSON_SKILLS_MANUAL.md](docs/LESSON_SKILLS_MANUAL.md) 起草
-    （5 skill 概要表 + 14 ルール出典対応 + 典型ワークフロー） 🆕
+    （5 skill 概要表 + 14 ルール出典対応 + 典型ワークフロー）
+- **Phase X-b 部分着地** 🆕（furigana 強制 ON は断念、メタと pill 機構のみ採用）
+  - `lesson.targetStudentLevel: "N5"|"N4"|"N3"|"N2"|"N1"` enum 新設 → lesson_01/02 に "N5" 付与
+  - validator: enum チェック追加（未設定で WARN、不正値で ERROR）
+  - slide_html.js: vocab card 上級語 pill 機構（word.jlptLevel > targetStudentLevel で右上 orange pill 自動発火・lesson_01/02 では発火 0、将来課用の地ならし）
+  - **断念**: kanji × JLPT level マップ + force class による「トグル OFF でも超過 kanji の furigana を残す」機能（CSS specificity・ブラウザキャッシュ・kuromoji 連携など複数要因あり得るが、実視で残らず・優先度低のため削除）
 
-### スナップショット（2026-05-26 X-a-4 完了直後・コマンドで再導出）
+### スナップショット（2026-05-26 X-b 部分着地直後・コマンドで再導出）
 
 ```
 image_registry: pending 469 / generated 16 / outdated 6 / (none) 1 (drive=0/local=16)
@@ -34,7 +38,8 @@ vocab_catalog:  17508 entries (schemaVersion 1.2)
                 accent unknown 502 / tts_workaround 0
 ojad cache:     416 entries (389 ok / 22 not_found)
 guide manifest: PART 1-6 .md 6 file / hash 0673ca2d537e
-slide_html.js:  γ2 改修 12 ブロック user 視聴 OK
+slide_html.js:  γ2 改修 12 ブロック user 視聴 OK + vocab pill 機構 (X-b 発火 0)
+lesson_NN.json: targetStudentLevel="N5" 追加 (lesson_01/02)
 LUFS:           ERROR 20 / WARN 80（439/459 PASS）← 構造上既知制約
 git:            main = origin/main 同期済（5/26 push 完了）
 ```
@@ -43,11 +48,11 @@ git:            main = origin/main 同期済（5/26 push 完了）
 
 ## active
 
-### 次セッション着手点：**X-b (targetStudentLevel 導入) または X-c (例文 revision + 29 件再生成)**
+### 次セッション着手点：**X-c (例文 revision + 29 件再生成)** または X-b 残（生成プロンプト側の level 連動）
 
-γ2 全 12 ブロック視聴確定済（5/26）+ X-a 全 4 ステップ完了（5/26）。
-残り：X-b / X-c の 2 件、優先順位は **X-b > X-c** 想定（kanji 表示制約が確定すると
-例文 revision の語彙選定も決まるため）。
+γ2 全 12 ブロック視聴確定済（5/26）+ X-a 全 4 ステップ完了（5/26）+ X-b 部分着地（5/26）。
+X-b の見た目側 (b-2 furigana 強制) は断念。残りは X-c と (b-3 生成プロンプト側の超過漢字置換) の 2 件、
+**X-c > (b-3)** 想定（例文の再設計が先で、それを受けてプロンプト側ガードを入れる順序）。
 
 ### (a) 課マスター作成 skill suite（モジュラー型）✅ 全完了
 
@@ -77,27 +82,13 @@ git:            main = origin/main 同期済（5/26 push 完了）
 - build-registry: 既存 entry の `naturalness` / `images[].imageUrl` を見て、
   「画像/音声 generated 済だが lesson が参照していない」detect 機能 (孤立 detect)
 
-### 🆕 (b) lesson に `targetStudentLevel` を導入 + level-aware 生成
+### (b-3) 生成プロンプト側で超過漢字を平易表現に置換 — δ 以降
 
-**動機**：user 観察 — lesson_01 のスライドに「漢字・難しい表現が多すぎる」。
-JLPT メタは既に存在するが生成側で参照していない:
-- `patterns[].jlptLevel` ✅ 存在
-- `vocabulary.byPattern[*].words[].jlptLevel` ✅ 存在（23 箇所付与済み）
-- `lesson.level` は自由文字列（`"初級前半(Lv.1)"`）で機械判定不可
-- `lesson.targetStudentLevel` ❌ まだ無い（X-a-3 の suggest-activities では
-  patterns[].jlptLevel か "N5" fallback で代用している）
+X-b 着地後の残：例文・指示文の語彙選定 (生成プロンプト) 側に `targetStudentLevel`
+を渡し、超過漢字を平易表現に置換するロジック。X-c 後に着手予定。
 
-**実装**：
-- (b-1) `lesson.targetStudentLevel: "N5" | "N4" | "N3" | "N2" | "N1"`
-  enum を新設（lesson_01/02 で人間判断・教科書 ABC は典型 N5 想定）
-- (b-2) `slide_html.js` / `homework_html.js` / `activity_html.js` で読取り:
-  - 例文・指示文中の漢字で `kanjiJlptLevel > targetStudentLevel` のものは
-    ふりがな強制 ON（既存 `.ruby-toggle` を無視して常時表示）
-  - 語彙カードで `word.jlptLevel > targetStudentLevel` のものは「上級語」マーク
-- (b-3) 後段：例文・指示文の語彙選定 (生成プロンプト) 側にも `targetStudentLevel`
-  を渡し、超過漢字を平易表現に置換するロジック（δ 以降）
-
-優先度：**X-a-4 (SKILLS_MANUAL) > (b-1)(b-2) > (b-3)**
+参考: X-b は (b-1) lesson.targetStudentLevel enum 新設 + (b-2) 内 vocab card pill 機構までを採用。
+(b-2) の furigana 強制 ON 部分は実視で残らず断念（コード削除済み）。
 
 ### 🆕 (c) 例文 / 例文画像 revision + 画像 29 件再生成
 
@@ -149,8 +140,12 @@ Phase X (γ2 派生・user 要望)
     X-a-2  /lesson-check + /lesson-fill-vocab                       ✅ 完了
     X-a-3  /lesson-suggest-activities + /lesson-build-registry     ✅ 完了
     X-a-4  docs/LESSON_SKILLS_MANUAL.md (suite まとめ)             ✅ 完了 🆕
-  X-b    lesson.targetStudentLevel 導入 + level-aware 生成         次セッション
-  X-c    例文 / 例文画像 revision + 29 件 (Drive orphan) 再生成    X-b 後
+  X-b    lesson.targetStudentLevel + 上級語 pill 機構             ✅ 部分着地
+    (b-1)  enum 新設 + lesson_01/02 付与 + validator               ✅ 完了
+    (b-2)  vocab card 上級語 pill (発火 0/lesson_01/02)            ✅ 完了
+    (b-2') furigana 強制 ON (force class)                          ❌ 実視で残らず断念・削除
+    (b-3)  生成プロンプト側で超過漢字を平易表現に置換              X-c 後
+  X-c    例文 / 例文画像 revision + 29 件 (Drive orphan) 再生成    次セッション
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
   δ2     applicability メタデータ 57 件 (H Stage 2)  ← user 教育判断・最重

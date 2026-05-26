@@ -334,3 +334,18 @@
 - **DL script 試作したが削除**：`scripts/download-drive-images.mjs` を audio 版から
   作成・dry-run/smoke は動作確認したが Drive アクセス不可で本走不能 → YAGNI で削除。
   将来 Drive 共有が設定された場合は audio script から再生成可能。
+
+## 2026-05-26 (X-b 部分着地 — furigana 強制 ON は断念)
+
+- **X-b 採用**: `lesson.targetStudentLevel` enum (N5..N1) 新設・lesson_01/02 に "N5" 付与・
+  validator enum チェック追加・slide_html.js に vocab card 上級語 pill 機構
+  (word.jlptLevel > targetStudentLevel で右上 orange pill 自動発火)。
+- **X-b 断念**: 「ふりがな OFF トグル時、超過 kanji の furigana だけ残す」force class 機構
+  (ruby class="force" + body.no-ruby ruby:not(.force) で CSS 制御)。lesson_02 「建物」
+  (N4 kanji) で動作確認したが、トグル OFF で furigana が残らなかった。原因特定せず削除。
+  考えられる要因: ブラウザキャッシュ・CSS specificity・kuromoji の opts 受け渡し・
+  buildAdvancedKanjiSet が空 set を返したケース 等。優先度低 (user 判断) で全削除。
+  関連削除: data/kanji_jlpt.json, scripts.lib の force 系コード, main.js loadKanjiJlpt。
+  vocab pill 機構と targetStudentLevel メタは将来課のために残置。
+- **将来 (b-3) 復活余地**: 生成プロンプト側で超過漢字を平易表現に置換するロジック
+  (例文設計時に level 制約をかける) は別アプローチとして X-c 後に検討可能。

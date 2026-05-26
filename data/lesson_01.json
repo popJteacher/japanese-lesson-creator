@@ -149,6 +149,7 @@
     "title": "名詞",
     "topic": "名詞(人物・職業・所属)",
     "level": "初級前半(Lv.1)",
+    "targetStudentLevel": "N5",
     "target": "完全初心者(ひらがな学習済み)、年齢混在(子ども・中高生・大学生・社会人)、マンツーマン・オンライン",
     "_recommendedDuration": 50,
     "_recommendedDuration_note": "標準授業時間(分)の目安値(reference only)。session_NNN.json の session.duration で実時間を指定する(session 値が常に優先・D-優先1)。例:体験レッスン 25 分・長時間集中レッスン 90 分などに対応。マスターはあくまで目安なので、教師が session で自由に変更可能。v2.5: duration → _recommendedDuration に rename。",

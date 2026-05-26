@@ -582,6 +582,22 @@ body.no-en .slide-title:has(+ .slide-title-en) {
   padding: var(--padding-md);
   text-align: center;
   box-shadow: var(--shadow-default);
+  position: relative; /* X-b: advanced-pill の絶対位置基準 */
+}
+/* X-b: word.jlptLevel が lesson.targetStudentLevel を超過する vocab card の右上に
+   小さな orange pill ("N4" 等) を表示。教師に「参考語彙」とわかるマークを与える。 */
+.vocab-card .advanced-pill {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--color-ui-accent);
+  color: var(--color-text-on-accent);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  padding: 2px 8px;
+  border-radius: 999px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  z-index: 2;
 }
 /* 1:1 アスペクトは保ちつつ、縦が伸びすぎないよう max-height で 160px 上限。
    ノートPC 768〜900px の縦解像度でスクロール無しに収まる目安。 */
@@ -1546,6 +1562,23 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     return esc(text);
   }
 
+  // X-b: vocab card の「上級語 pill」を出すか判定する。
+  // word.jlptLevel > lesson.targetStudentLevel のとき pill (例「N4」) を表示。
+  // lesson_01/02 はすべて N5 vocab のため発火件数 0。将来の課で N5 超過 word を入れたとき自動発火。
+  const JLPT_RANK = { N5: 5, N4: 4, N3: 3, N2: 2, N1: 1 };
+  let _targetRank = null;
+  function advancedPillForWord(w) {
+    if (!_targetRank) return '';
+    const wRank = JLPT_RANK[w && w.jlptLevel];
+    if (!wRank) return ''; // 未指定はマーク無し
+    if (wRank >= _targetRank) return ''; // 同 level 以下 (rank 大 = 易) はマーク無し
+    return `<span class="advanced-pill" title="この語は ${esc(w.jlptLevel)} (lesson は ${esc(_targetRankLabel())} 想定)">${esc(w.jlptLevel)}</span>`;
+  }
+  function _targetRankLabel() {
+    const inv = { 5: 'N5', 4: 'N4', 3: 'N3', 2: 'N2', 1: 'N1' };
+    return inv[_targetRank] || '';
+  }
+
   // 画像 URL 解決 (なければ null)
   // Stage 1 既知問題 #1 対策: Google Drive の `drive.google.com/uc?id=` は
   // 303 リダイレクトされて <img> から直接表示できないため、
@@ -1599,6 +1632,9 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     const { resolvedFlow, session, lessonsByNo, activityCatalog, introActivityCatalog, imageRegistry, lesson, flowMeta } = ctx;
     const registryEntries = imageRegistry && imageRegistry.entries ? imageRegistry.entries : imageRegistry;
     const slides = [];
+
+    // X-b: lesson.targetStudentLevel を読み、vocab card の「上級語 pill」判定用に保持。
+    _targetRank = (lesson && lesson.lesson && JLPT_RANK[lesson.lesson.targetStudentLevel]) || null;
 
     // session が教える patternId のセット (例文・練習のフィルタ用)
     const teachIds = new Set((session.teach || []).map((t) => t.patternId));
@@ -2059,8 +2095,10 @@ body.no-en .slide-title:has(+ .slide-title-en) {
     const imgHtml = url
       ? `<img src="${esc(url)}" alt="${esc(word)}" loading="eager" decoding="async" onerror="this.outerHTML='&lt;span class=image-fallback&gt;🖼️&lt;/span&gt;'">`
       : `<span class="image-fallback">🖼️</span>`;
+    const pill = advancedPillForWord(w); // X-b: 超過語のみ pill 文字列、それ以外は空
     return `
       <div class="vocab-card">
+        ${pill}
         ${imgHtml}
         <div class="word">${ruby(word)}</div>
         ${w.en ? `<span class="en en-text">${esc(w.en)}</span>` : ''}
