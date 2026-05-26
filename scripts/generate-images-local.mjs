@@ -334,9 +334,34 @@ async function runSyncOnly({ json, promptBasename, args }) {
   }
 }
 
+// v4.0.4 R11 (X-c 復元 2026-05-26): styleReferences の解決とロード
+// JSON 内の相対パス配列 → { bytes, mimeType }[] へ変換。imagen4 では未対応のため呼び側で警告。
+const REF_MIME_BY_EXT = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp' };
+async function loadReferenceImages(refs) {
+  if (!Array.isArray(refs) || refs.length === 0) return [];
+  const out = [];
+  for (const ref of refs) {
+    if (typeof ref !== 'string') {
+      throw new Error(`styleReferences entry must be a string path (got ${typeof ref})`);
+    }
+    const abs = resolve(ROOT, ref);
+    const ext = ref.toLowerCase().slice(ref.lastIndexOf('.'));
+    const mimeType = REF_MIME_BY_EXT[ext];
+    if (!mimeType) {
+      throw new Error(`styleReferences[*] must end in .png/.jpg/.jpeg/.webp (got "${ref}")`);
+    }
+    const bytes = await readFile(abs);
+    out.push({ bytes, mimeType });
+  }
+  return out;
+}
+
 // バックエンドごとの 1 件生成呼び出し
-async function callBackend(backend, prompt, args, onRetry) {
+async function callBackend(backend, prompt, args, styleReferences, onRetry) {
   if (backend === 'imagen4') {
+    if (styleReferences && styleReferences.length > 0) {
+      console.warn(`     ⚠ imagen4 backend は styleReferences 未対応のため無視されます`);
+    }
     return await generateImage({
       prompt,
       aspectRatio: args.aspect,
@@ -347,9 +372,11 @@ async function callBackend(backend, prompt, args, onRetry) {
     });
   }
   // nanobanana（既定）
+  const referenceImages = await loadReferenceImages(styleReferences);
   return await generateNanobananaImage({
     prompt,
     model: DEFAULT_NANOBANANA_MODEL,
+    referenceImages,
     onRetry,
   });
 }
@@ -404,9 +431,17 @@ async function runAuto({ json, promptBasename, args }) {
         continue;
       }
     }
-    targets.push({ id, prompt: v.prompt, word: v.word, en: v.en });
+    targets.push({ id, prompt: v.prompt, word: v.word, en: v.en, styleReferences: v.styleReferences || [] });
   }
   console.log(`  targets:    ${targets.length}  (skip: ${alreadyLocal} 既ローカル / ${notInReg} 未登録)`);
+  const refsCount = targets.reduce((n, t) => n + (t.styleReferences?.length || 0), 0);
+  if (refsCount > 0) {
+    if (args.backend === 'imagen4') {
+      console.warn(`  ⚠ styleReferences total ${refsCount} 件 / imagen4 は未対応のため無視されます`);
+    } else {
+      console.log(`  styleRefs:  total ${refsCount} 件 attached (nanobanana multi-image input, v4.0.4 R11)`);
+    }
+  }
 
   const limited = args.limit ? targets.slice(0, args.limit) : targets;
   console.log(`  実行予定:   ${limited.length} 件`);
@@ -438,7 +473,7 @@ async function runAuto({ json, promptBasename, args }) {
     const t = limited[i];
     const pngPath = resolve(IMAGES_DIR, `${t.id}.png`);
     try {
-      const result = await callBackend(args.backend, t.prompt, args, ({ attempt, status, delayMs }) => {
+      const result = await callBackend(args.backend, t.prompt, args, t.styleReferences, ({ attempt, status, delayMs }) => {
         console.warn(`     ⚠ HTTP ${status} retry attempt ${attempt} in ${delayMs} ms`);
       });
       if (!isPng(result.bytes)) {

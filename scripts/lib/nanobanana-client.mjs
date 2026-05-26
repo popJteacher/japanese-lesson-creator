@@ -15,7 +15,7 @@
 //   NANOBANANA_PRICE_PER_M_OUTPUT_TOKENS 単価（$/M output tokens・未確定モデルは null）
 //   NANOBANANA_IMAGE_TOKEN_ESTIMATE      1 画像あたりの推定 output token 数（公式 ~1290）
 //   estimateNanobananaCost(model, totalOutputTokens) → number | null
-//   generateNanobananaImage({ prompt, model?, responseModalities?, retry?, onRetry? })
+//   generateNanobananaImage({ prompt, model?, responseModalities?, referenceImages?, retry?, onRetry? })
 //                                        → { bytes: Buffer, mimeType, model, durationMs,
 //                                            costUsd, sampleCount, usageMetadata }
 //
@@ -26,6 +26,11 @@
 //     → 公式 ~1290 tokens/image × $30/M = ~$0.0387/image (Nano Banana の場合)
 //     → 実コストは usageMetadata.candidatesTokenCount から都度算出
 //   - 1 リクエストで複数枚生成は API レベルではサポートされるが本 client は 1 枚固定
+//   - v4.0.4 R11 (2026-05-24, X-c 復元 2026-05-26): referenceImages による
+//     multi-image input 対応 ({ bytes: Buffer, mimeType: string }[]) を text
+//     prompt 前に inlineData part として並べる。in-context style transfer 用途
+//     （擬似 LoRA）。input image は 1024x1024 換算 ~1290 tokens/枚、$0.30/M
+//     課金で 1 枚あたり ~$0.0004 上乗せ。Phase 6 で自作 LoRA 切替予定。
 //
 // エラーマッピング（imagen-client.mjs と統一）:
 //   401 → "GEMINI_API_KEY invalid"
@@ -105,6 +110,10 @@ export function estimateNanobananaCost(model, totalOutputTokens) {
  * @param {string} opts.prompt          プロンプト本文（aspect ratio directive は本文に含めること）
  * @param {string} [opts.model]         既定 'gemini-2.5-flash-image'
  * @param {string[]} [opts.responseModalities] 既定 ['IMAGE']（'TEXT' を含めるとテキストも返す可能性）
+ * @param {Array<{bytes: Buffer, mimeType: string}>} [opts.referenceImages]
+ *                                      v4.0.4 R11: in-context style transfer 用 reference images。
+ *                                      text prompt 前に inlineData part として並ぶ（Gemini multi-image
+ *                                      慣例）。1 枚 ~1290 tokens 入力。空 / 未指定なら従来通り text-only。
  * @param {object} [opts.retry]         retry 設定（既定 RETRY_DEFAULTS）
  * @param {function} [opts.onRetry]     ({ attempt, status, delayMs }) => void
  * @returns {Promise<{ bytes: Buffer, mimeType: string, model: string, durationMs: number,
@@ -114,6 +123,7 @@ export async function generateNanobananaImage({
   prompt,
   model = DEFAULT_NANOBANANA_MODEL,
   responseModalities = ['IMAGE'],
+  referenceImages = [],
   retry = RETRY_DEFAULTS,
   onRetry = null,
 } = {}) {
@@ -131,14 +141,33 @@ export async function generateNanobananaImage({
       throw new Error(`generateNanobananaImage: invalid responseModality "${m}" (allowed: ${[...VALID_RESPONSE_MODALITIES].join(', ')})`);
     }
   }
+  if (!Array.isArray(referenceImages)) {
+    throw new Error('generateNanobananaImage: referenceImages must be an array (or omitted)');
+  }
+  for (const [i, ref] of referenceImages.entries()) {
+    if (!ref || !Buffer.isBuffer(ref.bytes) || typeof ref.mimeType !== 'string') {
+      throw new Error(`generateNanobananaImage: referenceImages[${i}] must be { bytes: Buffer, mimeType: string }`);
+    }
+    if (!/^image\//i.test(ref.mimeType)) {
+      throw new Error(`generateNanobananaImage: referenceImages[${i}].mimeType must be image/* (got "${ref.mimeType}")`);
+    }
+  }
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY missing (set in .env; .env.example 参照)');
   }
 
   const url = `${ENDPOINT_BASE}/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  // Gemini multi-image 慣例: 画像 parts を先、text part を最後に並べる。
+  // text 内で referenceImages を indexed reference できる（例: "image_1 のスタイルに合わせて…"）。
+  const requestParts = [
+    ...referenceImages.map(ref => ({
+      inlineData: { mimeType: ref.mimeType, data: ref.bytes.toString('base64') },
+    })),
+    { text: prompt },
+  ];
   const body = {
-    contents: [{ parts: [{ text: prompt }] }],
+    contents: [{ parts: requestParts }],
     generationConfig: {
       responseModalities,
     },
