@@ -168,4 +168,4 @@ read-only なので副作用無く何度でも実行できる。
 - 兄弟 skill: [/lesson-scaffold](lesson-scaffold.md) (Phase 1) /
   [/lesson-check](lesson-check.md) + [/lesson-fill-vocab](lesson-fill-vocab.md) (Phase 2) /
   [/lesson-build-registry](lesson-build-registry.md) (同 Phase 3)
-- 全体まとめ docs (最後に書く): `docs/SKILLS_MANUAL.md`
+- 全体まとめ docs: [docs/LESSON_SKILLS_MANUAL.md](../../docs/LESSON_SKILLS_MANUAL.md)

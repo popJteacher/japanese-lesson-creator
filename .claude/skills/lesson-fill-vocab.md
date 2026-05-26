@@ -142,4 +142,4 @@ skip された語彙は人間判断:
 - 14 ルール B-5: [archive/handoffs/lesson_master_rules_handoff_v2.md](../../archive/handoffs/lesson_master_rules_handoff_v2.md)
 - vocab_catalog 構造: [data/vocab_catalog.json](../../data/vocab_catalog.json) (17,500+ entries / schemaVersion 1.2)
 - 兄弟 skill: [/lesson-scaffold](lesson-scaffold.md) (Phase 1) / [/lesson-check](lesson-check.md) (本 Phase 同時) / `/lesson-suggest-activities` `/lesson-build-registry` (Phase 3 未実装)
-- 全体まとめ docs (最後に書く): `docs/SKILLS_MANUAL.md`
+- 全体まとめ docs: [docs/LESSON_SKILLS_MANUAL.md](../../docs/LESSON_SKILLS_MANUAL.md)

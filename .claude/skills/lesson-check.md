@@ -140,4 +140,4 @@ TODO:  0
 - 14 ルール出典: [archive/handoffs/lesson_master_rules_handoff_v2.md](../../archive/handoffs/lesson_master_rules_handoff_v2.md)
 - schema 検査: [scripts/validate.mjs](../../scripts/validate.mjs)
 - 兄弟 skill: [/lesson-scaffold](lesson-scaffold.md) (Phase 1) / `/lesson-fill-vocab` (本 Phase 同時) / `/lesson-suggest-activities` `/lesson-build-registry` (Phase 3 未実装)
-- 全体まとめ docs (最後に書く): `docs/SKILLS_MANUAL.md`
+- 全体まとめ docs: [docs/LESSON_SKILLS_MANUAL.md](../../docs/LESSON_SKILLS_MANUAL.md)
