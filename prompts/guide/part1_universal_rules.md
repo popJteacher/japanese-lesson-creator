@@ -911,3 +911,118 @@ Generalization to other dynamic activities: 学び 13's underlying principle (na
 - A-1〜A-11 はテキストとして本ルール本文を Template B に注入する（外部参照ではなく inline 展開）
 - Per-vocab-type 変数（`{ACCENT}` / `{SIGNATURE}` / `{ACTIVITIES_BLOCK}` / `{SURROUNDINGS_BLOCK}` 等）は PART 5.10 BUILDING_CUES per-building entry から skill が解決して埋める
 - 未移行 building（銀行 / 病院 / 駅 / スーパー）は当面本ルール適用外（v3.0 path で生成）。lesson_02 以降で v4.0.4 fields を BUILDING_CUES に追加した時点で本ルール適用に移行する
+
+---
+
+## PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE
+
+> 例文画像（`vocab_type == "example_sentence"`）における NAMED_CHARACTER reference attachment 規律（v4.0.5 新規・2026-05-26）。
+> PART 1.12 building reference attachment の学び 6（text-only path は cross-vocab-type style coherence に根本的限界がある）を **同一人物が複数 example に登場するケース** に類推適用する。lesson_01 X-c (2026-05-26) で「リンさんが ex_L01_002 / 005 / 006 / 007 等で同一人物に見えること」が学習者理解に直結すると確認された。sentence 内に NAMED_CHARACTER 名を含む例文画像は portrait reference attach を必須化する。
+
+### Scope
+
+- `vocab_type == "example_sentence"` で **sentence 内に NAMED_CHARACTER（[PART 5.9](part5_vocab_reference_appendix.md#59-named_character_profiles)）の名前を含む**カード（`lesson_NN.json` の `patterns[].examples[]` 由来 `ex_L*_*` 全て）。
+- building には適用しない（[PART 1.12](#part-112-building_reference_attachment_rule) が既存・5-image 方式）。person card 単独（`vocab_type == "vocabulary_person"`）にも適用しない（生成時は他キャラ ref 不要・PART 5.9 fixed_features 記述で足りる）。
+- generic 人物のみ登場する例文（NAMED_CHARACTER 名が sentence に無いもの）には適用しない（ref attach 機構をスキップ・Template C `[REFERENCE]` section を省略）。
+
+### Principle
+
+```
+Example-sentence illustrations that reference NAMED_CHARACTERs (the per-lesson fixed cast — 鈴木さん / リンさん / キムさん / タノムさん / ケリーさん in lesson_01) MUST attach the corresponding character portrait(s) as reference image(s) to the nanobanana request. Visual identity consistency across multiple examples (same character recognizable as same person across ex_L01_001 / ex_L01_004 / ex_L01_012, etc.) is critical to learner comprehension — learners need to recognize "this is the same Suzuki-san who appeared two slides ago".
+
+Text-only NAMED_CHARACTER_PROFILES descriptions (fixed_features.face / character_visual_hints) cannot reliably reproduce a stable visual identity across separate generations; reference image attachment achieves this consistency.
+
+PART 1.12 学び 6 ("text-only path は cross-vocab-type style coherence に根本的限界") applies here in a structurally analogous way: instead of cross-vocab-type coherence (person → building), this is cross-example same-character coherence (リンさんの ex_L01_002 → ex_L01_005 → ex_L01_006). The fix is the same — replace text inheritance with in-context style transfer from attached reference images.
+```
+
+### rule_a — per-character single-image structure
+
+```
+For each NAMED_CHARACTER detected in the sentence, ONE portrait reference image is attached. The portrait is the canonical character_asset entry (char_<name> in master_image_registry, e.g., char_鈴木.png) — a single-figure full-body portrait against a neutral cream background, no scene, no props beyond character_visual_hints (per PART 5.9).
+
+If a sentence references N distinct NAMED_CHARACTERs (e.g., "鈴木さんとキムさんは先生です。"), then N portrait references are attached (max 4 per request to keep nanobanana stable; if a sentence somehow has 5+ NAMED_CHARACTERs, only the first 4 in sentence-occurrence order are attached and a warning is logged).
+
+Reference image roles for a single NAMED_CHARACTER sentence:
+  (image_1) NAMED_CHARACTER_PORTRAIT_A = portraitPath of NAMED_CHARACTER first appearing in sentence
+  (image_2..N) NAMED_CHARACTER_PORTRAIT_B..N = portraitPath of subsequent NAMED_CHARACTERs in sentence order
+
+The portrait image_N's role in the text prompt is character identity transfer — face structure, hair color & shape, outfit signature, accessory (e.g., リンさんの backpack / 鈴木さんの suit / タノムさんの white coat + stethoscope), nationality_visual_hints (skin tone, flag badge if present).
+```
+
+### rule_b — text prompt cross-reference (aspect-specific)
+
+```
+The text prompt's [REFERENCE] section MUST cross-reference each portrait image by ROLE (i.e., the character's PART 5.9 entry name) and ASPECT — NOT as a flat "all attached refs":
+
+- "image_1 = portrait of 鈴木さん (per PART 5.9 NAMED_CHARACTER_PROFILES). Inherit FACE STRUCTURE, HAIR COLOR & STYLE, OUTFIT (navy/charcoal business suit), and OVERALL BUILD from this reference."
+- "image_2 = portrait of リンさん (per PART 5.9). Inherit FACE STRUCTURE, HAIR (long straight dark, mid-length+), OUTFIT (casual smart top + jeans), BACKPACK, and EAST-ASIAN phenotype from this reference."
+
+Generic phrasing like "match the style of the attached portraits" is sub-optimal — nanobanana cannot determine which character is which from a flat reference list. Per-character ROLE+ASPECT addressing is required (per PART 1.12 rule_b 学び 9, applied here to NAMED_CHARACTERs).
+
+When the scene shows the named character in a NEW outfit or NEW location that differs from the portrait's outfit/scene_hints (e.g., portrait shows 鈴木さん in business suit in classroom, but scene requires 鈴木さん in casual wear at a park), the text prompt MUST explicitly override the outfit and scene while preserving FACE STRUCTURE / HAIR / BUILD / phenotype — the portrait reference still governs identity even when surface clothing differs.
+```
+
+### rule_c — placeholder set
+
+```
+Template C (example_sentence) MUST expose NAMED_CHARACTER reference placeholders that the skill fills from PART 5.9 NAMED_CHARACTER_PROFILES per-character data:
+
+- {NAMED_CHARACTER_REFERENCES} — the rule_b cross-reference block, expanded per character (1-4 entries). Empty (no [REFERENCE] section emitted) when no NAMED_CHARACTER is detected in the sentence.
+
+The skill output JSON includes a `styleReferences: [path, ...]` array (0-4 absolute paths) per example_sentence entry. Same `{bytes, mimeType}` attachment mechanism as PART 1.12 — `nanobanana-client.mjs` is unchanged.
+```
+
+### rule_d — cost / economics
+
+```
+Reference image attachment adds approximately +$0.0004 per portrait reference (~1290 tokens × $0.30/M ≈ $0.00039 per ref). For typical lesson_01 examples (1-2 NAMED_CHARACTERs per sentence), the overhead is ~$0.0008 over the base $0.0387 per generation (+2%). Negligible compared to the identity-drift quality loss of text-only path.
+
+For a 15-example lesson where ~13 examples reference NAMED_CHARACTERs (avg ≈ 1.2 chars/example), total overhead ≈ +$0.012 per full lesson regeneration. Insignificant.
+```
+
+### Detection algorithm (skill responsibility)
+
+```
+For each example_sentence entry being prompt-generated:
+
+1. Read lesson_NN.json (lesson context provides namedCharacters[]).
+2. Build the detected character set as the UNION of:
+   (a) sentence-string detection: tokenize sentence by NAMED_CHARACTER names. For each
+       named character in lesson.namedCharacters[], if sentence contains "<name>さん"
+       or "<name>" alone → add to detected set. Order = sentence-occurrence order
+       (string.find() position).
+   (b) example.sceneCharacters[] field (v4.0.5): an OPTIONAL per-example array that
+       explicitly declares the on-scene NAMED_CHARACTERs for sentences where the
+       Japanese name does not literally appear in the sentence (subject-omitted
+       sentences like 「先生ですか。」). Order = array order.
+   Order in the final union: (a) first (sentence-occurrence order), then (b) entries
+   not already present (array order). Duplicates are de-duped.
+3. For each detected NAMED_CHARACTER, resolve portraitPath from PART 5.9 NAMED_CHARACTER_PROFILES (or, if defined locally on the lesson, from lesson.namedCharacters[i].portraitPath — local takes precedence).
+4. Populate styleReferences: [...] (0-4 paths) in the skill output entry.
+5. Render {NAMED_CHARACTER_REFERENCES} in Template C [REFERENCE] section per rule_b.
+6. If 0 NAMED_CHARACTERs are detected (neither sentence nor sceneCharacters), OMIT the entire [REFERENCE] section from the output prompt and emit styleReferences: [] (empty array).
+
+Rationale for sceneCharacters: Japanese conversation in introductory textbooks frequently
+omits the subject (主語省略). For 「先生ですか。」 with intended addressee 鈴木さん, the
+sentence carries no string-detectable name, yet the scene logically requires 鈴木's
+portrait reference to render the addressee consistently. sceneCharacters provides a
+non-invasive override that preserves the original sentence (PDF fidelity) while still
+producing the correct visual identity in generation.
+```
+
+### enforcement
+
+- `scripts/lib/nanobanana-client.mjs`: `referenceImages: [{bytes, mimeType}]` 引数（PART 1.12 building 用で v4.0.4 R11 実装済・本ルールでも流用、改修不要）
+- `scripts/generate-images-local.mjs`: `loadReferenceImages()` helper / per-target `styleReferences` 配列流入（PART 1.12 と同経路・改修不要）
+- Skill output (`data/image_prompts_skill.json`): per-example_sentence entry に `styleReferences: [absolute path, ...]` (0-4 件) を必ず付与する
+- PART 5.9 NAMED_CHARACTER_PROFILES: 各 entry に `portraitPath` field を必ず持たせる（本ルールが参照する constants 表として [§Reference image constants](part5_vocab_reference_appendix.md#reference-image-constants-v405) を併設）
+- `generate-image-prompt` skill: lesson mode で `patterns[].examples[]` を走査し、Template C で prompt 生成 + NAMED_CHARACTER 検出 + styleReferences 構築する処理を追加（[§lesson-examples flow](../../.claude/skills/generate-image-prompt.md)）
+- 既存 `ex_L*_*` prompt（PRE-v4.0.5・generic 人物方針 = lesson_01 v2.6 Phase 1-F 由来）は段階的に再生成して本ルールに移行する。lesson_01 X-c (2026-05-26) で 13 件（13 example × 1 NAMED_CHARACTER ref 中央値）を再生成・移行第一陣
+
+### Lessons learned applied
+
+| 学び | 内容 | 適用箇所 |
+|---|---|---|
+| 6 | text-only path は cross-vocab-type style coherence に根本的限界 | [PART 1.12](#part-112-building_reference_attachment_rule) + 本 PART 1.14（cross-example same-character coherence への類推適用） |
+| 9 | cross-reference は aspect 別 specific が有効 | 本 PART 1.14 rule_b（ROLE+ASPECT addressing per character） |
+| X-c | lesson_01 X-c 移行（13 件・初回適用）で named-character recognition の学習者影響を実測 | 本ルール初回 production 適用ログ（2026-05-26） |

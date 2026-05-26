@@ -42,7 +42,7 @@ const CANONICAL = {
     resolve(ROOT, 'prompts/guide/part5_vocab_reference_appendix.md'),
     resolve(ROOT, 'prompts/guide/part6_output_instructions.md'),
   ],
-  guideManifestExpectedHashPrefix: '0673ca2d537e', // v5.0 + v4.0.4 building 取り込み (2026-05-25 / worktree phase4-prompt-plan ff-merge) — PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE + PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4 (A-1〜A-11 + 13 学び) + PART 3.2 building v4.0.4 design + PART 4 Template B 5-image reference (17 placeholders) + PART 2 BACKGROUND_BY_TYPE.building → legacy 専用化 + PART 5.10 BUILDING_CUES 4 件に v4_0_4_* fields + PART 6 C5 v4.0.4 採用 building も NOT_TOKEN 必須化
+  guideManifestExpectedHashPrefix: '15bd5fbf566b', // v4.0.5 person reference attachment + sceneCharacters union (2026-05-26 / X-c) — PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE 新設 (NAMED_CHARACTER detect → portrait 1-4 枚 attach / cross-example same-character coherence) + detection algorithm に sentence + sceneCharacters[] の union 追加（主語省略文の addressee 明示） + PART 5.9 NAMED_CHARACTER_PROFILES に portraitPath field 追加 (5 entries + Reference image constants table) + PART 4 Template C [REFERENCE] section + {NAMED_CHARACTER_REFERENCES} placeholder + styleReferences output field。前 hash: 0673ca2d537e (v5.0 + v4.0.4 building) / a05d8907534a (X-c 中間)
   // S列プロンプト JSON の置き場
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため

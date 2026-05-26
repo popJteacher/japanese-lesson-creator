@@ -288,12 +288,17 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ## Template C: example_sentence
 
 > v4.1 (2026-05-22) Phase 5 ④ Q1 A：v4.0 universal rules（PART 1.8 FACIAL_FEATURES / PART 1.10 HEAD_BODY_PROPORTION / FOOTWEAR_RULE）を `vocabulary_person` 同様に inline 追加。
+> v4.0.5 (2026-05-26)：[PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-114-person_reference_attachment_rule) の `[REFERENCE]` セクションを追加。sentence 内に NAMED_CHARACTER が登場する場合のみ、対応 portrait を 1〜4 枚 attach し identity transfer を行う。NAMED_CHARACTER 不在の例文では `[REFERENCE]` セクション自体を出力しない（skill が分岐）。
 
 ```
 [PURPOSE]
 Create an example sentence illustration for Japanese language learning materials.
 The image must clearly convey the grammatical relationship in the sentence:
 [{SENTENCE_JP}] ({SENTENCE_EN})
+
+[REFERENCE]
+(This section is emitted ONLY when the sentence contains one or more NAMED_CHARACTERs from PART 5.9 NAMED_CHARACTER_PROFILES. If no NAMED_CHARACTER is detected, the entire [REFERENCE] section is omitted by the skill.)
+{NAMED_CHARACTER_REFERENCES}
 
 [SUBJECT]
 {CHARACTER_DESCRIPTIONS}
@@ -350,8 +355,15 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 
 **Used for**: `vocab_type = "example_sentence"`（lesson-level、語彙ではない）
 **Aspect ratio**: 16:9
-**Rule references**: [PART 1.5 PHENOTYPE](part1_universal_rules.md#part-15-phenotype_specification_rule), [PART 1.8 FACIAL_FEATURES](part1_universal_rules.md#part-18-facial_features_rule), [PART 1.10 HEAD_BODY_PROPORTION](part1_universal_rules.md#part-110-head_body_proportion_rule), [PART 1.11 FOOTWEAR](part1_universal_rules.md#part-111-footwear_rule), [PART 3.9 example_sentence](part3_vocab_type_rules.md#39-example_sentence), [PART 5.9 NAMED_CHARACTER_PROFILES](part5_vocab_reference_appendix.md#59-named_character_profiles), [PART 5.14 VISUAL_SYMBOLS](part5_vocab_reference_appendix.md#514-visual_symbols)
-**Placeholders**: `[{SENTENCE_JP}]`, `{SENTENCE_EN}`, `{CHARACTER_DESCRIPTIONS}`, `{SCENE_DESCRIPTION}`, `{VISUAL_SYMBOL_IF_NEEDED}`, `{COMPOSITION_NOTES}`
+**Rule references**: [PART 1.5 PHENOTYPE](part1_universal_rules.md#part-15-phenotype_specification_rule), [PART 1.8 FACIAL_FEATURES](part1_universal_rules.md#part-18-facial_features_rule), [PART 1.10 HEAD_BODY_PROPORTION](part1_universal_rules.md#part-110-head_body_proportion_rule), [PART 1.11 FOOTWEAR](part1_universal_rules.md#part-111-footwear_rule), [PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-114-person_reference_attachment_rule), [PART 3.9 example_sentence](part3_vocab_type_rules.md#39-example_sentence), [PART 5.9 NAMED_CHARACTER_PROFILES](part5_vocab_reference_appendix.md#59-named_character_profiles), [PART 5.14 VISUAL_SYMBOLS](part5_vocab_reference_appendix.md#514-visual_symbols)
+**Placeholders**: `[{SENTENCE_JP}]`, `{SENTENCE_EN}`, `{CHARACTER_DESCRIPTIONS}`, `{SCENE_DESCRIPTION}`, `{VISUAL_SYMBOL_IF_NEEDED}`, `{COMPOSITION_NOTES}`, `{NAMED_CHARACTER_REFERENCES}` (v4.0.5 / [PART 1.14](part1_universal_rules.md#part-114-person_reference_attachment_rule); the entire `[REFERENCE]` section is omitted when no NAMED_CHARACTER is detected)
+
+**styleReferences (output JSON field)**: 0-4 paths drawn from PART 5.9 NAMED_CHARACTER_PROFILES `portraitPath` field per character detected in `{SENTENCE_JP}`. Empty array `[]` when no NAMED_CHARACTER appears. Same `referenceImages: [{bytes, mimeType}, ...]` attachment mechanism as PART 1.12 building — `nanobanana-client.mjs` is unchanged.
+```json
+"styleReferences": [
+  "data/images/char_鈴木.png"
+]
+```
 
 ---
 
