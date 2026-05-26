@@ -24,7 +24,7 @@
       "image://lesson{N}/action/{serial}": "action_L{N}_{serial} を参照",
       "image://lesson{N}/example/{id}": "ex_L{N}_{serial} を参照"
     },
-    "totalEntries": 485,
+    "totalEntries": 494,
     "lastModifiedBy": "handoff_v2_4.md §5 適用（v1.9）",
     "_addingNewEntry": "新エントリ追加手順: (1) primaryKeyRules に従いキー決定 (2) entries に追加 (3) status: pending で開始 (4) GAS 実行後 generated に更新 (5) レビュー後 approved に更新",
     "changes": [
@@ -439,7 +439,7 @@
       "patternId": "p2",
       "sentence": "リンさんですか。",
       "sentenceEn": "Is it Lin-san?",
-      "slot": "文型②の例文",
+      "slot": "文型②の例文 (2-1 アンカー)",
       "status": "pending",
       "images": [
         {
@@ -461,7 +461,7 @@
       "patternId": "p2",
       "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
       "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
-      "slot": "文型②の例文",
+      "slot": "文型②の例文 (2-2)",
       "status": "pending",
       "images": [
         {
@@ -481,9 +481,9 @@
       "type": "example_images",
       "lesson": 1,
       "patternId": "p2",
-      "sentence": "先生ですか。→ はい、先生です。／いいえ、先生じゃありません。",
-      "sentenceEn": "Are you a teacher? → Yes, I am. / No, I'm not.",
-      "slot": "文型②の例文",
+      "sentence": "だれですか。",
+      "sentenceEn": "Who is it?",
+      "slot": "文型②の例文 (2-3 Q 単独)",
       "status": "pending",
       "images": [
         {
@@ -503,9 +503,9 @@
       "type": "example_images",
       "lesson": 1,
       "patternId": "p2",
-      "sentence": "韓国人ですか。→ はい、韓国人です。／いいえ、韓国人じゃありません。",
-      "sentenceEn": "Are you Korean? → Yes, I am. / No, I'm not.",
-      "slot": "文型②の例文",
+      "sentence": "キムさんです。",
+      "sentenceEn": "It's Kim-san.",
+      "slot": "文型②の例文 (2-4 A 単独)",
       "status": "pending",
       "images": [
         {
@@ -525,9 +525,9 @@
       "type": "example_images",
       "lesson": 1,
       "patternId": "p2",
-      "sentence": "だれですか。→ キムさんです。",
-      "sentenceEn": "Who is it? → It's Kim-san.",
-      "slot": "文型②の例文",
+      "sentence": "先生ですか。",
+      "sentenceEn": "Are you a teacher?",
+      "slot": "文型②の例文 (2-5 Q 単独)",
       "status": "pending",
       "images": [
         {
@@ -538,116 +538,6 @@
           "generatedAt": null,
           "regenerate": false,
           "originalImageUrl": "https://drive.google.com/uc?id=1U4J36JFAC4wiDFvWW5D6cjYCy8PZzBKu",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
-        }
-      ]
-    },
-    "ex_L01_011": {
-      "type": "example_images",
-      "lesson": 1,
-      "patternId": "p3",
-      "sentence": "タノムさんは東西病院の医者です。",
-      "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
-      "slot": "文型③の例文",
-      "status": "pending",
-      "images": [
-        {
-          "imageId": "ex_L01_011_img",
-          "filename": "ex_L01_011.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_011",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1UcdPe7IDRNVXlMGLcGBkIA3hluMfruR6",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
-        }
-      ]
-    },
-    "ex_L01_012": {
-      "type": "example_images",
-      "lesson": 1,
-      "patternId": "p3",
-      "sentence": "鈴木さんは東西学校の先生です。",
-      "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
-      "slot": "文型③の例文",
-      "status": "pending",
-      "images": [
-        {
-          "imageId": "ex_L01_012_img",
-          "filename": "ex_L01_012.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_012",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1YYylkJntE8yd-Msw2jwIhyBzaaQPEzSM",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
-        }
-      ]
-    },
-    "ex_L01_013": {
-      "type": "example_images",
-      "lesson": 1,
-      "patternId": "p3",
-      "sentence": "キムさんは東西銀行の会社員です。",
-      "sentenceEn": "Kim-san is an employee at Tozai Bank.",
-      "slot": "文型③の例文",
-      "status": "pending",
-      "images": [
-        {
-          "imageId": "ex_L01_013_img",
-          "filename": "ex_L01_013.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_013",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1YtimJ7AR-r1dTN7ncm9Lo4W7L9Ekp9Ke",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
-        }
-      ]
-    },
-    "ex_L01_014": {
-      "type": "example_images",
-      "lesson": 1,
-      "patternId": "p3",
-      "sentence": "リンさんは東西大学の学生です。",
-      "sentenceEn": "Lin-san is a student at Tozai University.",
-      "slot": "文型③の例文",
-      "status": "pending",
-      "images": [
-        {
-          "imageId": "ex_L01_014_img",
-          "filename": "ex_L01_014.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_014",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1dkHWEVvU6jICcdZCfUn77e71Dak70tBl",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
-        }
-      ]
-    },
-    "ex_L01_015": {
-      "type": "example_images",
-      "lesson": 1,
-      "patternId": "p3",
-      "sentence": "キムさんは東西デパートの会社員です。",
-      "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
-      "slot": "文型③の例文",
-      "status": "pending",
-      "images": [
-        {
-          "imageId": "ex_L01_015_img",
-          "filename": "ex_L01_015.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_015",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1cEREo2m4obffIo30UO5YQZuY6cVsHrg-",
           "pendedReason": "drive-orphaned",
           "pendedAt": "2026-05-26"
         }
@@ -8417,6 +8307,179 @@
           "imageUrl": null,
           "generatedAt": null,
           "regenerate": false
+        }
+      ]
+    },
+    "ex_L01_014": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "タノムさんは東西病院の医者です。",
+      "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
+      "slot": "文型③の例文 (3-1)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_014_img",
+          "filename": "ex_L01_014.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_014",
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1UcdPe7IDRNVXlMGLcGBkIA3hluMfruR6",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_015": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "鈴木さんは東西学校の先生です。",
+      "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
+      "slot": "文型③の例文 (3-2)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_015_img",
+          "filename": "ex_L01_015.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_015",
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1YYylkJntE8yd-Msw2jwIhyBzaaQPEzSM",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_016": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "キムさんは東西銀行の会社員です。",
+      "sentenceEn": "Kim-san is an employee at Tozai Bank.",
+      "slot": "文型③の例文 (3-3)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_016_img",
+          "filename": "ex_L01_016.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_016",
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1YtimJ7AR-r1dTN7ncm9Lo4W7L9Ekp9Ke",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_017": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "リンさんは東西大学の学生です。",
+      "sentenceEn": "Lin-san is a student at Tozai University.",
+      "slot": "文型③の例文 (3-4 アンカー)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_017_img",
+          "filename": "ex_L01_017.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_017",
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1dkHWEVvU6jICcdZCfUn77e71Dak70tBl",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_018": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p3",
+      "sentence": "キムさんは東西デパートの会社員です。",
+      "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
+      "slot": "文型③の例文 (3-5)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_018_img",
+          "filename": "ex_L01_018.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_018",
+          "generatedAt": null,
+          "regenerate": false,
+          "originalImageUrl": "https://drive.google.com/uc?id=1cEREo2m4obffIo30UO5YQZuY6cVsHrg-",
+          "pendedReason": "drive-orphaned",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_011": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "はい、先生です。／いいえ、先生じゃありません。",
+      "sentenceEn": "Yes, I am a teacher. / No, I am not a teacher.",
+      "slot": "文型②の例文 (2-6 A セット)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_011_img",
+          "filename": "ex_L01_011.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_011",
+          "generatedAt": null,
+          "regenerate": false,
+          "pendedReason": "v2.12-new-separation",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_012": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "韓国人ですか。",
+      "sentenceEn": "Are you Korean?",
+      "slot": "文型②の例文 (2-7 Q 単独)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_012_img",
+          "filename": "ex_L01_012.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_012",
+          "generatedAt": null,
+          "regenerate": false,
+          "pendedReason": "v2.12-new-separation",
+          "pendedAt": "2026-05-26"
+        }
+      ]
+    },
+    "ex_L01_013": {
+      "type": "example_images",
+      "lesson": 1,
+      "patternId": "p2",
+      "sentence": "はい、韓国人です。／いいえ、韓国人じゃありません。",
+      "sentenceEn": "Yes, I am Korean. / No, I am not Korean.",
+      "slot": "文型②の例文 (2-8 A セット)",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L01_013_img",
+          "filename": "ex_L01_013.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson1_v7.json#ex_L01_013",
+          "generatedAt": null,
+          "regenerate": false,
+          "pendedReason": "v2.12-new-separation",
+          "pendedAt": "2026-05-26"
         }
       ]
     }
