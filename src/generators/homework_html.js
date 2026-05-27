@@ -333,6 +333,20 @@ section.lesson-section p { margin: 0 0 12px; }
   text-align: center;
   margin: 0;
 }
+/* v0.3: practiceTemplates 複数件を縦並びで表示するためのコンテナ */
+.exercise.hint-exercise .templates-block {
+  display: flex; flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  align-items: center;
+}
+.exercise.hint-exercise .template-row {
+  text-align: center;
+}
+.exercise.hint-exercise .template-row.no-input {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
 
 /* ── 音声ボタン ── */
 .audio-btn {
@@ -846,12 +860,14 @@ section.lesson-section p { margin: 0 0 12px; }
 
   /** 1 つの練習エクササイズの HTML を組み立てる。
    *  images: [{ url, alt, label? }] の配列。1 件 → 単独画像、2 件 → 横並びで「＋」結合。
+   *  templates: [{ html, blankCount }] の配列 — v0.3 で 1 件→N件に拡張。
+   *    blankCount=0 の template は input なしで .template-row.no-input として灰色表示される。
    *  audioUrl: 音声 URL or null (null は disabled ボタン)。
-   *  audioLabel: ツールチップ用ラベル。 */
-  /** answers: array<array<string>> — 各要素は 1 組の正解（input 数と同じ長さ）。
-   *  any-match で○判定。null/undefined/[] のときは判定 UI を出さない（β1 で正解未定義の問題用）。
-   *  answerLabel: 「正解を表示」 で表示する説明（"鈴木さんは先生です。" 等）— 省略時は answers から自動合成。 */
-  function exerciseHtml({ index, images, templateHtml, audioUrl, audioLabel, answers, answerLabel }) {
+   *  audioLabel: ツールチップ用ラベル。
+   *  answers: array<array<string>> — 各要素は 1 組の正解（全 templates の input 数合計と同じ長さ）。
+   *  any-match で○判定。null/undefined/[] のときは判定 UI を出さない。
+   *  answerLabel: 「正解を表示」で表示する説明 — 省略時は answers から自動合成。 */
+  function exerciseHtml({ index, images, templates, audioUrl, audioLabel, answers, answerLabel }) {
     const isPair = images.length >= 2;
     const wrapperCls = 'hint-images' + (isPair ? '' : ' single');
     let imagesHtml = '';
@@ -881,6 +897,11 @@ section.lesson-section p { margin: 0 0 12px; }
     } else {
       imagesHtml = `<div class="${wrapperCls}"><span class="img-fallback">🖼️</span></div>`;
     }
+    const tplArr = Array.isArray(templates) ? templates : [];
+    const templatesHtml = tplArr.map((t) => {
+      const noInputCls = (t && t.blankCount === 0) ? ' no-input' : '';
+      return `<div class="template-row${noInputCls}">${t ? t.html : ''}</div>`;
+    }).join('');
     const hasJudge = Array.isArray(answers) && answers.length > 0;
     const answersJson = hasJudge ? esc(JSON.stringify(answers)) : '';
     const judgeUi = hasJudge ? `
@@ -898,7 +919,8 @@ section.lesson-section p { margin: 0 0 12px; }
       <div class="exercise hint-exercise"${hasJudge ? ` data-answers="${answersJson}"` : ''}>
         ${imagesHtml}
         <div class="question">
-          <strong>${index}.</strong> ${templateHtml}
+          <strong>${index}.</strong>
+          <div class="templates-block">${templatesHtml}</div>
         </div>
         ${judgeUi}
       </div>
@@ -922,15 +944,54 @@ section.lesson-section p { margin: 0 0 12px; }
     return `<div class="answer-list-label">${esc('正解の例：')}</div><ul>${items}</ul>`;
   }
 
+  /** v0.3: practiceTemplates 全件を 1 練習問題内に縦並び表示する。
+   *  各 template の blank 数を解析し、blank≥1 のテンプレに input を出し、blank=0 のテンプレ
+   *  (例: lesson_02 p2 「これは　なんですか。」 / p6 「どの人ですか。」) は input 無し
+   *  テキスト hint として表示する。
+   *
+   *  judge UI (自動採点) は「全テンプレが同形 (blank 数が一致) かつ単一答え組を構成可能」
+   *  なときのみ有効化する。異形 (例: lesson_01 p2 [2,1,1]) や blank=0 混在 (例: lesson_02 p6 [0,1])
+   *  は judge UI を出さず生徒の自己採点に委ねる。 */
+  function analyzeTemplates(rawTemplates) {
+    return (rawTemplates || []).filter(t => t && t.pattern).map(t => {
+      const blankCount = (t.pattern.match(/[_＿]{2,}/g) || []).length;
+      return { pattern: t.pattern, html: renderTemplate(t.pattern), blankCount };
+    });
+  }
+  /** 全 templates が同じ blank 数かどうか (judge UI 有効化条件)。 */
+  function templatesAreUniform(tplInfos) {
+    if (tplInfos.length === 0) return false;
+    const first = tplInfos[0].blankCount;
+    if (first === 0) return false;
+    return tplInfos.every(t => t.blankCount === first);
+  }
+  /** singleTemplateAnswers ([[a,b], ...]) を N 個 つなげる (multi-template 統合答え)。
+   *  例: single=[[name,attr]], N=3 → multi=[[name,attr,name,attr,name,attr]] */
+  function expandAnswersForMultiTpl(singleTplAnswers, tplCount) {
+    if (!Array.isArray(singleTplAnswers) || singleTplAnswers.length === 0) return null;
+    if (tplCount <= 1) return singleTplAnswers;
+    return singleTplAnswers.map(row => {
+      const out = [];
+      for (let i = 0; i < tplCount; i++) out.push(...row);
+      return out;
+    });
+  }
+  /** answerLabel を multi-template 用にコピーして連結 (改行で区切る)。 */
+  function expandAnswerLabel(singleLabel, tplCount) {
+    if (!singleLabel || tplCount <= 1) return singleLabel;
+    return Array(tplCount).fill(singleLabel).join(' / ');
+  }
+
   /** patterns[].practiceImageSource に応じて練習問題群の HTML を生成する。
    *   - "vocabulary"            : 語彙 1 件ごと 1 問 (画像: word.imageId)
    *   - "namedCharacters"       : 名前付きキャラ 1 件ごと 1 問 (画像: char.imageId)
    *   - "namedCharacters+vocab" : 人物 × 建物 のペア (画像 2 つ横並び)
    *   - 未指定                  : 後方互換で "vocabulary" として扱う */
   function buildExercisesFor(pat, lesson, registryEntries, audioRegistry) {
-    const tpl = (pat.practiceTemplates || [])[0];
-    if (!tpl || !tpl.pattern) return '';
-    const templateHtml = renderTemplate(tpl.pattern);
+    const tplInfos = analyzeTemplates(pat.practiceTemplates);
+    if (tplInfos.length === 0) return '';
+    const tplCount = tplInfos.length;
+    const uniform = templatesAreUniform(tplInfos);
     const source = pat.practiceImageSource || 'vocabulary';
 
     if (source === 'namedCharacters' || source === 'namedCharacters+vocab') {
@@ -941,13 +1002,16 @@ section.lesson-section p { margin: 0 0 12px; }
         return chars.map((c, i) => {
           const charNameShort = (c.name || '').replace('さん', '');
           /* β1: pat.id で答えロジック分岐。p1 は examples からも拾える。p2 は質問形式で
-           * lesson_01 examples に該当形式が無いため namedCharacters fallback のみ。 */
-          const answers = (pat.id === 'p2')
+           * lesson_01 examples に該当形式が無いため namedCharacters fallback のみ。
+           * v0.3: multi-template の場合、uniform (全 blank 数一致) のときのみ judge UI 有効。 */
+          const singleAnswers = (pat.id === 'p2')
             ? extractAnswersP2Question(charNameShort, c)
             : extractAnswersP1(charNameShort, pat.examples, c);
-          const answerLabel = (pat.id === 'p2')
+          const singleLabel = (pat.id === 'p2')
             ? '{0}さんは{1}ですか。'
             : '{0}さんは{1}です。';
+          const answers = uniform ? expandAnswersForMultiTpl(singleAnswers, tplCount) : null;
+          const answerLabel = uniform ? expandAnswerLabel(singleLabel, tplCount) : null;
           return exerciseHtml({
             index: i + 1,
             images: [{
@@ -955,7 +1019,7 @@ section.lesson-section p { margin: 0 0 12px; }
               alt: c.name || '',
               label: c.name || '',
             }],
-            templateHtml,
+            templates: tplInfos,
             /* キャラクター名の音声(将来仕様・現状は audio registry に未収録 → グレーアウト) */
             audioUrl: audioUrlOf('char_' + charNameShort, audioRegistry),
             audioLabel: '人物名を聞く',
@@ -995,6 +1059,8 @@ section.lesson-section p { margin: 0 0 12px; }
 
         const bImgId = buildingObj.imageId || ('word_' + buildingWord);
         n++;
+        const singleAnswers = extractAnswersP3(charNameShort, buildingWord, occupation);
+        const singleLabel = '{0}さんは{1}の{2}です。';
         out.push(exerciseHtml({
           index: n,
           images: [
@@ -1003,11 +1069,11 @@ section.lesson-section p { margin: 0 0 12px; }
             { url: imgUrl(bImgId, registryEntries, 256),
               alt: buildingObj.word, label: buildingObj.word },
           ],
-          templateHtml,
+          templates: tplInfos,
           audioUrl: audioUrlOf(buildingObj.audioId || bImgId, audioRegistry),
           audioLabel: '語彙の音声を聞く',
-          answers: extractAnswersP3(charNameShort, buildingWord, occupation),
-          answerLabel: '{0}さんは{1}の{2}です。',
+          answers: uniform ? expandAnswersForMultiTpl(singleAnswers, tplCount) : null,
+          answerLabel: uniform ? expandAnswerLabel(singleLabel, tplCount) : null,
         }));
       }
       return out.join('');
@@ -1016,16 +1082,18 @@ section.lesson-section p { margin: 0 0 12px; }
     /* デフォルト = vocabulary: その文型(またはshareVocabWith先)の語彙 1 件ごと 1 問 */
     const words = collectVocabForPattern(lesson, pat);
     if (words.length === 0) return '';
-    /* β1: blanks 数 = template 内の '＿＿' 出現数。1 個なら answer = [[word]]。
-     * 2 個以上は語彙のみでは答えを組めないので judge UI を出さない。 */
-    const blankCount = (tpl.pattern.match(/[_＿]{2,}/g) || []).length;
+    /* v0.3: uniform & blankCount=1 のとき、各 input に同じ vocab.word を埋める単一答え組。
+     *   例: lesson_02 p1 (3 tpl, blank 1×3) → [[w, w, w]] が input 3 個に対応
+     *   blank>=2 を含む / 異形 templates / blank=0 のみ は judge UI 出さない。 */
+    const firstBlanks = tplInfos[0].blankCount;
+    const canJudge = uniform && firstBlanks === 1;
     return words.map((w, i) => {
       const imgId = w.imageId || ('word_' + (w.word || ''));
-      const answers = (blankCount === 1 && w.word) ? [[w.word]] : null;
+      const answers = (canJudge && w.word) ? [Array(tplCount).fill(w.word)] : null;
       return exerciseHtml({
         index: i + 1,
         images: [{ url: imgUrl(imgId, registryEntries, 256), alt: w.word || '', label: w.word || '' }],
-        templateHtml,
+        templates: tplInfos,
         audioUrl: audioUrlOf(w.audioId || imgId, audioRegistry),
         audioLabel: (w.word || '') + ' を聞く',
         answers,
@@ -1207,6 +1275,6 @@ ${INLINE_JS}
 
   window.HomeworkHtml = {
     generate,
-    _meta: { version: '0.2-practiceImageSource-audio', createdAt: '2026-05-15' },
+    _meta: { version: '0.3-multi-template-render', createdAt: '2026-05-27' },
   };
 })();
