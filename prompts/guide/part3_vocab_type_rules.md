@@ -520,6 +520,7 @@ position（上・下・中・前・後ろ・右・左・となり・間）ごと
 > `vocab_type` 不要。lesson_NN.json の `patterns[].examples[]` 全件に Template C を適用。
 > **v4.0.6 (2026-05-26 X-c)**：lesson_01 ex_L01_* 18 件の text-only 一陣失敗 + Gemini 第二意見を踏まえて 5 つの subsection を追加（aspect_ratio_enforcement / scene_action_focus / affiliation_indoor / visual_symbol_restriction / reference_redundancy_avoidance）。これらは Template C 経由の全 lesson 共通規律。
 > **v4.0.7 (2026-05-27 X-c-6)**：v4.0.6 5 subsection を Gemini 第三/四意見で literal phrase 強化（Forbidden phrases 列挙含む）+ 3 subsection 新設（**particle_visual_mapping** / **horror_vacui_blank_surfaces** / **two_panel_qa_pattern**）。Gemini 命名の bias（Native 1:1 Square / Object Isolation / Diegetic Confusion / Horror Vacui / Gibberish Hallucination / Dollhouse Scaling / Exterior Facade Literalism / Feature Blending）を直接 defeat する verbatim wording に統一。
+> **v4.0.8 (2026-05-27 X-c-7)**：v4.0.7 PoC 18 件再生成 → 6 NG (004/005/010/011/012/013) + 1 注意 (016) 確定 → Gemini 第二/三回 consult で §3.9.2 5a / §3.9.3 / §3.9.8 の構造欠落を診断。4 変更を適用：（1）§3.9.2 5a に **national flag prop 必須化** (12-15% image fill / hand-held / [CONSTRAINTS] global flag ban を identity-only example_sentence で override)、（2）§3.9.3 に **Institution Anchor Table + fallback rule** (病院/銀行/学校/デパート/会社 verbatim cue / ≥2 anchors MUST appear)、（3）§3.9.8 に **§3.9.8.A Archetype Cue Table** 新設（先生/学生/会社員/医者/Nationality の diegetic prop lookup）、（4）§3.9.8 に **§3.9.8.C Subject Bifurcation Rule** 新設（yes-no question を Route 1 proper noun retain / Route 2 class attribute archetype shift に機械分岐）。Defeats: Identity Card Collapse / Archetype Generic Collapse / Generic Office Fallback / Subject Selection Ambiguity.
 
 ### Aspect ratio / framing
 
@@ -638,14 +639,21 @@ standing pose.
 
 文の主旨が **nationality / identity** （例：「鈴木さんは日本人です」「リンさんは中国人です」）で、manipulable object を伴う role action が文意に乖離する場合、**3.9.2 の object-manipulation MUST は適用除外**。代わりに以下のいずれかを使う：
 
-**(5a) Nationality identity**（〜は[国籍]です）の Required phrase:
+**(5a) Nationality identity**（〜は[国籍]です）の Required phrase (v4.0.8 強化):
 
 ```
-The subject is actively engaged in a dynamic, mid-conversation social gesture — body
-angled in a 3/4 posture, extending one arm in an open-palm introductory motion toward
-the viewer. They maintain engaged, direct eye contact, anchoring their identity through
-active social presence rather than a static pose.
+The subject MUST hold a small national flag prop representing the target country in
+ONE hand at chest level, with the flag panel facing squarely toward the viewer. The
+flag MUST occupy 12-15% of the image fill, rendered as a flat solid-color fabric panel
+optionally attached to a thin staff (pole) for hand-held grip stability, with zero
+text/letters/numbers on its surface. The subject's other
+hand executes a dynamic, mid-conversation social gesture — body angled in a 3/4 posture,
+extending the free arm in an open-palm introductory motion toward the viewer. They
+maintain engaged, direct eye contact, anchoring their nationality identity through the
+explicit flag prop combined with active social presence.
 ```
+
+> **v4.0.8 flag prop diegetic exception**: This hand-held flag is a **diegetic physical prop** (per Gemini round 2 推奨 α / round 3 §3.9.8.A note) and does NOT count toward 2D UI overlay SYMBOL_COUNT limits. It explicitly **overrides** the [CONSTRAINTS] global flag ban (`no flag display in example-sentence illustrations`) for identity-only nationality sentences.
 
 **(5b) Role identity without affiliation**（〜は[役職]です・affiliation なし）の Required phrase:
 
@@ -658,7 +666,7 @@ deliver instruction or service.
 
 > **Eye contact 解釈ルール**: "engaged eye contact during an active physical gesture or role action" IS PERMITTED（identity を viewer に伝える効果あり）。Forbidden phrase の `Looking at the viewer` は exclusively **passport-style, dead-eyed, physically static standing pose with arms hanging limply at the sides** を指す。Active gesture or role action 中の eye contact はこの禁止に該当しない。
 
-> **Flag prop 禁止**: identity-only であっても国旗 prop は禁止（[PART 6.4 ROLE_ANTI_FLAG_BLOCK](part6_output_instructions.md#role_anti_flag_block) は named character / role 系の標準）。
+> **Flag prop ルール (v4.0.8 改訂)**: identity-only **nationality** example_sentence (5a) では flag prop **必須**（上記 Required phrase の verbatim 通り）。**role identity** example_sentence (5b / 役職のみ・国籍なし) では flag prop **禁止** ([PART 6.4 ROLE_ANTI_FLAG_BLOCK](part6_output_instructions.md#role_anti_flag_block) で global ban を強制)。5a と 5b の機械分岐は §3.9.8.C の Route 1/2 判定とは独立で、`{SENTENCE_JP}` に `〜人` (nationality stem) が含まれるかで判定。
 
 ### 3.9.3 affiliation_indoor (v4.0.6 新規 / v4.0.7 強化)
 
@@ -688,15 +696,31 @@ is INSIDE the [INSTITUTION].
 - `In front of the [INSTITUTION]`
 - `Near the [INSTITUTION]`
 
-#### 実装テーブル
+#### §3.9.3.B Institution Anchor Table (v4.0.8 新規 / Gemini round 2 推奨)
 
-| 文型例 | 建物 | 屋内シーン | 識別要素 (建物種別) |
+> v4.0.7 までは `INSIDE the [INSTITUTION]` phrase 1 行に institution-specific 描写を委ねていたが、X-c-7 PoC で ex_L01_016 (銀行) が cubicle オフィス化し ex_L01_003/009 (会社員) と差別化できない fail が露呈。**Institution 固有 anchor を verbatim cue list として明文化し、`{SCENE_DESCRIPTION}` に ≥2 anchor MUST appear** を §3.9.3.B として強制する。
+>
+> **Defeats**: Generic Office Fallback / Institution Affordance Collapse.
+
+| 文型例 | 建物 | 屋内シーン | **§3.9.3.B verbatim anchor cues** (≥2 MUST appear in [SCENE & ACTION]) |
 |---|---|---|---|
-| 〜は〜病院の医者です | hospital | 診察室 (consultation room) | 診察デスク + 医療チャート (flat panel) + 検査ベッド shadow |
-| 〜は〜学校の先生です | school | 教室 (classroom) | wide blackboard + 教壇 + 並ぶ生徒 desk silhouette |
-| 〜は〜銀行の会社員です | bank | 銀行業務オフィス | カウンター + 計算機 + 電卓 + 受付窓口 silhouette |
-| 〜は〜大学の学生です | university | 講義室 (lecture hall) | 長卓 + 教科書 + 講義スクリーン (blank) |
-| 〜は〜デパートの会社員です | department store | 売り場フロア入口 | カウンター + 商品棚 silhouette + ガラス展示窓 |
+| 〜は〜病院の医者です | hospital | 診察室 (consultation room) | `examination bed` / `stethoscope on wall hook` / `IV stand` / `medical record clipboard` |
+| 〜は〜学校の先生です | school | 教室 (classroom) | `blackboard with chalk tray` / `student desks` / `lectern` |
+| 〜は〜銀行の会社員です | bank | 銀行業務オフィス | `teller counter with low partition` / `window grille` / `number-call display` / `safe vault door` |
+| 〜は〜大学の学生です | university | 講義室 (lecture hall) | `long lecture-hall desks` / `lectern` / `blackboard with chalk tray` |
+| 〜は〜デパートの会社員です | department store | 売り場フロア入口 | `clothing rack with hanging garments` / `display mannequin` / `cashier register` / `shopping bag stack` |
+| 〜は〜会社の会社員です | corporate office | オフィス | `cubicle partition wall` / `wall clock` / `printer/copier` / `multiple desks` |
+
+#### §3.9.3.B Fallback Rule (unlisted institution)
+
+```
+If the target institution is NOT listed in the §3.9.3.B table above, the
+{SCENE_DESCRIPTION} MUST explicitly enumerate AT LEAST TWO distinct, highly specific
+functional fixtures or architectural elements native to that institution's interior.
+Generic desks, blank walls, generic office cubicles, or any visual configuration that
+could plausibly represent any indoor workplace are PROHIBITED. The two fixtures MUST
+be ones that a learner can use to identify "this is institution X, not institution Y".
+```
 
 text-only 出力でも nanobanana が「屋外建物 + 立ち姿」に倒れる bias を回避するため、prompt 本文に必ず `INDOOR scene set inside ...` と明示する。
 
@@ -892,6 +916,26 @@ image — exactly ONE green checkmark (left) and exactly ONE red X-mark (right).
 render any other symbols, floating shapes, UI elements, or background text.
 ```
 
+#### §3.9.8.A Archetype Cue Table (v4.0.8 新規 / Gemini round 2 推奨)
+
+> v4.0.7 PoC で ex_L01_011 (B archetype 「先生」) が「ただのスーツ男性」化、ex_L01_013 (B archetype 「韓国人」) が「ただのブリーフ持ちスーツ男性」化した。原因は §3.9.8.B の SUBJECT block が `<INSERT EXACT AGE RANGE, HAIR, PHENOTYPE, OUTFIT DETAILS>` を埋めるだけで、role/nationality を視覚的に強制する **occupation-defining hand-held prop or identity-defining anchor** を持たないこと。本表で archetype 固有 cue を verbatim lookup として明文化する。
+>
+> **Defeats**: Archetype Generic Collapse / Occupation Cue Loss.
+
+**Rule**: The B-archetype SUBJECT block (§3.9.8.B) MUST explicitly enumerate ONE occupation-defining hand-held prop OR identity-defining environmental anchor from this verbatim lookup table:
+
+| Archetype class | Trigger token (in {SENTENCE_JP}) | **Required verbatim diegetic prop / anchor** |
+|---|---|---|
+| 先生 (teacher) | `先生` | `one piece of chalk in the writing hand + a small textbook in the non-writing hand` |
+| 学生 / 大学生 (student) | `学生`, `大学生` | `an open spiral notebook in the writing hand + a canvas backpack on the back` |
+| 会社員 (company employee) | `会社員` | `a flat-vector briefcase in one hand + a visible lanyard ID badge at chest level` |
+| 医者 (doctor) | `医者` | `a stethoscope around the neck + a clipboard in one hand` |
+| Nationality (〜人) | `日本人` / `中国人` / `韓国人` / `ベトナム人` / `アメリカ人` / etc. | `a small national flag prop representing the target country (10-15% image fill) held in one hand at chest level, panel facing the viewer, optionally with or without a thin staff (pole), no text on the flag` |
+
+> **Diegetic prop note**: These props are **3D diegetic objects** placed within scene space and **do NOT count** toward the SYMBOL_COUNT STRICT ENFORCEMENT clause (which limits 2D UI overlay symbols — checkmarks/X-marks/question marks/arrows). The hard distinction is: a textbook is a **prop**, a checkmark is a **symbol**.
+
+> **Combinatorial application**: For 2-panel B-archetype sentences that combine role and nationality (e.g., 「はい、日本人の先生です」 — hypothetical), the SUBJECT MUST enumerate BOTH the role prop AND the nationality flag prop. The character holds the flag in one hand and the role prop in the other.
+
 #### B. NAMED_CHARACTER なし 2-panel（generic role/nationality archetype）
 
 [SUBJECT] block (verbatim — character archetype の **fully specified** description が必要):
@@ -899,8 +943,11 @@ render any other symbols, floating shapes, UI elements, or background text.
 ```
 Establish a SINGLE, highly specific generic character archetype for this scene: <INSERT
 EXACT AGE RANGE, HAIR, PHENOTYPE, OUTFIT DETAILS per PART 5.8 role_key + PART 5.3
-phenotype>. This precise visual configuration serves as the strict master template. The
-model MUST internally lock this exact design before rendering the panels.
+phenotype>, holding <INSERT §3.9.8.A diegetic prop verbatim — e.g. "one piece of chalk
+in the writing hand + a small textbook in the non-writing hand" for teacher archetype>.
+This precise visual configuration serves as the strict master template. The model MUST
+internally lock this exact design — including the §3.9.8.A diegetic prop — before
+rendering the panels. Both panels MUST display the identical prop configuration.
 ```
 
 [SCENE & ACTION] block (verbatim):
@@ -925,6 +972,38 @@ SYMBOL COUNT STRICT ENFORCEMENT: There MUST be exactly TWO symbols in the entire
 image — exactly ONE green checkmark (left) and exactly ONE red X-mark (right). DO NOT
 render any other symbols, floating shapes, UI elements, or background text.
 ```
+
+#### §3.9.8.C Subject Bifurcation Rule for Yes-No Questions (v4.0.8 新規 / Gemini round 3 D-β)
+
+> v4.0.7 PoC で role-question (ex_L01_010「先生ですか」) と nationality-question (ex_L01_012「韓国人ですか」) が NAMED_CHARACTER (鈴木 / キム) portrait を添付して描かれた結果、「既知の正答を持つ本人を問う」という意味論的に弱い構図になった。一方 name-question (ex_L01_006「リンさんですか」) と name-affirmation 2-panel (ex_L01_007) は NAMED_CHARACTER 保持で user OK。両者を機械分岐するルールを Gemini round 3 で確定 (D-β)。
+>
+> **Defeats**: Subject Selection Ambiguity / Identity-Question Semantic Collapse.
+
+**Trigger**: This rule applies when `{SENTENCE_JP}` is a yes-no question or its affirmation/negation answer:
+- 単独 `?` overlay 単 panel: `〜ですか` (e.g., `リンさんですか。` / `先生ですか。` / `韓国人ですか。`)
+- 2-panel はい/いいえ pair: `はい、〜です。／いいえ、〜じゃありません。` (e.g., `はい、リンさんです。／…` / `はい、先生です。／…` / `はい、韓国人です。／…`)
+
+When this trigger matches, the generation skill (`/generate-image-prompt`) MUST dynamically route the `[SUBJECT]` block based on the **semantic class of the target word `X`**:
+
+##### Route 1: Proper Noun Route (Name-Question) — **NAMED_CHARACTER Retain**
+
+- **TRIGGER (mechanical)**: The target `X` is a specific individual's name. Detectable as `{SENTENCE_JP}` containing the substring `〜さん` (the canonical Japanese personal name suffix), e.g., `リンさん` / `鈴木さん` / `キムさん`. English-side equivalent: a capitalized proper noun like `Lin-san` / `Suzuki-san`.
+- **ACTION**: Retain the NAMED_CHARACTER portrait assignment (`{NAMED_CHARACTER_REFERENCES}` populated per PART 1.14). Do NOT shift to a generic archetype. The single panel mode emits the canonical NAMED_CHARACTER portrait + 1 `?` 2D overlay; the 2-panel mode emits §3.9.8.A block with the same NAMED_CHARACTER on both sides.
+- **Example**: For `リンさんですか。`, render canonical Lin-san portrait + `?` overlay. For `はい、リンさんです。／いいえ、…`, render §3.9.8.A 2-panel with Lin-san on both sides.
+
+##### Route 2: Class Attribute Route (Role/Nationality-Question) — **Archetype Shift**
+
+- **TRIGGER (mechanical)**: The target `X` represents a general category, occupation, or nationality. Detectable as `{SENTENCE_JP}` containing either:
+  - `〜人` substring (nationality stem — e.g., `日本人` / `中国人` / `韓国人` / `ベトナム人`), OR
+  - one of the listed **occupation tokens**: `先生`, `学生`, `大学生`, `会社員`, `医者` (matches the §3.9.8.A Archetype Cue Table). The list is extensible per the table.
+- **ACTION**: Force archetype shift. The `[SUBJECT]` MUST use the generic B-archetype definition (§3.9.8.B SUBJECT block) with the corresponding §3.9.8.A diegetic prop. The skill MUST NOT attach any NAMED_CHARACTER portrait — `styleReferences: []` and `[REFERENCE]` section is omitted. The single panel mode emits generic archetype + 1 `?` 2D overlay; the 2-panel mode emits §3.9.8.B block (with §3.9.8.A prop) on both sides.
+- **Example**: For `先生ですか。`, render generic teacher archetype (chalk + textbook) + `?` overlay. For `韓国人ですか。`, render generic Korean adult archetype (small Korean flag prop, 10-15% image fill) + `?` overlay. For `はい、先生です。／いいえ、…`, render §3.9.8.B 2-panel with teacher archetype (chalk + textbook) on both sides.
+
+##### Disambiguation note
+
+If both triggers match the same sentence (theoretically — e.g., a sentence containing both `〜さん` and `〜人`), **Route 1 wins** (proper noun takes precedence). Rationale: name-question pedagogy is more specific than class-attribute question; the named character's identity card is the primary referent.
+
+If neither trigger matches (e.g., a yes-no question over some attribute not yet covered by §3.9.8.A), fall back to **Route 1 + concrete sentence-context props** (treat as proper-noun referent, with the skill emitting a warning log entry for human review and §3.9.8.A table extension).
 
 ### Composition: CHARACTER_DESCRIPTIONS + SCENE
 

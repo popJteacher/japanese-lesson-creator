@@ -20,6 +20,12 @@
       "cost_usd": 1.1223,
       "lastUpdated": "2026-05-26T11:57:57.133Z",
       "lastBackend": "nanobanana"
+    },
+    "2026-05-27": {
+      "count": 25,
+      "cost_usd": 0.9675,
+      "lastUpdated": "2026-05-27T04:41:03.803Z",
+      "lastBackend": "nanobanana"
     }
   }
 }

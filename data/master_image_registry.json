@@ -38,7 +38,7 @@
       "v1.9 (2026-05-17): handoff_v2_4.md §5 適用。[5-D] 新規追加9件（word_犬/写真 + ex_L02_029〜035）。[5-E] outdated化6件（ex_L02_002/005/006/011/012/013）。[5-F] sentence更新6件（ex_L02_003/004/007/008/009/010・lesson_02.json v2.11.7 imageId採番に整合）。totalEntries: 95件。",
       "v1.10 (2026-05-26): ローカル環境移行後 Drive アクセス不可となった 29 件 (ex_L01_*, char_*, vocab_*/word_*) を pending 化。元 URL は originalImageUrl に退避。今後 skill pipeline で再生成予定。"
     ],
-    "lastModified": "2026-05-26"
+    "lastModified": "2026-05-27"
   },
   "entries": {
     "word_医者": {
@@ -330,8 +330,17 @@
       "sentence": "鈴木さんは先生です。",
       "sentenceEn": "Suzuki-san is a teacher.",
       "slot": "文型①の例文",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_001_001",
+          "filename": "ex_L01_001.png",
+          "imageUrl": "data/images/ex_L01_001.png",
+          "promptRef": "_xc_targets.json#ex_L01_001",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -348,8 +357,17 @@
       "sentence": "リンさんは大学生です。",
       "sentenceEn": "Lin-san is a university student.",
       "slot": "文型①の例文",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_002_001",
+          "filename": "ex_L01_002.png",
+          "imageUrl": "data/images/ex_L01_002.png",
+          "promptRef": "_xc_targets.json#ex_L01_002",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -366,8 +384,17 @@
       "sentence": "キムさんは会社員です。",
       "sentenceEn": "Kim-san is a company employee.",
       "slot": "文型①の例文",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_003_001",
+          "filename": "ex_L01_003.png",
+          "imageUrl": "data/images/ex_L01_003.png",
+          "promptRef": "_xc_targets.json#ex_L01_003",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -384,8 +411,17 @@
       "sentence": "鈴木さんは日本人です。",
       "sentenceEn": "Suzuki-san is Japanese.",
       "slot": "文型①の例文",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_004_001",
+          "filename": "ex_L01_004.png",
+          "imageUrl": "data/images/ex_L01_004.png",
+          "promptRef": "_xc_targets_poc.json#ex_L01_004",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -402,8 +438,17 @@
       "sentence": "リンさんは中国人です。",
       "sentenceEn": "Lin-san is Chinese.",
       "slot": "文型①の例文",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_005_001",
+          "filename": "ex_L01_005.png",
+          "imageUrl": "data/images/ex_L01_005.png",
+          "promptRef": "_xc_targets_poc2.json#ex_L01_005",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -420,8 +465,17 @@
       "sentence": "リンさんですか。",
       "sentenceEn": "Is it Lin-san?",
       "slot": "文型②の例文 (2-1 アンカー)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_006_001",
+          "filename": "ex_L01_006.png",
+          "imageUrl": "data/images/ex_L01_006.png",
+          "promptRef": "_xc_targets.json#ex_L01_006",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -438,8 +492,17 @@
       "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
       "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
       "slot": "文型②の例文 (2-2)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_007_001",
+          "filename": "ex_L01_007.png",
+          "imageUrl": "data/images/ex_L01_007.png",
+          "promptRef": "_xc_targets.json#ex_L01_007",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -456,8 +519,17 @@
       "sentence": "だれですか。",
       "sentenceEn": "Who is it?",
       "slot": "文型②の例文 (2-3 Q 単独)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_008_001",
+          "filename": "ex_L01_008.png",
+          "imageUrl": "data/images/ex_L01_008.png",
+          "promptRef": "_xc_targets.json#ex_L01_008",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -474,8 +546,17 @@
       "sentence": "キムさんです。",
       "sentenceEn": "It's Kim-san.",
       "slot": "文型②の例文 (2-4 A 単独)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_009_001",
+          "filename": "ex_L01_009.png",
+          "imageUrl": "data/images/ex_L01_009.png",
+          "promptRef": "_xc_targets.json#ex_L01_009",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -492,8 +573,17 @@
       "sentence": "先生ですか。",
       "sentenceEn": "Are you a teacher?",
       "slot": "文型②の例文 (2-5 Q 単独)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_010_001",
+          "filename": "ex_L01_010.png",
+          "imageUrl": "data/images/ex_L01_010.png",
+          "promptRef": "_xc_targets_poc.json#ex_L01_010",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8262,8 +8352,17 @@
       "sentence": "タノムさんは東西病院の医者です。",
       "sentenceEn": "Tanom-san is a doctor at Tozai Hospital.",
       "slot": "文型③の例文 (3-1)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_014_001",
+          "filename": "ex_L01_014.png",
+          "imageUrl": "data/images/ex_L01_014.png",
+          "promptRef": "_xc_targets.json#ex_L01_014",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8280,8 +8379,17 @@
       "sentence": "鈴木さんは東西学校の先生です。",
       "sentenceEn": "Suzuki-san is a teacher at Tozai School.",
       "slot": "文型③の例文 (3-2)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_015_001",
+          "filename": "ex_L01_015.png",
+          "imageUrl": "data/images/ex_L01_015.png",
+          "promptRef": "_xc_targets.json#ex_L01_015",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8298,8 +8406,17 @@
       "sentence": "キムさんは東西銀行の会社員です。",
       "sentenceEn": "Kim-san is an employee at Tozai Bank.",
       "slot": "文型③の例文 (3-3)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_016_001",
+          "filename": "ex_L01_016.png",
+          "imageUrl": "data/images/ex_L01_016.png",
+          "promptRef": "_xc_targets_poc.json#ex_L01_016",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8316,8 +8433,17 @@
       "sentence": "リンさんは東西大学の学生です。",
       "sentenceEn": "Lin-san is a student at Tozai University.",
       "slot": "文型③の例文 (3-4 アンカー)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_017_001",
+          "filename": "ex_L01_017.png",
+          "imageUrl": "data/images/ex_L01_017.png",
+          "promptRef": "_xc_targets.json#ex_L01_017",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8334,8 +8460,17 @@
       "sentence": "キムさんは東西デパートの会社員です。",
       "sentenceEn": "Kim-san is an employee at Tozai Department Store.",
       "slot": "文型③の例文 (3-5)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_018_001",
+          "filename": "ex_L01_018.png",
+          "imageUrl": "data/images/ex_L01_018.png",
+          "promptRef": "_xc_targets.json#ex_L01_018",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8352,8 +8487,17 @@
       "sentence": "はい、先生です。／いいえ、先生じゃありません。",
       "sentenceEn": "Yes, I am a teacher. / No, I am not a teacher.",
       "slot": "文型②の例文 (2-6 A セット)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_011_001",
+          "filename": "ex_L01_011.png",
+          "imageUrl": "data/images/ex_L01_011.png",
+          "promptRef": "_xc_targets_poc.json#ex_L01_011",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8370,8 +8514,17 @@
       "sentence": "韓国人ですか。",
       "sentenceEn": "Are you Korean?",
       "slot": "文型②の例文 (2-7 Q 単独)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_012_001",
+          "filename": "ex_L01_012.png",
+          "imageUrl": "data/images/ex_L01_012.png",
+          "promptRef": "_xc_targets_poc2.json#ex_L01_012",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",
@@ -8388,8 +8541,17 @@
       "sentence": "はい、韓国人です。／いいえ、韓国人じゃありません。",
       "sentenceEn": "Yes, I am Korean. / No, I am not Korean.",
       "slot": "文型②の例文 (2-8 A セット)",
-      "status": "pending",
-      "images": [],
+      "status": "generated",
+      "images": [
+        {
+          "imageId": "ex_L01_013_001",
+          "filename": "ex_L01_013.png",
+          "imageUrl": "data/images/ex_L01_013.png",
+          "promptRef": "_xc_targets_poc2.json#ex_L01_013",
+          "generatedAt": "2026-05-27",
+          "regenerate": false
+        }
+      ],
       "_xc_history": [
         {
           "event": "text_only_v1_archived",

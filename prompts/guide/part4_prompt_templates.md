@@ -303,6 +303,11 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 >   6. **{SCENE_DESCRIPTION}** particle visual mapping 適用（§3.9.6）
 >   7. **{SCENE_DESCRIPTION}** blank surface は positive featureless wording（§3.9.7 / Horror Vacui 対応）
 >   8. **2-panel Q/A** sentence は §3.9.8 の verbatim block を [SCENE & ACTION] 丸ごと差し替え
+> v4.0.8 (2026-05-27 X-c-7)：[PART 3.9 v4.0.8 改修 4 件](part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level) 反映（Gemini 第二/三回 consult 統合）：
+>   9. **§3.9.2 5a** に **national flag prop 必須化**（identity-only nationality example_sentence のみ。global flag ban を override する diegetic prop exception）
+>   10. **§3.9.3.B** Institution Anchor Table 必須化（病院/銀行/学校/デパート/会社 verbatim cue / ≥2 anchors MUST appear in {SCENE_DESCRIPTION}）+ unlisted institution fallback rule
+>   11. **§3.9.8.A** Archetype Cue Table 必須化（先生/学生/会社員/医者/Nationality の diegetic prop を §3.9.8.B SUBJECT block に inject）
+>   12. **§3.9.8.C** Subject Bifurcation Rule（yes-no question を Route 1 proper noun NAMED retain / Route 2 class attribute archetype shift に skill が機械分岐）
 
 ```
 [PURPOSE]
@@ -373,9 +378,14 @@ The {SCENE_DESCRIPTION} above MUST satisfy ALL the following conditions
       manipulating an object related to their role — NOT a passive standing pose.
       EXCEPTION: identity-only declaratives (nationality / role identity without
       affiliation) follow §3.9.2 Identity-only exception 5a/5b instead.
-  (c) **Indoor enclosure (§3.9.3)**: for affiliation sentences (〜の〜), the scene
-      is strictly an INDOOR interior shot fully enclosed by walls; the character
-      is INSIDE the institution — NEVER "at" / "outside" / "in front of" it.
+  (c) **Indoor enclosure + institution anchor (§3.9.3 / §3.9.3.B)**: for affiliation
+      sentences (〜の〜), the scene is strictly an INDOOR interior shot fully enclosed
+      by walls; the character is INSIDE the institution — NEVER "at" / "outside" /
+      "in front of" it. **AT LEAST TWO verbatim anchor cues from the §3.9.3.B table**
+      MUST appear in the scene (e.g., for 銀行: `teller counter with low partition` +
+      `window grille`; for 病院: `examination bed` + `stethoscope on wall hook`).
+      Unlisted institutions follow the §3.9.3.B Fallback Rule (≥2 distinct functional
+      fixtures native to that institution).
   (d) **Particle visual mapping (§3.9.6)**: the dominant Japanese particles in the
       sentence MUST be reflected via the §3.9.6 verbatim phrases (は/が/に/で/を/の/へ).
   (e) **Featureless surfaces (§3.9.7)**: any flat surface mentioned (whiteboard /
@@ -383,7 +393,26 @@ The {SCENE_DESCRIPTION} above MUST satisfy ALL the following conditions
       "featureless solid color block" wording — NEVER the words "blank" / "empty"
       / "clean" / "unoccupied" / "nobody is".
   (f) **2-panel pattern (§3.9.8)**: for はい〜／いいえ〜 sentences, REPLACE this
-      entire [SCENE & ACTION] block with the verbatim §3.9.8 A or B block.
+      entire [SCENE & ACTION] block with the verbatim §3.9.8 A or B block. The
+      §3.9.8.B B-archetype path MUST embed the §3.9.8.A diegetic prop cue (chalk +
+      textbook for 先生, briefcase + lanyard for 会社員, small national flag for
+      〜人, etc.) — these are diegetic 3D props and do NOT count toward the 2D UI
+      SYMBOL_COUNT limit.
+  (g) **Yes-no question bifurcation (§3.9.8.C)**: for `〜ですか` single-panel and
+      `はい、〜です／いいえ、…` 2-panel sentences, the skill MUST route the
+      [SUBJECT] block per §3.9.8.C: Route 1 (proper noun, sentence contains `〜さん`)
+      retains NAMED_CHARACTER portrait reference; Route 2 (class attribute, sentence
+      contains `〜人` or a §3.9.8.A occupation token) MUST shift to the generic
+      B-archetype (§3.9.8.B) with the §3.9.8.A diegetic prop. The Route 2 prompt
+      MUST NOT attach any NAMED_CHARACTER portrait (`styleReferences: []`,
+      [REFERENCE] section omitted).
+  (h) **Identity-only nationality flag prop (§3.9.2 5a)**: for `〜は[国籍]です`
+      declarative sentences, the character MUST hold a small national flag prop
+      (12-15% image fill, hand-held at chest level, fabric panel facing viewer, no
+      pole, no text). This diegetic prop explicitly overrides the [CONSTRAINTS]
+      global flag ban for identity-only nationality sentences only. Identity-only
+      role sentences without nationality (5b) retain the global flag ban via
+      [PART 6.4 ROLE_ANTI_FLAG_BLOCK](part6_output_instructions.md#role_anti_flag_block).
 The characters' actions and relationship must make the sentence meaning visually obvious without any text.
 {VISUAL_SYMBOL_IF_NEEDED}
 (When a symbol IS permitted per §3.9.4, the {VISUAL_SYMBOL_IF_NEEDED} placeholder

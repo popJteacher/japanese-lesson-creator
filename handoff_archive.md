@@ -358,3 +358,16 @@
   vocab pill 機構と targetStudentLevel メタは将来課のために残置。
 - **将来 (b-3) 復活余地**: 生成プロンプト側で超過漢字を平易表現に置換するロジック
   (例文設計時に level 制約をかける) は別アプローチとして X-c 後に検討可能。
+
+## 2026-05-27 (X-c-7 v4.0.8 着地 — example_sentence 4 改修確定)
+
+- **v4.0.7 PoC fail**: v4.0.7 で lesson_01 ex_L01_* 18 件を全再生成 ($0.6966)。user 実視で 6 NG + 1 注意 (004/005 国籍 fail / 010 archetype と NAMED 被り / 011 B-archetype "先生" 性消失 / 012/013 国籍ゼロ + archetype fail / 016 銀行 affordance 弱)。原因は §3.9.2 5a "introductory social gesture" 単独では visual cue 不足 / [CONSTRAINTS] flag ban が word_nationality v4.0 pivot と矛盾 / §3.9.8 B-archetype に occupation cue 規定なし / §3.9.8 yes-no subject 選択ルールが name-question と class-attribute-question を区別しない。
+- **Gemini consult 第二回**: docs/_xc_history/gemini_consult_xc7_section3_9_revision.md + prompts.txt 起案、Gemini 2.5 Pro と 3 round 議論。
+- **v4.0.8 4 改修確定**: (1) §3.9.2 5a National Flag Prop 必須化 (12-15% image fill / hand-held / [CONSTRAINTS] global flag ban を identity-only example_sentence で override) / (2) §3.9.3.B Institution Anchor Table 新規 (病院/銀行/学校/デパート/会社 verbatim cue ≥2 anchors MUST appear) + unlisted institution fallback rule / (3) §3.9.8.A Archetype Cue Table 新規 (先生=chalk+textbook / 学生=notebook+backpack / 会社員=briefcase+lanyard / 医者=stethoscope+clipboard / Nationality=national flag prop の diegetic prop lookup — 2D UI SYMBOL_COUNT に加算しない) / (4) §3.9.8.C Subject Bifurcation Rule (D-β: 〜さん → Route 1 NAMED retain / 〜人 or OCCUPATION_TOKEN → Route 2 archetype shift + portrait detach + styleReferences=[])。
+- **PoC validated 6/7**: 004 日本国旗 / 005 中国国旗 (5 stars) / 010 teacher archetype + chalk+book + ? overlay / 011 2-panel teacher + identity lock / 012 Korean archetype + 太極旗 + ? overlay / 013 2-panel 太極旗 identity lock 完璧。
+- **v4.0.8.1 微修正**: §3.9.2 5a Required phrase の "with no pole or staff" を "optionally attached to a thin staff" に緩和 (生成画像で pole 付きが pedagogy 的に許容と validated)。§3.9.8.A Nationality 行も同期。
+- **v4.0.9 backlog**: 016 銀行 §3.9.3.B 強化 — cubicle 問題は v4.0.8 で解決したが「銀行確定」cue 不足 (札束/円看板/ATM/金庫扉 等が必要)、character の "カウンター後ろ" 強制配置、ホテル/役所/受付との明示的 disambiguation。lesson_02 で銀行 entry 追加時に Gemini consult 第三回相当で詰める。
+- **invariants hash 遷移**: c821d13e646e (v4.0.6) → 8a608d9863c8 (v4.0.7 / 5/27 朝) → a99d6c962a96 (v4.0.8 PoC 投入時) → 652aa0a3cbe3 (v4.0.8.1 pole 緩和反映 / 確定値)。
+- **総コスト** (X-c-7): $0.6966 (v4.0.7 18 件) + $0.1548 (v4.0.8 PoC 4 件) + $0.1161 (v4.0.8 二次 3 件) = **$0.97** / cap 18+4+3=25/30 安全帯。
+- **artifact 保全**: docs/_xc_history/gemini_consult_xc7_section3_9_revision.md (本体) + gemini_consult_xc7_prompts.txt (v3 prompt 9 件 verbatim) + gemini_consult_xc7_round3_reply.md (round 3 reply / D-β 確定)。
+- **教訓 (lesson_02+ 検証で確認すべき)**: §3.9.2 5a で role context (classroom 等) を残しても flag prop が pedagogy 的に視認できるサイズで描かれた (004/005)。但し prompt 内で context が flag prop を override する潜在リスクは残るので、nationality は neutral plain background が原則として記録。

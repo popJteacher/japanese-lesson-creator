@@ -168,6 +168,55 @@ words = candidates[:limit]
 8. **§3.9.7 featureless surfaces**：`{SCENE_DESCRIPTION}` 内で flat surface (whiteboard / desk / monitor / textbook / badge / wall) に言及する際は §3.9.7 表 (7a-7h) の Required phrase を verbatim 使用。Forbidden word stems (`blank`, `empty`, `clean`, `unoccupied`, `nobody is`) は絶対含めない。scene-essential prop は §3.9.7 Positive enumeration addendum で positively enumerate。
 9. **§3.9.8 2-panel pattern**：sentence が はい〜／いいえ〜パターン の場合、`{SCENE_DESCRIPTION}` ではなく **[SCENE & ACTION] block 全体** を §3.9.8 A (NAMED_CHARACTER 付き) または §3.9.8 B (generic archetype) の verbatim block で置換する。`{SUBJECT}` も §3.9.8 B の場合は archetype 仕様で置換。
 
+**v4.0.8 (2026-05-27 X-c-7) 仕様** — [PART 3.9 v4.0.8 4 改修](../../prompts/guide/part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level) 追加遵守（v4.0.7 を上書き・包含）：
+
+**10. §3.9.2 5a National Flag Prop (identity-only nationality example_sentence)**
+
+  - **トリガー判定**：`{SENTENCE_JP}` が `〜は[国籍]です` declarative かつ `〜人` substring を含む（`日本人` / `中国人` / `韓国人` / `ベトナム人` / `アメリカ人` / `スペイン人` / `ブラジル人` 等）
+  - **アクション**：`{SCENE_DESCRIPTION}` に §3.9.2 5a v4.0.8 Required phrase を verbatim 埋め込む（"The subject MUST hold a small national flag prop representing the target country in ONE hand at chest level..." 全文）。flag は 12-15% image fill、手持ち、テキスト無し
+  - **[CONSTRAINTS] override**：identity-only nationality example_sentence では skill が `[CONSTRAINTS]` の global flag ban 文を **次の override 形に置換** する：
+    ```
+    The clothing, accessories, and any visible badges of all characters must NEVER include any national flag motif, national emblem, nationality pin, country indicator, political symbol, or flag-print on garments, UNLESS explicitly directed in the [SCENE & ACTION] block to hold a specific national flag as a diegetic hand-held prop for an identity-only nationality sentence (per §3.9.2 5a v4.0.8 / §3.9.8.A).
+    ```
+  - **5b との分離**：sentence が `〜は[役職]です`（affiliation なし）の場合は 5b の object-manipulation Required phrase を emit し、global flag ban を保持（[PART 6.4 ROLE_ANTI_FLAG_BLOCK](../../prompts/guide/part6_output_instructions.md#role_anti_flag_block) 適用）
+
+**11. §3.9.3.B Institution Anchor Table (affiliation 文)**
+
+  - **トリガー判定**：`{SENTENCE_JP}` が `〜は〜の〜です` で第 1 の `の` の前が施設名（病院 / 銀行 / 学校 / 大学 / デパート / 会社 等）
+  - **アクション**：§3.9.3.B 表から該当 institution の行を lookup、その verbatim cue list から **≥2 cue** を選んで `{SCENE_DESCRIPTION}` に inline する。例：銀行なら `teller counter with low partition` + `window grille`、病院なら `examination bed` + `stethoscope on wall hook`
+  - **Unlisted institution fallback**：表に無い施設名（駅 / スーパー / 図書館 等）は §3.9.3.B Fallback Rule の verbatim phrase を emit（"the {SCENE_DESCRIPTION} MUST explicitly enumerate AT LEAST TWO distinct, highly specific functional fixtures or architectural elements native to that institution's interior. Generic desks, blank walls, generic office cubicles, or any visual configuration that could plausibly represent any indoor workplace are PROHIBITED."）
+
+**12. §3.9.8.A Archetype Cue Table (2-panel B-archetype + Route 2 single panel)**
+
+  - **トリガー判定**：(a) sentence が 2-panel `はい〜／いいえ〜` パターン かつ §3.9.8 B 経路に分岐するとき、または (b) §3.9.8.C Route 2 (class-attribute single panel + ? overlay)
+  - **アクション**：§3.9.8.A 表から target class (先生 / 学生 / 大学生 / 会社員 / 医者 / 〜人) の行を lookup し、対応する diegetic prop verbatim phrase を §3.9.8.B SUBJECT block の `<INSERT §3.9.8.A diegetic prop>` placeholder に inject
+  - **Prop の symbol counting**：これら prop は **3D diegetic objects** なので SYMBOL_COUNT STRICT ENFORCEMENT (checkmark/X-mark/?/arrow の 2D UI overlay count) に **加算しない**。skill は prompt 本文に "These are diegetic 3D props and DO NOT count toward 2D UI SYMBOL_COUNT limits." を明示 emit
+
+**13. §3.9.8.C Subject Bifurcation Rule for Yes-No Questions (機械判定)**
+
+  - **トリガー判定**：`{SENTENCE_JP}` が yes-no question または answer のパターン:
+    - 単 panel `?`: 末尾が `ですか。` (例: `リンさんですか。` / `先生ですか。` / `韓国人ですか。`)
+    - 2-panel はい/いいえ: `はい、〜です。／いいえ、〜じゃありません。` (例: `はい、リンさんです。／…` / `はい、先生です。／…`)
+  - **Route 1 判定 (Proper Noun Route)**:
+    ```python
+    if "さん" in sentence_jp:
+        route = "1_proper_noun"
+        # NAMED_CHARACTER portrait を retain
+        # styleReferences populated per PART 1.14 detection
+    ```
+    アクション：NAMED_CHARACTER portrait を attach、[SUBJECT] は §3.9.5 lean form、SCENE は単 panel mode なら NAMED_CHARACTER の role action + 1 `?` overlay、2-panel mode なら §3.9.8 A block (verbatim、両 panel で同じ portrait)
+  - **Route 2 判定 (Class Attribute Route)**:
+    ```python
+    OCCUPATION_TOKENS = {"先生", "学生", "大学生", "会社員", "医者"}
+    if any(tok in sentence_jp for tok in OCCUPATION_TOKENS) or "人" in sentence_jp:
+        route = "2_class_attribute"
+        # NAMED_CHARACTER attach を抑止、styleReferences = []
+        # [REFERENCE] section を omit
+    ```
+    アクション：portrait attach せず、[SUBJECT] は §3.9.8.B archetype block を §3.9.8.A diegetic prop 埋め込みで emit、SCENE は単 panel mode なら archetype + 1 `?` overlay、2-panel mode なら §3.9.8 B block + §3.9.8.A prop で両 panel clone
+  - **Tie-breaking**：Route 1 と Route 2 の両方がマッチする仮想ケース（`さん` と `〜人` の両方含む）は **Route 1 優先**。理由：name-question は class-attribute question より意味論的に specific
+  - **No-match fallback**：どちらもマッチしない（未知の attribute を問う yes-no question）は **Route 1 + warning log entry**。`_meta.warnings[]` に「§3.9.8.C trigger no-match: <sentence>」を記録し、PART 3.9.8.A 表の拡張候補として保留
+
 #### `mode = explicit`
 
 `--words` で渡された word を catalog で lookup して vocab_type を解決。catalog に無い word は ABORT。
