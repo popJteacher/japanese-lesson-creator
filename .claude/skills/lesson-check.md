@@ -56,11 +56,12 @@ node scripts/lib/lesson-check.mjs --no NN
 
 | 重大度 | 内容 |
 |---|---|
-| ERROR | A-2 / A-3 / A-4 形式 / A-5 / A-6 / B-5 / B-6 / B-7 / B-9 / C-11 違反 |
-| WARN | A-4 文数 (複数文 canDo) / B-8 推奨時間範囲外 / C-10 changes 短文 / A-2 記述欠落 |
+| ERROR | A-2 / A-3 / A-4 形式 / A-5 / A-6 / B-5 / B-6 / B-6-2 / B-7 / B-9 / C-11 違反 |
+| WARN | A-4 文数 (複数文 canDo) / B-6-3 blank 異形 / B-8 推奨時間範囲外 / B-12 examples 応答混入 / B-13 examples 空 / C-10 changes 短文 / A-2 記述欠落 |
+| INFO | B-6-4 templates ≥4 件 (過剰の可能性) |
 | TODO | 文字列値内の "TODO_*" / "TODO:" を全 path で列挙 |
 
-ERROR > 0 で exit code 1。
+ERROR > 0 で exit code 1 (WARN / INFO / TODO は 0)。
 
 ### Step 4: user にガイダンスを echo
 
@@ -94,9 +95,14 @@ ERROR > 0 で exit code 1。
 | B-5 ② | ERROR | isFirstAppearance が boolean |
 | B-5 ③ | (chk 対象外) | 絵カード化不可語の `_note` は人間 review 領域 |
 | B-6 | ERROR | practiceTemplates.length >= 2 |
+| B-6-2 | ERROR | practiceTemplates 全件 blank=0 (`＿＿＿` なし) 不可。controlled practice として機能しないため input なしの hint-only templates のみは不可 |
+| B-6-3 | WARN | practiceTemplates の blank 数が異形 (uniform でない)。Q+R pair 等の構造的シグナル。homework judge UI は uniform でないと有効化されない (multi-template render v0.3 仕様) |
+| B-6-4 | INFO | practiceTemplates が ≥4 件は過剰の可能性 (multi-template render で縦並びになるためスクロール量に注意) |
 | B-7 | ERROR | type 別 materialNeeds 政策 (intro_activity/main_activity 必須、review/intro_slide/example/wrapUp 禁止、pattern/practice optional)、TODO_B-7 不可 |
 | B-8 | WARN | _recommendedMinutes が目安範囲内か (review 3-5 / intro_activity 5-10 / pattern 3-7 / main_activity 10-20 / wrapUp 2-5) |
 | B-9 | ERROR | main_activity (skipped=false) の ABCactivityRef に activityName/fadingStage/taskType + playerSteps[] 非空 |
+| B-12 | WARN | examples[].sentence に応答/応用シグナル (em-dash・「はい〜です」・「いいえ〜じゃありません」・指示応答 (それ/これ/あれ/こちら/そちら/あちら/どちらです)・「そうです」・「〜のです」省略形) を検出 → applicationExamples[] への移動を検討 (基本ルール: examples = PDF 文型欄基本形のみ) |
+| B-13 | WARN | patterns[].examples が空 (applicationExamples のみ)。PDF 文型欄基本形例文を 1 件以上 examples に置く必要あり (宿題 generator は examples のみ参照) |
 | C-9 | (chk 対象外) | 作業順序は手続的ルール (lint 不可) |
 | C-10 | WARN | _meta.changes[] 各エントリは 30 文字以上 (object 形式は { version, changes[] } を再帰 check) |
 | C-11 | ERROR | _meta.formatVersion + _meta.lessonVersion 両方存在 |

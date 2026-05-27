@@ -251,6 +251,27 @@ function buildPatterns(patternIds, no, seed) {
       ? sp.examples.map((ex, j) => buildExample(ex, no, patternIdx, j))
       : [buildExample({}, no, patternIdx, 0, true)];
 
+    // applicationExamples (v2.13+ schema): seed 由来があればそのまま使い、なければ
+    // 空配列で seed 化。docs/REFERENCE.md §6-1 の役割分担:
+    //   examples[]            = PDF 文型欄基本形 (Q または基本宣言形のみ・宿題 generator 参照)
+    //   applicationExamples[] = 教え方の例・プラスα・活動例・応答セット由来の応用 (画像不要)
+    const applicationExamples = Array.isArray(sp.applicationExamples)
+      ? sp.applicationExamples.map((ax, j) => buildApplicationExample(ax, j))
+      : [];
+
+    // B-6-3 軽 lint: practiceTemplates の blank 数 (＿＿＿) が uniform か。fill 段階で
+    // 異形が混入すると homework judge UI が無効化される。scaffold 自体は警告のみ。
+    const templates = sp.practiceTemplates && sp.practiceTemplates.length >= 2
+      ? sp.practiceTemplates
+      : [
+          { pattern: "＿＿＿は＿＿＿です。", hint: "(肯定)" },
+          { pattern: "＿＿＿は＿＿＿ですか。", hint: "(疑問)" },
+        ];
+    const blankCounts = templates.map((t) => (t.pattern && t.pattern.match(/＿＿＿/g) || []).length);
+    if (new Set(blankCounts).size > 1) {
+      console.warn(`[lesson-scaffold] patterns[${pid}].practiceTemplates の blank 数が異形: ${JSON.stringify(blankCounts)} (lesson-check B-6-3 WARN 想定)`);
+    }
+
     return {
       id: pid,
       pattern: sp.pattern || `TODO: 〜は〜です 等の文型表現`,
@@ -263,18 +284,34 @@ function buildPatterns(patternIds, no, seed) {
       vocabCount: sp.vocabCount || 0,
       shareVocabWith: sp.shareVocabWith || null,
       examples,
+      applicationExamples,
       practiceImageSource: sp.practiceImageSource || "TODO_v19: vocabulary | namedCharacters | namedCharacters+vocab",
-      practiceTemplates: sp.practiceTemplates && sp.practiceTemplates.length >= 2
-        ? sp.practiceTemplates
-        : [
-            { pattern: "＿＿＿は＿＿＿です。", hint: "(肯定)" },
-            { pattern: "＿＿＿は＿＿＿ですか。", hint: "(疑問)" },
-          ],
+      practiceTemplates: templates,
       conversationPhrases: sp.conversationPhrases || [],
       plusAlpha: sp.plusAlpha || [],
       cautionNote: sp.cautionNote || [],
     };
   });
+}
+
+function buildApplicationExample(seedAx, axIdx) {
+  // applicationExamples スキーマ (docs/REFERENCE.md §6-1):
+  //   no: "app-N" 形式 (examples の "N-M" と区別)
+  //   sentence: 出典のまま (A 単独 / Q+A 結合 / 複合会話 / 応答セット可)
+  //   sentenceEn: 英訳
+  //   imageId: 省略可 (原則画像なし)
+  //   isAnchor: 常に false (省略可)
+  //   originalSource: 出典 PDF page / textbookRef (例: "PDF p.031 教え方の例")
+  //   _comment: 任意
+  return {
+    no: seedAx.no || `app-${axIdx + 1}`,
+    sentence: seedAx.sentence || "TODO: PDF 文型欄以外 (教え方の例・プラスα・活動例・応答) 由来の応用表現",
+    sentenceEn: seedAx.sentenceEn || "TODO",
+    isAnchor: false,
+    ...(seedAx.imageId ? { imageId: seedAx.imageId } : {}),
+    originalSource: seedAx.originalSource || "TODO: 出典 PDF page / textbookRef (例: 'PDF p.NNN 教え方の例')",
+    _comment: seedAx._comment || "",
+  };
 }
 
 function buildExample(seedEx, no, patternIdx, exIdx, isPlaceholder = false) {

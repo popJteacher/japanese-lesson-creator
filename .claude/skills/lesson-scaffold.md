@@ -76,7 +76,8 @@ stderr に `rendered N pages` が出る。
 | 抽出対象 | seed JSON のキー |
 |---|---|
 | 課タイトル (例: 「こそあど」) | `lesson.title` |
-| 「文型」セクションの番号付き例文 | `patterns[].examples[]` (各文の no/sentence) |
+| **「文型」セクションの番号付き例文 (PDF 一番始めの基本形)** | `patterns[].examples[]` (各文の no/sentence) — **PDF 文型欄基本形のみ** |
+| **「教え方の例」「プラスα」「活動例」「会話例」由来の応用** | `patterns[].applicationExamples[]` (各文の no=`app-N`/sentence) — **画像不要** |
 | 「文法知識の整理」要旨 (1-2 文) | `lesson.grammarMemo.general` |
 | 「導入語彙」リスト | `vocabulary.<groupKey>.words[]` |
 | 「教え方の例」のキャラ名 (固有名詞のみ) | A-2/A-3 ルールに従い `namedCharacters[]` |
@@ -88,6 +89,9 @@ stderr に `rendered N pages` が出る。
 - ❌ canDo を 2 文以上にする / 「〜できる」以外の形にする — A-4 違反
 - ❌ jlptLevel を捏造 — PDF に書いてなければ `"N5"` 既定
 - ❌ practiceTemplates を 1 件にする — B-6 違反 (最低 2 件は scaffold 側で常に保証)
+- ❌ practiceTemplates 全件を blank=0 (`＿＿＿` なし) にする — B-6-2 違反
+- ❌ **PDF 文型欄以外の例文 (教え方の例・プラスα・活動例) を `examples[]` に入れる** — B-12 違反 (`applicationExamples[]` 行き)
+- ❌ **`examples[]` を空にして `applicationExamples[]` のみ作る** — B-13 違反 (宿題 generator が機能しなくなる)
 
 #### 3-3. seed を JSON ファイルに保存
 
@@ -137,14 +141,27 @@ node scripts/lib/lesson-scaffold.mjs --no NN --patterns p1,p2,p3 \
   A-5  vocabType を全語に付与 (vocabulary_card / actual_object / scene_picture / contrast_picture)
   A-6  imageRole を全語・全例文に付与 (vocab_person / vocab_object / scene / contrast)
   B-5  語彙 3 点セット (jlptLevel / isFirstAppearance / 絵カード化不可語の理由)
-  B-6  practiceTemplates ≥ 2  ← scaffold が常に保証済
+  B-6   practiceTemplates ≥ 2  ← scaffold が常に保証済
+  B-6-2 practiceTemplates 全件 blank=0 (`＿＿＿` なし) 不可
+  B-6-3 practiceTemplates の blank 数は uniform 推奨 (異形は judge UI 無効化)
+  B-6-4 practiceTemplates ≥4 件は INFO (multi-template render で縦並びになるためスクロール量に注意)
   B-7  materialNeeds 必須対象 = intro_activity, main_activity (他は禁止)
   B-8  推奨時間 (復習 3-5分 / 導入 5-10分 / 文型 3-7分 / メイン 10-20分 / まとめ 2-5分)
   B-9  活動例の必須 field (活動名 / 設定 / 準備物 / 会話例 / fadingStage / ABC対応)
+  B-12 examples[] に応答/応用混入禁止 (em-dash / 「はい〜です」/「いいえ〜じゃありません」/指示応答 / 「そうです」/ 「〜のです」省略形) → applicationExamples[] へ
+  B-13 examples[] が空で applicationExamples[] のみは不可 (宿題 generator が機能しない)
   C-9  Step 1a→1e の順序を守る (今あなたが見ている順序)
   C-10 _meta.changes には変更内容 + 変更理由を両方書く
   C-11 formatVersion (全課共通) と lessonVersion (この課) を _meta に並べる
   C-12 教案の手順は ABC 準拠で書く (課マスターには teachingHint 1-2 文のみ)
+
+examples[] / applicationExamples[] の役割分担 (基本ルール・docs/REFERENCE.md §6-1):
+  examples[]            = 各課 PDF の「文型」セクション (一番始めに提示される基本形例文一覧) に
+                          明記されたものだけ。Q 形式 or 基本宣言形のみ。応答・応用は含めない。
+                          宿題練習問題はこの配列のみ参照。blank 構成が uniform になるよう揃える。
+  applicationExamples[] = 教え方の例・プラスα・活動例・会話例から拾った応用表現。
+                          sentence 形は出典のまま (A 単独 / Q+A 結合 / 複合会話)。
+                          画像不要 (imageId 省略可)。宿題練習問題には使われない。
 
 次セッション skill (Phase 2 以降):
   /lesson-fill-vocab <NN>       — vocab_catalog + 他課から自動補完

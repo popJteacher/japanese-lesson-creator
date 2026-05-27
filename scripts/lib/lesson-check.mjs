@@ -13,7 +13,15 @@
 //   A-5  vocabulary.byPattern[*].words[].vocabType ∈ enum
 //   A-6  examples[].imageRole + words[].imageRole ∈ enum (TODO_A-6 は ERROR)
 //   B-5  jlptLevel ∈ N5-N1 (TODO は ERROR)
-//   B-6  practiceTemplates.length >= 2 (validate.mjs でも一部見るがここで再確認)
+//   B-6   practiceTemplates.length >= 2 (validate.mjs でも一部見るがここで再確認)
+//   B-6-2 practiceTemplates 全件が blank=0 (input なし) は ERROR (controlled practice
+//         として機能しない)。homework_html v0.3 multi-template render の判定 UI 有効化
+//         条件と整合 (blank=0 templates は hint only 表示)。
+//   B-6-3 blank 数が template 間で異形 (uniform でない) は WARN。Q+R pair 等の構造的
+//         シグナルだが、homework judge UI は uniform でないと有効化されないため pedagogy
+//         レビューを促す。
+//   B-6-4 templates が ≥4 件は INFO (過剰の可能性。multi-template render では縦に並ぶため
+//         スクロール量に注意)。
 //   B-7  intro_activity / main_activity の materialNeeds[] 必須かつ TODO_B-7 不可
 //        review / intro_slide / example / wrapUp は materialNeeds 禁止 (=undefined)
 //        pattern / practice は optional
@@ -21,6 +29,13 @@
 //        review 3-5 / intro_activity 5-10 / pattern 3-7 / main_activity 10-20 / wrapUp 2-5
 //   B-9  main_activity の ABCactivityRef = { activityName, fadingStage, taskType, playerSteps[] }
 //        各 field が非空 (TODO は ERROR)
+//   B-12 examples[] に応答/応用パターン混入を検出 (WARN)。「PDF 文型欄基本形以外」の
+//        典型シグナル (em-dash 含む / 応答セット終端 / 「〜のです」省略形等) を持つ
+//        sentence は applicationExamples[] へ移動候補。schema 定義は docs/REFERENCE.md
+//        §6-1 参照。
+//   B-13 patterns[].examples[] が 0 件で applicationExamples[] のみ存在は WARN。PDF
+//        文型欄基本形例文を 1 件以上 examples に置く必要あり (宿題 generator は
+//        examples のみ参照)。
 //   C-10 _meta.changes[] 各エントリは 30 文字以上 (理由を含めているか粗判定)
 //   C-11 _meta.formatVersion + _meta.lessonVersion 両方存在 (validate.mjs と重複だが報告対象)
 //
@@ -224,11 +239,83 @@ function checkA4(doc, report) {
   });
 }
 
+// 「＿＿＿」(全角アンダースコア 3 連) を blank と数える。homework_html v0.3 の
+// RE_BLANK / countBlanks と同じ判定基準。
+const BLANK_RE = /＿＿＿/g;
+function countBlanks(s) {
+  if (typeof s !== "string") return 0;
+  const m = s.match(BLANK_RE);
+  return m ? m.length : 0;
+}
+
 function checkB6(doc, report) {
   const patterns = doc.patterns || [];
   patterns.forEach((p) => {
     const t = Array.isArray(p.practiceTemplates) ? p.practiceTemplates : [];
-    if (t.length < 2) report.errors.push({ rule: "B-6", msg: `patterns[${p.id}].practiceTemplates が ${t.length} 件 (≥2 必須)` });
+    // B-6 (original): ≥2 required (controlled practice の最小単位)
+    if (t.length < 2) {
+      report.errors.push({ rule: "B-6", msg: `patterns[${p.id}].practiceTemplates が ${t.length} 件 (≥2 必須)` });
+      return;
+    }
+    const blanks = t.map((tmpl) => countBlanks(tmpl.pattern));
+    // B-6-2 ERROR: 全件 blank=0
+    if (blanks.every((b) => b === 0)) {
+      report.errors.push({ rule: "B-6-2", msg: `patterns[${p.id}].practiceTemplates 全件が blank=0 (＿＿＿ なし)。controlled practice として機能しないため input なしの hint-only templates のみは不可。少なくとも 1 件 blank を含めること。` });
+    }
+    // B-6-3 WARN: blank 数が異形 (uniform でない)
+    const distinctBlankCounts = Array.from(new Set(blanks));
+    if (distinctBlankCounts.length > 1) {
+      report.warns.push({ rule: "B-6-3", msg: `patterns[${p.id}].practiceTemplates の blank 数が異形: ${JSON.stringify(blanks)} (uniform でないと homework judge UI は無効化される。意図的なら無視可)` });
+    }
+    // B-6-4 INFO: ≥4 件
+    if (t.length >= 4) {
+      report.infos.push({ rule: "B-6-4", msg: `patterns[${p.id}].practiceTemplates が ${t.length} 件 (≥4・multi-template render で縦並びになるためスクロール量に注意)` });
+    }
+  });
+}
+
+// B-12: examples[] に応答 / 応用パターン混入を検出
+// detection rules (OR):
+//   1. em-dash + space を含む (Q+A 結合形)
+//   2. 末尾が「はい、〜です。」「いいえ、〜じゃありません。」(肯定/否定応答)
+//   3. 末尾が「(それ|これ|あれ|こちら|そちら|あちら|どちら)です。」「そうです。」(指示応答)
+//   4. 末尾が「〜のです。」(省略形)
+const B12_EMDASH_RE = /— /;
+const B12_HAI_RE = /はい、.+です。$/;
+const B12_IIE_RE = /いいえ、.+じゃありません。$/;
+const B12_KOSO_RE = /(それ|これ|あれ|こちら|そちら|あちら|どちら)です。$/;
+const B12_SODESU_RE = /そうです。$/;
+const B12_NODESU_RE = /[^のな]のです。$/; // 連体「〜のです」を狙う (「な」のです 等は除外)
+
+function checkB12(doc, report) {
+  const patterns = doc.patterns || [];
+  patterns.forEach((p) => {
+    (p.examples || []).forEach((ex) => {
+      const s = ex.sentence;
+      if (typeof s !== "string" || s.length === 0) return;
+      const hits = [];
+      if (B12_EMDASH_RE.test(s)) hits.push("em-dash (Q+A 結合)");
+      if (B12_HAI_RE.test(s)) hits.push("「はい、〜です」応答");
+      if (B12_IIE_RE.test(s)) hits.push("「いいえ、〜じゃありません」応答");
+      if (B12_KOSO_RE.test(s)) hits.push("指示応答 (それ/これ/あれ/こちら 等です)");
+      if (B12_SODESU_RE.test(s)) hits.push("「そうです」応答");
+      if (B12_NODESU_RE.test(s)) hits.push("「〜のです」省略形");
+      if (hits.length > 0) {
+        report.warns.push({ rule: "B-12", msg: `patterns[${p.id}].examples[no=${ex.no}] sentence に応答/応用シグナル: ${hits.join(", ")}。PDF 文型欄該当でない場合は applicationExamples[] への移動を検討してください。sentence: "${s}"` });
+      }
+    });
+  });
+}
+
+// B-13: examples[] が 0 件で applicationExamples[] のみ存在
+function checkB13(doc, report) {
+  const patterns = doc.patterns || [];
+  patterns.forEach((p) => {
+    const ex = Array.isArray(p.examples) ? p.examples : [];
+    const app = Array.isArray(p.applicationExamples) ? p.applicationExamples : [];
+    if (ex.length === 0 && app.length > 0) {
+      report.warns.push({ rule: "B-13", msg: `patterns[${p.id}].examples が空 (applicationExamples は ${app.length} 件)。PDF 文型欄の基本形例文を 1 件以上 examples に置いてください (宿題 generator は examples のみ参照)。` });
+    }
   });
 }
 
@@ -365,7 +452,7 @@ function checkB9(doc, report) {
 // ---- main check runner ----
 
 function runChecks(doc) {
-  const report = { errors: [], warns: [], todos: [] };
+  const report = { errors: [], warns: [], infos: [], todos: [] };
   checkC11(doc, report);
   checkC10(doc, report);
   checkA2(doc, report);
@@ -378,6 +465,8 @@ function runChecks(doc) {
   checkB7(doc, report);
   checkB8(doc, report);
   checkB9(doc, report);
+  checkB12(doc, report);
+  checkB13(doc, report);
   // TODO scan は最後 (lint ERROR 化されたものも検出されるが、それは重複ではなく
   // 「全 TODO の全体像」を見せる別軸)。
   scanTodos(report, doc, "");
@@ -391,6 +480,8 @@ function formatText(filePath, report) {
   for (const e of report.errors) out.push(`  [${e.rule}] ${e.msg}`);
   out.push(`WARN:  ${report.warns.length}`);
   for (const w of report.warns) out.push(`  [${w.rule}] ${w.msg}`);
+  out.push(`INFO:  ${(report.infos || []).length}`);
+  for (const inf of (report.infos || [])) out.push(`  [${inf.rule}] ${inf.msg}`);
   out.push(`TODO:  ${report.todos.length}`);
   for (const t of report.todos) out.push(`  ${t.where} = ${t.value}`);
   return out.join("\n") + "\n";

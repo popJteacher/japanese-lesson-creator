@@ -492,7 +492,7 @@
       "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
       "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
       "slot": "文型②の例文 (2-2)",
-      "status": "generated",
+      "status": "outdated",
       "images": [
         {
           "imageId": "ex_L01_007_001",
@@ -510,7 +510,8 @@
           "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
           "archivedPath": "data/images/_xc_text_only_v1/ex_L01_007.png"
         }
-      ]
+      ],
+      "_outdated_reason": "lesson_01 v2.13 で旧 examples[2-2] が applicationExamples[app-1] へ移動 (画像不要)。plan 2-or-validated-pancake §2.1。"
     },
     "ex_L01_008": {
       "type": "example_images",
@@ -518,7 +519,7 @@
       "patternId": "p2",
       "sentence": "だれですか。",
       "sentenceEn": "Who is it?",
-      "slot": "文型②の例文 (2-3 Q 単独)",
+      "slot": "文型②の例文 (新 2-4 / 旧 2-3 から v2.13 renumber, Q 単独)",
       "status": "generated",
       "images": [
         {
@@ -546,7 +547,7 @@
       "sentence": "キムさんです。",
       "sentenceEn": "It's Kim-san.",
       "slot": "文型②の例文 (2-4 A 単独)",
-      "status": "generated",
+      "status": "outdated",
       "images": [
         {
           "imageId": "ex_L01_009_001",
@@ -564,7 +565,8 @@
           "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
           "archivedPath": "data/images/_xc_text_only_v1/ex_L01_009.png"
         }
-      ]
+      ],
+      "_outdated_reason": "lesson_01 v2.13 で旧 examples[2-4] が applicationExamples[app-2] へ移動 (画像不要)。plan 2-or-validated-pancake §2.1。"
     },
     "ex_L01_010": {
       "type": "example_images",
@@ -572,7 +574,7 @@
       "patternId": "p2",
       "sentence": "先生ですか。",
       "sentenceEn": "Are you a teacher?",
-      "slot": "文型②の例文 (2-5 Q 単独)",
+      "slot": "文型②の例文 (新 2-2 / 旧 2-5 から v2.13 renumber, Q 単独)",
       "status": "generated",
       "images": [
         {
@@ -1804,22 +1806,24 @@
       "lesson": 2,
       "patternId": "p4",
       "exampleNo": "4-4",
-      "sentence": "タノムさんの時計はどれですか。— あれです。",
-      "sentenceEn": "Which one is Tanomu-san's clock? — That one over there.",
+      "sentence": "タノムさんの時計はどれですか。",
+      "sentenceEn": "Which one is Tanomu-san's clock?",
       "slot": "p4 例文(どれ×時計・あれ答え)・画像化対象",
       "status": "pending",
-      "images": []
+      "images": [],
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_030": {
       "type": "example_images",
       "lesson": 2,
       "patternId": "p4",
       "exampleNo": "4-5",
-      "sentence": "ケリーさんの消しゴムはどれですか。— これです。",
-      "sentenceEn": "Which one is Kelly-san's eraser? — This one.",
+      "sentence": "ケリーさんの消しゴムはどれですか。",
+      "sentenceEn": "Which one is Kelly-san's eraser?",
       "slot": "p4 例文(どれ×消しゴム)",
       "status": "pending",
-      "images": []
+      "images": [],
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_031": {
       "type": "example_images",
@@ -1840,8 +1844,9 @@
       "sentence": "その建物はABCビルですか。— はい、そうです。",
       "sentenceEn": "Is that building the ABC Building? — Yes, it is.",
       "slot": "p5 例文(その+建物・疑問形)",
-      "status": "pending",
-      "images": []
+      "status": "outdated",
+      "images": [],
+      "_outdated_reason": "lesson_02 v2.12 で旧 examples[5-5] が applicationExamples[app-1] へ移動 (画像不要)。plan 2-or-validated-pancake §2.4。"
     },
     "ex_L02_033": {
       "type": "example_images",
@@ -1859,22 +1864,24 @@
       "lesson": 2,
       "patternId": "p6",
       "exampleNo": "6-3",
-      "sentence": "どの犬ですか。— この犬です。",
-      "sentenceEn": "Which dog is it? — This dog.",
+      "sentence": "どの犬ですか。",
+      "sentenceEn": "Which dog is it?",
       "slot": "p6 例文(どの+犬)・画像化対象",
       "status": "pending",
-      "images": []
+      "images": [],
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_035": {
       "type": "example_images",
       "lesson": 2,
       "patternId": "p6",
       "exampleNo": "6-4",
-      "sentence": "どの写真ですか。— その写真です。",
-      "sentenceEn": "Which photo is it? — That photo.",
+      "sentence": "どの写真ですか。",
+      "sentenceEn": "Which photo is it?",
       "slot": "p6 例文(どの+写真)・画像化対象",
       "status": "pending",
-      "images": []
+      "images": [],
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_015": {
       "type": "scene_illustration",
@@ -1902,9 +1909,10 @@
       "patternRef": "p3",
       "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
       "isAnchor": false,
-      "status": "pending",
+      "status": "outdated",
       "url": null,
-      "_note": "p3 例文。所有確認Q&A。v2.11.10で新規追加。"
+      "_note": "p3 例文。所有確認Q&A。v2.11.10で新規追加。",
+      "_outdated_reason": "lesson_02 v2.12 で旧 examples[3-3] が applicationExamples[app-1] へ移動 (画像不要)。plan 2-or-validated-pancake §2.2。"
     },
     "ex_L02_018": {
       "type": "scene_illustration",
@@ -1912,9 +1920,10 @@
       "patternRef": "p3",
       "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
       "isAnchor": false,
-      "status": "pending",
+      "status": "outdated",
       "url": null,
-      "_note": "p3 例文。所有確認 否定応答。v2.11.10で新規追加。"
+      "_note": "p3 例文。所有確認 否定応答。v2.11.10で新規追加。",
+      "_outdated_reason": "lesson_02 v2.12 で旧 examples[3-4] が applicationExamples[app-2] へ移動 (画像不要)。plan 2-or-validated-pancake §2.2。"
     },
     "ex_L02_019": {
       "type": "scene_illustration",
@@ -1922,9 +1931,10 @@
       "patternRef": "p3",
       "sentence": "わたしのです。",
       "isAnchor": false,
-      "status": "pending",
+      "status": "outdated",
       "url": null,
-      "_note": "p3 例文。所有省略形。v2.11.10で新規追加。"
+      "_note": "p3 例文。所有省略形。v2.11.10で新規追加。",
+      "_outdated_reason": "lesson_02 v2.12 で旧 examples[3-5] が applicationExamples[app-3] へ移動 (画像不要)。plan 2-or-validated-pancake §2.2。"
     },
     "ex_L02_020": {
       "type": "scene_illustration",
@@ -1932,39 +1942,46 @@
       "patternRef": "p3",
       "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
       "isAnchor": false,
-      "status": "pending",
+      "status": "outdated",
       "url": null,
-      "_note": "p3 例文。会話形式・定型表現含む。v2.11.10で新規追加。"
+      "_note": "p3 例文。会話形式・定型表現含む。v2.11.10で新規追加。",
+      "_outdated_reason": "lesson_02 v2.12 で旧 examples[3-6] が applicationExamples[app-4] へ移動 (画像不要)。plan 2-or-validated-pancake §2.2。"
     },
     "ex_L02_021": {
       "type": "scene_illustration",
       "lesson": 2,
       "patternRef": "p4",
-      "sentence": "リンさんのペンはどれですか。— それです。",
+      "sentence": "リンさんのペンはどれですか。",
       "isAnchor": true,
       "status": "pending",
       "url": null,
-      "_note": "p4 アンカー例文。どれ疑問文。v2.11.10で新規追加。"
+      "_note": "p4 アンカー例文。どれ疑問文。v2.11.10で新規追加。",
+      "sentenceEn": "Which one is Lin-san's pen?",
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_022": {
       "type": "scene_illustration",
       "lesson": 2,
       "patternRef": "p4",
-      "sentence": "キムさんのかばんはどれですか。— これです。",
+      "sentence": "キムさんのかばんはどれですか。",
       "isAnchor": false,
       "status": "pending",
       "url": null,
-      "_note": "p4 例文。どれ疑問文（かばん）。v2.11.10で新規追加。"
+      "_note": "p4 例文。どれ疑問文（かばん）。v2.11.10で新規追加。",
+      "sentenceEn": "Which one is Kim-san's bag?",
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_023": {
       "type": "scene_illustration",
       "lesson": 2,
       "patternRef": "p4",
-      "sentence": "タノムさんの本はどちらですか。— こちらです。",
+      "sentence": "タノムさんの本はどちらですか。",
       "isAnchor": false,
       "status": "pending",
       "url": null,
-      "_note": "p4 例文。どちら（教科書原典）。v2.11.10で新規追加。"
+      "_note": "p4 例文。どちら（教科書原典）。v2.11.10で新規追加。",
+      "sentenceEn": "Which one is Tanomu-san's book?",
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_024": {
       "type": "vocab_person_card",
@@ -2000,21 +2017,25 @@
       "type": "scene_illustration",
       "lesson": 2,
       "patternRef": "p6",
-      "sentence": "どの人ですか。— この人です。",
+      "sentence": "どの人ですか。",
       "isAnchor": true,
       "status": "pending",
       "url": null,
-      "_note": "p6 アンカー例文。どの+N（人）。v2.11.10で新規追加。"
+      "_note": "p6 アンカー例文。どの+N（人）。v2.11.10で新規追加。",
+      "sentenceEn": "Which person is it?",
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "ex_L02_028": {
       "type": "scene_illustration",
       "lesson": 2,
       "patternRef": "p6",
-      "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
+      "sentence": "ケリーさんのかばんはどのかばんですか。",
       "isAnchor": false,
       "status": "pending",
       "url": null,
-      "_note": "p6 例文。どの+N（かばん）。v2.11.10で新規追加。"
+      "_note": "p6 例文。どの+N（かばん）。v2.11.10で新規追加。",
+      "sentenceEn": "Which bag is Kelly-san's bag?",
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
     },
     "word_挨拶": {
       "type": "auto_generated_vocab",
@@ -8487,7 +8508,7 @@
       "sentence": "はい、先生です。／いいえ、先生じゃありません。",
       "sentenceEn": "Yes, I am a teacher. / No, I am not a teacher.",
       "slot": "文型②の例文 (2-6 A セット)",
-      "status": "generated",
+      "status": "outdated",
       "images": [
         {
           "imageId": "ex_L01_011_001",
@@ -8505,7 +8526,8 @@
           "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
           "archivedPath": "data/images/_xc_text_only_v1/ex_L01_011.png"
         }
-      ]
+      ],
+      "_outdated_reason": "lesson_01 v2.13 で旧 examples[2-6] が applicationExamples[app-3] へ移動 (画像不要)。plan 2-or-validated-pancake §2.1。"
     },
     "ex_L01_012": {
       "type": "example_images",
@@ -8513,7 +8535,7 @@
       "patternId": "p2",
       "sentence": "韓国人ですか。",
       "sentenceEn": "Are you Korean?",
-      "slot": "文型②の例文 (2-7 Q 単独)",
+      "slot": "文型②の例文 (新 2-3 / 旧 2-7 から v2.13 renumber, Q 単独)",
       "status": "generated",
       "images": [
         {
@@ -8541,7 +8563,7 @@
       "sentence": "はい、韓国人です。／いいえ、韓国人じゃありません。",
       "sentenceEn": "Yes, I am Korean. / No, I am not Korean.",
       "slot": "文型②の例文 (2-8 A セット)",
-      "status": "generated",
+      "status": "outdated",
       "images": [
         {
           "imageId": "ex_L01_013_001",
@@ -8559,7 +8581,8 @@
           "note": "PART 1.14 ref attachment infra 未実装のまま意図せず生成。data/images/_xc_text_only_v1/ に退避。infra 実装後に v2 再生成予定",
           "archivedPath": "data/images/_xc_text_only_v1/ex_L01_013.png"
         }
-      ]
+      ],
+      "_outdated_reason": "lesson_01 v2.13 で旧 examples[2-8] が applicationExamples[app-4] へ移動 (画像不要)。plan 2-or-validated-pancake §2.1。"
     }
   }
 }

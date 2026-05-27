@@ -1,13 +1,13 @@
 {
   "_meta": {
     "formatVersion": "2.7",
-    "lessonVersion": "2.11.11",
+    "lessonVersion": "2.12",
     "_formatVersion_note": "lesson_01 v2.7 と統一済み（T3: 2026-05-14）。formatVersion は lesson_NN.json の schema 版数を示し、各課個別のバージョンではない。",
     "lessonStatus": "ready_for_step_2",
     "_lessonStatus_note": "ready_for_step_2: Phase 1-F 完了済み。Step 2(image_prompts_lesson2.json 設計)に進行可能。旧値 ready_for_phase1f_then_step_2 は Phase 1-F 着手前のステータスであり、Phase 1-F 完了(2026-05-11)に伴い更新。",
     "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
     "createdAt": "2026-05-11",
-    "lastModified": "2026-05-18",
+    "lastModified": "2026-05-27",
     "changes": [
       "v1.0 (2026-05-11): Step 1a 骨格作成。全6文型(p1〜p6)網羅・materialNeeds[] 付与・grammarConcept/jlptLevel/canDo を最初から記述(教科書非依存)。架空有名人キャラ(やまだまさし・すずきはなこ)を Layer 2 に追加(handoff_phase2_design_review §6-1 整合)。vocabulary は Step 1b で確定予定(現時点プレースホルダ)。examples は Step 1c で確定予定(現時点プレースホルダ)。formatVersion は lesson_01 v2.5 と同期。",
       "v1.1 (2026-05-11): Step 1b 完了。vocab_lesson2.json (draft) を生成し、vocabulary.byPattern を 4 カテゴリ・16 語で確定。patterns[].vocabCount を Step 1b 確定値に更新(p1=14, p2=10, p3=11, p4=10, p5=1, p6=1)。第1課語彙12語は既習として _inheritedFromLesson1 セクションに記録。Step 1c(examples 確定)に進行可能。",
@@ -41,6 +41,21 @@
         "changes": [
           "C-4: _step1c_check.results.missing_examples_review 文言修正（p4 4-3「どちら」はplusAlphaではなくexamples[]に収録済みである旨を実態に合わせて訂正）",
           "画像化対象マーク補完: ex_L02_022/025/026/028 の _comment に【画像化対象】マークを追加（image_prompts_lesson2_v2_0 との整合）"
+        ]
+      },
+      {
+        "version": "2.12",
+        "date": "2026-05-27",
+        "changes": [
+          "applicationExamples schema 導入 (plan 2-or-validated-pancake §2.2-2.5)。詳細スキーマは docs/REFERENCE.md §6-1 参照。",
+          "基本ルール: examples = PDF 文型欄基本形のみ / applicationExamples = 教え方の例・プラスα・活動例・応答セット由来。宿題 generator は examples のみ参照(controlled practice の純度担保)。",
+          "p3: examples 6→2 件に削減 (3-1/3-2 PDF 文型欄 3 由来の宣言形のみ残置・3-2 は user 判断で examples 維持)。3-3 Q&A モデル / 3-4 否定訂正 / 3-5 省略形 / 3-6 落としもの返しごっこ活動例 を applicationExamples[app-1〜app-4] へ移動 (画像不要)。",
+          "p4: examples 5 件は維持しつつ sentence を Q 形式のみに刈り込み (応答「それです/これです/こちらです/あれです/これです」を applicationExamples[app-1〜app-5] へ分離・user 判断で 4-2/4-3 は examples 維持)。",
+          "p5: examples 6→5 件に削減 (5-1/5-2/5-3 アインシュタイン + 5-4 市役所 + 5-6 富士山・no は 5-5 欠番)。5-5 (その建物はABCビルですか/はい、そうです) は Q+A 応用のため applicationExamples[app-1] へ移動。",
+          "p6: examples 4 件は維持しつつ sentence を Q 形式のみに刈り込み (応答「この人/そのかばん/この犬/その写真」を applicationExamples[app-1〜app-4] へ分離)。",
+          "旧 examples 由来の image entry ex_L02_017〜020 (p3-3〜3-6) / ex_L02_032 (p5-5) は registry 側で outdated 化 (別 step)。",
+          "Q 単体最適化画像への再生成 (ex_L02_021〜023/029/030/027/028/034/035) は backlog 化。既存 Q+A 場面画像を Q 単体 sentence にも流用。",
+          "formatVersion 2.7 維持。"
         ]
       }
     ]
@@ -813,6 +828,12 @@
             "intro_act_p6"
           ],
           "_note": "教科書ではアインシュタイン等の実在有名人だが、著作権・肖像権配慮のため架空キャラに置換(Q2 確定)。教科書記述: 『アインシュタインなど世界的な有名人や政治家、スターの写真または似顔絵などを用意する』(p.031)・『写真または似顔絵などを用意する』『著作権配慮のため写真より似顔絵推奨』(survey)"
+        },
+        {
+          "type": "teacher_photo",
+          "count": 4,
+          "description": "学習者が知っている有名人(スター・スポーツ選手等)の写真を 4 枚 drop。『この人/その人/あの人は〜です』の練習素材。教師が自分で用意する。",
+          "_note": "PDF 記述: 学習者が知っていると思われる人物の写真。act_famous_person_intro の正規スロット。v2.12: Drop&Drag 化 (plan 2-or-validated-pancake §2.6)。slide_html.js の renderMaterialDrivenLayout / renderQaCardPairLayout が type='teacher_photo' を自動認識して 4 スロット横並びを描画。"
         }
       ],
       "ABCactivityRef": {
@@ -898,6 +919,13 @@
           "description": "p5 で使った架空有名人の似顔絵を複数枚並べて使用。",
           "reusedFrom": "intro_act_p5",
           "_note": "PDF記述: 『導入5で使用した有名人の写真をそのまま使用する。ホワイトボードに数枚の写真を貼っておくか立て掛けておき、教師は学習者側に行く』(p.033)。オンライン授業ではスライド上に複数枚を表示する形に調整。"
+        },
+        {
+          "type": "teacher_photo",
+          "count": 4,
+          "description": "intro_act_p5 で drop した有名人写真をそのまま再利用 (どの人ですか の練習素材)。新しく drop する場合も同 4 枚で完結。",
+          "reusedFrom": "intro_act_p5",
+          "_note": "PDF 記述: 『導入5で使用した有名人の写真をそのまま使用する』(p.033)。v2.12: Drop&Drag 化 (plan 2-or-validated-pancake §2.6)。intro_act_p5 の teacher_photo スロットと同 layout (4 スロット横並び)。"
         }
       ],
       "ABCactivityRef": {
@@ -1326,96 +1354,43 @@
             }
           ],
           "_comment": "他人の所有を表現する例。リンさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5 例文設計基準適用）。画像生成では generic な人物＋かばんで表現。"
-        },
-        {
-          "no": "3-3",
-          "pattern": "〜は〜さんの〜ですか / はい、わたしの〜です",
-          "vocab": "本",
-          "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
-          "sentenceEn": "Is this Kim-san's book? — Yes, it's my book.",
-          "imageId": "ex_L02_017",
-          "imageRole": "scene",
-          "audioId": "sentence_ex_L02_017",
-          "isAnchor": false,
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 2,
-              "originalSentence": "Bさんの本ですか。/ はい、わたしの本です。",
-              "textbookRef": "2-3 Q&A モデル (p.030)",
-              "replacementNote": "v2.11.5: Bさん → キムさん（namedCharacters）に置換。"
-            }
-          ],
-          "_comment": "Q&A 肯定応答。キムさん（namedCharacters）を使用。教科書記号Bさんから置換（v2.11.5 例文設計基準適用）。"
-        },
-        {
-          "no": "3-4",
-          "pattern": "〜は〜さんの〜ですか / いいえ、〜さんの〜です",
-          "vocab": "かばん",
-          "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
-          "sentenceEn": "Is this Suzuki-san's bag? — No, it's Lin-san's bag.",
-          "imageId": "ex_L02_018",
-          "imageRole": "scene",
-          "audioId": "sentence_ex_L02_018",
-          "isAnchor": false,
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 2,
-              "originalSentence": "(T)これはCさんのかばんですか。/(C)いいえ、わたしのかばんじゃありません。Aさんのかばんです。",
-              "textbookRef": "2-3 否定+訂正モデル (p.030)",
-              "replacementNote": "v2.11.5: Cさん → 鈴木さん、Aさん → リンさん（namedCharacters）に置換。"
-            }
-          ],
-          "_comment": "否定形＋訂正。鈴木さん（質問対象）・リンさん（実際の所有者）を使用。じゃありません（L1 p2）は述語に混入しないよう削除（v2.11.7 原則④適用）。"
-        },
-        {
-          "no": "3-5",
-          "pattern": "わたしのです(省略形)",
-          "sentence": "わたしのです。",
-          "sentenceEn": "It's mine.",
-          "imageId": "ex_L02_019",
-          "imageRole": "scene",
-          "audioId": "sentence_ex_L02_019",
-          "isAnchor": false,
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 2,
-              "originalSentence": "わたしのです。",
-              "textbookRef": "2-3 (p.030)",
-              "replacementNote": "教科書例文を継承(置換なし)。省略形の重要例。"
-            }
-          ],
-          "_comment": "省略形『わたしのです』(名詞繰り返し省略)。p3 の plusAlpha で扱う応用形。"
-        },
-        {
-          "no": "3-6",
-          "pattern": "すみません。これは〜さんの〜ですか / はい、そうです。わたしのです。どうも、ありがとう。",
-          "vocab": "ペン",
-          "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
-          "sentenceEn": "Excuse me. Is this Kelly-san's pen? — Yes, it is. It's mine. Thank you.",
-          "imageId": "ex_L02_020",
-          "imageRole": "scene",
-          "audioId": "sentence_ex_L02_020",
-          "isAnchor": false,
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 2,
-              "originalSentence": "(A)すみません。これはBさんのペンですか。/(B)はい、そうです。わたしのです。どうも、ありがとう。",
-              "textbookRef": "2-3 + 活動例 p.034(落としもの返しごっこ 会話例)",
-              "replacementNote": "v2.11.5: Bさん → ケリーさん（namedCharacters）に置換。"
-            }
-          ],
-          "_comment": "p3＋落としもの返しごっこアクティビティ連動例文。ケリーさん（namedCharacters）を使用。教科書記号Bさんから置換（v2.11.5）。"
         }
       ],
-      "_examples_note": "[Step 1c 完了 / 2026-05-11] 5 例文確定。元メモ: Step 1c で確定予定。『これはわたしの〜です』『それはAさんの〜です』『これはBさんの〜ですか / はい、わたしの〜です』『わたしのです』(省略形)を最低限カバー。",
+      "applicationExamples": [
+        {
+          "no": "app-1",
+          "sentence": "これはキムさんの本ですか。— はい、わたしの本です。",
+          "sentenceEn": "Is this Kim-san's book? — Yes, it's my book.",
+          "isAnchor": false,
+          "originalSource": "PDF p.030 教え方の例(Q&A モデル) — Bさんの本ですか。/ はい、わたしの本です。",
+          "_comment": "Q&A 肯定応答(キムさん namedCharacters 使用)。v2.12: 旧 examples[3-3] → applicationExamples へ移動(PDF 文型欄 3 の純粋宣言形ではなく Q&A モデル由来のため)。画像不要(旧 ex_L02_017 は outdated 化)。"
+        },
+        {
+          "no": "app-2",
+          "sentence": "これは鈴木さんのかばんですか。— いいえ、リンさんのかばんです。",
+          "sentenceEn": "Is this Suzuki-san's bag? — No, it's Lin-san's bag.",
+          "isAnchor": false,
+          "originalSource": "PDF p.030 教え方の例(否定+訂正モデル) — (T)これはCさんのかばんですか。/(C)いいえ、わたしのかばんじゃありません。Aさんのかばんです。",
+          "_comment": "否定形＋訂正(鈴木さん→リンさん)。v2.12: 旧 examples[3-4] → applicationExamples へ移動。画像不要(旧 ex_L02_018 は outdated 化)。"
+        },
+        {
+          "no": "app-3",
+          "sentence": "わたしのです。",
+          "sentenceEn": "It's mine.",
+          "isAnchor": false,
+          "originalSource": "PDF p.030 教え方の例(2-3) — 省略形「わたしのです」",
+          "_comment": "省略形(名詞繰り返し省略)。v2.12: 旧 examples[3-5] → applicationExamples へ移動(PDF 文型欄 3 の基本宣言形ではなく plusAlpha 応用形のため)。画像不要(旧 ex_L02_019 は outdated 化)。"
+        },
+        {
+          "no": "app-4",
+          "sentence": "すみません。これはケリーさんのペンですか。— はい、そうです。わたしのです。どうも、ありがとう。",
+          "sentenceEn": "Excuse me. Is this Kelly-san's pen? — Yes, it is. It's mine. Thank you.",
+          "isAnchor": false,
+          "originalSource": "PDF p.034 活動例「落としもの返しごっこ」会話例 — (A)すみません。これはBさんのペンですか。/(B)はい、そうです。わたしのです。どうも、ありがとう。",
+          "_comment": "活動例由来の複合会話。ケリーさん namedCharacters 使用。v2.12: 旧 examples[3-6] → applicationExamples へ移動(PDF 文型欄ではなく活動例由来のため)。画像不要(旧 ex_L02_020 は outdated 化)。"
+        }
+      ],
+      "_examples_note": "[v2.12 / 2026-05-27] applicationExamples 導入。examples = PDF 文型欄 3 由来 2 件(3-1 これはわたしのかばん / 3-2 それはリンさんのかばん)、applicationExamples = 教え方の例・活動例由来 4 件(Q&A・否定訂正・省略形・落としもの返しごっこ会話)。宿題 generator は examples のみ参照。",
       "practiceImageSource": "vocabulary",
       "practiceTemplates": [
         {
@@ -1461,10 +1436,10 @@
       "examples": [
         {
           "no": "4-1",
-          "pattern": "〜さんの〜はどれですか / それです",
+          "pattern": "〜さんの〜はどれですか",
           "vocab": "ペン",
-          "sentence": "リンさんのペンはどれですか。— それです。",
-          "sentenceEn": "Which one is Lin-san's pen? — That one.",
+          "sentence": "リンさんのペンはどれですか。",
+          "sentenceEn": "Which one is Lin-san's pen?",
           "imageId": "ex_L02_021",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_021",
@@ -1476,17 +1451,17 @@
               "lesson": 2,
               "originalSentence": "リンさんのペンはどれですか。",
               "textbookRef": "2-4",
-              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)後も維持。『リンさん』は教科書 PDF p.026 文型 4 に明記された原典固有名詞であり、教科書由来の固有名詞として保持。画像生成では generic 人物 + ペン で表現。"
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)後も維持。『リンさん』は教科書 PDF p.026 文型 4 に明記された原典固有名詞であり、教科書由来の固有名詞として保持。v2.12: 応答「それです」を applicationExamples[app-1] へ分離(examples は PDF 文型欄 4 純粋 Q 形式のみ)。画像生成では generic 人物 + ペン で表現。"
             }
           ],
-          "_comment": "p4 代表例文(教科書ベース)。複数の選択肢から1つを特定する典型。『リンさん』は教科書原典の固有名詞のため維持。画像化対象(複数のペンの中から1つを指す場面)。"
+          "_comment": "p4 代表例文(教科書ベース・Q 単体)。複数の選択肢から1つを特定する典型。『リンさん』は教科書原典の固有名詞のため維持。画像化対象(複数のペンの中から1つを指す場面)。"
         },
         {
           "no": "4-2",
-          "pattern": "〜さんの〜はどれですか / これです",
+          "pattern": "〜さんの〜はどれですか",
           "vocab": "かばん",
-          "sentence": "キムさんのかばんはどれですか。— これです。",
-          "sentenceEn": "Which one is Kim-san's bag? — This one.",
+          "sentence": "キムさんのかばんはどれですか。",
+          "sentenceEn": "Which one is Kim-san's bag?",
           "imageId": "ex_L02_022",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_022",
@@ -1498,17 +1473,17 @@
               "lesson": 2,
               "originalSentence": "Aさん、Aさんのペンはこれですか。これですか。— それです。",
               "textbookRef": "2-4 (p.031 教え方の例)",
-              "replacementNote": "v2.11.5: Aさん → キムさん（namedCharacters）に置換。"
+              "replacementNote": "v2.11.5: Aさん → キムさん（namedCharacters）に置換。v2.12: 応答「これです」を applicationExamples[app-2] へ分離(examples は Q 形式のみ)。"
             }
           ],
-          "_comment": "教科書例文のキャラ・物バリエーション。キムさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。【画像化対象】"
+          "_comment": "教科書例文のキャラ・物バリエーション(Q 単体)。キムさん（namedCharacters）を使用。画像化対象。"
         },
         {
           "no": "4-3",
-          "pattern": "〜さんの〜はどちら(どっち)ですか / こちらです",
+          "pattern": "〜さんの〜はどちら(どっち)ですか",
           "vocab": "本",
-          "sentence": "タノムさんの本はどちらですか。— こちらです。",
-          "sentenceEn": "Which one is Tanomu-san's book? — This one (here).",
+          "sentence": "タノムさんの本はどちらですか。",
+          "sentenceEn": "Which one is Tanomu-san's book?",
           "imageId": "ex_L02_023",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_023",
@@ -1520,17 +1495,17 @@
               "lesson": 2,
               "originalSentence": "(2本のペンを見せて)Aさんのペンはどちらですか。",
               "textbookRef": "2-4 プラスα (p.031)",
-              "replacementNote": "v2.11.5: Bさん → タノムさん（namedCharacters）に置換。"
+              "replacementNote": "v2.11.5: Bさん → タノムさん（namedCharacters）に置換。v2.12: 応答「こちらです」を applicationExamples[app-3] へ分離(examples は Q 形式のみ)。"
             }
           ],
-          "_comment": "選択肢2つのplusAlpha例。タノムさん（namedCharacters）を使用。教科書記号Bさんから置換（v2.11.5）。"
+          "_comment": "選択肢2つのplusAlpha例(Q 単体)。タノムさん（namedCharacters）を使用。"
         },
         {
           "no": "4-4",
-          "pattern": "〜さんの〜はどれですか / あれです",
+          "pattern": "〜さんの〜はどれですか",
           "vocab": "時計",
-          "sentence": "タノムさんの時計はどれですか。— あれです。",
-          "sentenceEn": "Which one is Tanomu-san's clock? — That one over there.",
+          "sentence": "タノムさんの時計はどれですか。",
+          "sentenceEn": "Which one is Tanomu-san's clock?",
           "imageId": "ex_L02_029",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_029",
@@ -1541,17 +1516,17 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 2,
               "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。「あれです」バリエーションでこれ/それ/あれ全答え形を網羅。namedCharacters使用。"
+              "replacementNote": "v2.11.5 新規追加。namedCharacters使用。v2.12: 応答「あれです」を applicationExamples[app-4] へ分離(examples は Q 形式のみ)。"
             }
           ],
-          "_comment": "どれ＋あれ の答えバリエーション。語彙「時計」使用。画像化対象（複数の時計の中から遠くのものを指す）。"
+          "_comment": "どれ＋あれ の Q バリエーション。語彙「時計」使用。画像化対象（複数の時計の中から遠くのものを指す）。"
         },
         {
           "no": "4-5",
-          "pattern": "〜さんの〜はどれですか / これです",
+          "pattern": "〜さんの〜はどれですか",
           "vocab": "消しゴム",
-          "sentence": "ケリーさんの消しゴムはどれですか。— これです。",
-          "sentenceEn": "Which one is Kelly-san's eraser? — This one.",
+          "sentence": "ケリーさんの消しゴムはどれですか。",
+          "sentenceEn": "Which one is Kelly-san's eraser?",
           "imageId": "ex_L02_030",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_030",
@@ -1562,13 +1537,55 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 2,
               "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。ケリーさん（namedCharacters）使用。"
+              "replacementNote": "v2.11.5 新規追加。ケリーさん（namedCharacters）使用。v2.12: 応答「これです」を applicationExamples[app-5] へ分離(examples は Q 形式のみ)。"
             }
           ],
-          "_comment": "p4の語彙バリエーション例。ケリーさん使用。語彙「消しゴム」。"
+          "_comment": "p4の語彙バリエーション例(Q 単体)。ケリーさん使用。語彙「消しゴム」。"
         }
       ],
-      "_examples_note": "[v2.11.5 更新] 5例文。4-1(リンさん★ 教科書原典)/4-2(キムさん・かばん)/4-3(タノムさん・どちら)/4-4(タノムさん・時計)/4-5(ケリーさん・消しゴム)。A/B → namedCharacters に置換済み。画像化対象: 4-1/4-2。",
+      "applicationExamples": [
+        {
+          "no": "app-1",
+          "sentence": "それです。",
+          "sentenceEn": "That one.",
+          "isAnchor": false,
+          "originalSource": "PDF p.026 文型 4 例文の応答部分(4-1「リンさんのペンはどれですか」への応答)",
+          "_comment": "p4 応答「それ」。v2.12: 旧 examples[4-1] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-2",
+          "sentence": "これです。",
+          "sentenceEn": "This one.",
+          "isAnchor": false,
+          "originalSource": "PDF p.031 教え方の例の応答部分(4-2「キムさんのかばんはどれですか」への応答)",
+          "_comment": "p4 応答「これ」。v2.12: 旧 examples[4-2] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-3",
+          "sentence": "こちらです。",
+          "sentenceEn": "This one (here).",
+          "isAnchor": false,
+          "originalSource": "PDF p.031 プラスα(どちら) の応答部分(4-3「タノムさんの本はどちらですか」への応答)",
+          "_comment": "p4 応答「こちら」。v2.12: 旧 examples[4-3] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-4",
+          "sentence": "あれです。",
+          "sentenceEn": "That one over there.",
+          "isAnchor": false,
+          "originalSource": "v2.11.5 新規追加例の応答部分(4-4「タノムさんの時計はどれですか」への応答)",
+          "_comment": "p4 応答「あれ」。v2.12: 旧 examples[4-4] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-5",
+          "sentence": "これです。",
+          "sentenceEn": "This one.",
+          "isAnchor": false,
+          "originalSource": "v2.11.5 新規追加例の応答部分(4-5「ケリーさんの消しゴムはどれですか」への応答)",
+          "_comment": "p4 応答「これ」(app-2 と重複可・5 例題セットの完結性のため保持)。v2.12: 旧 examples[4-5] の A 部分を分離。画像不要。"
+        }
+      ],
+      "_examples_note": "[v2.12 / 2026-05-27] applicationExamples 導入。examples = PDF 文型欄 4 由来 5 件(全 Q 形式)、applicationExamples = それ/これ/こちら/あれ の応答 5 件。宿題 generator は examples のみ参照(uniform 化)。",
       "practiceImageSource": "vocabulary",
       "practiceTemplates": [
         {
@@ -1687,27 +1704,6 @@
           "_comment": "純粋p5例文（建物）。指示連体詞「あの」＋名詞「建物」の典型。p1の「あれは市役所です」との対比で連体詞vs代名詞の違いを示す。画像化対象（遠景の市役所）。"
         },
         {
-          "no": "5-5",
-          "pattern": "その + N + は〜ですか / はい、そうです",
-          "vocab": "ビル",
-          "sentence": "その建物はABCビルですか。— はい、そうです。",
-          "sentenceEn": "Is that building the ABC Building? — Yes, it is.",
-          "imageId": "ex_L02_032",
-          "imageRole": "scene",
-          "audioId": "sentence_ex_L02_032",
-          "isAnchor": false,
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 2,
-              "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。純粋p5例文。L1の「〜ですか/はい、そうです」使用。"
-            }
-          ],
-          "_comment": "純粋p5例文（建物・疑問形）。「その建物」でp5連体詞を使い、L1既習の「〜ですか/はい、そうです」で応答。同一課他パターン混在なし。"
-        },
-        {
           "no": "5-6",
           "pattern": "あの + N + は〜です",
           "vocab": "山",
@@ -1729,7 +1725,17 @@
           "_comment": "純粋p5例文（自然物）。PDF p.032 に直接記載された例文。「あの」＋自然物で指示連体詞の用法を示す。富士山は固有名詞のため「さん」不要（p5.plusAlpha参照）。画像化対象（遠景の富士山）。"
         }
       ],
-      "_examples_note": "[v2.11.5 更新] 6例文。5-1(この人★)/5-2(その人)/5-3(あの人)はアインシュタイン（教科書原典）。5-4(あの建物=市役所)/5-5(その建物=ABCビル)/5-6(あの山=富士山)は既存語彙による純粋p5例文（人物以外）。画像化対象: 5-1/5-4/5-6。",
+      "applicationExamples": [
+        {
+          "no": "app-1",
+          "sentence": "その建物はABCビルですか。— はい、そうです。",
+          "sentenceEn": "Is that building the ABC Building? — Yes, it is.",
+          "isAnchor": false,
+          "originalSource": "v2.11.5 新規追加(L1「〜ですか/はい、そうです」を p5 連体詞と組み合わせた応用)",
+          "_comment": "p5 連体詞 + 疑問応答セットの応用例。v2.12: 旧 examples[5-5] → applicationExamples へ移動(PDF 文型 5 基本宣言形ではなく Q+A 応用のため)。画像不要(旧 ex_L02_032 は outdated 化)。"
+        }
+      ],
+      "_examples_note": "[v2.12 / 2026-05-27] applicationExamples 導入。examples = PDF 文型欄 5 由来 5 件(5-1/5-2/5-3 アインシュタイン + 5-4 市役所 + 5-6 富士山・全宣言形・no は 5-5 欠番)、applicationExamples = Q+A 応用 1 件(旧 5-5 ABCビル)。宿題 generator は examples のみ参照。",
       "practiceImageSource": "namedCharacters",
       "practiceTemplates": [
         {
@@ -1779,10 +1785,10 @@
       "examples": [
         {
           "no": "6-1",
-          "pattern": "どの + N + ですか / この + N + です / その + N + は〜です",
+          "pattern": "どの + N + ですか",
           "vocab": "人",
-          "sentence": "どの人ですか。— この人です。",
-          "sentenceEn": "Which person is it? — This person.",
+          "sentence": "どの人ですか。",
+          "sentenceEn": "Which person is it?",
           "imageId": "ex_L02_027",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_027",
@@ -1794,29 +1800,29 @@
               "lesson": 2,
               "originalSentence": "(T)どの人ですか。/(T)この人です。/(L)その人は○○です。",
               "textbookRef": "2-6 + p.033 教師発話",
-              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)により『田中先生』→ アインシュタインに戻す。PDF p.033 教師ジェスチャー + 流れ(T どの人ですか → T この人です → L その人は○○です)に整合。"
+              "replacementNote": "v1.4: 固定キャラ廃止(選択肢X)後維持。PDF p.033 T-L 往復構造。v2.12: 応答「この人です」を applicationExamples[app-1] へ分離(examples は PDF 文型欄 6 純粋 Q のみ)。"
             }
           ],
-          "_comment": "p6 代表例文（教科書ベース）。「どの人ですか → この人です」でp6のQ&Aが完結。旧第3文「その人はアインシュタインです」はp5の完全文のため削除（v2.11.6 原則①）。人物同定の全会話流れはABCactivityRef(intro_act_p6)に記録済み。画像化対象（複数の有名人写真・アインシュタイン含む）。"
+          "_comment": "p6 代表例文(Q 単体)。教師ジェスチャー(輪を描く)で「どの」を導入。画像化対象（複数の有名人写真・アインシュタイン含む）。"
         },
         {
           "no": "6-2",
-          "pattern": "〜さんの〜はどの + N + ですか / その + N + です",
+          "pattern": "〜さんの〜はどの + N + ですか",
           "vocab": "かばん",
-          "sentence": "ケリーさんのかばんはどのかばんですか。— そのかばんです。",
-          "sentenceEn": "Which bag is Kelly-san's bag? — That bag.",
+          "sentence": "ケリーさんのかばんはどのかばんですか。",
+          "sentenceEn": "Which bag is Kelly-san's bag?",
           "imageId": "ex_L02_028",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_028",
           "isAnchor": false,
-          "_comment": "p6-2: 物への適用例。p3（所有）＋p6（どのN）の統合。ケリーさん（namedCharacters）を使用。教科書記号Aさんから置換（v2.11.5）。p4「どれ」との違いを教師が解説（どれ=単独/どの＋N=名詞明示）。【画像化対象】"
+          "_comment": "p6-2: 物への適用例(Q 単体)。p3（所有）＋p6（どのN）の統合。ケリーさん（namedCharacters）を使用。p4「どれ」との違いを教師が解説（どれ=単独/どの＋N=名詞明示）。v2.12: 応答「そのかばんです」を applicationExamples[app-2] へ分離。【画像化対象】"
         },
         {
           "no": "6-3",
-          "pattern": "どの + N + ですか / この + N + です",
+          "pattern": "どの + N + ですか",
           "vocab": "犬",
-          "sentence": "どの犬ですか。— この犬です。",
-          "sentenceEn": "Which dog is it? — This dog.",
+          "sentence": "どの犬ですか。",
+          "sentenceEn": "Which dog is it?",
           "imageId": "ex_L02_034",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_034",
@@ -1827,17 +1833,17 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 2,
               "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「犬」使用。"
+              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「犬」使用。v2.12: 応答「この犬です」を applicationExamples[app-3] へ分離。"
             }
           ],
-          "_comment": "純粋p6例文。新語彙「犬」を使用。複数の犬の中から1匹を特定する場面。画像化対象（複数の犬の中からこの犬を指す場面）。"
+          "_comment": "純粋p6例文(Q 単体)。新語彙「犬」を使用。複数の犬の中から1匹を特定する場面。画像化対象（複数の犬の中からこの犬を指す場面）。"
         },
         {
           "no": "6-4",
-          "pattern": "どの + N + ですか / その + N + です",
+          "pattern": "どの + N + ですか",
           "vocab": "写真",
-          "sentence": "どの写真ですか。— その写真です。",
-          "sentenceEn": "Which photo is it? — That photo.",
+          "sentence": "どの写真ですか。",
+          "sentenceEn": "Which photo is it?",
           "imageId": "ex_L02_035",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_035",
@@ -1848,13 +1854,47 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 2,
               "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「写真」使用。"
+              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「写真」使用。v2.12: 応答「その写真です」を applicationExamples[app-4] へ分離。"
             }
           ],
-          "_comment": "純粋p6例文。新語彙「写真」を使用。複数の写真の中から1枚を特定する場面。画像化対象（複数の写真の中からその写真を指す場面）。"
+          "_comment": "純粋p6例文(Q 単体)。新語彙「写真」を使用。複数の写真の中から1枚を特定する場面。画像化対象（複数の写真の中からその写真を指す場面）。"
         }
       ],
-      "_examples_note": "[v2.11.5 更新] 4例文。6-1(どの人★ 教科書原典)/6-2(ケリーさんのかばん・Aさんから置換)/6-3(どの犬)/6-4(どの写真)。6-3/6-4は新語彙（犬・写真）による純粋p6例文。画像化対象: 6-1/6-3/6-4。",
+      "applicationExamples": [
+        {
+          "no": "app-1",
+          "sentence": "この人です。",
+          "sentenceEn": "This person.",
+          "isAnchor": false,
+          "originalSource": "PDF p.033 教師発話の応答部分(6-1「どの人ですか」への応答)",
+          "_comment": "p6 応答「この人」。v2.12: 旧 examples[6-1] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-2",
+          "sentence": "そのかばんです。",
+          "sentenceEn": "That bag.",
+          "isAnchor": false,
+          "originalSource": "v2.11.5 新規追加例の応答部分(6-2「ケリーさんのかばんはどのかばんですか」への応答)",
+          "_comment": "p6 応答「そのかばん」。v2.12: 旧 examples[6-2] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-3",
+          "sentence": "この犬です。",
+          "sentenceEn": "This dog.",
+          "isAnchor": false,
+          "originalSource": "v2.11.5 新規追加例の応答部分(6-3「どの犬ですか」への応答)",
+          "_comment": "p6 応答「この犬」。v2.12: 旧 examples[6-3] の A 部分を分離。画像不要。"
+        },
+        {
+          "no": "app-4",
+          "sentence": "その写真です。",
+          "sentenceEn": "That photo.",
+          "isAnchor": false,
+          "originalSource": "v2.11.5 新規追加例の応答部分(6-4「どの写真ですか」への応答)",
+          "_comment": "p6 応答「その写真」。v2.12: 旧 examples[6-4] の A 部分を分離。画像不要。"
+        }
+      ],
+      "_examples_note": "[v2.12 / 2026-05-27] applicationExamples 導入。examples = PDF 文型欄 6 由来 4 件(全 Q 形式)、applicationExamples = この/その/この/その の応答 4 件。宿題 generator は examples のみ参照(uniform 化)。",
       "practiceImageSource": "namedCharacters",
       "practiceTemplates": [
         {

@@ -381,3 +381,17 @@
 - **lesson_01 intro_act_p1 世界地図 Drop&Drag**: 現状 character_card_grid layout で world_map スロットを併存させていないため drop placeholder が出ない (user 認識「課マスター未設定だから」は半分正しい、layout 改修も必要)。本 plan のスコープ外、backlog。
 - **新規 B-NN checker (skill 改修で追加予定)**: B-6-2 ERROR (practiceTemplates 全件 blank=0) / B-6-3 WARN (blank 異形) / B-6-4 INFO (≥4 templates) / B-12 WARN (examples に「— 」「はい/いいえ応答」「それ/これ/あれ/こちらです」末尾を検出) / B-13 WARN (examples 空 + applicationExamples のみ)。severity は WARN で fail させず、既存 lesson は plan の data 修正で違反消去する方針。
 - **plan ファイル**: [C:\Users\kohn0\.claude\plans\2-or-validated-pancake.md](C:\Users\kohn0\.claude\plans\2-or-validated-pancake.md) に最終形で保存。次 session 着手前に再読すること。
+
+## 2026-05-27 (X-e applicationExamples 実装着地)
+
+- **plan 2-or-validated-pancake を実装着地**: schema + data + skill + registry を一連で適用。実装順 10 step を一気通貫で消化 (途中で plan §2.2/§2.3 の判断ポイント = p3 3-2 残置 / p4 4-2,4-3 残置 を user に確認・plan default 採用)。
+- **schema 追加**: docs/REFERENCE.md §6-1 に `patterns[].applicationExamples[]` 定義を追加 (no=`app-N` / sentence / sentenceEn / imageId 任意 / isAnchor 任意 / originalSource 任意 / _comment 任意)。examples / applicationExamples の役割分担を 5 行 doc で明記。
+- **lesson_01 v2.13**: p2 を 8 件 → 4 件 (Q のみ) + applicationExamples 4 件 (応答セット) に再構成。残存 examples は既存 imageId 流用 (ex_L01_006/010/012/008)。旧 examples 由来の ex_L01_007/009/011/013 は registry で outdated 化。
+- **lesson_02 v2.12**: p3 (6→2 / app 4) / p4 (5→5 sentence Q 化 / app 5) / p5 (6→5 / app 1) / p6 (4→4 sentence Q 化 / app 4)。旧 examples 由来の ex_L02_017/018/019/020 / ex_L02_032 は registry で outdated 化。残存 examples (ex_L02_021..023/027..030/034/035) は sentence を Q 単体に同期 (画像は流用)。intro_act_p5 / intro_act_p6 に `{type:'teacher_photo', count:4}` materialNeed を追加 (Drop&Drag 化)。
+- **lesson-check 強化**: B-6-2 ERROR (全件 blank=0) / B-6-3 WARN (blank 異形) / B-6-4 INFO (≥4 templates) / B-12 WARN (em-dash / 「はい〜です」/ 「いいえ〜じゃありません」/ 指示応答 / 「そうです」/ 「〜のです」省略形 検出) / B-13 WARN (examples 空 + applicationExamples のみ) を実装。report に `infos` カテゴリを追加。
+- **lesson-scaffold 強化**: `buildApplicationExample` を新設して seed に `applicationExamples: []` を初期化。docstring に user 確定の基本ルールを記載。practiceTemplates blank 数の uniform 軽 lint を fill 段階に追加。
+- **activity_catalog**: `act_whiteboard_categorize.validatedForLessons = [1, 2]` に拡張。
+- **検証**: `npm run validate` invariants A/B/B'/C PASS 維持 (D の 20 LUFS ERROR は既知制約)、`node scripts/_verify_homework_html_l02.cjs` 通過 (p5 uniform 多 template = judge UI 動作 / p3/p4/p6 異形 or 単一 = judge UI 無し・plan 想定通り)、`/lesson-check 01` / `/lesson-check 02` 実行で B-6/B-12/B-13 違反 0 件 (今回の data 整理で消去済)。
+- **スライド実視**: user 側で `python -m http.server 8766` 起動 + intro_act_p5/p6 で teacher_photo スロット × 4 が破線枠で drop 待ち状態になることを確認 (本セッションでは Node 経由 SlideHtml.generate が ctx.flow 不在で失敗 / dev server 起動は user 都合に任せた)。
+- **invariants hash 変化なし**: 本セッションは prompts/guide を触らないので B/B' hash は 891b73f5ae2d / 652aa0a3cbe3 不変。
+- **backlog 追加**: applicationExamples の render 先 (会話例スライド or 教案 docx 応用ガイド) / Q 単体最適化画像への再生成 / lesson_plan_docx.js の applicationExamples 対応 / lesson_01 intro_act_p1 世界地図 Drop&Drag は引き続き NEXT_ACTIONS の backlog 欄。

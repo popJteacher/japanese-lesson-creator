@@ -1,10 +1,10 @@
 {
   "_meta": {
     "formatVersion": "2.7",
-    "lessonVersion": "1.2",
+    "lessonVersion": "1.3",
     "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
     "createdAt": "2026-05-05",
-    "lastModified": "2026-05-15",
+    "lastModified": "2026-05-27",
     "changes": [
       "v2.0: timing・fallbackFlow を廃止し flow に統合。実際の授業フローを反映。",
       "v2.1: 鈴木さん・キムさん廃止 → 田中世界観に統一(解1)。教科書由来例文には originalSource フィールドで原文を保持。採用語彙(vocabulary セクション)と人物アサイン(characters セクション)を SSOT として明示。p3.examples を 5 例文に拡張し、所属機関破綻 4 件を修正(さくら系ハイブリッド採用)。a3 不在問題を解消(selectedId を a1 に変更、最終決定は Phase 3 T4 にて再選定予定)。target に年齢混在を明示。",
@@ -20,7 +20,8 @@
       "v2.11.2 (2026-05-15): canDoEn フィールドを全パターン(p1/p2/p3)に追加(全課共通仕様化)。slide_html.js は既に canDoEn 出力に対応済み(introGoalsSlide / patternIntroSlide / wrapUpSlide / reviewSlide の 4 箇所で .en-text クラス付き)のため修正不要。lesson_02.json 以降は patterns[].canDo の直後に必ず canDoEn を追加すること(CLAUDE.md §lesson_NN.json スキーマ要件 参照)。formatVersion 2.7 維持。",
       "v2.11.3 (2026-05-15): patterns[] に practiceImageSource フィールドを追加 (p1: \"vocabulary\", p2: \"namedCharacters\", p3: \"namedCharacters+vocab\")。homework_html.js が宿題の練習問題画像を文型ごとに切り替えるための分岐キー。formatVersion 2.7 維持。",
       "v2.11.4 (2026-05-15): p1/p3 の practice 仕様更新。(1) p1: practiceImageSource を \"vocabulary\" → \"namedCharacters\" に変更。practiceTemplates を「＿＿＿さんは＿＿＿です。」(2 blanks, 名前+職業/国籍) に置換。(2) p3: practiceTemplates を「＿＿＿さんは＿＿＿の＿＿＿です。」(3 blanks, 名前+所属+職業) に置換。宿題HTMLで人物カード+空欄入力による文型練習を実現。formatVersion 2.7 維持。",
-      "v2.12 (2026-05-26): X-c 例文 revision + 画像再生成第一陣。(1) patterns[p2].examples を 5 件 → 8 件に分離型再構成: 旧 2-3(Q+A)/2-4(Q+肯定+否定)/2-5(Q+肯定+否定) を Q と A 別 example に分割。(2) anchor を 旧 2-4(先生ですか) から 新 2-1(リンさんですか) に戻す(PDF p.6 文型 2-1 原典回帰・v2.11.1 Bug④A 修正の差し戻し)。(3) patterns[p3].examples の imageId/audioId を ex_L01_011..015 → ex_L01_014..018 に shift(p2 拡張分の番号確保)。(4) 全 examples(p1+p2+p3 = 18 件) に sceneCharacters[] field 追加(PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE v4.0.5 対応・主語省略文の addressee 明示用)。(5) キャラ分布: リン 4(p1-2/1-5 + p2-1/2-2 + p3-4) / 鈴木 4(p1-1/1-4 + p2-5/2-6 + p3-2) / キム 5(p1-3 + p2-4/2-7/2-8 + p3-3/3-5) / タノム 1(p3-1) / なし 1(p2-3 だれですか)。formatVersion 2.7 維持。"
+      "v2.12 (2026-05-26): X-c 例文 revision + 画像再生成第一陣。(1) patterns[p2].examples を 5 件 → 8 件に分離型再構成: 旧 2-3(Q+A)/2-4(Q+肯定+否定)/2-5(Q+肯定+否定) を Q と A 別 example に分割。(2) anchor を 旧 2-4(先生ですか) から 新 2-1(リンさんですか) に戻す(PDF p.6 文型 2-1 原典回帰・v2.11.1 Bug④A 修正の差し戻し)。(3) patterns[p3].examples の imageId/audioId を ex_L01_011..015 → ex_L01_014..018 に shift(p2 拡張分の番号確保)。(4) 全 examples(p1+p2+p3 = 18 件) に sceneCharacters[] field 追加(PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE v4.0.5 対応・主語省略文の addressee 明示用)。(5) キャラ分布: リン 4(p1-2/1-5 + p2-1/2-2 + p3-4) / 鈴木 4(p1-1/1-4 + p2-5/2-6 + p3-2) / キム 5(p1-3 + p2-4/2-7/2-8 + p3-3/3-5) / タノム 1(p3-1) / なし 1(p2-3 だれですか)。formatVersion 2.7 維持。",
+      "v2.13 (2026-05-27): applicationExamples schema 導入(plan 2-or-validated-pancake §2.1)。(1) patterns[p2] を「PDF 文型欄準拠 Q 4 件 + 応答 applicationExamples 4 件」に再構成: examples を 8 件 → 4 件 Q のみに削減(2-1 リンさんですか / 2-2 先生ですか / 2-3 韓国人ですか / 2-4 だれですか)。応答(肯定/否定セット・キムさんです 等)は新フィールド applicationExamples[] へ移動(app-1〜app-4・画像なし)。(2) 残存 examples は既存 imageId/audioId 流用(ex_L01_006/010/012/008)、Q 単体最適化画像への再生成は backlog。(3) applicationExamples 詳細スキーマは docs/REFERENCE.md §6-1 参照。基本ルール: examples = PDF 文型欄基本形のみ / applicationExamples = 教え方の例・プラスα・活動例・応答セット由来の応用表現。宿題 generator は examples のみ参照(controlled practice の純度担保)。(4) 旧 examples 由来の image entry ex_L01_007/009/011/013 は registry 側で outdated 化(別 step)。(5) p1/p3 は本 plan 対象外で無変更。formatVersion 2.7 維持。"
     ],
     "_phase1f_completed": {
       "_note": "v2.6 で Phase 1-F F-1 を完了した記録。lesson_02 v1.4 と同じ原則で固定キャラ概念を廃止。previous_characters_backup は将来のロールバック用に保存。",
@@ -1037,76 +1038,6 @@
         },
         {
           "no": "2-2",
-          "pattern": "はい〜です／いいえ〜じゃありません",
-          "vocab": null,
-          "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
-          "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
-          "imageId": "ex_L01_007",
-          "imageRole": "scene",
-          "sceneCharacters": [
-            "リン"
-          ],
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 1,
-              "originalSentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
-              "replacementNote": "PDF p.6 文型セクション 2-2 原典。v2.12: 維持(肯定/否定セットを 1 example として保持)。"
-            }
-          ],
-          "_comment": "p2 応答例文(肯定/否定セット)。PDF p.6 文型原典。リン portrait ref。",
-          "audioId": "sentence_ex_L01_007",
-          "isAnchor": false
-        },
-        {
-          "no": "2-3",
-          "pattern": "だれですか",
-          "vocab": null,
-          "sentence": "だれですか。",
-          "sentenceEn": "Who is it?",
-          "imageId": "ex_L01_008",
-          "imageRole": "scene",
-          "sceneCharacters": [],
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 1,
-              "originalSentence": "だれですか。−キムさんです。",
-              "replacementNote": "PDF p.6 文型セクション 2-3 前半(Q)。v2.12: Q と A を分離(新 2-3 = Q / 新 2-4 = A)。"
-            }
-          ],
-          "_comment": "p2 疑問詞「だれ」Q 単独。NAMED_CHARACTER 不在(まだ確認していない人物を問う場面)。ref attach なし。",
-          "audioId": "sentence_ex_L01_008",
-          "isAnchor": false
-        },
-        {
-          "no": "2-4",
-          "pattern": "〜です(応答)",
-          "vocab": null,
-          "sentence": "キムさんです。",
-          "sentenceEn": "It's Kim-san.",
-          "imageId": "ex_L01_009",
-          "imageRole": "vocab_person",
-          "sceneCharacters": [
-            "キム"
-          ],
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 1,
-              "originalSentence": "だれですか。−キムさんです。",
-              "replacementNote": "PDF p.6 文型セクション 2-3 後半(A)。v2.12: 新 2-3 から分離して独立例文化。キム portrait ref。"
-            }
-          ],
-          "_comment": "p2「だれですか」への応答。キムさん(会社員・韓国人・男性)。NAMED_CHARACTER_PROFILES と連動。",
-          "audioId": "sentence_ex_L01_009",
-          "isAnchor": false
-        },
-        {
-          "no": "2-5",
           "pattern": "〜ですか(職業)",
           "vocab": "先生",
           "sentence": "先生ですか。",
@@ -1122,39 +1053,15 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 1,
               "originalSentence": "(v2.10新規追加→ v2.12 分離型化)",
-              "replacementNote": "PDF p.4「職業・国籍の練習」由来。v2.10 で結合型「先生ですか→はい/いいえ」として追加。v2.12 で Q と A を分離(新 2-5 = Q / 新 2-6 = A)。対象は鈴木さん(先生・日本人)に確定。"
+              "replacementNote": "PDF p.4「職業・国籍の練習」由来。v2.10 で結合型「先生ですか→はい/いいえ」として追加。v2.12 で Q と A を分離(新 2-5 = Q / 新 2-6 = A)。v2.13: 旧 2-5 を新 2-2 に renumber(examples = PDF 文型欄準拠 Q のみ)。対象は鈴木さん(先生・日本人)。"
             }
           ],
-          "_comment": "p2 職業疑問文 Q 単独。対象は鈴木さん(p1-1/1-4 で確立)。鈴木 portrait ref。v2.12: 結合型から分離。",
+          "_comment": "p2 職業疑問文 Q 単独。対象は鈴木さん(p1-1/1-4 で確立)。鈴木 portrait ref。",
           "audioId": "sentence_ex_L01_010",
           "isAnchor": false
         },
         {
-          "no": "2-6",
-          "pattern": "はい〜です／いいえ〜じゃありません",
-          "vocab": "先生",
-          "sentence": "はい、先生です。／いいえ、先生じゃありません。",
-          "sentenceEn": "Yes, I am a teacher. / No, I am not a teacher.",
-          "imageId": "ex_L01_011",
-          "imageRole": "scene",
-          "sceneCharacters": [
-            "鈴木"
-          ],
-          "originalSources": [
-            {
-              "textbookId": "ABC",
-              "textbookName": "日本語の教え方ABC",
-              "lesson": 1,
-              "originalSentence": "(v2.10新規追加→ v2.12 分離型化)",
-              "replacementNote": "v2.12: 旧 2-4 結合型「先生ですか→はい/いいえ」から A 部分を独立例文化(新 2-6)。対象は鈴木さん。"
-            }
-          ],
-          "_comment": "p2 職業応答(肯定/否定セット)。対象は鈴木さん(先生・日本人)。鈴木 portrait ref。",
-          "audioId": "sentence_ex_L01_011",
-          "isAnchor": false
-        },
-        {
-          "no": "2-7",
+          "no": "2-3",
           "pattern": "〜ですか(国籍)",
           "vocab": "韓国人",
           "sentence": "韓国人ですか。",
@@ -1170,36 +1077,68 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 1,
               "originalSentence": "(v2.10新規追加→ v2.12 分離型化)",
-              "replacementNote": "PDF p.4「職業・国籍の練習」由来。v2.10 で結合型として追加。v2.12 で Q と A を分離(新 2-7 = Q / 新 2-8 = A)。対象はキムさん(会社員・韓国人)。"
+              "replacementNote": "PDF p.4「職業・国籍の練習」由来。v2.10 で結合型として追加。v2.12 で Q と A を分離(新 2-7 = Q / 新 2-8 = A)。v2.13: 旧 2-7 を新 2-3 に renumber(examples = PDF 文型欄準拠 Q のみ)。対象はキムさん(会社員・韓国人)。"
             }
           ],
-          "_comment": "p2 国籍疑問文 Q 単独。対象はキムさん(p1-3 / 新 2-4 で確立)。キム portrait ref。v2.12: 結合型から分離。",
+          "_comment": "p2 国籍疑問文 Q 単独。対象はキムさん(p1-3 / app-2 応答で確立)。キム portrait ref。",
           "audioId": "sentence_ex_L01_012",
           "isAnchor": false
         },
         {
-          "no": "2-8",
-          "pattern": "はい〜です／いいえ〜じゃありません",
-          "vocab": "韓国人",
-          "sentence": "はい、韓国人です。／いいえ、韓国人じゃありません。",
-          "sentenceEn": "Yes, I am Korean. / No, I am not Korean.",
-          "imageId": "ex_L01_013",
+          "no": "2-4",
+          "pattern": "だれですか",
+          "vocab": null,
+          "sentence": "だれですか。",
+          "sentenceEn": "Who is it?",
+          "imageId": "ex_L01_008",
           "imageRole": "scene",
-          "sceneCharacters": [
-            "キム"
-          ],
+          "sceneCharacters": [],
           "originalSources": [
             {
               "textbookId": "ABC",
               "textbookName": "日本語の教え方ABC",
               "lesson": 1,
-              "originalSentence": "(v2.10新規追加→ v2.12 分離型化)",
-              "replacementNote": "v2.12: 旧 2-5 結合型「韓国人ですか→はい/いいえ」から A 部分を独立例文化(新 2-8)。対象はキムさん。"
+              "originalSentence": "だれですか。−キムさんです。",
+              "replacementNote": "PDF p.6 文型セクション 2-3 前半(Q)。v2.12: Q と A を分離(新 2-3 = Q / 新 2-4 = A)。v2.13: 旧 2-3(Q) を新 2-4 に renumber(examples 末尾配置)。応答「キムさんです」は applicationExamples[app-2] へ。"
             }
           ],
-          "_comment": "p2 国籍応答(肯定/否定セット)。対象はキムさん(会社員・韓国人)。キム portrait ref。",
-          "audioId": "sentence_ex_L01_013",
+          "_comment": "p2 疑問詞「だれ」Q 単独。NAMED_CHARACTER 不在(まだ確認していない人物を問う場面)。ref attach なし。",
+          "audioId": "sentence_ex_L01_008",
           "isAnchor": false
+        }
+      ],
+      "applicationExamples": [
+        {
+          "no": "app-1",
+          "sentence": "はい、リンさんです。／いいえ、リンさんじゃありません。",
+          "sentenceEn": "Yes, it's Lin-san. / No, it's not Lin-san.",
+          "isAnchor": false,
+          "originalSource": "PDF p.6 文型セクション 2-2 原典(リンさんですか への肯定/否定応答)",
+          "_comment": "p2 応答例文(肯定/否定セット)。v2.13: 旧 examples[2-2] → applicationExamples へ移動。画像不要(旧 ex_L01_007 は outdated 化予定)。"
+        },
+        {
+          "no": "app-2",
+          "sentence": "キムさんです。",
+          "sentenceEn": "It's Kim-san.",
+          "isAnchor": false,
+          "originalSource": "PDF p.6 文型セクション 2-3 後半(「だれですか」への応答)",
+          "_comment": "p2「だれですか」への応答。v2.13: 旧 examples[2-4] → applicationExamples へ移動。画像不要(旧 ex_L01_009 は outdated 化予定)。"
+        },
+        {
+          "no": "app-3",
+          "sentence": "はい、先生です。／いいえ、先生じゃありません。",
+          "sentenceEn": "Yes, I am a teacher. / No, I am not a teacher.",
+          "isAnchor": false,
+          "originalSource": "PDF p.4「職業・国籍の練習」由来(先生ですか への肯定/否定応答)",
+          "_comment": "p2 職業応答(肯定/否定セット)。v2.13: 旧 examples[2-6] → applicationExamples へ移動。画像不要(旧 ex_L01_011 は outdated 化予定)。"
+        },
+        {
+          "no": "app-4",
+          "sentence": "はい、韓国人です。／いいえ、韓国人じゃありません。",
+          "sentenceEn": "Yes, I am Korean. / No, I am not Korean.",
+          "isAnchor": false,
+          "originalSource": "PDF p.4「職業・国籍の練習」由来(韓国人ですか への肯定/否定応答)",
+          "_comment": "p2 国籍応答(肯定/否定セット)。v2.13: 旧 examples[2-8] → applicationExamples へ移動。画像不要(旧 ex_L01_013 は outdated 化予定)。"
         }
       ],
       "practiceImageSource": "namedCharacters",
