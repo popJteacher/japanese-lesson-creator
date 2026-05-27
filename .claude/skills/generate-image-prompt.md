@@ -156,6 +156,18 @@ words = candidates[:limit]
 4. **`{CHARACTER_DESCRIPTIONS}` lean form**：portrait reference が attach されている場合、衣装・髪・顔の詳細を再記述しない（reference に identity transfer を委ねる）。role context + posture intent のみ書く。
 5. **scene-deviation override**：scene が portrait と異なる outfit/activity を要求する場合のみ explicit override 文を [SUBJECT] に追記。
 
+**v4.0.7 (2026-05-27 X-c-6) 仕様** — [PART 3.9 v4.0.7 8 subsections](../../prompts/guide/part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level) 追加遵守（v4.0.6 を上書き・包含）：
+
+1. **§3.9.1 edge-bleed**：`{SCENE_DESCRIPTION}` 末尾に PART 3.9.1 Required phrase（`physically intersect and bleed off both the extreme left and extreme right edges`）を必ず含める。
+2. **§3.9.2 object-manipulation**：`{SCENE_DESCRIPTION}` に PART 3.9.2 Required phrase（`actively, physically manipulating an object related to their role`）を含める。Forbidden phrases (`Standing in front of` / `Standing next to` / `Posing naturally`) は出力に絶対含めない。
+3. **§3.9.2 Identity-only exception**：sentence が nationality declarative（〜は[国籍]です）の場合は §3.9.2 5a の Required phrase を `{SCENE_DESCRIPTION}` に **代わりに** emit。role identity without affiliation（〜は[役職]です・affiliation なし）は §3.9.2 5b。
+4. **§3.9.3 INSIDE**：affiliation 文の `{SCENE_DESCRIPTION}` に PART 3.9.3 Required phrase（`strictly an INDOOR interior shot fully enclosed by walls. The character is INSIDE the [INSTITUTION]`）を必ず含める。
+5. **§3.9.4 2D UI overlay**：`{VISUAL_SYMBOL_IF_NEEDED}` placeholder は symbol 必要時のみ emit、その内容は PART 3.9.4 Required phrase（`pure 2D graphic UI overlay composited flat against the picture plane. It MUST have zero depth, cast zero shadows...`）。Forbidden positional phrases (`hovers`, `floating`, `next to`, `suspended above`) は絶対含めない。
+6. **§3.9.5 EXCLUSIVELY**：`{CHARACTER_DESCRIPTIONS}` lean form に PART 3.9.5 Required phrase（`Character identity MUST be derived EXCLUSIVELY from the attached image`）を必ず含める。
+7. **§3.9.6 particle mapping**：sentence の dominant particle (は/が/に/で/を/の/へ) を §3.9.6 表から lookup し、対応する verbatim phrase を `{SCENE_DESCRIPTION}` に inline する。Forbidden ambiguous descriptor (`near`, `by`, `around`) は出力に絶対含めない。
+8. **§3.9.7 featureless surfaces**：`{SCENE_DESCRIPTION}` 内で flat surface (whiteboard / desk / monitor / textbook / badge / wall) に言及する際は §3.9.7 表 (7a-7h) の Required phrase を verbatim 使用。Forbidden word stems (`blank`, `empty`, `clean`, `unoccupied`, `nobody is`) は絶対含めない。scene-essential prop は §3.9.7 Positive enumeration addendum で positively enumerate。
+9. **§3.9.8 2-panel pattern**：sentence が はい〜／いいえ〜パターン の場合、`{SCENE_DESCRIPTION}` ではなく **[SCENE & ACTION] block 全体** を §3.9.8 A (NAMED_CHARACTER 付き) または §3.9.8 B (generic archetype) の verbatim block で置換する。`{SUBJECT}` も §3.9.8 B の場合は archetype 仕様で置換。
+
 #### `mode = explicit`
 
 `--words` で渡された word を catalog で lookup して vocab_type を解決。catalog に無い word は ABORT。

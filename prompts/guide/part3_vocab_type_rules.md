@@ -519,6 +519,7 @@ position（上・下・中・前・後ろ・右・左・となり・間）ごと
 
 > `vocab_type` 不要。lesson_NN.json の `patterns[].examples[]` 全件に Template C を適用。
 > **v4.0.6 (2026-05-26 X-c)**：lesson_01 ex_L01_* 18 件の text-only 一陣失敗 + Gemini 第二意見を踏まえて 5 つの subsection を追加（aspect_ratio_enforcement / scene_action_focus / affiliation_indoor / visual_symbol_restriction / reference_redundancy_avoidance）。これらは Template C 経由の全 lesson 共通規律。
+> **v4.0.7 (2026-05-27 X-c-6)**：v4.0.6 5 subsection を Gemini 第三/四意見で literal phrase 強化（Forbidden phrases 列挙含む）+ 3 subsection 新設（**particle_visual_mapping** / **horror_vacui_blank_surfaces** / **two_panel_qa_pattern**）。Gemini 命名の bias（Native 1:1 Square / Object Isolation / Diegetic Confusion / Horror Vacui / Gibberish Hallucination / Dollhouse Scaling / Exterior Facade Literalism / Feature Blending）を直接 defeat する verbatim wording に統一。
 
 ### Aspect ratio / framing
 
@@ -532,17 +533,34 @@ position（上・下・中・前・後ろ・右・左・となり・間）ごと
 - Simple minimal background with only essential context
 - Main characters clearly separated from background in visual contrast
 
-### aspect_ratio_enforcement (v4.0.6 新規)
+### 3.9.1 aspect_ratio_enforcement (v4.0.6 新規 / v4.0.7 強化)
 
 > Template C は 16:9 だが、nanobanana / gemini-2.5-flash-image は **画像生成 API として aspect ratio パラメータを持たず、テキスト directive にも 1:1 default bias がある**。`Wide 16:9 shot` の 1 行だけでは default に倒れる。lesson_01 X-c v1 text-only 一陣 18 件全件で 16:9 → 1:1 drift が発生し、X-c-7 PoC を毀損した。
+>
+> **Defeats**: Native 1:1 Square Bias / Object Isolation Bias / Center-Weighted Cropping Bias / Dollhouse Scaling Bias.
 
 ```
 Strict 16:9 enforcement requires (a) a dedicated [STRICT LAYOUT DIRECTIVE] block placed
 HIGH in the prompt (between [PURPOSE] and [REFERENCE]) and (b) a horizontally-stretching
-background element described in [SCENE & ACTION] that explicitly spans left-to-right.
-Text-only ratio request without a background anchor is insufficient — nanobanana collapses
-to its native 1:1 bias.
+background element described in [SCENE & ACTION] that explicitly INTERSECTS AND BLEEDS
+OFF both the extreme left and extreme right edges of the frame. Text-only ratio request
+without a physical edge-bleeding anchor is insufficient — nanobanana collapses to its
+native 1:1 bias and shrinks any "wide" element to a disconnected prop ("dollhouse" scaling).
 ```
+
+#### Required phrase (v4.0.7 verbatim, in [SCENE & ACTION])
+
+```
+To enforce the 16:9 widescreen layout, the specified horizontal background anchor MUST
+physically intersect and bleed off both the extreme left and extreme right edges of the
+frame.
+```
+
+#### Forbidden phrases (v4.0.7)
+
+- `Wide 16:9 shot` を **anchor 文なしで単独** で使うこと（必ず edge-bleed 文と組で）
+- `A whiteboard in the background`（disconnected miniature prop に倒れる）
+- `Centered in the frame`（center-weighted bias を悪化させる）
 
 #### rule_a — STRICT LAYOUT DIRECTIVE block (位置 + 文言)
 
@@ -575,15 +593,36 @@ is the primary counterweight.
 
 `MUST`, `DO NOT`, `NEVER` を使う（[PART 1.4 rule_c](part1_universal_rules.md#part-14-prompt_literalization_avoidance_rule)）。`should` / `may` は 16:9 で禁止。
 
-### scene_action_focus (v4.0.6 新規)
+### 3.9.2 scene_action_focus (v4.0.6 新規 / v4.0.7 強化)
 
 > 例文画像の教育的価値は「sentence の文法関係が一目でわかる」ことにある。Identity card 風の立ち姿だけでは sentence 内容と画像が乖離する（例：「鈴木さんは先生です」を ホワイトボード横で立つだけの絵にすると「ここは教室」としか伝わらず「鈴木さんは教師」が確定しない）。
+>
+> **Defeats**: Default Standing Portrait Bias / Subject-Environment Disconnection.
 
 ```
-For every example_sentence, the [SCENE_DESCRIPTION] MUST anchor the sentence's grammatical
-or semantic core in a ROLE-SPECIFIC ACTION rather than a passive standing pose. The viewer
-must read the sentence purpose from the action, not from the absence of conflicting cues.
+For every example_sentence (with the identity-only exception below), the [SCENE_DESCRIPTION]
+MUST anchor the sentence's grammatical or semantic core in a ROLE-SPECIFIC ACTION rather
+than a passive standing pose. The character MUST be actively, physically manipulating an
+object related to their role (hands gripping a keyboard, fingers writing on a board, hand
+on stethoscope at chest, palm flat on textbook, etc.). The viewer must read the sentence
+purpose from the action, not from the absence of conflicting cues.
 ```
+
+#### Required phrase (v4.0.7 verbatim, in [SCENE & ACTION])
+
+```
+The character MUST be actively, physically manipulating an object related to their role
+(e.g., hands gripping a keyboard, fingers writing on a board, palm flat on the open
+textbook, hand resting on the stethoscope at chest level). DO NOT render a passive
+standing pose.
+```
+
+#### Forbidden phrases (v4.0.7)
+
+- `Standing in front of`
+- `Standing next to`
+- `Looking at the viewer` （注：dead-eyed passport-style に限る。**active role action 中の eye contact は OK** — §3.9.2 identity-only exception 参照）
+- `Posing naturally`
 
 #### Per-role canonical actions (推奨参照表)
 
@@ -595,23 +634,59 @@ must read the sentence purpose from the action, not from the absence of conflict
 | doctor | standing in consultation room facing patient/viewer / one hand on stethoscope / examining a clipboard | wide consultation desk + medical chart on flat panel |
 | foreigner / learner | with open phrasebook in hands speaking to a Japanese person / at a station information board | minimal urban or classroom context spanning horizontally |
 
-#### Identity-only exception
+#### Identity-only exception (v4.0.7 拡張 / Gemini Q5)
 
-文の主旨が **nationality / identity** （例：「鈴木さんは日本人です」「リンさんは中国人です」）の場合は、role action を維持しつつ phenotype が一目でわかる構図を選ぶ：
-- 同 role の他例文と「同じスタジオ・別カット」風に、より character 主体のフレーミング（建物より人物に寄る）
-- 但し国旗 prop は禁止（[PART 6.4 ROLE_ANTI_FLAG_BLOCK](part6_output_instructions.md#role_anti_flag_block) は named character / role 系の標準）
+文の主旨が **nationality / identity** （例：「鈴木さんは日本人です」「リンさんは中国人です」）で、manipulable object を伴う role action が文意に乖離する場合、**3.9.2 の object-manipulation MUST は適用除外**。代わりに以下のいずれかを使う：
 
-### affiliation_indoor (v4.0.6 新規)
+**(5a) Nationality identity**（〜は[国籍]です）の Required phrase:
+
+```
+The subject is actively engaged in a dynamic, mid-conversation social gesture — body
+angled in a 3/4 posture, extending one arm in an open-palm introductory motion toward
+the viewer. They maintain engaged, direct eye contact, anchoring their identity through
+active social presence rather than a static pose.
+```
+
+**(5b) Role identity without affiliation**（〜は[役職]です・affiliation なし）の Required phrase:
+
+```
+The subject is captured mid-action in their canonical role activity, physically
+manipulating the primary tool of their profession (e.g., holding up a textbook,
+gesturing to a board) while making direct, engaged eye contact with the viewer to
+deliver instruction or service.
+```
+
+> **Eye contact 解釈ルール**: "engaged eye contact during an active physical gesture or role action" IS PERMITTED（identity を viewer に伝える効果あり）。Forbidden phrase の `Looking at the viewer` は exclusively **passport-style, dead-eyed, physically static standing pose with arms hanging limply at the sides** を指す。Active gesture or role action 中の eye contact はこの禁止に該当しない。
+
+> **Flag prop 禁止**: identity-only であっても国旗 prop は禁止（[PART 6.4 ROLE_ANTI_FLAG_BLOCK](part6_output_instructions.md#role_anti_flag_block) は named character / role 系の標準）。
+
+### 3.9.3 affiliation_indoor (v4.0.6 新規 / v4.0.7 強化)
 
 > 〜の〜（institution の role）パターン（lesson_01 p3）は「キャラが建物の前に立つ立ち姿」ではなく **「その建物の中で職務を遂行している」** シーンで描く。建物前立ち姿は **location 意味（〜にいます）** に誤読される。
+>
+> **Defeats**: Exterior Facade Literalism / Dollhouse Scaling Bias.
 
 ```
 For sentences expressing professional affiliation (〜は〜の〜です), the scene MUST be set
-INDOORS at the institution, with the character actively performing their role within
-that institution's recognizable interior. The institution-character relationship reads as
-"this person works/studies/treats AT this institution" — NOT "this person stands in front
-of this institution".
+strictly INDOORS at the institution, FULLY ENCLOSED BY WALLS, with the character actively
+performing their role within that institution's recognizable interior. The institution-
+character relationship reads as "this person works/studies/treats AT this institution" —
+NOT "this person stands in front of this institution".
 ```
+
+#### Required phrase (v4.0.7 verbatim, in [SCENE & ACTION])
+
+```
+The scene is strictly an INDOOR interior shot fully enclosed by walls. The character
+is INSIDE the [INSTITUTION].
+```
+
+#### Forbidden phrases (v4.0.7)
+
+- `At the [INSTITUTION]`（exterior-facade に倒れる）
+- `Outside the [INSTITUTION]`
+- `In front of the [INSTITUTION]`
+- `Near the [INSTITUTION]`
 
 #### 実装テーブル
 
@@ -625,17 +700,50 @@ of this institution".
 
 text-only 出力でも nanobanana が「屋外建物 + 立ち姿」に倒れる bias を回避するため、prompt 本文に必ず `INDOOR scene set inside ...` と明示する。
 
-### visual_symbol_restriction (v4.0.6 新規)
+### 3.9.4 visual_symbol_restriction (v4.0.6 新規 / v4.0.7 Diegetic Confusion 対応)
 
 > 例文によっては question mark / checkmark / X mark / arrow を使うが、**「symbol を出して良い」という許可文言を全 example に常駐させると nanobanana が「何かマークを入れろ」と過剰解釈して floating arrow / encircling shape を捏造する** (lesson_01 ex_L01_016 で実証された)。symbol 必要例文だけに permission を限定し、不要例文は明示的に禁止する。
+>
+> **v4.0.7 追加**: 許可された symbol 自体も、3D scene space に置こうとすると **Diegetic Confusion** で physical object（neon sign / balloon / 持ち物）化する。Symbol は **必ず 2D UI overlay として composited** されねばならない。
+>
+> **Defeats**: Semantic Literalism / Abstract Symbol Objectification / Diegetic Confusion / Center-Weighted Subject Bias.
 
 ```
 The "VISUAL_SYMBOLS ARE PERMITTED" clause in [CONSTRAINTS] MUST be emitted ONLY when the
 example explicitly needs a question mark / checkmark / X mark / arrow. For example_sentences
 that do not use any symbol (declarative statements, affiliation statements, simple identity
 statements), the clause MUST be replaced with an explicit prohibition of all floating
-symbols, encircling shapes, and abstract overlays.
+symbols, encircling shapes, and abstract overlays. When a symbol IS permitted, it MUST be
+described as a flat 2D UI overlay composited against the picture plane — NEVER as a 3D
+object occupying scene space, and the character MUST NOT interact with it.
 ```
+
+#### Required phrase for SYMBOL position (v4.0.7 verbatim, in [SCENE & ACTION])
+
+```
+Render the symbol as a pure 2D graphic UI overlay composited flat against the picture
+plane. It MUST have zero depth, cast zero shadows, and exist completely outside the 3D
+diegetic scene space. The character MUST NOT interact with, look at, point to, or react
+to this overlay.
+```
+
+#### Forbidden phrases for SYMBOL position (v4.0.7)
+
+- `hovers at chest level`
+- `floating in the air`
+- `next to the character`
+- `suspended above`
+- `projected onto`
+- `holographic`
+
+#### Symbol 使用パターン分類
+
+| sentence パターン | symbol | [CONSTRAINTS] 出力 |
+|---|---|---|
+| 〜です（declarative） | なし | `ABSOLUTELY NO floating symbols of any kind — no question marks, no checkmarks, no X marks, no arrows, no circles, no geometric shapes encircling the scene, no callout balloons.` |
+| 〜ですか（question） | symbol_red question mark | `VISUAL_SYMBOLS entries ARE PERMITTED — but ONLY the single large question mark specified above, rendered as a flat 2D UI overlay per §3.9.4. nanobanana MUST NEVER add additional floating symbols, arrows, circles, or shapes encircling the character.` |
+| はい〜／いいえ〜（2-panel) | green checkmark + red X | 2-panel divider + 各 panel に 1 symbol。「ONLY exactly two symbols (one ✓, one ✗), each rendered as a flat 2D UI overlay per §3.9.4」と明示。詳細は §3.9.8 |
+| identification reveal | optional small arrow | symbol 必要時のみ permission, 不要時は禁止。 |
 
 #### Symbol 使用パターン分類
 
@@ -646,34 +754,176 @@ symbols, encircling shapes, and abstract overlays.
 | はい〜／いいえ〜（2-panel) | green checkmark + red X | 2-panel divider + 各 panel に 1 symbol。「ONLY exactly two symbols (one ✓, one ✗)」と明示。 |
 | identification reveal | optional small arrow | symbol 必要時のみ permission, 不要時は禁止。 |
 
-### reference_redundancy_avoidance (v4.0.6 新規)
+### 3.9.5 reference_redundancy_avoidance (v4.0.6 新規 / v4.0.7 強化)
 
 > [PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-114-person_reference_attachment_rule) で portrait を attach した場合、[SUBJECT] 内で **衣装・髪・顔の詳細を再記述すると nanobanana が image と text 指示の間で矛盾を起こし、結果として両方を中途半端に reflect する**。
+>
+> **Defeats**: Feature Blending / Drift Bias caused by conflicting text/image embeddings competing for latent space.
 
 ```
 When a NAMED_CHARACTER portrait is attached via [REFERENCE], the [SUBJECT] section
 MUST be lean — describe WHO is in the scene (role + name reference) and the rendering
 intent (e.g., posture, expression baseline), but DO NOT duplicate the outfit / hair /
-face details. Those are inherited from the attached portrait per [PART 1.14 rule_b].
+face details. Those are inherited EXCLUSIVELY from the attached portrait per
+[PART 1.14 rule_b].
 ```
 
-#### rule_a — lean [SUBJECT] form
+#### Required phrase (v4.0.7 verbatim, in [SUBJECT])
+
+```
+Character identity MUST be derived EXCLUSIVELY from the attached image. Render the
+exact face, hair, and build shown in the reference. Replace ONLY the outfit with
+[NEW_OUTFIT] when the scene action requires a different outfit than the portrait.
+When the scene uses the portrait's default outfit, do NOT mention outfit at all.
+```
+
+#### Forbidden phrases (v4.0.7)
+
+- 衣装・髪色・目の形・顔の輪郭の **textual re-description**（reference image と embedding 競合）
+- `as shown in the reference image with X hair and Y outfit`（reference 指定と text 指定の二重情報）
+- `inspired by the reference`（曖昧な参照、identity drift を許す）
+
+#### Lean [SUBJECT] form (canonical wording)
 
 ```
 Character in scene: <role description> (<NAMED_CHARACTER name reference>, per attached
-portrait image_N). The portrait reference governs face structure, hair, outfit details,
-build, and phenotype. This block specifies only role contextualization and any scene-
-specific posture/expression that differs from the portrait's default.
+portrait image_N). Character identity MUST be derived EXCLUSIVELY from the attached
+image — render the exact face, hair, build, and phenotype shown in the reference. This
+block specifies only role contextualization and any scene-specific posture/expression
+that differs from the portrait's default.
 ```
 
-#### rule_b — scene-deviation override
-
-scene が portrait と異なる outfit / activity を要求する場合（例：portrait は teaching context だが scene は holiday context）、[SUBJECT] で **明示的に override** する：
+#### Scene-deviation override (when scene outfit ≠ portrait outfit)
 
 ```
 NOTE: while the attached portrait shows <character> in <portrait-outfit>, this scene
 requires <scene-outfit>. Preserve FACE STRUCTURE, HAIR, BUILD, and PHENOTYPE from the
-portrait; replace OUTFIT to match this scene only.
+portrait; replace ONLY the outfit with <scene-outfit>.
+```
+
+### 3.9.6 particle_visual_mapping (v4.0.7 新規 / Gemini Q2)
+
+> 日本語 particle は文中の意味関係を運ぶ。画像で同等の関係を伝えるには、各 particle に対応する **visual syntax** を定める必要がある。曖昧な spatial descriptor（near / by / around）は関係が確定しないため禁止。
+>
+> **Defeats**: Relational Ambiguity Bias.
+
+| Particle | Semantic role | Required SCENE phrase (verbatim) | Forbidden phrase |
+|---|---|---|---|
+| は | topic (given) | `Render the subject in the primary foreground plane at 60% frame scale, establishing them as the absolute visual anchor of the composition.` | `standing in the background`, `visible in the scene` |
+| が | focus (new info) | `Render the subject actively executing the verb with distinct, dynamic physical motion, isolating their action from the static background elements.` | `standing passively`, `posing naturally`, `looking at the camera` |
+| に | target / recipient | `Lock the subject's exact eyeline directly onto the target, and extend their arm in a rigid, unbroken trajectory pointing squarely at the target.` | `looking vaguely towards`, `near the target`, `facing the target` |
+| で | locale / instrument | `Fully enclose the subject within the specified interior architecture, ensuring bounding walls or large stationary instruments physically frame their immediate working space.` | `standing outside`, `holding the tool loosely`, `in front of` |
+| を | direct object | `Ensure the subject's hands are in direct physical contact with the object, actively gripping, holding, or manipulating its surface.` | `looking at the object`, `object is placed on the table near them` |
+| の | possession ("私の本") | `The subject MUST be physically clasping the object firmly against their own torso, visually locking the item to their personal body mass.` | `the object is next to the character`, `holding the object out`, `the object belongs to them` |
+| へ | direction (movement) | `Angle the subject's body profile horizontally across the frame, with their leading foot suspended in mid-stride pointing toward the target destination edge.` | `facing the viewer`, `arrived at`, `standing at` |
+
+> **Notes**:
+> - の (institutional affiliation, e.g. 大学**の**学生) は §3.9.3 affiliation_indoor で別扱い。の (possession, e.g. 私**の**本) のみ上表を適用。
+> - が の Required phrase は **action 動詞** を伴う sentence 用。stative copula sentence（誰**が**先生ですか — 行動なし）は §3.9.2 Identity-only exception を適用。
+
+### 3.9.7 horror_vacui_blank_surfaces (v4.0.7 新規 / Gemini (d) + Q3 + Q7)
+
+> "blank whiteboard" や "empty desks" 等の **欠落を語る wording** は、nanobanana の **Horror Vacui (Fear of Empty Space) / Gibberish Hallucination** bias を直撃し、模様の代わりに pseudo-kanji / 幽霊生徒 / fake document / 偽 UI を捏造する。**「無い」ではなく「solid 何々がある」と positive に書く**。
+>
+> **Defeats**: Horror Vacui / Gibberish Hallucination / Textual Hallucination Bias.
+
+```
+All flat surfaces (whiteboards, screens, paper, walls, monitors, badges, desks) MUST be
+rendered as solid, unbroken fields of flat color. "Empty" or "blank" means a solid
+geometric color block, NOT an absence of people. Do NOT write "blank" / "empty" / "clean"
+/ "unoccupied" / "nobody is" — these word stems trigger the model to generate the very
+things that usually occupy those objects to define what they are.
+```
+
+#### Required SCENE phrase per surface (v4.0.7 verbatim)
+
+| # | surface | Required SCENE phrase | Forbidden phrase |
+|---|---|---|---|
+| 7a | unused whiteboard | `A wide featureless whiteboard spanning the left half of the frame, rendered as a single, uninterrupted geometric block of solid flat white color. It MUST be absolutely devoid of any marker lines, scribbles, text, or pseudo-kanji.` | `A blank whiteboard`, `An empty whiteboard`, `A clean whiteboard ready for writing` |
+| 7b | unoccupied lecture-hall desks | `A long, continuous horizontal row of wooden lecture-hall desk surfaces extending edge-to-edge. The seating area MUST be completely unpopulated, showing only bare chairs and bare desk surfaces with zero human figures, silhouettes, or personal items.` | `Empty desks`, `An empty classroom`, `Unoccupied seats`, `Nobody is sitting there` |
+| 7c | flat-panel medical monitor | `A flat-panel medical monitor angled toward the viewer, its screen rendered as a completely solid, featureless dark-slate rectangle. The screen MUST NOT display any UI elements, charts, text, lines, or data visualization.` | `A blank monitor`, `A monitor showing a blank screen`, `An empty display`, `The screen is off` |
+| 7d | textbook held by character | `A thick textbook rendered as a solid, flat-color geometric block. The cover, spine, and any visible pages MUST be completely blank, displaying absolute zero text, lines, pseudo-kanji, or interior illustrations.` | `An open textbook showing pages`, `A detailed book`, `Reading a book` |
+| 7e | ID name-badge | `A plain rectangular plastic ID badge, rendered as a single, uninterrupted solid-color polygon. It MUST contain zero text, zero profile photos, zero graphic logos, and zero dividing lines.` | `A name tag`, `An ID card with a photo`, `A staff badge` |
+| 7f | desk surface (cleared) | `The desk surface MUST be rendered as an entirely bare, completely cleared geometric plane of solid color. It MUST be absolutely devoid of any scattered papers, pens, coffee cups, or hallucinated office clutter.` | `A typical office desk`, `A desk with paperwork`, `A realistic workspace` |
+| 7g | office computer monitor | `An office computer monitor featuring a completely solid, uniform dark-slate screen area. The screen MUST NOT display any desktop icons, application windows, text, taskbars, or UI elements of any kind.` | `A computer screen showing work`, `A monitor with data`, `An active computer` |
+| 7h | interior wall | `The interior background wall MUST be a completely bare, uninterrupted expanse of solid flat color. It MUST be absolutely devoid of posters, framed pictures, clocks, light switches, baseboards, or any architectural detailing.` | `A decorated wall`, `A typical classroom wall`, `An office background` |
+
+#### Positive enumeration addendum (v4.0.7)
+
+scene-essential prop（医療診察室の clipboard、教室の textbook on podium、銀行カウンターの計算機 等）が必要な場合は、**desk featureless rule (7f) を上書き** して positive enumerate する：
+
+```
+The desk surface displays exactly <N> <prop list — e.g. "one closed clipboard at the
+right side and one flat-panel medical monitor at the left center">; the rest of the
+surface is bare and devoid of any other items.
+```
+
+### 3.9.8 two_panel_qa_pattern (v4.0.7 新規 / Gemini Q4 + Q6)
+
+> はい〜／いいえ〜の対比 sentence（lesson_01 ex_L01_007 / 011 / 013）は、**vertical divider が無視される / 2 character が identity drift する / 余分な symbol が捏造される** の 3 failure mode がある。divider 強制 + identity lock + symbol count strict の 3 段 enforcement が必要。
+>
+> **Defeats**: Layout Ignorance Bias / Identity Drift Across Panels / Symbol Over-Generation Bias.
+
+#### A. NAMED_CHARACTER 付き 2-panel（portrait reference あり）
+
+[SCENE & ACTION] block (verbatim):
+
+```
+LAYOUT OVERRIDE: The 16:9 frame MUST be split exactly down the middle by a thick, solid
+vertical divider line extending entirely from the top edge to the bottom edge, creating
+two strictly equal, isolated rectangular panels (LEFT PANEL and RIGHT PANEL).
+
+LEFT PANEL (Affirmation): Render the specified character (per attached portrait) inside
+the left half. They exhibit a bright, affirming open-mouth smile. A pure 2D graphic
+overlay of a single green checkmark is composited flat against the picture plane in the
+left-center of this panel.
+
+RIGHT PANEL (Negation): Render an EXACT visual clone of the character (same attached
+portrait) inside the right half. They exhibit a negating expression with closed eyes
+and hands crossed in an 'X' gesture. A pure 2D graphic overlay of a single red X-mark
+is composited flat against the picture plane in the right-center of this panel.
+
+IDENTITY LOCK: The character in the LEFT PANEL and the character in the RIGHT PANEL
+MUST be identical in every physical detail (face, hair, build, outfit, phenotype). Zero
+identity drift is permitted between the two panels.
+
+SYMBOL COUNT STRICT ENFORCEMENT: There MUST be exactly TWO symbols in the entire output
+image — exactly ONE green checkmark (left) and exactly ONE red X-mark (right). DO NOT
+render any other symbols, floating shapes, UI elements, or background text.
+```
+
+#### B. NAMED_CHARACTER なし 2-panel（generic role/nationality archetype）
+
+[SUBJECT] block (verbatim — character archetype の **fully specified** description が必要):
+
+```
+Establish a SINGLE, highly specific generic character archetype for this scene: <INSERT
+EXACT AGE RANGE, HAIR, PHENOTYPE, OUTFIT DETAILS per PART 5.8 role_key + PART 5.3
+phenotype>. This precise visual configuration serves as the strict master template. The
+model MUST internally lock this exact design before rendering the panels.
+```
+
+[SCENE & ACTION] block (verbatim):
+
+```
+LAYOUT OVERRIDE: The 16:9 frame MUST be split exactly down the middle by a thick, solid
+vertical divider line extending entirely from the top edge to the bottom edge, creating
+two strictly equal, isolated rectangular panels (LEFT PANEL and RIGHT PANEL).
+
+LEFT PANEL (Affirmation): Render the master character template inside the left half.
+They exhibit a bright, affirming open-mouth smile. A pure 2D graphic overlay of a single
+green checkmark is composited flat against the picture plane in the left-center of this
+panel.
+
+RIGHT PANEL (Negation): EXACT CLONE. Render a 1:1 visual clone of the left-panel
+character inside the right half. The ONLY permitted differences are the facial expression
+(closed eyes, negating) and the arm gesture (hands crossed in an 'X'). The face structure,
+hair strands, outfit folds, and body proportions MUST be mathematically identical to the
+left panel.
+
+SYMBOL COUNT STRICT ENFORCEMENT: There MUST be exactly TWO symbols in the entire output
+image — exactly ONE green checkmark (left) and exactly ONE red X-mark (right). DO NOT
+render any other symbols, floating shapes, UI elements, or background text.
 ```
 
 ### Composition: CHARACTER_DESCRIPTIONS + SCENE

@@ -294,6 +294,15 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 >   2. **[SUBJECT] は REFERENCE attached 時 lean form** (衣装重複削除)
 >   3. **{SYMBOL_PERMISSION_CLAUSE}** placeholder 化 (symbol 不要例文では explicit 禁止文に切替・skill が分岐)
 >   4. **{SCENE_DESCRIPTION} は role action + horizontal anchor** を含む (PART 3.9 scene_action_focus / affiliation_indoor)
+> v4.0.7 (2026-05-27 X-c-6)：[PART 3.9 v4.0.7 8 subsections](part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level) 反映（Gemini 第三/四意見統合）：
+>   1. **{SCENE_DESCRIPTION}** に edge-bleed 文必須（§3.9.1 Required phrase）
+>   2. **{SCENE_DESCRIPTION}** に object-manipulation 文必須・identity-only 例外あり（§3.9.2 / §3.9.2 5a/5b）
+>   3. **{SCENE_DESCRIPTION}** affiliation は "INSIDE the [INSTITUTION]" 文必須（§3.9.3）
+>   4. **{VISUAL_SYMBOL_IF_NEEDED}** は **2D UI overlay** 文必須（§3.9.4 Diegetic Confusion 対応）
+>   5. **[SUBJECT]** lean form 強化：`EXCLUSIVELY from the attached image`（§3.9.5）
+>   6. **{SCENE_DESCRIPTION}** particle visual mapping 適用（§3.9.6）
+>   7. **{SCENE_DESCRIPTION}** blank surface は positive featureless wording（§3.9.7 / Horror Vacui 対応）
+>   8. **2-panel Q/A** sentence は §3.9.8 の verbatim block を [SCENE & ACTION] 丸ごと差し替え
 
 ```
 [PURPOSE]
@@ -320,9 +329,11 @@ wide desk / building facade / 2-panel vertical divider). nanobanana defaults to
 [SUBJECT]
 {CHARACTER_DESCRIPTIONS}
 (When a NAMED_CHARACTER portrait is attached above, the [CHARACTER_DESCRIPTIONS]
-text MUST be lean — name the role + portrait reference only, and rely on image_N
-for face / hair / outfit / build / phenotype. See [PART 3.9 reference_redundancy_avoidance](part3_vocab_type_rules.md#reference_redundancy_avoidance-v406-新規) — duplicating outfit details in text while ALSO attaching the portrait
-causes nanobanana to reflect both half-heartedly, producing identity drift.)
+text MUST be lean — per [PART 3.9.5 reference_redundancy_avoidance](part3_vocab_type_rules.md#395-reference_redundancy_avoidance-v406-新規--v407-強化), character identity
+MUST be derived EXCLUSIVELY from the attached image. DO NOT redescribe hair color,
+eye shape, face contour, or the portrait's default outfit. When the scene requires
+a different outfit, use the Scene-deviation override formulation; otherwise omit
+outfit text entirely.)
 
 FACIAL FEATURES RULE (v4.0 PART 1.8): Every character figure in the image MUST
 clearly show all four primary facial features — eyes (with visible pupils, not
@@ -353,20 +364,34 @@ at-home or indoor context. If the composition crops feet out of frame
 
 [SCENE & ACTION]
 {SCENE_DESCRIPTION}
-The {SCENE_DESCRIPTION} above MUST satisfy three conditions
-(per [PART 3.9 scene_action_focus / affiliation_indoor / aspect_ratio_enforcement rule_b](part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level)):
-  (a) the named character (if any) is performing their canonical ROLE ACTION
-      (teaching at podium / studying at lecture desk / working at office desk /
-      examining patient at consultation desk / serving at counter / etc.) — NOT
-      just standing as an identity card,
-  (b) for affiliation sentences (〜の〜), the scene is set INDOORS at the named
-      institution with the role action happening inside — NOT the character
-      standing in front of an outdoor building,
-  (c) the background includes at least ONE horizontally-stretching anchor
-      element (wide whiteboard / long desk row / institution interior wall /
-      2-panel divider) that spans the frame edge-to-edge in the 16:9 layout.
+The {SCENE_DESCRIPTION} above MUST satisfy ALL the following conditions
+(per [PART 3.9 v4.0.7 subsections 1-3 + 6-8](part3_vocab_type_rules.md#39-example_sentence-no-vocab_type--lesson-level)):
+  (a) **Edge-bleed (§3.9.1)**: the specified horizontal background anchor MUST
+      physically intersect and bleed off both the extreme left and extreme right
+      edges of the frame.
+  (b) **Object-manipulation (§3.9.2)**: the character MUST be actively, physically
+      manipulating an object related to their role — NOT a passive standing pose.
+      EXCEPTION: identity-only declaratives (nationality / role identity without
+      affiliation) follow §3.9.2 Identity-only exception 5a/5b instead.
+  (c) **Indoor enclosure (§3.9.3)**: for affiliation sentences (〜の〜), the scene
+      is strictly an INDOOR interior shot fully enclosed by walls; the character
+      is INSIDE the institution — NEVER "at" / "outside" / "in front of" it.
+  (d) **Particle visual mapping (§3.9.6)**: the dominant Japanese particles in the
+      sentence MUST be reflected via the §3.9.6 verbatim phrases (は/が/に/で/を/の/へ).
+  (e) **Featureless surfaces (§3.9.7)**: any flat surface mentioned (whiteboard /
+      desk / monitor / textbook / badge / wall) MUST use the §3.9.7 positive
+      "featureless solid color block" wording — NEVER the words "blank" / "empty"
+      / "clean" / "unoccupied" / "nobody is".
+  (f) **2-panel pattern (§3.9.8)**: for はい〜／いいえ〜 sentences, REPLACE this
+      entire [SCENE & ACTION] block with the verbatim §3.9.8 A or B block.
 The characters' actions and relationship must make the sentence meaning visually obvious without any text.
 {VISUAL_SYMBOL_IF_NEEDED}
+(When a symbol IS permitted per §3.9.4, the {VISUAL_SYMBOL_IF_NEEDED} placeholder
+MUST emit the §3.9.4 verbatim "pure 2D graphic UI overlay composited flat against
+the picture plane" phrase. The character MUST NOT interact with, look at, point to,
+or react to the overlay. Forbidden positional phrases: "hovers at chest level",
+"floating in the air", "next to the character", "suspended above", "projected onto",
+"holographic".)
 
 Composition: Wide 16:9 shot, 50mm standard lens equivalent (natural perspective).
 Characters occupy 60% of the frame.
@@ -396,6 +421,11 @@ No text, no letters, no numbers, no purely decorative symbols inside the image.
     without any symbolic overlay.")
 No gradients, no shadows, no 3D effects, no photoreal textures.
 Apply zero ambient lighting, zero drop shadows, zero global illumination.
+(v4.0.7 / §3.9.7 horror_vacui_blank_surfaces — Horror Vacui defense): All flat
+surfaces (whiteboards, screens, paper, walls, monitors, badges, desks) MUST be
+rendered as solid, unbroken fields of flat color. "Empty" or "blank" means a
+solid geometric color block, NOT an absence of people. Scene-essential props must
+be positively enumerated per §3.9.7 Positive enumeration addendum.
 ```
 
 **Used for**: `vocab_type = "example_sentence"`（lesson-level、語彙ではない）
