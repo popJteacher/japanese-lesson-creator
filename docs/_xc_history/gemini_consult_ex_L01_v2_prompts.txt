@@ -1,0 +1,243 @@
+================ ex_L01_001 ================
+word: 鈴木さんは先生です。
+en:   Suzuki-san is a teacher.
+vocab_type: example_sentence
+aspect_ratio: 16:9
+styleReferences: ['data/images/char_鈴木.png']
+
+[PURPOSE]
+Create an example sentence illustration for Japanese language learning materials.
+The image must clearly convey the grammatical relationship in the sentence:
+鈴木さんは先生です。 (Suzuki-san is a teacher.)
+The viewer must instantly read the sentence's grammatical core from the
+visualized action, NOT from the absence of conflicting cues.
+
+[STRICT LAYOUT DIRECTIVE]
+ASPECT RATIO: MUST be 16:9 widescreen landscape (horizontal orientation).
+DO NOT crop into a square 1:1 frame, NOT 4:3 landscape, NOT 3:4 vertical,
+NOT 9:16 portrait. To enforce the 16:9 layout, the scene's background
+elements MUST extend horizontally from the left edge to the right edge of
+the frame — see the [SCENE & ACTION] block below for the specific
+horizontal anchor (whiteboard / wide desk / institution interior / 2-panel
+vertical divider). nanobanana defaults to 1:1; this directive is the
+primary counterweight.
+
+[REFERENCE]
+Attached reference images per PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE:
+image_1 = canonical portrait of the Japanese male language teacher (鈴木さん, per PART 5.9 NAMED_CHARACTER_PROFILES). Inherit FACE STRUCTURE, HAIR (salt-and-pepper short), OUTFIT (navy/charcoal suit + white shirt + slate-gray tie + ID lanyard), 7-head ADULT BUILD, and East Asian phenotype from this reference. If this scene requires a different outfit or activity than the portrait shows, preserve face structure, hair, build, and phenotype while adapting surface clothing only.
+
+[SUBJECT]
+Character in scene: the Japanese male language teacher (鈴木さん, in his 40s to 50s, per attached portrait image_1). Identity (face/hair/outfit/build/phenotype) is inherited from the portrait — do NOT redescribe.
+
+FACIAL FEATURES RULE (v4.0 PART 1.8): Every character figure in the image
+MUST clearly show all four primary facial features — eyes (with visible
+pupils, not blank circles), eyebrows, nose, and mouth — drawn in flat
+illustration style. NEVER omit any of these four features.
+HEAD-BODY PROPORTION RULE (v4.0 PART 1.10): Every adult character figure
+MUST be rendered with approximately 7-head-height proportion. NEVER render
+adult roles with shorter 5-6 head proportions — that reads as childlike or
+cartoonish. Working-age adults (20s-50s) must read as such by body
+proportion alone.
+FOOTWEAR RULE (v3.11 / preserved in v4.0): Every character figure MUST
+visibly wear footwear on both feet (loafers / sneakers / etc.) whenever
+both feet are inside the frame. Barefoot is NOT permitted.
+
+[SCENE & ACTION]
+An indoor scene set inside a bright, minimalist Japanese classroom. The Japanese male language teacher (鈴木さん, per attached portrait) stands behind a simple wooden teacher's podium at the right-center of the frame, in mid-lesson posture: one hand holding his thick textbook open against his chest, the other hand gesturing toward a large blank whiteboard. He looks slightly toward the viewer with a warm, confident, engaging closed-mouth smile.
+
+A wide, completely blank flat-vector whiteboard spans across the LEFT HALF of the frame from the left edge inward to the center — large enough to occupy roughly 40% of the canvas width — anchoring the 16:9 horizontal layout. A simple flat classroom wall extends behind it to the right edge.
+
+The scene above is built to satisfy PART 3.9 v4.0.6 (scene_action_focus /
+affiliation_indoor / aspect_ratio_enforcement rule_b): the named character
+is performing their canonical role action; if the sentence expresses
+affiliation, the scene is INDOORS at the institution; and the background
+includes a horizontally-stretching anchor that spans the 16:9 frame.
+
+No visual symbol is used in this scene.
+
+Composition: Wide 16:9 shot, 50mm standard lens equivalent (natural
+perspective). Characters occupy 60% of the frame. Eye-level view. Background
+base: soft cream off-white background (warm off-white, NOT pure stark white).
+Main characters are clearly separated from the background in visual contrast.
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with
+consistent line weight. Completely flat solid color fills only. Color
+palette: soft cream off-white background (warm off-white, NOT pure stark
+white), deep slate navy outlines, muted warm colors, warm amber gold
+accents for emphasis. This should look like it belongs in a brand style
+guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+No text, no letters, no numbers, no purely decorative symbols inside the image.
+ABSOLUTELY NO floating symbols of any kind — no question marks, no checkmarks, no X marks, no arrows, no circles, no geometric shapes encircling characters, no callout balloons. The scene must communicate without any symbolic overlay.
+The clothing, accessories, props, and any visible badges of all characters must NEVER include any national flag motif, national emblem, nationality pin, country indicator, political symbol, or flag-print on garments. Nationality is conveyed by phenotype and subtle outfit palette tendency only — no flag display in example-sentence illustrations.
+EXTERIOR BUILDING SIGNAGE RULE: Any background buildings, walls, windows, or
+surfaces MUST be left BLANK — no signboard text, no English labels, no Japanese
+kanji or kana, no street numbers, no logos. nanobanana frequently invents text
+on building surfaces; this is PROHIBITED.
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
+
+================ ex_L01_006 ================
+word: リンさんですか。
+en:   Are you Lin-san?
+vocab_type: example_sentence
+aspect_ratio: 16:9
+styleReferences: ['data/images/char_リン.png']
+
+[PURPOSE]
+Create an example sentence illustration for Japanese language learning materials.
+The image must clearly convey the grammatical relationship in the sentence:
+リンさんですか。 (Are you Lin-san?)
+The viewer must instantly read the sentence's grammatical core from the
+visualized action, NOT from the absence of conflicting cues.
+
+[STRICT LAYOUT DIRECTIVE]
+ASPECT RATIO: MUST be 16:9 widescreen landscape (horizontal orientation).
+DO NOT crop into a square 1:1 frame, NOT 4:3 landscape, NOT 3:4 vertical,
+NOT 9:16 portrait. To enforce the 16:9 layout, the scene's background
+elements MUST extend horizontally from the left edge to the right edge of
+the frame — see the [SCENE & ACTION] block below for the specific
+horizontal anchor (whiteboard / wide desk / institution interior / 2-panel
+vertical divider). nanobanana defaults to 1:1; this directive is the
+primary counterweight.
+
+[REFERENCE]
+Attached reference images per PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE:
+image_1 = canonical portrait of the Chinese female university student (リンさん, per PART 5.9 NAMED_CHARACTER_PROFILES). Inherit FACE STRUCTURE, HAIR (long straight dark, past shoulders), OUTFIT (muted-blue top + blue jeans + canvas backpack on both shoulders), 7-head ADULT BUILD, and East Asian phenotype from this reference. If this scene requires a different outfit or activity than the portrait shows, preserve face structure, hair, build, and phenotype while adapting surface clothing only.
+
+[SUBJECT]
+Character in scene: the Chinese female university student (リンさん, in her early 20s, per attached portrait image_1). Identity (face/hair/outfit/build/phenotype) is inherited from the portrait — do NOT redescribe.
+
+FACIAL FEATURES RULE (v4.0 PART 1.8): Every character figure in the image
+MUST clearly show all four primary facial features — eyes (with visible
+pupils, not blank circles), eyebrows, nose, and mouth — drawn in flat
+illustration style. NEVER omit any of these four features.
+HEAD-BODY PROPORTION RULE (v4.0 PART 1.10): Every adult character figure
+MUST be rendered with approximately 7-head-height proportion. NEVER render
+adult roles with shorter 5-6 head proportions — that reads as childlike or
+cartoonish. Working-age adults (20s-50s) must read as such by body
+proportion alone.
+FOOTWEAR RULE (v3.11 / preserved in v4.0): Every character figure MUST
+visibly wear footwear on both feet (loafers / sneakers / etc.) whenever
+both feet are inside the frame. Barefoot is NOT permitted.
+
+[SCENE & ACTION]
+An indoor scene set inside the same university lecture hall context. The Chinese female university student (リンさん, per attached portrait) stands at the RIGHT side of the frame, body angled slightly toward the viewer (toward an off-frame speaker who is asking her identity). Her canvas backpack is on her back with straps visible, notebook in one hand at her side. Her expression is a slightly surprised, faintly uncertain closed-mouth response — as if being addressed by name.
+
+A long row of empty lecture-hall desks extends across the BOTTOM HALF of the frame edge to edge horizontally — anchoring the 16:9 horizontal layout.
+
+The scene above is built to satisfy PART 3.9 v4.0.6 (scene_action_focus /
+affiliation_indoor / aspect_ratio_enforcement rule_b): the named character
+is performing their canonical role action; if the sentence expresses
+affiliation, the scene is INDOORS at the institution; and the background
+includes a horizontally-stretching anchor that spans the 16:9 frame.
+
+A single large flat-vector question mark in muted symbolic red (per [PART 2 STYLE_BIBLE educational_symbol_colors.symbol_red](../../prompts/guide/part2_style_bible.md)) hovers in the LEFT-CENTER of the frame at the character's upper-chest level. It is exactly ONE question mark — no other symbols.
+
+Composition: Wide 16:9 shot, 50mm standard lens equivalent (natural
+perspective). Characters occupy 60% of the frame. Eye-level view. Background
+base: soft cream off-white background (warm off-white, NOT pure stark white).
+Main characters are clearly separated from the background in visual contrast.
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with
+consistent line weight. Completely flat solid color fills only. Color
+palette: soft cream off-white background (warm off-white, NOT pure stark
+white), deep slate navy outlines, muted warm colors, warm amber gold
+accents for emphasis. This should look like it belongs in a brand style
+guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+No text, no letters, no numbers, no purely decorative symbols inside the image.
+VISUAL_SYMBOLS entries (question mark / checkmark / X mark / arrow) ARE PERMITTED — but ONLY exactly the symbols specified in the visual symbol block above. nanobanana MUST NEVER add any additional floating symbols, arrows, circles, or geometric shapes encircling characters or the scene.
+The clothing, accessories, props, and any visible badges of all characters must NEVER include any national flag motif, national emblem, nationality pin, country indicator, political symbol, or flag-print on garments. Nationality is conveyed by phenotype and subtle outfit palette tendency only — no flag display in example-sentence illustrations.
+EXTERIOR BUILDING SIGNAGE RULE: Any background buildings, walls, windows, or
+surfaces MUST be left BLANK — no signboard text, no English labels, no Japanese
+kanji or kana, no street numbers, no logos. nanobanana frequently invents text
+on building surfaces; this is PROHIBITED.
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
+
+================ ex_L01_014 ================
+word: タノムさんは東西病院の医者です。
+en:   Tanom-san is a doctor at Tozai Hospital.
+vocab_type: example_sentence
+aspect_ratio: 16:9
+styleReferences: ['data/images/char_タノム.png']
+
+[PURPOSE]
+Create an example sentence illustration for Japanese language learning materials.
+The image must clearly convey the grammatical relationship in the sentence:
+タノムさんは東西病院の医者です。 (Tanom-san is a doctor at Tozai Hospital.)
+The viewer must instantly read the sentence's grammatical core from the
+visualized action, NOT from the absence of conflicting cues.
+
+[STRICT LAYOUT DIRECTIVE]
+ASPECT RATIO: MUST be 16:9 widescreen landscape (horizontal orientation).
+DO NOT crop into a square 1:1 frame, NOT 4:3 landscape, NOT 3:4 vertical,
+NOT 9:16 portrait. To enforce the 16:9 layout, the scene's background
+elements MUST extend horizontally from the left edge to the right edge of
+the frame — see the [SCENE & ACTION] block below for the specific
+horizontal anchor (whiteboard / wide desk / institution interior / 2-panel
+vertical divider). nanobanana defaults to 1:1; this directive is the
+primary counterweight.
+
+[REFERENCE]
+Attached reference images per PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE:
+image_1 = canonical portrait of the Vietnamese male doctor (タノムさん, per PART 5.9 NAMED_CHARACTER_PROFILES). Inherit FACE STRUCTURE, HAIR (short dark), MEDIUM-BROWN warm skin, OUTFIT (open white doctor's coat + muted-blue shirt + slate-gray stethoscope around neck + blank name badge), 7-head ADULT BUILD, and Southeast Asian phenotype from this reference. If this scene requires a different outfit or activity than the portrait shows, preserve face structure, hair, build, and phenotype while adapting surface clothing only.
+
+[SUBJECT]
+Character in scene: the Vietnamese male doctor (タノムさん, in his mid-to-late 20s, per attached portrait image_1). Identity (face/hair/outfit/build/phenotype) is inherited from the portrait — do NOT redescribe.
+
+FACIAL FEATURES RULE (v4.0 PART 1.8): Every character figure in the image
+MUST clearly show all four primary facial features — eyes (with visible
+pupils, not blank circles), eyebrows, nose, and mouth — drawn in flat
+illustration style. NEVER omit any of these four features.
+HEAD-BODY PROPORTION RULE (v4.0 PART 1.10): Every adult character figure
+MUST be rendered with approximately 7-head-height proportion. NEVER render
+adult roles with shorter 5-6 head proportions — that reads as childlike or
+cartoonish. Working-age adults (20s-50s) must read as such by body
+proportion alone.
+FOOTWEAR RULE (v3.11 / preserved in v4.0): Every character figure MUST
+visibly wear footwear on both feet (loafers / sneakers / etc.) whenever
+both feet are inside the frame. Barefoot is NOT permitted.
+
+[SCENE & ACTION]
+An indoor scene set INSIDE a bright, minimalist hospital consultation room. The Vietnamese male doctor (タノムさん, per attached portrait) stands at the right-center of the frame in a calm, welcoming consulting posture, body angled at 3/4 view toward the viewer (the patient's perspective), one hand gently resting near his stethoscope at chest level. His expression is a kind, reassuring closed-mouth smile with gentle attentive eyes.
+
+A wide medical consultation desk spans across the LEFT HALF of the frame from left edge inward, with a simple flat-panel medical monitor (displaying a blank textless interface — no diagrams, no charts) and a closed clipboard resting on the desk. A simple medical examination bed silhouette + horizontal medical equipment shelf extend along the upper-left wall — anchoring the 16:9 horizontal hospital interior.
+
+The scene above is built to satisfy PART 3.9 v4.0.6 (scene_action_focus /
+affiliation_indoor / aspect_ratio_enforcement rule_b): the named character
+is performing their canonical role action; if the sentence expresses
+affiliation, the scene is INDOORS at the institution; and the background
+includes a horizontally-stretching anchor that spans the 16:9 frame.
+
+No visual symbol is used in this scene.
+
+Composition: Wide 16:9 shot, 50mm standard lens equivalent (natural
+perspective). Characters occupy 60% of the frame. Eye-level view. Background
+base: soft cream off-white background (warm off-white, NOT pure stark white).
+Main characters are clearly separated from the background in visual contrast.
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with
+consistent line weight. Completely flat solid color fills only. Color
+palette: soft cream off-white background (warm off-white, NOT pure stark
+white), deep slate navy outlines, muted warm colors, warm amber gold
+accents for emphasis. This should look like it belongs in a brand style
+guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+No text, no letters, no numbers, no purely decorative symbols inside the image.
+ABSOLUTELY NO floating symbols of any kind — no question marks, no checkmarks, no X marks, no arrows, no circles, no geometric shapes encircling characters, no callout balloons. The scene must communicate without any symbolic overlay.
+The clothing, accessories, props, and any visible badges of all characters must NEVER include any national flag motif, national emblem, nationality pin, country indicator, political symbol, or flag-print on garments. Nationality is conveyed by phenotype and subtle outfit palette tendency only — no flag display in example-sentence illustrations.
+EXTERIOR BUILDING SIGNAGE RULE: Any background buildings, walls, windows, or
+surfaces MUST be left BLANK — no signboard text, no English labels, no Japanese
+kanji or kana, no street numbers, no logos. nanobanana frequently invents text
+on building surfaces; this is PROHIBITED.
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
+

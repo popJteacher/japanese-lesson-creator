@@ -1,0 +1,197 @@
+all imageIds: ['word_医者', 'ex_L02_001', 'ex_L02_007', 'ex_L02_009', 'ex_L02_010', 'ex_L02_015', 'char_鈴木', 'char_リン', 'char_ケリー', 'char_キム', 'char_タノム', 'ex_L01_001', 'ex_L01_002', 'ex_L01_003', 'ex_L01_004', 'ex_L01_005', 'ex_L01_006', 'ex_L01_007', 'ex_L01_008', 'ex_L01_009', 'ex_L01_010', 'ex_L01_011', 'ex_L01_012', 'ex_L01_013', 'ex_L01_014', 'ex_L01_015', 'ex_L01_016', 'ex_L01_017', 'ex_L01_018']
+
+================ char_鈴木 ================
+word: 鈴木さん
+en:   Suzuki-sensei (canonical Japanese male language teacher in lesson_01)
+vocab_type: character_asset
+aspect_ratio: 1:1
+styleReferences: []
+
+[PURPOSE]
+Create a canonical character portrait illustration for Japanese language
+learning materials. The image must instantly communicate the visual identity
+of a Japanese male language teacher (canonical lesson_01 character) at a glance. This portrait is the canonical reference image
+that subsequent example_sentence prompts (PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE)
+will attach to maintain cross-example identity consistency. Identity is
+conveyed through phenotype, outfit signature, and mandatory props ONLY —
+the character's personal name MUST NEVER appear in the image.
+
+[SUBJECT]
+A specific adult Japanese man in his 40s to 50s.
+Phenotype (per PART 5.3 east_asian profile + PART 5.9 character-specific overlay):
+  fair to light-medium skin with East Asian features and salt-and-pepper short hair
+  (dark-brown to grey, neatly combed, parted to one side).
+
+Outfit (PART 5.9 Japanese-teacher overlay on PART 5.8 ROLE_BASED_GENERIC_PROFILES teacher signature):
+  - A conservative navy or charcoal business suit jacket and matching trousers,
+    with a crisp plain white dress shirt and a subtle solid slate-gray necktie.
+    (Note: in Japan, senior male teachers typically wear business suits rather than
+    the international cardigan-and-blouse teacher uniform — preserve this cultural fit.)
+  - He MUST visibly wear a rectangular plastic name-tag-style ID badge clipped to a
+    thin strap or cord at chest level — the badge is a plain blank rectangle with
+    NO text, NO icon, NO graphic, NO drawing of any kind on it. (rectangular shape,
+    NOT a circular pendant or medallion.)
+  - He MUST visibly hold one thick textbook with a clearly visible spine and pages,
+    tucked under one arm or clasped against the chest.
+  - Footwear MUST be plain dark leather loafers, visibly on both feet.
+
+Pose and expression: standing upright in a calm, composed senior educator's posture with both feet flat on the ground at shoulder width, body angled at a 3/4 view, the textbook clasped against the chest under one arm and the lanyard badge hanging at upper-chest level. Expression: warm but reserved closed-mouth smile suggesting decades of teaching experience, eyes engaged with the viewer.
+The character's role must be immediately obvious from clothing, posture, and
+props alone — at a glance the viewer must read the correct profession.
+
+FACIAL FEATURES RULE (v4.0 PART 1.8): The character's face MUST clearly show
+all four primary facial features — eyes (with visible pupils, not blank circles),
+eyebrows (simple curved or angled lines above the eyes), nose (a simple line or
+dot or small shape), and mouth (a simple line or curve or small shape). NEVER
+omit any of these four features. A faceless silhouette, blank face, partially-
+rendered face, or 'stylized stock illustration without facial detail' is NOT
+permitted. Facial features must be drawn in the same flat illustration style as
+the rest of the body — minimal but visibly present.
+
+HEAD-BODY PROPORTION RULE (v4.0 PART 1.10) — CRITICAL FOR THIS GENERATION:
+  - 7-HEAD-HEIGHT proportion (head height = approximately 1/7 of total body height).
+  - In this 1:1 square frame, the standing figure occupies ~80% of the image HEIGHT.
+    The HEAD alone occupies ~11-12% of the IMAGE HEIGHT (= 1/7 × 80%).
+    LEGS from hip to floor occupy ~40% of image height.
+  - NEVER render with 5-6 head proportion — that reads as childlike, cartoonish,
+    or anime-cliche. Particular bias warning: a 40s-50s man in a business suit can bias nanobanana toward a slightly stocky / shorter middle-aged office-worker proportion. RESIST this — render as a tall, mature adult educator with 7-head proportion.
+  - Working-age adult in his 40s to 50s — a working-age adult, NOT a teenager, NOT anime-style.
+
+[SCENE & ACTION]
+ASPECT RATIO: The output image MUST be 1:1 SQUARE — equal width and height
+(e.g., 1024×1024). DO NOT output 16:9 widescreen, 4:3 landscape, 3:4 vertical,
+9:16 portrait, or any other ratio. Square 1:1 only.
+FULL-BODY SHOT — the entire figure from the very top of the head to the soles
+of BOTH feet is fully inside the frame, with a clear empty margin above the
+head and a visible strip of empty ground below both feet. This is NOT a
+portrait, headshot, or waist-up crop.
+The standing figure spans roughly 80% of the image HEIGHT (measured by height,
+NOT by area), centered horizontally. Empty background on the left and right
+is expected and correct — do NOT zoom or crop in to fill the sides.
+Camera angle: HORIZONTAL 3/4 view at EYE LEVEL — the camera is positioned at
+the subject's eye height (not above, not below) and rotated approximately
+30-45 degrees to one side. DO NOT use an overhead or bird's-eye angle.
+DO NOT crop the body at the head, neck, waist, hips, thighs, or knees.
+Both feet and a small patch of the flat ground directly beneath them must
+be clearly visible.
+FOOTWEAR RULE (v3.11 / PART 1.11): Both feet MUST visibly wear the footwear
+specified in the [SUBJECT] section above. Barefoot is NOT permitted.
+Solid soft cream off-white background (warm off-white, NOT pure stark white).
+No other characters or objects in the frame.
+Framed as with a standard ~50mm-equivalent lens at full standing distance
+(NOT an 85mm tight portrait lens).
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with
+consistent line weight. Completely flat solid color fills only. Color palette:
+soft cream off-white background (warm off-white, NOT pure stark white),
+deep slate navy outlines, muted warm blue and warm amber gold as accents,
+cool slate gray for secondary elements. This should look like it belongs in
+a brand style guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+No text, no letters, no numbers, no decorative symbols anywhere — including
+titles, labels, captions, watermarks, or any text overlay at any position in
+the rendered output. Any ID badge / name badge worn is a PLAIN BLANK
+RECTANGLE with no text, no icon, no graphic.
+The clothing, accessories, props, and any visible badges must NEVER include any flag, national emblem, nationality pin, country indicator, political symbol, or red-and-white circular badge. This is a character portrait of a specific person, not a nationality card.
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
+
+================ char_ケリー ================
+word: ケリーさん
+en:   Kelly-sensei (canonical American female language teacher in lesson_01)
+vocab_type: character_asset
+aspect_ratio: 1:1
+styleReferences: []
+
+[PURPOSE]
+Create a canonical character portrait illustration for Japanese language
+learning materials. The image must instantly communicate the visual identity
+of an American female language teacher with Northern-European phenotype (canonical lesson_01 character) at a glance. This portrait is the canonical reference image
+that subsequent example_sentence prompts (PART 1.14 PERSON_REFERENCE_ATTACHMENT_RULE)
+will attach to maintain cross-example identity consistency. Identity is
+conveyed through phenotype, outfit signature, and mandatory props ONLY —
+the character's personal name MUST NEVER appear in the image.
+
+[SUBJECT]
+A specific adult American woman in her 30s to 40s.
+Phenotype (per PART 5.3 northern_eu profile + PART 5.9 character-specific overlay):
+  fair skin with straight to wavy light-brown to honey-blonde shoulder-length hair,
+  parted to one side. Western Northern-European features.
+
+Outfit (per PART 5.8 ROLE_BASED_GENERIC_PROFILES teacher signature):
+  - Professional but approachable — a soft cream-colored blouse layered under a
+    muted warm-blue simple cardigan, paired with plain dark-navy slacks.
+    Palette stays within the muted color family (white / muted warm blue /
+    cool slate gray / beige).
+  - She MUST visibly wear a rectangular plastic name-tag-style ID badge clipped to
+    a thin strap or cord at chest level — the badge is a plain blank rectangle with
+    NO text, NO icon, NO graphic. (rectangular shape, NOT a circular pendant.)
+  - She MUST visibly hold one thick textbook with a clearly visible spine and
+    pages, held under one arm against her side.
+  - Footwear MUST be plain dark leather low-profile loafers, visibly on both feet.
+
+Pose and expression: standing upright in an open, approachable teacher's stance with both feet flat on the ground at shoulder width, body angled at a 3/4 view, the lanyard badge hanging at upper-chest level and the textbook clasped under one arm. Expression: warm engaging open smile with open friendly eyes.
+The character's role must be immediately obvious from clothing, posture, and
+props alone — at a glance the viewer must read the correct profession.
+
+FACIAL FEATURES RULE (v4.0 PART 1.8): The character's face MUST clearly show
+all four primary facial features — eyes (with visible pupils, not blank circles),
+eyebrows (simple curved or angled lines above the eyes), nose (a simple line or
+dot or small shape), and mouth (a simple line or curve or small shape). NEVER
+omit any of these four features. A faceless silhouette, blank face, partially-
+rendered face, or 'stylized stock illustration without facial detail' is NOT
+permitted. Facial features must be drawn in the same flat illustration style as
+the rest of the body — minimal but visibly present.
+
+HEAD-BODY PROPORTION RULE (v4.0 PART 1.10) — CRITICAL FOR THIS GENERATION:
+  - 7-HEAD-HEIGHT proportion (head height = approximately 1/7 of total body height).
+  - In this 1:1 square frame, the standing figure occupies ~80% of the image HEIGHT.
+    The HEAD alone occupies ~11-12% of the IMAGE HEIGHT (= 1/7 × 80%).
+    LEGS from hip to floor occupy ~40% of image height.
+  - NEVER render with 5-6 head proportion — that reads as childlike, cartoonish,
+    or anime-cliche. Particular bias warning: a woman with a cardigan + textbook composition biases nanobanana toward 'anime-cute teacher' 5-6 head proportions. RESIST this bias — render as a tall, mature adult educator with 7-head proportion.
+  - Working-age adult in her 30s to 40s — a working-age adult, NOT a teenager, NOT anime-style.
+
+[SCENE & ACTION]
+ASPECT RATIO: The output image MUST be 1:1 SQUARE — equal width and height
+(e.g., 1024×1024). DO NOT output 16:9 widescreen, 4:3 landscape, 3:4 vertical,
+9:16 portrait, or any other ratio. Square 1:1 only.
+FULL-BODY SHOT — the entire figure from the very top of the head to the soles
+of BOTH feet is fully inside the frame, with a clear empty margin above the
+head and a visible strip of empty ground below both feet. This is NOT a
+portrait, headshot, or waist-up crop.
+The standing figure spans roughly 80% of the image HEIGHT (measured by height,
+NOT by area), centered horizontally. Empty background on the left and right
+is expected and correct — do NOT zoom or crop in to fill the sides.
+Camera angle: HORIZONTAL 3/4 view at EYE LEVEL — the camera is positioned at
+the subject's eye height (not above, not below) and rotated approximately
+30-45 degrees to one side. DO NOT use an overhead or bird's-eye angle.
+DO NOT crop the body at the head, neck, waist, hips, thighs, or knees.
+Both feet and a small patch of the flat ground directly beneath them must
+be clearly visible.
+FOOTWEAR RULE (v3.11 / PART 1.11): Both feet MUST visibly wear the footwear
+specified in the [SUBJECT] section above. Barefoot is NOT permitted.
+Solid soft cream off-white background (warm off-white, NOT pure stark white).
+No other characters or objects in the frame.
+Framed as with a standard ~50mm-equivalent lens at full standing distance
+(NOT an 85mm tight portrait lens).
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with
+consistent line weight. Completely flat solid color fills only. Color palette:
+soft cream off-white background (warm off-white, NOT pure stark white),
+deep slate navy outlines, muted warm blue and warm amber gold as accents,
+cool slate gray for secondary elements. This should look like it belongs in
+a brand style guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+No text, no letters, no numbers, no decorative symbols anywhere — including
+titles, labels, captions, watermarks, or any text overlay at any position in
+the rendered output. Any ID badge / name badge worn is a PLAIN BLANK
+RECTANGLE with no text, no icon, no graphic.
+The clothing, accessories, props, and any visible badges must NEVER include any flag, national emblem, nationality pin, country indicator, political symbol, or red-and-white circular badge. This is a character portrait of a specific person, not a nationality card.
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
+
