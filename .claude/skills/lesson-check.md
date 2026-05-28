@@ -56,8 +56,8 @@ node scripts/lib/lesson-check.mjs --no NN
 
 | 重大度 | 内容 |
 |---|---|
-| ERROR | A-2 / A-3 / A-4 形式 / A-5 / A-6 / B-5 / B-6 / B-6-2 / B-7 / B-9 / C-11 違反 |
-| WARN | A-4 文数 (複数文 canDo) / B-6-3 blank 異形 / B-8 推奨時間範囲外 / B-12 examples 応答混入 / B-13 examples 空 / C-10 changes 短文 / A-2 記述欠落 |
+| ERROR | A-2 / A-3 / A-4 形式 / A-5 / A-6 / B-5 / B-6 / B-6-2 / B-7 / B-9 / **B-15 / B-16** / C-11 違反 |
+| WARN | A-4 文数 (複数文 canDo) / B-6-3 blank 異形 / B-8 推奨時間範囲外 / B-12 examples 応答混入 / B-13 examples 空 / **B-14 vocab×sentence 不整合** / C-10 changes 短文 / A-2 記述欠落 |
 | INFO | B-6-4 templates ≥4 件 (過剰の可能性) |
 | TODO | 文字列値内の "TODO_*" / "TODO:" を全 path で列挙 |
 
@@ -103,6 +103,9 @@ ERROR > 0 で exit code 1 (WARN / INFO / TODO は 0)。
 | B-9 | ERROR | main_activity (skipped=false) の ABCactivityRef に activityName/fadingStage/taskType + playerSteps[] 非空 |
 | B-12 | WARN | examples[].sentence に応答/応用シグナル (em-dash・「はい〜です」・「いいえ〜じゃありません」・指示応答 (それ/これ/あれ/こちら/そちら/あちら/どちらです)・「そうです」・「〜のです」省略形) を検出 → applicationExamples[] への移動を検討 (基本ルール: examples = PDF 文型欄基本形のみ) |
 | B-13 | WARN | patterns[].examples が空 (applicationExamples のみ)。PDF 文型欄基本形例文を 1 件以上 examples に置く必要あり (宿題 generator は examples のみ参照) |
+| B-14 | WARN | vocab グループの word が examples / applicationExamples / practiceTemplates のどこにも sentence 内に登場しない (lesson_02「犬/写真」問題の再発防止)。`_sourceTag="practice_only"` の word は意図的に sentence 不在として skip |
+| B-15 | ERROR | vocabulary.byPattern[*].words[]._sourceTag が必須・enum 内 (pdf_introduction / goi_list_n5_supplement / teacher_addition / inherited_from_earlier_lesson / practice_only)。Phase 1 of Goi_List skill 統合 (2026-05-28+) |
+| B-16 | ERROR | `_sourceTag="goi_list_n5_supplement"` の word は実際に `data/sources/goi_list_raw.json` の N5 範囲に (word, reading) が実在すること。出どころ捏造を防ぐ |
 | C-9 | (chk 対象外) | 作業順序は手続的ルール (lint 不可) |
 | C-10 | WARN | _meta.changes[] 各エントリは 30 文字以上 (object 形式は { version, changes[] } を再帰 check) |
 | C-11 | ERROR | _meta.formatVersion + _meta.lessonVersion 両方存在 |

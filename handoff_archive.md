@@ -395,3 +395,24 @@
 - **スライド実視**: user 側で `python -m http.server 8766` 起動 + intro_act_p5/p6 で teacher_photo スロット × 4 が破線枠で drop 待ち状態になることを確認 (本セッションでは Node 経由 SlideHtml.generate が ctx.flow 不在で失敗 / dev server 起動は user 都合に任せた)。
 - **invariants hash 変化なし**: 本セッションは prompts/guide を触らないので B/B' hash は 891b73f5ae2d / 652aa0a3cbe3 不変。
 - **backlog 追加**: applicationExamples の render 先 (会話例スライド or 教案 docx 応用ガイド) / Q 単体最適化画像への再生成 / lesson_plan_docx.js の applicationExamples 対応 / lesson_01 intro_act_p1 世界地図 Drop&Drag は引き続き NEXT_ACTIONS の backlog 欄。
+
+## 2026-05-28 (X-g Phase 1: Goi_List skill 統合 — _sourceTag schema + B-14/15/16 lint + migration)
+
+- **背景**: 5/28 セッションで user 明示「Goi_List の 17000 語はまったくレッスンでは登場しないということですか？これは私がお願いした Skill 設計からかけ離れています」。現状の skill suite は Goi_List 17,908 entries (N5=422) を vocab 能動選定ソースとして使っておらず、`/lesson-fill-vocab` が jlptLevel 補完辞書として参照するだけだった (vocab_catalog 経由で 17,495 件が dead code)。lesson_02 「犬/写真」問題 (PDF 導入語彙でない vocab が混入) の検出機構もなく、lesson_03 着手前に整理が必要だった。
+- **採用案** (user 確認): A 案=補強推薦型 (中庸) + `_sourceTag` schema 追加 (推奨)。「部分的 NG で再度提示」可能な対話 skill 設計を Phase 2 で実装予定。
+- **Phase 1 着地**: 再発防止の土台と migration を本セッションで完了。Phase 2 (lesson-scaffold への Goi_List N5 補強候補対話フェーズ追加) は次セッション。
+  - **`_sourceTag` enum 定義** (5 値): `pdf_introduction` / `goi_list_n5_supplement` / `teacher_addition` / `inherited_from_earlier_lesson` / `practice_only`。
+  - **`scripts/lib/migrate-vocab-source-tag.mjs` 作成** (one-shot migration)。dry-run + --apply モード。lesson_01 全 17 vocab → `pdf_introduction`、lesson_02 全 25 vocab → 15 件 `pdf_introduction` + 10 件 `goi_list_n5_supplement` (X-f commit log で「Goi_List N5 1.初級前半 由来」明記の p5_p6_thing)。
+  - **validate.mjs**: `WORD_REQUIRED` に `_sourceTag` 追加 + `SOURCE_TAG_ENUM` enum 値検証。
+  - **lesson-check.mjs に B-14/B-15/B-16 追加**:
+    - **B-14 WARN**: vocab word が examples / applicationExamples / practiceTemplates の sentence 内に登場しない (`_sourceTag="practice_only"` の word は skip)。lesson_02「犬/写真」再発防止の本丸。
+    - **B-15 ERROR**: vocab word に `_sourceTag` 必須・enum 内。
+    - **B-16 ERROR**: `_sourceTag="goi_list_n5_supplement"` の word は `data/sources/goi_list_raw.json` の N5 範囲に (word, reading) が実在すること (出どころ捏造防止)。実装は N5 426 件を `byKey` / `byWord` の 2 段 Map にキャッシュ。
+  - **docs/REFERENCE.md §6-1**: `_sourceTag` を必須フィールドに追加 + enum 5 値の意味表 + B-14/15/16 への参照を追記。
+  - **.claude/skills/lesson-check.md / lesson-scaffold.md**: 重大度表に B-14/15/16 追記、scaffold の「しないこと」「すること」リストに `_sourceTag` 必須・捏造禁止を追記、scaffold 末尾に Phase 2 予告 (Goi_List N5 補強候補対話フェーズ) を入れる。
+- **検証結果**: `npm run validate` invariants 既知制約のみ (D の 20 LUFS ERROR は構造的制約)。lesson_01/02 lint:
+  - lesson_01: ERROR 2 (既存 B-6 のみ・本 plan 対象外) / WARN 8 (B-14 が 4 件発火・全て国籍語 vocab カード提示意図的) / TODO 0
+  - lesson_02: ERROR 2 (既存 B-6-2 / B-6 のみ) / WARN 16 (B-14 が 10 件発火・全て p1_p4_thing / p5_p6_thing の vocab カード提示意図的) / INFO 2 / TODO 0
+  - B-14 WARN 14 件は pedagogy 上正常 (ABC 教科書の典型「全 vocab をカードで提示するが例文では一部のみ使う」パターン)。user 判断で `practice_only` 化 or 例文追加かは別 task。
+  - B-15 / B-16 ERROR 0 件 = migration が正しく enum 内で完了。
+- **Phase 2 残務** (次セッション): lesson-scaffold skill の Step 3 後半に Goi_List N5 補強候補抽出 + 対話判定フェーズを実装。採用語に `_sourceTag="goi_list_n5_supplement"` 自動付与。lesson_03 で初実証。

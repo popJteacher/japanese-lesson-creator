@@ -36,6 +36,15 @@
 //   B-13 patterns[].examples[] が 0 件で applicationExamples[] のみ存在は WARN。PDF
 //        文型欄基本形例文を 1 件以上 examples に置く必要あり (宿題 generator は
 //        examples のみ参照)。
+//   B-14 vocab グループの word が examples / applicationExamples / practiceTemplates
+//        のどこにも sentence 内に登場しないなら WARN。lesson_02「犬/写真」問題の
+//        再発防止 (Phase 1 of Goi_List skill 統合・2026-05-28)。_sourceTag=practice_only
+//        の word は意図的に sentence 不在として skip。
+//   B-15 vocabulary.byPattern[*].words[]._sourceTag が必須・enum 内 (ERROR)。
+//        enum: pdf_introduction / goi_list_n5_supplement / teacher_addition /
+//        inherited_from_earlier_lesson / practice_only。Phase 1 of Goi_List skill 統合。
+//   B-16 _sourceTag="goi_list_n5_supplement" の word は実際に data/sources/goi_list_raw.json
+//        の N5 範囲にあること (ERROR)。出どころ捏造を防ぐ。
 //   C-10 _meta.changes[] 各エントリは 30 文字以上 (理由を含めているか粗判定)
 //   C-11 _meta.formatVersion + _meta.lessonVersion 両方存在 (validate.mjs と重複だが報告対象)
 //
@@ -54,6 +63,15 @@ import path from "node:path";
 const VOCAB_TYPE_ENUM = ["vocabulary_card", "actual_object", "scene_picture", "contrast_picture"];
 const IMAGE_ROLE_ENUM = ["vocab_person", "vocab_object", "scene", "contrast"];
 const JLPT_ENUM = ["N5", "N4", "N3", "N2", "N1"];
+
+// B-15: vocab word の出どころ tag (Phase 1 of Goi_List skill 統合・2026-05-28)
+const SOURCE_TAG_ENUM = [
+  "pdf_introduction",
+  "goi_list_n5_supplement",
+  "teacher_addition",
+  "inherited_from_earlier_lesson",
+  "practice_only",
+];
 
 // flow type → materialNeeds の扱い (B-7)
 const MATERIAL_NEEDS_POLICY = {
@@ -319,6 +337,97 @@ function checkB13(doc, report) {
   });
 }
 
+// B-14: vocab word が examples / applicationExamples / practiceTemplates のどこにも登場しない
+// (lesson_02「犬/写真」再発防止)。判定は単純な部分文字列 includes。
+// _sourceTag="practice_only" の word は意図的に sentence 不在として skip。
+function checkB14(doc, report) {
+  const patterns = doc.patterns || [];
+  const haystack = [];
+  patterns.forEach((p) => {
+    (p.examples || []).forEach((ex) => { if (typeof ex.sentence === "string") haystack.push(ex.sentence); });
+    (p.applicationExamples || []).forEach((ex) => { if (typeof ex.sentence === "string") haystack.push(ex.sentence); });
+    (p.practiceTemplates || []).forEach((t) => { if (typeof t.pattern === "string") haystack.push(t.pattern); });
+  });
+  const joined = haystack.join("\n");
+  const byPattern = (doc.vocabulary && doc.vocabulary.byPattern) || {};
+  for (const [group, g] of Object.entries(byPattern)) {
+    if (group.startsWith("_")) continue;
+    const words = Array.isArray(g.words) ? g.words : [];
+    words.forEach((w, i) => {
+      if (w._sourceTag === "practice_only") return;
+      if (typeof w.word !== "string" || w.word.length === 0) return;
+      if (!joined.includes(w.word)) {
+        report.warns.push({
+          rule: "B-14",
+          msg: `vocabulary.byPattern[${group}].words[${i}](word=${w.word}, reading=${w.reading || "?"}) が examples / applicationExamples / practiceTemplates のどこにも登場しない。sentence 不在の vocab は teacher_addition 化または除去を検討 (再発防止: 犬/写真 問題)。意図的に sentence 抜きで vocab カードだけ提示する場合は _sourceTag="practice_only" を付与。`,
+        });
+      }
+    });
+  }
+}
+
+// B-15: vocab word に _sourceTag (enum) 必須 (Phase 1 of Goi_List skill 統合)
+function checkB15(doc, report) {
+  const byPattern = (doc.vocabulary && doc.vocabulary.byPattern) || {};
+  for (const [group, g] of Object.entries(byPattern)) {
+    if (group.startsWith("_")) continue;
+    const words = Array.isArray(g.words) ? g.words : [];
+    words.forEach((w, i) => {
+      const tag = `vocabulary.byPattern[${group}].words[${i}](word=${w.word})`;
+      if (w._sourceTag === undefined || w._sourceTag === null
+          || (typeof w._sourceTag === "string" && TODO_RE.test(w._sourceTag))) {
+        report.errors.push({ rule: "B-15", msg: `${tag} _sourceTag 不在/TODO (期待: ${SOURCE_TAG_ENUM.join("|")})` });
+      } else if (!SOURCE_TAG_ENUM.includes(w._sourceTag)) {
+        report.errors.push({ rule: "B-15", msg: `${tag} _sourceTag "${w._sourceTag}" が enum 外 (${SOURCE_TAG_ENUM.join("|")})` });
+      }
+    });
+  }
+}
+
+// B-16: _sourceTag="goi_list_n5_supplement" の word が Goi_List N5 範囲に実在すること
+let _goiN5Cache = null;
+function loadGoiN5() {
+  if (_goiN5Cache !== null) return _goiN5Cache;
+  const p = "data/sources/goi_list_raw.json";
+  if (!fs.existsSync(p)) { _goiN5Cache = null; return null; }
+  try {
+    const json = JSON.parse(fs.readFileSync(p, "utf8"));
+    const byKey = new Map();
+    const byWord = new Map();
+    for (const e of (json.entries || [])) {
+      if (e.jlpt !== "N5") continue;
+      byKey.set(`${e.word}|${e.reading || ""}`, e);
+      if (!byWord.has(e.word)) byWord.set(e.word, e);
+    }
+    _goiN5Cache = { byKey, byWord };
+    return _goiN5Cache;
+  } catch {
+    _goiN5Cache = null;
+    return null;
+  }
+}
+
+function checkB16(doc, report) {
+  const goi = loadGoiN5();
+  if (!goi) return;
+  const byPattern = (doc.vocabulary && doc.vocabulary.byPattern) || {};
+  for (const [group, g] of Object.entries(byPattern)) {
+    if (group.startsWith("_")) continue;
+    const words = Array.isArray(g.words) ? g.words : [];
+    words.forEach((w, i) => {
+      if (w._sourceTag !== "goi_list_n5_supplement") return;
+      const tag = `vocabulary.byPattern[${group}].words[${i}](word=${w.word})`;
+      const keyFull = `${w.word}|${w.reading || ""}`;
+      if (!goi.byKey.has(keyFull) && !goi.byWord.has(w.word)) {
+        report.errors.push({
+          rule: "B-16",
+          msg: `${tag} _sourceTag="goi_list_n5_supplement" だが Goi_List N5 範囲に (${w.word}, ${w.reading || "?"}) が見つからない。出どころ捏造の疑い。teacher_addition への変更を検討。`,
+        });
+      }
+    });
+  }
+}
+
 function checkA3(doc, report) {
   const patterns = doc.patterns || [];
   patterns.forEach((p) => {
@@ -467,6 +576,9 @@ function runChecks(doc) {
   checkB9(doc, report);
   checkB12(doc, report);
   checkB13(doc, report);
+  checkB14(doc, report);
+  checkB15(doc, report);
+  checkB16(doc, report);
   // TODO scan は最後 (lint ERROR 化されたものも検出されるが、それは重複ではなく
   // 「全 TODO の全体像」を見せる別軸)。
   scanTodos(report, doc, "");

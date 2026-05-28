@@ -92,6 +92,11 @@ stderr に `rendered N pages` が出る。
 - ❌ practiceTemplates 全件を blank=0 (`＿＿＿` なし) にする — B-6-2 違反
 - ❌ **PDF 文型欄以外の例文 (教え方の例・プラスα・活動例) を `examples[]` に入れる** — B-12 違反 (`applicationExamples[]` 行き)
 - ❌ **`examples[]` を空にして `applicationExamples[]` のみ作る** — B-13 違反 (宿題 generator が機能しなくなる)
+- ❌ **PDF にない vocab を独自判断で `_sourceTag="pdf_introduction"` として入れる** — B-15 違反候補 (`goi_list_n5_supplement` or `teacher_addition` を使う・出どころ捏造禁止)
+
+抽出時に**すること** (Phase 1 of Goi_List skill 統合・2026-05-28+)：
+- ✅ vocab word 全件に `_sourceTag` を付与する。PDF 導入語彙由来は `pdf_introduction`、Goi_List N5 由来は `goi_list_n5_supplement`、教師独自判断は `teacher_addition`。enum は B-15 / 詳細は [docs/REFERENCE.md §6-1](../../docs/REFERENCE.md)
+- ✅ vocab word が examples / applicationExamples / practiceTemplates の sentence に登場するか自己確認 (`/lesson-check` B-14 で機械検出可)。意図的に sentence 抜きで vocab カードだけ提示する場合は `_sourceTag="practice_only"`
 
 #### 3-3. seed を JSON ファイルに保存
 
@@ -165,9 +170,16 @@ examples[] / applicationExamples[] の役割分担 (基本ルール・docs/REFER
 
 次セッション skill (Phase 2 以降):
   /lesson-fill-vocab <NN>       — vocab_catalog + 他課から自動補完
-  /lesson-check <NN>            — 14 ルール準拠 lint
+  /lesson-check <NN>            — 14 ルール + B-14/15/16 (vocab×sentence + _sourceTag 系) 準拠 lint
   /lesson-suggest-activities    — activity_catalog から activityId 候補提示
   /lesson-build-registry        — master_image/audio_registry pending 生成
+
+Phase 2 of Goi_List skill 統合 (未実装・lesson_03 着手前 or 並行で実装予定):
+  本 skill Step 3 の後半に「Goi_List N5 補強候補対話フェーズ」を追加し、
+  PDF 導入語彙確定後に data/sources/goi_list_raw.json の N5 範囲
+  (422 件) から各 pattern の文型コンテキストに沿った関連語を抽出して
+  user に y/n/skip で個別判定させる。採用語には _sourceTag="goi_list_n5_supplement"
+  を自動付与 (B-16 が範囲実在を検証)。
 ```
 
 ## seed mode と empty mode の比較

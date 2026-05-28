@@ -150,7 +150,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_時計",
-            "audioId": "word_時計"
+            "audioId": "word_時計",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "腕時計",
@@ -161,7 +162,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_腕時計",
-            "audioId": "word_腕時計"
+            "audioId": "word_腕時計",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "ペン",
@@ -172,7 +174,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_ペン",
-            "audioId": "word_ペン"
+            "audioId": "word_ペン",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "鉛筆",
@@ -183,7 +186,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_鉛筆",
-            "audioId": "word_鉛筆"
+            "audioId": "word_鉛筆",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "ケータイ",
@@ -194,7 +198,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_ケータイ",
-            "audioId": "word_ケータイ"
+            "audioId": "word_ケータイ",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "本",
@@ -205,7 +210,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_本",
-            "audioId": "word_本"
+            "audioId": "word_本",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "雑誌",
@@ -216,7 +222,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_雑誌",
-            "audioId": "word_雑誌"
+            "audioId": "word_雑誌",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "新聞",
@@ -227,7 +234,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_新聞",
-            "audioId": "word_新聞"
+            "audioId": "word_新聞",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "かばん",
@@ -238,7 +246,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_かばん",
-            "audioId": "word_かばん"
+            "audioId": "word_かばん",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "消しゴム",
@@ -249,7 +258,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_消しゴム",
-            "audioId": "word_消しゴム"
+            "audioId": "word_消しゴム",
+            "_sourceTag": "pdf_introduction"
           }
         ]
       },
@@ -269,7 +279,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_ビル",
-            "audioId": "word_ビル"
+            "audioId": "word_ビル",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "病院",
@@ -281,7 +292,8 @@
             "imageRole": "vocab_object",
             "imageId": "word_病院",
             "audioId": "word_病院",
-            "_note": "lesson_01 p3 グループで初出済み(word_病院 は既存ID)。第2課では『あれ』導入の遠景建物として再利用。"
+            "_note": "lesson_01 p3 グループで初出済み(word_病院 は既存ID)。第2課では『あれ』導入の遠景建物として再利用。",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "市役所",
@@ -292,7 +304,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_市役所",
-            "audioId": "word_市役所"
+            "audioId": "word_市役所",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "山",
@@ -303,7 +316,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_山",
-            "audioId": "word_山"
+            "audioId": "word_山",
+            "_sourceTag": "pdf_introduction"
           }
         ]
       },
@@ -326,7 +340,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_カメラ",
-            "audioId": "word_カメラ"
+            "audioId": "word_カメラ",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "ノート",
@@ -337,7 +352,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_ノート",
-            "audioId": "word_ノート"
+            "audioId": "word_ノート",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "傘",
@@ -348,7 +364,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_傘",
-            "audioId": "word_傘"
+            "audioId": "word_傘",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "かぎ",
@@ -359,7 +376,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_かぎ",
-            "audioId": "word_かぎ"
+            "audioId": "word_かぎ",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "自転車",
@@ -370,7 +388,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_自転車",
-            "audioId": "word_自転車"
+            "audioId": "word_自転車",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "辞書",
@@ -381,7 +400,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_辞書",
-            "audioId": "word_辞書"
+            "audioId": "word_辞書",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "教科書",
@@ -392,7 +412,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_教科書",
-            "audioId": "word_教科書"
+            "audioId": "word_教科書",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "いす",
@@ -403,7 +424,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_いす",
-            "audioId": "word_いす"
+            "audioId": "word_いす",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "机",
@@ -414,7 +436,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_机",
-            "audioId": "word_机"
+            "audioId": "word_机",
+            "_sourceTag": "goi_list_n5_supplement"
           },
           {
             "word": "靴",
@@ -425,7 +448,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_靴",
-            "audioId": "word_靴"
+            "audioId": "word_靴",
+            "_sourceTag": "goi_list_n5_supplement"
           }
         ]
       },
@@ -446,7 +470,8 @@
             "imageRole": "vocab_person",
             "imageId": "word_わたし",
             "audioId": "word_わたし",
-            "_note": "代名詞。語彙カードは教師のジェスチャー(自分を指す)で代替可。GASパイプラインでの画像生成は任意扱い。"
+            "_note": "代名詞。語彙カードは教師のジェスチャー(自分を指す)で代替可。GASパイプラインでの画像生成は任意扱い。",
+            "_sourceTag": "pdf_introduction"
           }
         ]
       },

@@ -5,30 +5,32 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-28 X-f 着地 ✅ (復習 UI 連動 fix + intro_act fallback fix + lesson_02 p5/p6 vocab 入れ替え) / スライド実視は user 側 ⏳
+**最終更新：** 2026-05-28 X-g Phase 1 着地 ✅ (Goi_List skill 統合: _sourceTag schema + B-14/15/16 lint + lesson_01/02 migration)
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ / α1 〜 β1-v0.3 / γ2 / X-a 全 4 / X-b 部分 / X-c (1〜7) / X-d / X-e / X-f 完了** ✅
-- **X-f (今 session)** 復習 UI 連動 + intro_act fallback fix + lesson_02 p5/p6 vocab 入れ替え:
-  - **flow_synthesizer.js**: `_step6_prependReview` に「`session.review` が array で空 → 既存 review エントリを `skipped:true / enabled:false / minutes:0` で抑制」分岐を追加。UI フォームで復習文型を未選択時に lesson_NN.json 内蔵 review エントリが flow に乗ってしまう問題を解消。
-  - **lesson_02.json v2.13**: intro_act_p5 / intro_act_p6 から `materialNeeds[].type='auto_generated_vocab'` を削除 (teacher_photo Drop&Drag のみ残す)。`vocabsForPattern` fallback バグ解消。
-  - **lesson_02.json v2.14**: p5/p6 vocab 入れ替え (削除 + 増強)。旧 p5_p6_person (人) + p5_p6_object (犬/写真) 計 3 語を、p5_p6_thing 計 10 語 (カメラ/ノート/傘/かぎ/自転車/辞書/教科書/いす/机/靴・Goi_List N5 1.初級前半 由来) に置換。examples 6-2 → applicationExamples[app-5] 移動、6-3 (どの犬) → どのカメラ、6-4 (どの写真) → どの自転車 に書き換え。practiceTemplates 連動修正。
-  - **master_image_registry**: 新 10 entries の `usedInLessons=[2]` 付与、旧 word_人/犬/写真 を `status: outdated` + usedInLessons から 2 削除、ex_L02_034/035 の sentence を新 vocab に更新。
-  - **次セッション着手前残務**: スライド実視 (user 側で http://127.0.0.1:8766/ から p5/p6 文型・例文・練習しよう スライドが新構成になっているか確認 + 復習スライドが UI 未選択時に出ないことを確認)
+- **Phase 0 〜 5 ⑤ / α1 〜 β1-v0.3 / γ2 / X-a 全 4 / X-b 部分 / X-c (1〜7) / X-d / X-e / X-f / X-g Phase 1 完了** ✅
+- **X-g Phase 1 (今 session)** Goi_List skill 統合の再発防止土台:
+  - **`_sourceTag` enum 定義** (5 値): `pdf_introduction` / `goi_list_n5_supplement` / `teacher_addition` / `inherited_from_earlier_lesson` / `practice_only`。
+  - **`scripts/lib/migrate-vocab-source-tag.mjs`**: lesson_01 全 17 vocab → `pdf_introduction`、lesson_02 全 25 vocab → 15 件 `pdf_introduction` + 10 件 `goi_list_n5_supplement` (X-f の p5_p6_thing が Goi_List N5 由来の commit log 明記)。
+  - **validate.mjs**: `_sourceTag` 必須化 + enum 検証。
+  - **lesson-check.mjs B-14/15/16 追加**: vocab×sentence 整合性 WARN / `_sourceTag` 必須 ERROR / `goi_list_n5_supplement` の Goi_List N5 実在 ERROR。
+  - **docs**: REFERENCE.md §6-1 / lesson-check.md / lesson-scaffold.md 更新。scaffold に Phase 2 予告 (Goi_List N5 補強候補対話フェーズ) を入れる。
+- **X-g Phase 2 (次セッション)**: lesson-scaffold skill に「PDF 導入語彙確定後の Goi_List N5 補強候補対話フェーズ」を追加。user が y/n/skip で個別判定可、部分 NG なら追加候補提示可。採用語に `goi_list_n5_supplement` 自動付与。
 
-### スナップショット（2026-05-28 X-f 着地直後・コマンドで再導出）
+### スナップショット（2026-05-28 X-g Phase 1 着地直後・コマンドで再導出）
 
 ```
-image_registry:  494 entries / outdated +3 (word_人/犬/写真)
+image_registry:  496 entries / 478 active / 443 missing (lesson_02 ex_L02_021〜035 等の生成待ち)
 audio_registry:  466 entries / 459 active (変化なし)
 invariants:      A v7.5 / B 891b73f5ae2d / B' 652aa0a3cbe3 / C / D 439/459 PASS (20 LUFS ERROR は既知制約) / D' 451/459
-lesson_01:       v1.3 (p2 例文 4+4)
-lesson_02:       v2.14 (p5/p6 vocab 入れ替え 3→10 + examples 整理 + practice 連動)
-lesson-check 02: ERROR 2 (既存 B-6-2 p2 全 blank=0 / B-6 p4 templateCount=1) / WARN 6 / INFO 2 / TODO 0
-git:             main → X-f commit 予定
+lesson_01:       v1.3 + _sourceTag migration (17 vocab 全 pdf_introduction)
+lesson_02:       v2.14 + _sourceTag migration (15 pdf_introduction + 10 goi_list_n5_supplement)
+lesson-check 02: ERROR 2 (既存 B-6-2 p2 / B-6 p4 — 本 plan スコープ外) / WARN 16 (新 B-14 が 10 件発火・user 判断待ち) / INFO 2 / TODO 0
+lesson-check 01: ERROR 2 (既存 B-6 p1/p3) / WARN 8 (新 B-14 が 4 件発火) / INFO 0 / TODO 0
+git:             main → X-g Phase 1 commit 予定
 ```
 
 ---
@@ -37,14 +39,14 @@ git:             main → X-f commit 予定
 
 ### 次セッション着手点候補（user 判断）
 
-1. **Goi_List を skill 設計に統合 (大論点)** — 現状 17,508 語の Goi_List は jlptLevel 補完辞書としてのみ。user の skill 設計意図 (vocab 能動選定ソース) と乖離。`/lesson-scaffold` で「PDF 導入語彙 + Goi_List N5 補強推薦」に改修、`/lesson-check` で「PDF にない vocab に `_sourceTag` 要求」追加。lesson_03 着手前に整理推奨。詳細: [[feedback_goi_list_skill_design_gap]]
-2. **lesson-check に「vocab vs examples 整合性 WARN」追加** — lesson_02 「犬/写真」問題の再発防止の本丸。`scripts/lib/lesson-check.mjs` に B-14 として実装。詳細: [[project_vocab_selection_rules_pending]]
+1. **X-g Phase 2: lesson-scaffold への Goi_List N5 補強候補対話フェーズ追加** — 本セッションで土台 (lint + schema + migration) が完了。次は能動選定の本体。lesson_03 着手前 or 並行で実装。Step 3 後半に N5 422 件から各 pattern 文型コンテキスト沿いの候補抽出 → user との y/n/skip 対話 → 採用語に `goi_list_n5_supplement` 自動付与 (B-16 検証通過必須)。
+2. **B-14 WARN 14 件の人間 review** — 本セッションで検出された「vocab カード提示のみ・sentence 不在」14 件 (lesson_01 4 件: アメリカ人/ブラジル人/ベトナム人/スペイン人 / lesson_02 10 件: 腕時計/鉛筆/雑誌/新聞/ノート/傘/かぎ/辞書/教科書/机) は pedagogy 上正常 (ABC 教科書の典型「全 vocab をカードで提示するが例文では一部のみ使う」パターン)。対処は `_sourceTag="practice_only"` 付与で B-14 を skip するか、例文追加 (推奨は前者・cheap)。本セッションでは未対処。
 3. **UI フォームの 例文/練習しよう を文型ブロック化** — 現状 example/practice は単一 stage entry。lesson 側は文型ブロック構造 (example_pN / practice_pN × N) なのに UI から制御不能。`rebuildStages` 改修で文型ごとに 3 つ組 stage を生成。
 4. **p5/p6 新 vocab 10 件 + 例文画像 (ex_L02_034/035 更新版) の画像生成** — `/generate-image-prompt` で word_カメラ〜word_靴 + ex_L02_034 (どのカメラ) / ex_L02_035 (どの自転車) の prompt 起草 → 画像生成。X-f で pending のまま残置。
 5. **applicationExamples の render 先実装** — 会話例スライド (新 `flow.type='dialogue_example'`) or 教案 docx の応用ガイド section。pedagogy review 必要、1-2 セッション規模。
 6. **Phase γ1 (スライド音声移植)** — homework の `.audio-btn` 機構を slide_html.js に移植。user 都合で後送り中。
 7. **Phase δ (アクティビティ完成・3-5 セッション想定)** — δ1 画像組み込み 6 ブロック / δ2 applicability メタデータ 57 件 / δ3 recommender.js + form UI 統合
-8. **lesson_03 着手** — `/lesson-scaffold 03 --pdf data/sources/pdfs/第03課.pdf` で新フローを実機検証 (skill の初本番運用)。1-2 を済ませてからの方が望ましい。
+8. **lesson_03 着手** — `/lesson-scaffold 03 --pdf data/sources/pdfs/第03課.pdf` で新フローを実機検証 (skill の初本番運用)。X-g Phase 2 完了後の方が望ましい (Goi_List 統合が初実証になる)。
 
 ### 既存 ERROR (lesson-check で残る・本 plan のスコープ外)
 
@@ -54,7 +56,7 @@ git:             main → X-f commit 予定
 
 ### 並行待機 / backlog
 
-- **applicationExamples の render 先実装** (上記 1)
+- **applicationExamples の render 先実装** (上記 5)
 - **Q 単体画像への再生成**: examples sentence が Q 形式に整理された後、対応する画像 (ex_L02_021〜023/027/028/029/030/034/035 等) を Q 単体場面に最適化。`--dry-run` + `--limit` 安全帯で別 session
 - **lesson_01 intro_act_p1 世界地図 Drop&Drag**: act_picture_card_vocab_intro の character_card_grid layout に world_map スロット併存。slide_html.js layout 改修 + lesson_01 materialNeeds 移行。1 セッション規模
 - **lesson_plan_docx.js の applicationExamples 対応**: 教案 docx に「応用ガイド」section を追加
@@ -90,7 +92,11 @@ Phase X (γ2 派生・user 要望)
   X-b    lesson.targetStudentLevel + 上級語 pill 機構             ✅ 部分着地
   X-d    復習機能 + intro_activity fallback テンプレ修正           ✅ 着地
   X-c    例文 revision + v4.0.5 PERSON ref + v4.0.6/7/8           ✅ 完了
-  X-e    applicationExamples schema (data 整備 + skill 強制)       ✅ 着地 (今 session) 🆕
+  X-e    applicationExamples schema (data 整備 + skill 強制)       ✅ 着地
+  X-f    復習 UI 連動 fix + intro_act fallback fix + l02 p5/p6     ✅ 着地
+  X-g    Goi_List skill 統合
+    Phase 1 ✅ _sourceTag schema + B-14/15/16 lint + migration     ← 今 session
+    Phase 2 ⏳ lesson-scaffold への Goi_List N5 補強対話フェーズ    ← 次 session
 Phase δ  アクティビティ完成（3-5 セッション）
   δ1     画像組み込み 6 ブロック (E)
   δ2     applicability メタデータ 57 件 (H Stage 2)
@@ -101,6 +107,14 @@ Phase ε  統合テスト・リリース判断（1 セッション）
 ---
 
 ## 確定仕様
+
+### vocab `_sourceTag` schema (X-g Phase 1 確定 / 2026-05-28)
+
+- 詳細: [docs/REFERENCE.md §6-1](docs/REFERENCE.md)
+- **enum 5 値**: `pdf_introduction` / `goi_list_n5_supplement` / `teacher_addition` / `inherited_from_earlier_lesson` / `practice_only`
+- **強制**: lesson-check B-15 (必須 ERROR) / B-16 (goi_list_n5_supplement の Goi_List N5 実在 ERROR・捏造防止)
+- **関連 lint**: B-14 WARN (vocab×sentence 整合性 — `practice_only` は skip)
+- migration script: `scripts/lib/migrate-vocab-source-tag.mjs` (--apply で書き戻し)
 
 ### applicationExamples schema (X-e 確定 / 2026-05-27)
 
@@ -165,10 +179,13 @@ npm run validate                # A=v7.5 / B=891b73f5ae2d / B'=652aa0a3cbe3 / C 
 
 # 課マスター作成 skill suite (manual invoke)
 /lesson-scaffold NN [--patterns p1,p2,p3] [--force] [--no-pdf]
-/lesson-check NN [--json]                # B-6-2/3/4 + B-12 + B-13 強化済
+/lesson-check NN [--json]                # B-6-2/3/4 + B-12 + B-13 + B-14/15/16 (X-g Phase 1) 強化済
 /lesson-fill-vocab NN [--apply] [--json]
 /lesson-suggest-activities NN [--type intro|main|all] [--top N] [--json]
 /lesson-build-registry NN [--apply] [--json]
+
+# X-g Phase 1 migration (one-shot・既に適用済)
+node scripts/lib/migrate-vocab-source-tag.mjs [--apply] [--no NN]
 
 # 例文画像 prompt 生成 (lesson_02 以降は skill 経由を試す予定)
 /generate-image-prompt mode=lesson-examples --lesson NN
@@ -188,7 +205,7 @@ python -m http.server 8766 --bind 127.0.0.1   # http://127.0.0.1:8766/ で index
 - [docs/SKILLS_MANUAL.md](docs/SKILLS_MANUAL.md) — 画像 prompt 系 skill マニュアル
 - [docs/MANUAL_image_generation.md](docs/MANUAL_image_generation.md) — 手動画像生成の段取り
 - [docs/MANUAL_word_example_state.md](docs/MANUAL_word_example_state.md) — どこに何があるか / status の見方
-- [docs/REFERENCE.md](docs/REFERENCE.md) — 命名規則・スキーマ詳細（不変仕様）— **§6-1 に applicationExamples 追加 (X-e)**
+- [docs/REFERENCE.md](docs/REFERENCE.md) — 命名規則・スキーマ詳細（不変仕様）— **§6-1 に `_sourceTag` enum 追加 (X-g Phase 1) + applicationExamples (X-e)**
 - [docs/WORKFLOW.md](docs/WORKFLOW.md) — main / worktree の使い分け
 - [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md) — Phase 0〜5 全体ロードマップ
 - [docs/PHASE_BACKLOG.md](docs/PHASE_BACKLOG.md) — 退避中項目

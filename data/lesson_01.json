@@ -207,7 +207,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_person",
             "imageId": "word_医者",
-            "audioId": "word_医者"
+            "audioId": "word_医者",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "会社員",
@@ -218,7 +219,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_person",
             "imageId": "word_会社員",
-            "audioId": "word_会社員"
+            "audioId": "word_会社員",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "学生",
@@ -229,7 +231,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_person",
             "imageId": "word_学生",
-            "audioId": "word_学生"
+            "audioId": "word_学生",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "大学生",
@@ -241,7 +244,8 @@
             "imageRole": "vocab_person",
             "_note": "v2.10新規追加。Goi_List No.10351 確認済み(1.初級前半)。学生(普通名詞)との対比で導入。p3アンカー(東西大学の学生)と連動。",
             "imageId": "word_大学生",
-            "audioId": "word_大学生"
+            "audioId": "word_大学生",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "先生",
@@ -252,7 +256,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_person",
             "imageId": "word_先生",
-            "audioId": "word_先生"
+            "audioId": "word_先生",
+            "_sourceTag": "pdf_introduction"
           }
         ]
       },
@@ -275,7 +280,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.5 教え方の例1 教師モデル発話「鈴木さんは日本人です」",
             "imageId": "word_日本人",
-            "audioId": "word_日本人"
+            "audioId": "word_日本人",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "中国人",
@@ -287,7 +293,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.1 会話例「中国人です」(リンさん)",
             "imageId": "word_中国人",
-            "audioId": "word_中国人"
+            "audioId": "word_中国人",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "アメリカ人",
@@ -299,7 +306,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.1 会話例「アメリカから来ました」(ケリーさん)",
             "imageId": "word_アメリカ人",
-            "audioId": "word_アメリカ人"
+            "audioId": "word_アメリカ人",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "韓国人",
@@ -311,7 +319,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.5 世界地図に韓国旗あり",
             "imageId": "word_韓国人",
-            "audioId": "word_韓国人"
+            "audioId": "word_韓国人",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "ブラジル人",
@@ -323,7 +332,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.5 世界地図に国旗あり",
             "imageId": "word_ブラジル人",
-            "audioId": "word_ブラジル人"
+            "audioId": "word_ブラジル人",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "ベトナム人",
@@ -335,7 +345,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.5 世界地図に国旗あり",
             "imageId": "word_ベトナム人",
-            "audioId": "word_ベトナム人"
+            "audioId": "word_ベトナム人",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "スペイン人",
@@ -347,7 +358,8 @@
             "imageRole": "vocab_person",
             "_pdfSource": "PDF p.5 世界地図に国旗あり",
             "imageId": "word_スペイン人",
-            "audioId": "word_スペイン人"
+            "audioId": "word_スペイン人",
+            "_sourceTag": "pdf_introduction"
           }
         ]
       },
@@ -368,7 +380,8 @@
             "imageRole": "vocab_object",
             "_note": "v2.10: 会社から差し替え。「東西病院の医者です」で自然な所属表現が成立。",
             "imageId": "word_病院",
-            "audioId": "word_病院"
+            "audioId": "word_病院",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "学校",
@@ -379,7 +392,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_学校",
-            "audioId": "word_学校"
+            "audioId": "word_学校",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "銀行",
@@ -390,7 +404,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_銀行",
-            "audioId": "word_銀行"
+            "audioId": "word_銀行",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "大学",
@@ -401,7 +416,8 @@
             "vocabType": "vocabulary_card",
             "imageRole": "vocab_object",
             "imageId": "word_大学",
-            "audioId": "word_大学"
+            "audioId": "word_大学",
+            "_sourceTag": "pdf_introduction"
           },
           {
             "word": "デパート",
@@ -413,7 +429,8 @@
             "imageRole": "vocab_object",
             "_note": "カタカナ語のため絵カード化は可能だが、「建物の外観」で表現する。",
             "imageId": "word_デパート",
-            "audioId": "word_デパート"
+            "audioId": "word_デパート",
+            "_sourceTag": "pdf_introduction"
           }
         ]
       }

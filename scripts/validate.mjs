@@ -42,7 +42,15 @@ const EXAMPLE_REQUIRED = [
 ];
 const WORD_REQUIRED = [
   'word', 'reading', 'en', 'jlptLevel', 'isFirstAppearance',
-  'vocabType', 'imageRole', 'imageId', 'audioId',
+  'vocabType', 'imageRole', 'imageId', 'audioId', '_sourceTag',
+];
+
+const SOURCE_TAG_ENUM = [
+  'pdf_introduction',
+  'goi_list_n5_supplement',
+  'teacher_addition',
+  'inherited_from_earlier_lesson',
+  'practice_only',
 ];
 
 const EX_IMAGE_ID_RE = /^ex_L\d{2}_\d{3}$/;
@@ -125,6 +133,9 @@ function checkLesson(path, doc, errors, warns) {
       const wtag = `vocabulary.byPattern[${key}].words[${i}]${w.word ? `(word=${w.word})` : ''}`;
       for (const f of WORD_REQUIRED) {
         if (w[f] === undefined || w[f] === null) err(`${wtag} 必須フィールド欠落: ${f}`);
+      }
+      if (w._sourceTag != null && !SOURCE_TAG_ENUM.includes(w._sourceTag)) {
+        err(`${wtag} _sourceTag が不正値: ${JSON.stringify(w._sourceTag)} (期待: ${SOURCE_TAG_ENUM.join('/')})`);
       }
     }
   }
