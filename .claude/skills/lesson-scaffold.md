@@ -1,7 +1,7 @@
 ---
 name: lesson-scaffold
-description: Scaffold a new lesson_NN.json with the v2.7 schema. Reads the corresponding 第NN課.pdf when present (vision-based seed extraction); falls back to empty placeholder skeleton when no PDF. Phase 1 MVP of the 課マスター作成 skill suite.
-allowed-tools: Read, Write, Bash, Glob, Grep
+description: Scaffold a new lesson_NN.json with the v2.7 schema. Reads the corresponding 第NN課.pdf when present (vision-based seed extraction); falls back to empty placeholder skeleton when no PDF. Optional Step 4.5 dialogue phase pulls Goi_List N5 supplement candidates with user y/n/skip judgment (Phase 2 of Goi_List skill 統合). Phase 1 MVP of the 課マスター作成 skill suite.
+allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion
 ---
 
 # lesson-scaffold skill
@@ -124,6 +124,121 @@ node scripts/lib/lesson-scaffold.mjs --no NN --patterns p1,p2,p3 \
 
 `✅ wrote data/lesson_NN.json (patterns: ..., seed: yes|no)` が stdout に出る。
 
+### Step 4.5: Goi_List N5 補強候補対話フェーズ (optional / Phase 2 of Goi_List skill 統合)
+
+PDF 導入語彙 (Step 3 で抽出済) だけでは pedagogically 薄い場合に、
+`data/sources/goi_list_raw.json` の N5 範囲 (422 件) から補強候補を user と対話して決定する。
+採用語には `_sourceTag="goi_list_n5_supplement"` が自動付与される (B-16 lint 適合)。
+
+**いつ動くか**：
+
+- seed mode で PDF 導入語彙が少なく、pattern の examples / practice が貧弱になりそうな時
+- empty mode で user が PDF なしで lesson を組み立てる時の語彙ベース
+- skip 推奨：PDF が十分な語彙を提供している場合 (lesson_01 17 件 / lesson_02 PDF 由来 15 件 等)
+
+**user が opt-out**：`AskUserQuestion` で「Goi_List N5 補強フェーズを実行しますか？」を最初に聞き、
+`no` なら Step 5 へ進む (このフェーズの実行は必須ではない)。
+
+#### 4.5-1. 候補プール抽出
+
+```bash
+node scripts/lib/lesson-goi-supplement.mjs --no NN --candidates --json > tmp/goi_pool_NN.json
+```
+
+- 出力: 対象 NN 以前の全 lesson_*.json の vocab を除外した N5 候補 (pos1 別 group)
+- 名詞 / イ形容詞 / 動詞1類 / ナ形容詞 / 代名詞 等で自動 grouping
+- 必要なら `--pos1 名詞` で更に絞る
+
+#### 4.5-2. Claude 側で pattern コンテキストに沿った候補を curate
+
+pool の中から、各 pattern の `pattern` 表現 / `canDo` / `examples[]` の文脈に沿って
+pedagogically 噛み合う候補を 5-10 件ピックアップする。
+
+curate の指針：
+
+- **物の名前 pattern (〜は〜です / どれ 等)** → `pos1=名詞` の身近な可視物 (家具 / 文具 / 食べ物 / 衣類)
+- **形容 pattern (〜は〜い 等)** → `pos1=イ形容詞 or ナ形容詞`
+- **動作 pattern (〜ます 等)** → `pos1=動詞1類 or 動詞2類`
+- **時制 / 助数詞 pattern** → `pos1=名詞-数詞 or 接尾辞`
+- **既に lesson に出る同義語の重複は避ける** (`vocabType=actual_object` の場合は特に画像生成負荷も考慮)
+- **`vocabulary_card` (絵カード化困難語) は pedagogy で本当に必要な時のみ**
+
+#### 4.5-3. user と y/n/skip 対話
+
+各 pattern について、curate した候補 5-10 件を plain text で提示し、自由応答で受ける。
+**`AskUserQuestion` で 1 件ずつ尋ねるのは禁止** (sub-step での permission 連発回避・
+[[feedback_skill_use_permission_threshold]] 準拠)。1 batch を 1 ターンで尋ねる：
+
+```
+pattern p1 (〜は〜です) の Goi_List N5 補強候補 (8 件):
+  1. 朝御飯 (あさごはん)       — 家庭で毎朝出てくる物の名前
+  2. ノート (ノート)            — 文具
+  3. 鞄    (かばん)            — (※ lesson_02 に既出かも要確認)
+  4. パン  (ぱん)              — 食べ物
+  5. お茶  (おちゃ)            — 飲み物
+  6. テレビ (テレビ)            — 家電
+  7. 自転車 (じてんしゃ)        — 乗り物 (※ lesson_02 に既出)
+  8. 椅子 (いす)               — 家具 (※ lesson_02 に既出)
+
+採用したいものを番号 or 'all' / 'none' / 'more' で。
+理由メモがあれば自由に追記してください。
+```
+
+user は自由応答で `1, 2, 4, 6` のように返す or `none` / `more` (追加候補) で次の batch を要求。
+全 pattern 終わったら最終確認 (採用 list 全件) を一度だけ `AskUserQuestion` で yes/no
+(教育内容の確定 = AskUserQuestion 適用域)。
+
+#### 4.5-4. adopt.json 書き出し → 適用
+
+最終採用 list を `tmp/goi_adopt_NN.json` に書き出す (schema は helper の `--adopt` 入力)：
+
+```json
+{
+  "_meta": { "lesson": "NN", "curatedBy": "claude+user", "createdAt": "YYYY-MM-DD" },
+  "adoptions": [
+    {
+      "groupKey": "p1_thing",
+      "patternIds": ["p1"],
+      "description": "(新規 group の場合のみ) 説明文",
+      "words": [
+        { "word": "ノート", "reading": "ノート", "en": "notebook",
+          "vocabType": "actual_object", "imageRole": "vocab_object" }
+      ]
+    }
+  ]
+}
+```
+
+書き戻し：
+
+```bash
+# 1. dry-run で内容確認
+node scripts/lib/lesson-goi-supplement.mjs --no NN --adopt tmp/goi_adopt_NN.json
+
+# 2. apply
+node scripts/lib/lesson-goi-supplement.mjs --no NN --adopt tmp/goi_adopt_NN.json --apply
+
+# 3. lesson-check で B-15/B-16 検証
+node scripts/lib/lesson-check.mjs --no NN
+```
+
+helper が自動でやること：
+
+- 各 word に `_sourceTag="goi_list_n5_supplement"` を付与
+- `imageId` / `audioId` を `word_<word>` で補完
+- `jlptLevel: "N5"` 固定 / `isFirstAppearance: true` 既定
+- 既存 group なら append、なければ新規作成
+- dup word は WARN で skip (idempotent)
+- B-16 相当の N5 実在検査 (`goi_list_raw.json` の word 集合と照合)
+- `_meta.changes[]` に "goi-supplement (YYYY-MM-DD): ..." を追記
+- `vocabulary.totalWords` を再計算
+
+#### 4.5-5. 失敗時 / 中断時
+
+- helper が validation error を出した場合は adopt.json を修正して再実行 (idempotent)
+- user が途中で抜けた場合は次セッションで `lesson-goi-supplement.mjs --no NN --adopt <未完成 json>`
+  を直接走らせる手動運用も可 (skill 経由でなくてもよい)
+
 ### Step 5: user にガイダンスを echo
 
 下記テンプレを user に出す。`<NN>` は zero-pad、`<patterns>` は csv：
@@ -174,12 +289,11 @@ examples[] / applicationExamples[] の役割分担 (基本ルール・docs/REFER
   /lesson-suggest-activities    — activity_catalog から activityId 候補提示
   /lesson-build-registry        — master_image/audio_registry pending 生成
 
-Phase 2 of Goi_List skill 統合 (未実装・lesson_03 着手前 or 並行で実装予定):
-  本 skill Step 3 の後半に「Goi_List N5 補強候補対話フェーズ」を追加し、
-  PDF 導入語彙確定後に data/sources/goi_list_raw.json の N5 範囲
-  (422 件) から各 pattern の文型コンテキストに沿った関連語を抽出して
-  user に y/n/skip で個別判定させる。採用語には _sourceTag="goi_list_n5_supplement"
-  を自動付与 (B-16 が範囲実在を検証)。
+Goi_List N5 補強 (Phase 2・本 skill Step 4.5 で実行可):
+  PDF 導入語彙だけで pedagogically 薄い場合、Step 4.5 で N5 422 件から
+  pattern コンテキストに沿った候補を user 対話で追加できる。
+  採用語には _sourceTag="goi_list_n5_supplement" が自動付与され
+  /lesson-check の B-15/B-16 で検証される。
 ```
 
 ## seed mode と empty mode の比較

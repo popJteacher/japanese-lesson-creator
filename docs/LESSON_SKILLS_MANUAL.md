@@ -129,6 +129,85 @@ A-1 ルールに従って人間が必ずやる。
 
 順序（C-9）は **守る**。例文より先に materialNeeds を書かない。activityId は最後。
 
+### 2.5 Step 4.5: Goi_List N5 補強候補対話フェーズ（optional / Phase 2）
+
+`/lesson-scaffold` の Step 4 で `lesson_NN.json` を書き出した直後、
+**PDF 導入語彙だけで pedagogically 薄い場合** に N5 補強を user 対話で追加できる。
+
+**動かす条件**：
+
+- seed mode で PDF 導入語彙が少なく、pattern の examples / practice が貧弱になりそう
+- empty mode で PDF なしで lesson を組み立てる時の語彙ベース確保
+- PDF が十分な語彙を提供している場合は **skip 推奨** (lesson_01 17 件 / lesson_02 PDF 由来 15 件 等の場合は不要)
+
+**flow**：
+
+```
+1. (skill 内) AskUserQuestion で「Goi_List N5 補強フェーズを実行しますか？」 yes/no
+2. node scripts/lib/lesson-goi-supplement.mjs --no NN --candidates --json > tmp/goi_pool_NN.json
+   → 対象 NN 以前の全 lesson_*.json の vocab を除外した N5 候補プール (pos1 別 group)
+3. Claude が pool から各 pattern コンテキストに沿った候補 5-10 件を curate
+4. plain text で user に提示 → 自由応答で y/n/skip (per-batch、per-word permission 連発禁止)
+5. 全 pattern 終わったら最終確認 AskUserQuestion (教育内容の確定 = AskUserQuestion 適用域)
+6. tmp/goi_adopt_NN.json を書き出し
+7. node scripts/lib/lesson-goi-supplement.mjs --no NN --adopt tmp/goi_adopt_NN.json --apply
+   → 採用語に _sourceTag="goi_list_n5_supplement" 自動付与 + _meta.changes 追記 + totalWords 再計算
+8. node scripts/lib/lesson-check.mjs --no NN  で B-15/B-16 検証
+```
+
+**helper の責務**：
+
+| 入力 | 出力 |
+|---|---|
+| `--candidates --json` | 対象課以前の全 lesson_*.json と dedup した N5 候補 pool (pos1 別) |
+| `--adopt path --apply` | adopt.json の adoptions[] を vocab.byPattern に merge (auto-sourceTag) |
+
+**helper が自動でやること**：
+
+- 各 word に `_sourceTag="goi_list_n5_supplement"` を付与（user は付けなくてよい）
+- `imageId` / `audioId` を `word_<word>` で補完
+- `jlptLevel: "N5"` 固定 / `isFirstAppearance: true` 既定
+- 既存 group なら append、なければ新規作成
+- dup word は WARN で skip（idempotent）
+- B-16 相当の N5 実在検査（`goi_list_raw.json` の word 集合と照合 / 不一致は exit 1）
+- `_meta.changes[]` に `"goi-supplement (YYYY-MM-DD): ..."` を追記
+- `vocabulary.totalWords` を再計算
+
+**スタンドアロン運用**：
+
+skill 外でも helper を直接呼べる。例えば lesson_02 のように既に手作業で `goi_list_n5_supplement`
+を入れた lesson に対して、追加で N5 補強を入れる場合：
+
+```bash
+# 候補プール (lesson_02 視点で見て、未取り込みの N5)
+node scripts/lib/lesson-goi-supplement.mjs --no 02 --candidates --pos1 名詞
+
+# adopt.json を作って apply
+node scripts/lib/lesson-goi-supplement.mjs --no 02 --adopt tmp/goi_adopt_l02.json --apply
+```
+
+**adopt.json schema**：
+
+```json
+{
+  "_meta": { "lesson": "NN", "curatedBy": "claude+user", "createdAt": "YYYY-MM-DD" },
+  "adoptions": [
+    {
+      "groupKey": "p1_thing",
+      "patternIds": ["p1"],
+      "description": "(新規 group の場合のみ) 説明文",
+      "words": [
+        { "word": "ノート", "reading": "ノート", "en": "notebook",
+          "vocabType": "actual_object", "imageRole": "vocab_object" }
+      ]
+    }
+  ]
+}
+```
+
+`_sourceTag` は **書かない**（helper が auto 付与する）。書いた場合は
+`"goi_list_n5_supplement"` 以外は ERROR。
+
 ---
 
 ## 3. `/lesson-check` — 14 ルール lint + `validate.mjs`
