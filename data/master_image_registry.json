@@ -2,7 +2,7 @@
   "_meta": {
     "version": "2.0",
     "createdAt": "2026-05-10",
-    "lastUpdated": "2026-05-21",
+    "lastUpdated": "2026-05-28",
     "purpose": "全課横断の画像登録簿。同一素材の重複生成を防ぐ SSOT。lesson_NN.json の materialNeeds[].imageRef が参照する。",
     "primaryKeyRules": {
       "auto_generated_vocab": "vocab_{word}  例: vocab_医者",
@@ -24,8 +24,8 @@
       "image://lesson{N}/action/{serial}": "action_L{N}_{serial} を参照",
       "image://lesson{N}/example/{id}": "ex_L{N}_{serial} を参照"
     },
-    "totalEntries": 494,
-    "lastModifiedBy": "handoff_v2_4.md §5 適用（v1.9）",
+    "totalEntries": 496,
+    "lastModifiedBy": "lesson-build-registry",
     "_addingNewEntry": "新エントリ追加手順: (1) primaryKeyRules に従いキー決定 (2) entries に追加 (3) status: pending で開始 (4) GAS 実行後 generated に更新 (5) レビュー後 approved に更新",
     "changes": [
       "v1.0 (2026-05-10): 初版。第1課エントリ 18 件登録。",
@@ -1756,11 +1756,10 @@
       "en": "person",
       "context": "vocabulary_person",
       "firstLesson": 2,
-      "usedInLessons": [
-        2
-      ],
-      "status": "pending",
-      "images": []
+      "usedInLessons": [],
+      "status": "outdated",
+      "images": [],
+      "_outdated_note": "v2.14 (2026-05-28): lesson_02 から削除 (p5_p6_person + p5_p6_object → p5_p6_thing 入れ替え)。"
     },
     "word_わたし": {
       "type": "auto_generated_vocab",
@@ -1782,11 +1781,10 @@
       "en": "dog",
       "context": "vocabulary_object",
       "firstLesson": 2,
-      "usedInLessons": [
-        2
-      ],
-      "status": "pending",
-      "images": []
+      "usedInLessons": [],
+      "status": "outdated",
+      "images": [],
+      "_outdated_note": "v2.14 (2026-05-28): lesson_02 から削除 (p5_p6_person + p5_p6_object → p5_p6_thing 入れ替え)。"
     },
     "word_写真": {
       "type": "auto_generated_vocab",
@@ -1795,11 +1793,10 @@
       "en": "photo",
       "context": "vocabulary_object",
       "firstLesson": 2,
-      "usedInLessons": [
-        2
-      ],
-      "status": "pending",
-      "images": []
+      "usedInLessons": [],
+      "status": "outdated",
+      "images": [],
+      "_outdated_note": "v2.14 (2026-05-28): lesson_02 から削除 (p5_p6_person + p5_p6_object → p5_p6_thing 入れ替え)。"
     },
     "ex_L02_029": {
       "type": "example_images",
@@ -1864,24 +1861,26 @@
       "lesson": 2,
       "patternId": "p6",
       "exampleNo": "6-3",
-      "sentence": "どの犬ですか。",
-      "sentenceEn": "Which dog is it?",
+      "sentence": "どのカメラですか。",
+      "sentenceEn": "Which camera is it?",
       "slot": "p6 例文(どの+犬)・画像化対象",
       "status": "pending",
       "images": [],
-      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。",
+      "_changeNote": "v2.14 (2026-05-28): 旧『どの犬ですか』を『どのカメラですか』に置換 (p5_p6_thing vocab 入れ替えに伴う)。prompt も再生成が必要 (画像はもともと pending・未生成)。"
     },
     "ex_L02_035": {
       "type": "example_images",
       "lesson": 2,
       "patternId": "p6",
       "exampleNo": "6-4",
-      "sentence": "どの写真ですか。",
-      "sentenceEn": "Which photo is it?",
+      "sentence": "どの自転車ですか。",
+      "sentenceEn": "Which bicycle is it?",
       "slot": "p6 例文(どの+写真)・画像化対象",
       "status": "pending",
       "images": [],
-      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。"
+      "_v2_12_sync_note": "v2.12 (2026-05-27): sentence を Q 単体形に同期 (応答部分は lesson_02 applicationExamples へ移動)。既存画像は流用 (Q+A 場面の絵は Q 単体 sentence にも整合)。Q 単体最適化画像への再生成は backlog。",
+      "_changeNote": "v2.14 (2026-05-28): 旧『どの写真ですか』を『どの自転車ですか』に置換 (p5_p6_thing vocab 入れ替えに伴う)。prompt も再生成が必要 (画像はもともと pending・未生成)。"
     },
     "ex_L02_015": {
       "type": "scene_illustration",
@@ -2843,7 +2842,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_忙しい": {
       "type": "auto_generated_vocab",
@@ -4086,7 +4089,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_書く": {
       "type": "auto_generated_vocab",
@@ -4120,7 +4127,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_菓子": {
       "type": "auto_generated_vocab",
@@ -4307,7 +4318,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_火曜": {
       "type": "auto_generated_vocab",
@@ -4732,7 +4747,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_教室": {
       "type": "auto_generated_vocab",
@@ -4936,7 +4955,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_国": {
       "type": "auto_generated_vocab",
@@ -5786,7 +5809,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_静か": {
       "type": "auto_generated_vocab",
@@ -5850,7 +5877,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_自動車": {
       "type": "auto_generated_vocab",
@@ -6490,7 +6521,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_作る": {
       "type": "auto_generated_vocab",
@@ -7180,7 +7215,11 @@
           "generatedAt": null,
           "regenerate": false
         }
-      ]
+      ],
+      "usedInLessons": [
+        2
+      ],
+      "firstLesson": 2
     },
     "word_飲む": {
       "type": "auto_generated_vocab",
@@ -8583,6 +8622,44 @@
         }
       ],
       "_outdated_reason": "lesson_01 v2.13 で旧 examples[2-8] が applicationExamples[app-4] へ移動 (画像不要)。plan 2-or-validated-pancake §2.1。"
+    },
+    "ex_L02_036": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p6",
+      "sentence": "どの靴ですか。",
+      "sentenceEn": "Which shoes are they?",
+      "slot": "文型p6 例文 6-5",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_036_img",
+          "filename": "ex_L02_036.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_036",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
+    },
+    "ex_L02_037": {
+      "type": "example_images",
+      "lesson": 2,
+      "patternId": "p6",
+      "sentence": "どのいすですか。",
+      "sentenceEn": "Which chair is it?",
+      "slot": "文型p6 例文 6-6",
+      "status": "pending",
+      "images": [
+        {
+          "imageId": "ex_L02_037_img",
+          "filename": "ex_L02_037.png",
+          "imageUrl": null,
+          "promptRef": "image_prompts_lesson2.json#ex_L02_037",
+          "generatedAt": null,
+          "regenerate": false
+        }
+      ]
     }
   }
 }

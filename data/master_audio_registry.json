@@ -3,13 +3,13 @@
     "version": "1.2",
     "description": "音声資産レジストリ。word_* は語彙音声、sentence_* は例文音声。audioUrl は音声生成後に設定する。",
     "createdAt": "2026-05-15",
-    "lastModified": "2026-05-25",
+    "lastModified": "2026-05-28",
     "changes": [
       "v1.0 (2026-05-15): 初版。L01 語彙17件 + 例文15件 = 32件登録。",
       "v1.1 (2026-05-17): L02 語彙15件 (word_病院はL01既存のため上書き更新のみ) + 例文28件 = 実質43件新規追加。totalEntries: 32 -> 75。",
       "v1.2 (2026-05-17): handoff_v2_4.md §5 適用。[5-A] sentence更新8件（旧A/B/Cさん→namedCharacters・v2.11.7修正後）。[5-B] 新規追加9件（word_犬/写真 + sentence_ex_L02_029〜035）。[5-C] outdated化7件（002/005/006/011/012/013/014）。totalEntries: 77件（active）。"
     ],
-    "totalEntries": 459
+    "totalEntries": 468
   },
   "entries": {
     "word_医者": {
@@ -6292,6 +6292,20 @@
       "audioSource": "tts-local-regen",
       "audioLocalizedAt": "2026-05-25",
       "regenReason": "drive-download accent fix (Neural2 + yomigana SSML)"
+    },
+    "sentence_ex_L02_036": {
+      "audioUrl": null,
+      "sentence": "どの靴ですか。",
+      "_addedBy": "lesson-build-registry",
+      "_addedAt": "2026-05-28",
+      "_firstLesson": 2
+    },
+    "sentence_ex_L02_037": {
+      "audioUrl": null,
+      "sentence": "どのいすですか。",
+      "_addedBy": "lesson-build-registry",
+      "_addedAt": "2026-05-28",
+      "_firstLesson": 2
     }
   }
 }

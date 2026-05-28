@@ -5,33 +5,30 @@
 > 移行ロードマップ全体は `docs/MIGRATION_PLAN.md`。退避中の項目は `docs/PHASE_BACKLOG.md`。
 > main / worktree 役割分担は `docs/WORKFLOW.md`。
 
-**最終更新：** 2026-05-27 X-e applicationExamples schema + skill 強制 + data 整備着地 ✅ / スライド実視は user 側 ⏳
+**最終更新：** 2026-05-28 X-f 着地 ✅ (復習 UI 連動 fix + intro_act fallback fix + lesson_02 p5/p6 vocab 入れ替え) / スライド実視は user 側 ⏳
 
 ---
 
 ## 現在地
 
-- **Phase 0 〜 5 ⑤ / α1 〜 β1-v0.3 / γ2 / X-a 全 4 / X-b 部分 / X-c (1〜7) / X-d / X-e 完了** ✅
-- **X-e (今 session)** plan [2-or-validated-pancake.md](C:\Users\kohn0\.claude\plans\2-or-validated-pancake.md) 実装着地：
-  - **schema**: docs/REFERENCE.md §6-1 に `patterns[].applicationExamples[]` 追加 + 役割分担 doc 明記
-  - **lesson_01 v2.13**: p2 を examples 4 件 (Q のみ) + applicationExamples 4 件 (応答セット) に再構成
-  - **lesson_02 v2.12**: p3/p4/p5/p6 を update (examples = PDF 文型欄 Q / applicationExamples = 教え方の例・応答由来)、intro_act_p5/p6 に `teacher_photo` materialNeed 追加 (Drop&Drag 化)
-  - **registry**: 旧 examples 由来 9 件 (ex_L01_007/009/011/013 + ex_L02_017/018/019/020/032) を outdated 化、残存 12 件の sentence を Q 単体形に同期
-  - **skill 強化**: lesson-check に B-6-2/3/4 (ERROR/WARN/INFO) + B-12 (応答混入 WARN) + B-13 (examples 空 WARN) を実装、`infos` カテゴリ追加。lesson-scaffold に `buildApplicationExample` seed + practiceTemplates blank 数の uniform 軽 lint 追加。skill md も併せて更新。
-  - **activity_catalog**: `act_whiteboard_categorize.validatedForLessons = [1, 2]` に拡張
-  - **次セッション着手前残務**: スライド実視 (user 側で http://127.0.0.1:8766/ から intro_act_p5/p6 で teacher_photo スロット × 4 が破線枠で出ることを確認)
+- **Phase 0 〜 5 ⑤ / α1 〜 β1-v0.3 / γ2 / X-a 全 4 / X-b 部分 / X-c (1〜7) / X-d / X-e / X-f 完了** ✅
+- **X-f (今 session)** 復習 UI 連動 + intro_act fallback fix + lesson_02 p5/p6 vocab 入れ替え:
+  - **flow_synthesizer.js**: `_step6_prependReview` に「`session.review` が array で空 → 既存 review エントリを `skipped:true / enabled:false / minutes:0` で抑制」分岐を追加。UI フォームで復習文型を未選択時に lesson_NN.json 内蔵 review エントリが flow に乗ってしまう問題を解消。
+  - **lesson_02.json v2.13**: intro_act_p5 / intro_act_p6 から `materialNeeds[].type='auto_generated_vocab'` を削除 (teacher_photo Drop&Drag のみ残す)。`vocabsForPattern` fallback バグ解消。
+  - **lesson_02.json v2.14**: p5/p6 vocab 入れ替え (削除 + 増強)。旧 p5_p6_person (人) + p5_p6_object (犬/写真) 計 3 語を、p5_p6_thing 計 10 語 (カメラ/ノート/傘/かぎ/自転車/辞書/教科書/いす/机/靴・Goi_List N5 1.初級前半 由来) に置換。examples 6-2 → applicationExamples[app-5] 移動、6-3 (どの犬) → どのカメラ、6-4 (どの写真) → どの自転車 に書き換え。practiceTemplates 連動修正。
+  - **master_image_registry**: 新 10 entries の `usedInLessons=[2]` 付与、旧 word_人/犬/写真 を `status: outdated` + usedInLessons から 2 削除、ex_L02_034/035 の sentence を新 vocab に更新。
+  - **次セッション着手前残務**: スライド実視 (user 側で http://127.0.0.1:8766/ から p5/p6 文型・例文・練習しよう スライドが新構成になっているか確認 + 復習スライドが UI 未選択時に出ないことを確認)
 
-### スナップショット（2026-05-27 X-e 着地直後・コマンドで再導出）
+### スナップショット（2026-05-28 X-f 着地直後・コマンドで再導出）
 
 ```
-image_registry:  494 entries / outdated +9 (本 session で applicationExamples 移動分)
+image_registry:  494 entries / outdated +3 (word_人/犬/写真)
 audio_registry:  466 entries / 459 active (変化なし)
 invariants:      A v7.5 / B 891b73f5ae2d / B' 652aa0a3cbe3 / C / D 439/459 PASS (20 LUFS ERROR は既知制約) / D' 451/459
 lesson_01:       v1.3 (p2 例文 4+4)
-lesson_02:       v2.12 (p3 ex 2 app 4 / p4 ex 5 app 5 / p5 ex 5 app 1 / p6 ex 4 app 4 / intro_act_p5,p6 teacher_photo 追加)
-lesson-check 01: ERROR 2 (既存 B-6 p1/p3 templateCount=1) / WARN 4 / INFO 0 / TODO 0
+lesson_02:       v2.14 (p5/p6 vocab 入れ替え 3→10 + examples 整理 + practice 連動)
 lesson-check 02: ERROR 2 (既存 B-6-2 p2 全 blank=0 / B-6 p4 templateCount=1) / WARN 6 / INFO 2 / TODO 0
-git:             main → X-e commit 予定
+git:             main → X-f commit 予定
 ```
 
 ---
@@ -40,10 +37,14 @@ git:             main → X-e commit 予定
 
 ### 次セッション着手点候補（user 判断）
 
-1. **applicationExamples の render 先実装** — 会話例スライド (新 `flow.type='dialogue_example'`) or 教案 docx の応用ガイド section。pedagogy review 必要、1-2 セッション規模。本 plan §6 backlog 化済。
-2. **Phase γ1 (スライド音声移植)** — homework の `.audio-btn` 機構を slide_html.js に移植。user 都合で後送り中。
-3. **Phase δ (アクティビティ完成・3-5 セッション想定)** — δ1 画像組み込み 6 ブロック / δ2 applicability メタデータ 57 件 / δ3 recommender.js + form UI 統合
-4. **lesson_03 着手** — `/lesson-scaffold 03 --pdf data/sources/pdfs/第03課.pdf` で新フローを実機検証 (今回の skill 強化が初お試し)。X-e で B-6-2/3/4/B-12/B-13 が seed 段階から働く。
+1. **Goi_List を skill 設計に統合 (大論点)** — 現状 17,508 語の Goi_List は jlptLevel 補完辞書としてのみ。user の skill 設計意図 (vocab 能動選定ソース) と乖離。`/lesson-scaffold` で「PDF 導入語彙 + Goi_List N5 補強推薦」に改修、`/lesson-check` で「PDF にない vocab に `_sourceTag` 要求」追加。lesson_03 着手前に整理推奨。詳細: [[feedback_goi_list_skill_design_gap]]
+2. **lesson-check に「vocab vs examples 整合性 WARN」追加** — lesson_02 「犬/写真」問題の再発防止の本丸。`scripts/lib/lesson-check.mjs` に B-14 として実装。詳細: [[project_vocab_selection_rules_pending]]
+3. **UI フォームの 例文/練習しよう を文型ブロック化** — 現状 example/practice は単一 stage entry。lesson 側は文型ブロック構造 (example_pN / practice_pN × N) なのに UI から制御不能。`rebuildStages` 改修で文型ごとに 3 つ組 stage を生成。
+4. **p5/p6 新 vocab 10 件 + 例文画像 (ex_L02_034/035 更新版) の画像生成** — `/generate-image-prompt` で word_カメラ〜word_靴 + ex_L02_034 (どのカメラ) / ex_L02_035 (どの自転車) の prompt 起草 → 画像生成。X-f で pending のまま残置。
+5. **applicationExamples の render 先実装** — 会話例スライド (新 `flow.type='dialogue_example'`) or 教案 docx の応用ガイド section。pedagogy review 必要、1-2 セッション規模。
+6. **Phase γ1 (スライド音声移植)** — homework の `.audio-btn` 機構を slide_html.js に移植。user 都合で後送り中。
+7. **Phase δ (アクティビティ完成・3-5 セッション想定)** — δ1 画像組み込み 6 ブロック / δ2 applicability メタデータ 57 件 / δ3 recommender.js + form UI 統合
+8. **lesson_03 着手** — `/lesson-scaffold 03 --pdf data/sources/pdfs/第03課.pdf` で新フローを実機検証 (skill の初本番運用)。1-2 を済ませてからの方が望ましい。
 
 ### 既存 ERROR (lesson-check で残る・本 plan のスコープ外)
 

@@ -327,6 +327,15 @@ function _step5_replaceMainActivities(flow, mainActivities, warnings) {
  * @returns {Array<Object>} review 追加後の flow
  */
 function _step6_prependReview(flow, review, warnings) {
+  // session.review が array で空 → 既存 review エントリを skipped:true に上書きして抑制。
+  // UI フォームで復習文型を未選択にしたとき、lesson_NN.json の review エントリ
+  // (enabled:true / skipped:false でハードコード) がそのまま flow に残るのを防ぐ。
+  if (Array.isArray(review) && review.length === 0) {
+    return flow.map((e) => {
+      if (e.type !== 'review') return e;
+      return Object.assign({}, e, { skipped: true, enabled: false, minutes: 0 });
+    });
+  }
   if (!review || review.length === 0) return flow;
 
   const existingReviewIdx = flow.findIndex((e) => e.type === 'review');

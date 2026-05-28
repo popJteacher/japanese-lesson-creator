@@ -1,13 +1,13 @@
 {
   "_meta": {
     "formatVersion": "2.7",
-    "lessonVersion": "2.12",
+    "lessonVersion": "2.14",
     "_formatVersion_note": "lesson_01 v2.7 と統一済み（T3: 2026-05-14）。formatVersion は lesson_NN.json の schema 版数を示し、各課個別のバージョンではない。",
     "lessonStatus": "ready_for_step_2",
     "_lessonStatus_note": "ready_for_step_2: Phase 1-F 完了済み。Step 2(image_prompts_lesson2.json 設計)に進行可能。旧値 ready_for_phase1f_then_step_2 は Phase 1-F 着手前のステータスであり、Phase 1-F 完了(2026-05-11)に伴い更新。",
     "description": "各課の設定ファイル(教育設計系 SSOT)。lesson_plan_generator.js の CONFIG を完全に代替する。このファイルを編集するだけで全教材(教案・スライド・宿題・アクティビティ・image_prompts)の内容が変わる。",
     "createdAt": "2026-05-11",
-    "lastModified": "2026-05-27",
+    "lastModified": "2026-05-28",
     "changes": [
       "v1.0 (2026-05-11): Step 1a 骨格作成。全6文型(p1〜p6)網羅・materialNeeds[] 付与・grammarConcept/jlptLevel/canDo を最初から記述(教科書非依存)。架空有名人キャラ(やまだまさし・すずきはなこ)を Layer 2 に追加(handoff_phase2_design_review §6-1 整合)。vocabulary は Step 1b で確定予定(現時点プレースホルダ)。examples は Step 1c で確定予定(現時点プレースホルダ)。formatVersion は lesson_01 v2.5 と同期。",
       "v1.1 (2026-05-11): Step 1b 完了。vocab_lesson2.json (draft) を生成し、vocabulary.byPattern を 4 カテゴリ・16 語で確定。patterns[].vocabCount を Step 1b 確定値に更新(p1=14, p2=10, p3=11, p4=10, p5=1, p6=1)。第1課語彙12語は既習として _inheritedFromLesson1 セクションに記録。Step 1c(examples 確定)に進行可能。",
@@ -55,6 +55,31 @@
           "p6: examples 4 件は維持しつつ sentence を Q 形式のみに刈り込み (応答「この人/そのかばん/この犬/その写真」を applicationExamples[app-1〜app-4] へ分離)。",
           "旧 examples 由来の image entry ex_L02_017〜020 (p3-3〜3-6) / ex_L02_032 (p5-5) は registry 側で outdated 化 (別 step)。",
           "Q 単体最適化画像への再生成 (ex_L02_021〜023/029/030/027/028/034/035) は backlog 化。既存 Q+A 場面画像を Q 単体 sentence にも流用。",
+          "formatVersion 2.7 維持。"
+        ]
+      },
+      {
+        "version": "2.13",
+        "date": "2026-05-28",
+        "changes": [
+          "intro_act_p5 / intro_act_p6 から materialNeeds[].type='auto_generated_vocab' を削除 (teacher_photo Drop&Drag のみ残す)。",
+          "理由: vocabsForPattern の fallback バグ (keywords=['アインシュタイン...'] でフィルタ 0 件 → p5 vocab 全件 fallback) で word_人/犬/写真 の placeholder カードが intro_activity スライドに描画される問題が発生していた。設計記述 (slideDisplay.primaryMaterialTypes=['famous_person_card']) と乖離。",
+          "結果: intro_act_p5/p6 スライドは teacher_photo 4 スロット (Drop&Drag) のみを描画し、教師が用意した有名人写真を context として使う。",
+          "formatVersion 2.7 維持。"
+        ]
+      },
+      {
+        "version": "2.14",
+        "date": "2026-05-28",
+        "changes": [
+          "p5/p6 vocab 入れ替え (削除 + 増強)。旧 p5_p6_person (人) + p5_p6_object (犬/写真) 計 3 語を、p5_p6_thing 計 10 語 (カメラ/ノート/傘/かぎ/自転車/辞書/教科書/いす/机/靴) に置換。",
+          "理由: p5/p6 文型スライドの語彙カードが 3 枚のみで他文型 (p1〜p4 は 11-14 語) と比べて極端に薄かった。『犬/写真』は PDF 教科書導入語彙にない手作業追加 (v2.11.5) で pedagogy 必然性が薄かった。Goi_List N5 1.初級前半 (`data/sources/goi_list_raw.json` / `data/vocab_catalog.json`) から複数並べて指示連体詞練習に適した具体物 10 語を選定。",
+          "patterns[p5].examples 5 件 (5-1〜5-4, 5-6 アインシュタイン/市役所/富士山) は PDF 教科書原典のため維持 (vocab カードと例文 sentence は別概念として運用)。",
+          "patterns[p6].examples: 6-1 (どの人ですか) PDF 由来維持。6-2 (ケリーさんのかばんはどのかばんですか) を applicationExamples[app-5] に移動 (基本形『どの+N+ですか』から逸脱・p3 所有 + p6 統合のため)。6-3 (どの犬ですか) → 6-3 (どのカメラですか) に置換。6-4 (どの写真ですか) → 6-4 (どの自転車ですか) に置換。さらに user リクエストで 6-5 (どの靴ですか) / 6-6 (どのいすですか) を新規追加 (計 5 件)。",
+          "patterns[p6].applicationExamples 再構成: app-1 維持、app-2/3/4 を p5_p6_thing vocab に整合化 (このカメラです/その自転車です/あのいすです)、app-5 新規 (旧 6-2 移動分)。",
+          "patterns[p5].practiceTemplates: 旧『この犬は』『その写真は』を『このカメラは』『その自転車は』に置換。",
+          "patterns[p5].vocabCount / patterns[p6].vocabCount: 3 → 10。",
+          "本セッションで議論した『vocab 選定ルール』『Goi_List 能動活用』『lesson-check 再発防止 lint』は別 backlog 化 (NEXT_ACTIONS.md 参照)。",
           "formatVersion 2.7 維持。"
         ]
       }
@@ -282,25 +307,125 @@
           }
         ]
       },
-      "p5_p6_person": {
+      "p5_p6_thing": {
         "patternIds": [
           "p5",
           "p6"
         ],
-        "vocabCount": 1,
-        "description": "p5(この/その/あの+N)・p6(どの+N)で使用する『人』。連体詞+名詞の中核語彙。例文ではアインシュタイン（教科書原典・generic フラットベクターイラストで表現）を使用する。固定キャラクターシステムは v1.4 (2026-05-11) で廃止済み。",
+        "vocabCount": 10,
+        "description": "p5（この/その/あの＋N）・p6（どの＋N）で使用する身近な指示対象。Goi_List 1.初級前半（N5）から選定。複数並べて指示連体詞の練習に適した具体物。",
+        "_sourceTag": "designer_selected_with_goi_n5_check",
+        "_sourceTag_note": "PDF 教科書 2-5/2-6 には『指示連体詞 + N』の N に入れる対象が固定されていない（教師がアインシュタイン写真等で実演する想定）。本グループは Goi_List N5 1.初級前半 範囲から複数並べて指示練習しやすい具体物を選定。v2.14 (2026-05-28) で旧 p5_p6_person (人) + p5_p6_object (犬/写真) と入れ替え。",
         "words": [
           {
-            "word": "人",
-            "reading": "ひと",
-            "en": "person",
+            "word": "カメラ",
+            "reading": "カメラ",
+            "en": "camera",
             "jlptLevel": "N5",
             "isFirstAppearance": true,
             "vocabType": "vocabulary_card",
-            "imageRole": "vocab_person",
-            "imageId": "word_人",
-            "audioId": "word_人",
-            "_note": "汎用的な人物像。p5/p6 では『この人/その人/あの人/どの人』として有名人（アインシュタイン等）を指す。"
+            "imageRole": "vocab_object",
+            "imageId": "word_カメラ",
+            "audioId": "word_カメラ"
+          },
+          {
+            "word": "ノート",
+            "reading": "ノート",
+            "en": "notebook",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_ノート",
+            "audioId": "word_ノート"
+          },
+          {
+            "word": "傘",
+            "reading": "かさ",
+            "en": "umbrella",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_傘",
+            "audioId": "word_傘"
+          },
+          {
+            "word": "かぎ",
+            "reading": "かぎ",
+            "en": "key",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_かぎ",
+            "audioId": "word_かぎ"
+          },
+          {
+            "word": "自転車",
+            "reading": "じてんしゃ",
+            "en": "bicycle",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_自転車",
+            "audioId": "word_自転車"
+          },
+          {
+            "word": "辞書",
+            "reading": "じしょ",
+            "en": "dictionary",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_辞書",
+            "audioId": "word_辞書"
+          },
+          {
+            "word": "教科書",
+            "reading": "きょうかしょ",
+            "en": "textbook",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_教科書",
+            "audioId": "word_教科書"
+          },
+          {
+            "word": "いす",
+            "reading": "いす",
+            "en": "chair",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_いす",
+            "audioId": "word_いす"
+          },
+          {
+            "word": "机",
+            "reading": "つくえ",
+            "en": "desk",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_机",
+            "audioId": "word_机"
+          },
+          {
+            "word": "靴",
+            "reading": "くつ",
+            "en": "shoes",
+            "jlptLevel": "N5",
+            "isFirstAppearance": true,
+            "vocabType": "vocabulary_card",
+            "imageRole": "vocab_object",
+            "imageId": "word_靴",
+            "audioId": "word_靴"
           }
         ]
       },
@@ -325,41 +450,7 @@
           }
         ]
       },
-      "p5_p6_object": {
-        "patternIds": [
-          "p5",
-          "p6"
-        ],
-        "vocabCount": 2,
-        "description": "p5（この/その/あの＋N）・p6（どの＋N）の例文バリエーション用語彙。PDF p.034「ペットの写真」記述を根拠に追加。Goi_List 1.初級前半（N5相当）確認済み。p5例文では既存のp1_distant_building語彙を使用し、本グループはp6例文のバリエーション確保が主目的。",
-        "_jlptLevel_note": "犬（N5・1.初級前半）・写真（N5・1.初級前半）ともGoi_List確認済み。",
-        "words": [
-          {
-            "word": "犬",
-            "reading": "いぬ",
-            "en": "dog",
-            "jlptLevel": "N5",
-            "isFirstAppearance": true,
-            "vocabType": "vocabulary_card",
-            "imageRole": "vocab_object",
-            "imageId": "word_犬",
-            "audioId": "word_犬",
-            "_note": "PDF p.034「ペットの写真」記述に基づきp6例文バリエーション用として追加。Goi_List 1.初級前半確認済み。"
-          },
-          {
-            "word": "写真",
-            "reading": "しゃしん",
-            "en": "photo",
-            "jlptLevel": "N5",
-            "isFirstAppearance": true,
-            "vocabType": "vocabulary_card",
-            "imageRole": "vocab_object",
-            "imageId": "word_写真",
-            "audioId": "word_写真",
-            "_note": "p6の指示連体詞練習でフォトカードとして自然に使用できる語彙。Goi_List 1.初級前半確認済み。"
-          }
-        ]
-      }
+      "_removed_p5_p6_object_note": "v2.14 (2026-05-28): 旧 p5_p6_object (犬/写真) を p5_p6_thing と入れ替え。理由: PDF 導入語彙に無い手作業追加 + pedagogy 必然性が薄い (例文・practice 専用化していた)。Goi_List N5 1.初級前半 から複数並べて指示練習に適した 10 語に置換。"
     },
     "draftSource": "vocab_lesson2.json (v1.0)",
     "_draftSource_note": "vocab_lesson2.json は Goi_List.pdf 由来の draft (Step 1b で生成)。第2課の採用語彙の SSOT は本セクション(byPattern)。例文・imageNote 等の詳細は vocab_lesson2.json を参照。",
@@ -814,26 +905,14 @@
       "_recommendedMinutes_note": "目安値。session で実時間を指定。架空有名人の写真・似顔絵を見せる場面のため、画像準備が必要。",
       "optional": true,
       "skipped": false,
-      "materials": "架空有名人の写真または似顔絵",
-      "_assignmentNote": "PDF 教え方の例『5. 「この・その・あの」の導入』に対応。教科書ではアインシュタイン等の有名人の写真・似顔絵を使用。本プロジェクトでは generic フラットベクターイラスト（白髪・口ひげの elderly man 等）で表現し、著作権・肖像権配慮を図る（固定キャラクター廃止済み・v1.4）。教師が catalog から別 activityId を選択することも可。",
+      "materials": "教師が用意する有名人の写真 (Drop&Drag 4 枚)",
+      "_assignmentNote": "PDF 教え方の例『5. 「この・その・あの」の導入』に対応。教科書ではアインシュタイン等の有名人の写真・似顔絵を使用。教師が学習者の知る有名人写真を Drop&Drag 4 枠に配置することで context 化する。教師が catalog から別 activityId を選択することも可。",
       "materialNeeds": [
-        {
-          "type": "auto_generated_vocab",
-          "description": "有名人・著名人の似顔絵または写真（アインシュタイン等）。複数枚用意して『この人/その人/あの人』の練習に使用。実際の画像生成では generic フラットベクターイラストを使用する（著作権配慮）。",
-          "keywords": [
-            "アインシュタイン（generic elderly man with white hair）"
-          ],
-          "imageRef": "image://lesson2/context/famous_character",
-          "usedAlsoIn": [
-            "intro_act_p6"
-          ],
-          "_note": "教科書ではアインシュタイン等の実在有名人だが、著作権・肖像権配慮のため架空キャラに置換(Q2 確定)。教科書記述: 『アインシュタインなど世界的な有名人や政治家、スターの写真または似顔絵などを用意する』(p.031)・『写真または似顔絵などを用意する』『著作権配慮のため写真より似顔絵推奨』(survey)"
-        },
         {
           "type": "teacher_photo",
           "count": 4,
           "description": "学習者が知っている有名人(スター・スポーツ選手等)の写真を 4 枚 drop。『この人/その人/あの人は〜です』の練習素材。教師が自分で用意する。",
-          "_note": "PDF 記述: 学習者が知っていると思われる人物の写真。act_famous_person_intro の正規スロット。v2.12: Drop&Drag 化 (plan 2-or-validated-pancake §2.6)。slide_html.js の renderMaterialDrivenLayout / renderQaCardPairLayout が type='teacher_photo' を自動認識して 4 スロット横並びを描画。"
+          "_note": "PDF 記述: 学習者が知っていると思われる人物の写真。act_famous_person_intro の正規スロット。v2.12: Drop&Drag 化 (plan 2-or-validated-pancake §2.6)。slide_html.js の renderMaterialDrivenLayout / renderQaCardPairLayout が type='teacher_photo' を自動認識して 4 スロット横並びを描画。v2.13 (2026-05-28): 旧 auto_generated_vocab (アインシュタイン keywords) を削除。vocabsForPattern の fallback バグで p5 vocab 全件 (人/犬/写真) が表示されていた問題を解消。"
         }
       ],
       "ABCactivityRef": {
@@ -911,21 +990,15 @@
       "_recommendedMinutes_note": "目安値。session で実時間を指定。p5 で使った写真を再利用するため準備時間は短い。",
       "optional": true,
       "skipped": false,
-      "materials": "p5 の有名人写真を再利用",
+      "materials": "p5 の有名人写真を再利用 (Drop&Drag 4 枠)",
       "_assignmentNote": "PDF 教え方の例『6. 「どの」の導入』に対応。少し離れたところから写真を指して『あの人はだれですか』→学習者が困る→近づいて1枚ずつ指して『この人ですか』→全体を輪を描いて『どの人ですか』、というジェスチャー指導が重要。",
       "materialNeeds": [
-        {
-          "type": "auto_generated_vocab",
-          "description": "p5 で使った架空有名人の似顔絵を複数枚並べて使用。",
-          "reusedFrom": "intro_act_p5",
-          "_note": "PDF記述: 『導入5で使用した有名人の写真をそのまま使用する。ホワイトボードに数枚の写真を貼っておくか立て掛けておき、教師は学習者側に行く』(p.033)。オンライン授業ではスライド上に複数枚を表示する形に調整。"
-        },
         {
           "type": "teacher_photo",
           "count": 4,
           "description": "intro_act_p5 で drop した有名人写真をそのまま再利用 (どの人ですか の練習素材)。新しく drop する場合も同 4 枚で完結。",
           "reusedFrom": "intro_act_p5",
-          "_note": "PDF 記述: 『導入5で使用した有名人の写真をそのまま使用する』(p.033)。v2.12: Drop&Drag 化 (plan 2-or-validated-pancake §2.6)。intro_act_p5 の teacher_photo スロットと同 layout (4 スロット横並び)。"
+          "_note": "PDF 記述: 『導入5で使用した有名人の写真をそのまま使用する』(p.033)。v2.12: Drop&Drag 化 (plan 2-or-validated-pancake §2.6)。intro_act_p5 の teacher_photo スロットと同 layout (4 スロット横並び)。v2.13 (2026-05-28): 旧 auto_generated_vocab (reusedFrom 参照) を削除。vocabsForPattern fallback バグ解消。"
         }
       ],
       "ABCactivityRef": {
@@ -1612,8 +1685,8 @@
       "canDo": "写真や絵を見せて『この人はアインシュタインです』『あの建物は○○です』のように指示連体詞 + 名詞で人物や物を指して情報を述べられる。",
       "canDoEn": "Can refer to people and things using the attributive demonstratives 'kono/sono/ano + noun'.",
       "_step1c_status": "完了 (v1.4): 3 例文確定。教科書 2-5『アインシュタイン』を全例で維持(架空キャラ廃止)。この/その/あの の領域対立を全カバー。画像生成は『elderly man with white messy hair and mustache』として generic フラットベクターで実装(実在人物の似顔絵直接生成は回避)。1枚の画像を 5-1/5-2/5-3 で使い回し可。",
-      "vocabCount": 3,
-      "_vocabCount_note": "3語（人・犬・写真）。p5_p6_person + p5_p6_object。",
+      "vocabCount": 10,
+      "_vocabCount_note": "10 語（カメラ/ノート/傘/かぎ/自転車/辞書/教科書/いす/机/靴）。p5_p6_thing。v2.14: 旧『人/犬/写真』(p5_p6_person + p5_p6_object) を Goi_List N5 1.初級前半 から選定した 10 語に入れ替え。",
       "shareVocabWith": null,
       "examples": [
         {
@@ -1751,12 +1824,12 @@
           "hint": "(遠くの人を指す)"
         },
         {
-          "pattern": "この犬は　＿＿＿　です。",
-          "hint": "(近くの犬を指す)"
+          "pattern": "このカメラは　＿＿＿　です。",
+          "hint": "(近くのカメラを指す)"
         },
         {
-          "pattern": "その写真は　＿＿＿　です。",
-          "hint": "(相手のそばの写真を指す)"
+          "pattern": "その自転車は　＿＿＿　です。",
+          "hint": "(相手のそばの自転車を指す)"
         }
       ],
       "plusAlpha": [
@@ -1779,8 +1852,8 @@
       "canDo": "複数の人物・物の中から1つを『どの+N+ですか』で特定して聞ける。",
       "canDoEn": "Can ask which specific person or thing is meant using 'dono + noun + desu ka' when multiple options are present.",
       "_step1c_status": "完了 (v1.4): 2 例文確定。教科書 2-6 継承(6-1: PDF p.033 T-L 往復構造『どの人ですか → この人です → その人はアインシュタインです』・教師ジェスチャーを _comment に反映)+ 物への適用(6-2: Aさんのかばん・落としもの返しごっこ連動)。p4『どれ』との違いを note で明示。画像化候補: 6-1(複数有名人写真)/6-2(複数かばん)。",
-      "vocabCount": 3,
-      "_vocabCount_note": "3語（p5と共有: 人・犬・写真）。",
+      "vocabCount": 10,
+      "_vocabCount_note": "10 語（p5 と共有: p5_p6_thing カメラ/ノート/傘/かぎ/自転車/辞書/教科書/いす/机/靴）。v2.14 で入れ替え済。",
       "shareVocabWith": "p5",
       "examples": [
         {
@@ -1806,23 +1879,11 @@
           "_comment": "p6 代表例文(Q 単体)。教師ジェスチャー(輪を描く)で「どの」を導入。画像化対象（複数の有名人写真・アインシュタイン含む）。"
         },
         {
-          "no": "6-2",
-          "pattern": "〜さんの〜はどの + N + ですか",
-          "vocab": "かばん",
-          "sentence": "ケリーさんのかばんはどのかばんですか。",
-          "sentenceEn": "Which bag is Kelly-san's bag?",
-          "imageId": "ex_L02_028",
-          "imageRole": "scene",
-          "audioId": "sentence_ex_L02_028",
-          "isAnchor": false,
-          "_comment": "p6-2: 物への適用例(Q 単体)。p3（所有）＋p6（どのN）の統合。ケリーさん（namedCharacters）を使用。p4「どれ」との違いを教師が解説（どれ=単独/どの＋N=名詞明示）。v2.12: 応答「そのかばんです」を applicationExamples[app-2] へ分離。【画像化対象】"
-        },
-        {
           "no": "6-3",
           "pattern": "どの + N + ですか",
-          "vocab": "犬",
-          "sentence": "どの犬ですか。",
-          "sentenceEn": "Which dog is it?",
+          "vocab": "カメラ",
+          "sentence": "どのカメラですか。",
+          "sentenceEn": "Which camera is it?",
           "imageId": "ex_L02_034",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_034",
@@ -1833,17 +1894,17 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 2,
               "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「犬」使用。v2.12: 応答「この犬です」を applicationExamples[app-3] へ分離。"
+              "replacementNote": "v2.14 (2026-05-28): 旧『どの犬ですか』(犬は p5_p6_object 削除に伴い vocab から外れた) を Goi_List N5 1.初級前半 由来の『カメラ』に置換。p5_p6_thing vocab グループに対応する純粋 p6 例文。"
             }
           ],
-          "_comment": "純粋p6例文(Q 単体)。新語彙「犬」を使用。複数の犬の中から1匹を特定する場面。画像化対象（複数の犬の中からこの犬を指す場面）。"
+          "_comment": "純粋 p6 例文 (Q 単体)。p5_p6_thing vocab『カメラ』を使用。複数のカメラ (デジカメ・ミラーレス・スマホ等) を並べて 1 台を特定する場面。画像化対象 (複数のカメラの中からこのカメラを指す場面)。"
         },
         {
           "no": "6-4",
           "pattern": "どの + N + ですか",
-          "vocab": "写真",
-          "sentence": "どの写真ですか。",
-          "sentenceEn": "Which photo is it?",
+          "vocab": "自転車",
+          "sentence": "どの自転車ですか。",
+          "sentenceEn": "Which bicycle is it?",
           "imageId": "ex_L02_035",
           "imageRole": "scene",
           "audioId": "sentence_ex_L02_035",
@@ -1854,10 +1915,52 @@
               "textbookName": "日本語の教え方ABC",
               "lesson": 2,
               "originalSentence": "(新規作成)",
-              "replacementNote": "v2.11.5 新規追加。純粋p6例文。新語彙「写真」使用。v2.12: 応答「その写真です」を applicationExamples[app-4] へ分離。"
+              "replacementNote": "v2.14 (2026-05-28): 旧『どの写真ですか』(写真は p5_p6_object 削除に伴い vocab から外れた) を Goi_List N5 1.初級前半 由来の『自転車』に置換。p5_p6_thing vocab グループに対応する純粋 p6 例文。"
             }
           ],
-          "_comment": "純粋p6例文(Q 単体)。新語彙「写真」を使用。複数の写真の中から1枚を特定する場面。画像化対象（複数の写真の中からその写真を指す場面）。"
+          "_comment": "純粋 p6 例文 (Q 単体)。p5_p6_thing vocab『自転車』を使用。駐輪場の複数台から 1 台を特定する場面。画像化対象 (複数の自転車の中からこの自転車を指す場面)。"
+        },
+        {
+          "no": "6-5",
+          "pattern": "どの + N + ですか",
+          "vocab": "靴",
+          "sentence": "どの靴ですか。",
+          "sentenceEn": "Which shoes are they?",
+          "imageId": "ex_L02_036",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_036",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.14 (2026-05-28) 新規追加。p5_p6_thing vocab『靴』を使用した純粋 p6 例文。"
+            }
+          ],
+          "_comment": "純粋 p6 例文 (Q 単体)。p5_p6_thing vocab『靴』を使用。玄関で複数の靴 (運動靴/革靴/サンダル等) を並べて 1 足を特定する場面。画像化対象 (複数の靴の中からこの靴を指す場面)。"
+        },
+        {
+          "no": "6-6",
+          "pattern": "どの + N + ですか",
+          "vocab": "いす",
+          "sentence": "どのいすですか。",
+          "sentenceEn": "Which chair is it?",
+          "imageId": "ex_L02_037",
+          "imageRole": "scene",
+          "audioId": "sentence_ex_L02_037",
+          "isAnchor": false,
+          "originalSources": [
+            {
+              "textbookId": "ABC",
+              "textbookName": "日本語の教え方ABC",
+              "lesson": 2,
+              "originalSentence": "(新規作成)",
+              "replacementNote": "v2.14 (2026-05-28) 新規追加。p5_p6_thing vocab『いす』を使用した純粋 p6 例文。"
+            }
+          ],
+          "_comment": "純粋 p6 例文 (Q 単体)。p5_p6_thing vocab『いす』を使用。教室・リビング等で複数のいす (椅子の形違い) を並べて 1 脚を特定する場面。画像化対象 (複数のいすの中からこのいすを指す場面)。"
         }
       ],
       "applicationExamples": [
@@ -1871,30 +1974,38 @@
         },
         {
           "no": "app-2",
-          "sentence": "そのかばんです。",
-          "sentenceEn": "That bag.",
+          "sentence": "このカメラです。",
+          "sentenceEn": "This camera.",
           "isAnchor": false,
-          "originalSource": "v2.11.5 新規追加例の応答部分(6-2「ケリーさんのかばんはどのかばんですか」への応答)",
-          "_comment": "p6 応答「そのかばん」。v2.12: 旧 examples[6-2] の A 部分を分離。画像不要。"
+          "originalSource": "v2.14 (2026-05-28) 新規追加。6-3 (どのカメラですか) への応答",
+          "_comment": "p6 応答「このカメラ」。v2.14: 旧 app-2 (そのかばんです) は applicationExamples app-5 へ統合・整理。画像不要。"
         },
         {
           "no": "app-3",
-          "sentence": "この犬です。",
-          "sentenceEn": "This dog.",
+          "sentence": "その自転車です。",
+          "sentenceEn": "That bicycle.",
           "isAnchor": false,
-          "originalSource": "v2.11.5 新規追加例の応答部分(6-3「どの犬ですか」への応答)",
-          "_comment": "p6 応答「この犬」。v2.12: 旧 examples[6-3] の A 部分を分離。画像不要。"
+          "originalSource": "v2.14 (2026-05-28) 新規追加。6-4 (どの自転車ですか) への応答",
+          "_comment": "p6 応答「その自転車」。v2.14: 旧 app-3 (この犬です) を入れ替え (犬は vocab グループ削除済)。画像不要。"
         },
         {
           "no": "app-4",
-          "sentence": "その写真です。",
-          "sentenceEn": "That photo.",
+          "sentence": "あのいすです。",
+          "sentenceEn": "That chair over there.",
           "isAnchor": false,
-          "originalSource": "v2.11.5 新規追加例の応答部分(6-4「どの写真ですか」への応答)",
-          "_comment": "p6 応答「その写真」。v2.12: 旧 examples[6-4] の A 部分を分離。画像不要。"
+          "originalSource": "v2.14 (2026-05-28) 新規追加。p5_p6_thing の「あの+N」応用",
+          "_comment": "p6 応答「あのいす」。v2.14: 旧 app-4 (その写真です) を入れ替え (写真は vocab グループ削除済)。『あの』指示語のバリエーション応答として p5_p6_thing から選定。画像不要。"
+        },
+        {
+          "no": "app-5",
+          "sentence": "ケリーさんのかばんはどのかばんですか。",
+          "sentenceEn": "Which bag is Kelly-san's bag?",
+          "isAnchor": false,
+          "originalSource": "v2.14 (2026-05-28) 旧 examples[6-2] から applicationExamples へ移動",
+          "_comment": "p3 (所有) + p6 (どの+N) の統合応用例。基本形『どの+N+ですか』から逸脱 (前置修飾あり) のため examples ではなく applicationExamples で扱う。落としもの返しごっこ活動例と連動可能。画像不要。"
         }
       ],
-      "_examples_note": "[v2.12 / 2026-05-27] applicationExamples 導入。examples = PDF 文型欄 6 由来 4 件(全 Q 形式)、applicationExamples = この/その/この/その の応答 4 件。宿題 generator は examples のみ参照(uniform 化)。",
+      "_examples_note": "[v2.14 / 2026-05-28] examples = PDF 文型欄 6 由来 5 件 (Q 形式・p5_p6_thing vocab を使用: 人/カメラ/自転車/靴/いす)、applicationExamples = 応答 4 件 + 統合応用 1 件 (旧 6-2 移動分)。宿題 generator は examples のみ参照。",
       "practiceImageSource": "namedCharacters",
       "practiceTemplates": [
         {
@@ -1926,7 +2037,7 @@
     "lessonMeta": "✅ lesson.no/title/topic/level/target/_recommendedDuration/grammarMemo 完備",
     "textbookSources": "✅ ABC 第2課 p.026-034 を参照元として記録",
     "characters": "✅ v1.4: 固定キャラ概念廃止(選択肢X)。characters セクション削除。lesson_NN.json は文法軸のみで管理。",
-    "vocabulary": "✅ Step 1b 完了(全18語確定・v2.11.5で犬・写真を追加)",
+    "vocabulary": "✅ Step 1b 完了。v2.14 (2026-05-28) で p5_p6_person (人) + p5_p6_object (犬/写真) を p5_p6_thing (カメラ/ノート/傘/かぎ/自転車/辞書/教科書/いす/机/靴 計 10 語) に入れ替え。",
     "flow": "✅ 全28エントリ（文型ブロック構造: review/intro_slide + 4エントリ×6文型 + main_act_1 + wrapUp）・materialNeeds[] 必須箇所付与済み",
     "patterns": "✅ Step 1c v2.11.6 完了（例文設計原則①厳密適用）。p1=6 / p2=1 / p3=6 / p4=5 / p5=6 / p6=4 = 計28例文。",
     "github": "✅ 新設計(lessonAssets:[])",
@@ -1945,7 +2056,7 @@
         "疑問詞": "✅ なに(p2-1: 1件のみ)・どれ(p4-1〜4-5)・どの(p6-1〜6-4)を網羅。p2は純粋「何ですか」1件(v2.11.6削除後)。だれは第1課で既習・本課では言及なし。"
       },
       "material_usage_examples": {
-        "スライド代表例(各 pattern 1 以上)": "✅ p1=1-1(これは時計)/1-4(それはペン)/1-7(あれはABCビル) / p2=2-1(何ですか) / p3=3-1(これはわたしのかばん) / p4=4-1(リンさんのペンはどれ) / p5=5-1(この人はアインシュタイン)/5-4(あの建物は市役所)/5-6(あの山は富士山) / p6=6-1(どの人ですか)/6-3(どの犬)/6-4(どの写真)",
+        "スライド代表例(各 pattern 1 以上)": "✅ p1=1-1(これは時計)/1-4(それはペン)/1-7(あれはABCビル) / p2=2-1(何ですか) / p3=3-1(これはわたしのかばん) / p4=4-1(リンさんのペンはどれ) / p5=5-1(この人はアインシュタイン)/5-4(あの建物は市役所)/5-6(あの山は富士山) / p6=6-1(どの人ですか)/6-3(どのカメラ)/6-4(どの自転車)",
         "宿題 fill_blank(画像ヒント必須)": "✅ 画像化対象12件(image_marking参照): 1-1/1-4/1-7/3-1/4-1/4-4/5-1/5-4/5-6/6-1/6-3/6-4",
         "宿題 sentence_ordering(画像不要)": "✅ Q&A 形式の例文(3-3/3-4/3-6/4-1/4-2/4-3/4-4/4-5/6-1/6-2/6-3/6-4)が利用可能",
         "宿題 audio_listening(音声読み上げ)": "✅ 全例文が音声化可能(短文中心・各 30 文字以内)",
