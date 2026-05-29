@@ -262,18 +262,16 @@
       "usedInLessons": [
         1
       ],
-      "status": "pending",
+      "status": "generated",
+      "_v4_0_4_adopted": "R1 (Phase 1-S1 / 2026-05-29 / urban_corner mid-rise + glass banking hall + ATM unit + muted teal accent)。逸脱: ATM 機に 'ATM' 文字が残存（A-7/A-9 単一ラベル違反）だが user 許容で採用 2026-05-29。preflight に signage 検証が無いギャップ起因。",
       "images": [
         {
-          "imageId": "vocab_銀行_001",
-          "filename": "vocab_銀行.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson1_v7.json#vocab_銀行",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=1UOSOptVLPr19HyMbqmLTt99_Y463-CKA",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageId": "word_銀行_001",
+          "filename": "word_銀行.png",
+          "imageUrl": "data/images/word_銀行.png",
+          "promptRef": "data/_drafts/prompt_銀行_v4_0_4.txt",
+          "generatedAt": "2026-05-29",
+          "regenerate": false
         }
       ]
     },
@@ -848,18 +846,16 @@
         1,
         2
       ],
-      "status": "pending",
+      "status": "generated",
+      "_v4_0_4_adopted": "R1 (Phase 1-S1 / 2026-05-29 / campus low-rise + entrance canopy + wheelchair ramp + red cross + soft sage green accent)。ルール適合 (単一 HOSPITAL ラベル / 赤十字は彩度例外)。image_5 architectural anchor の vocab_病院.jpg とは別ファイル。",
       "images": [
         {
-          "imageId": "vocab_病院_001",
-          "filename": "vocab_病院.png",
-          "imageUrl": null,
-          "promptRef": "image_prompts_lesson2.json#vocab_病院",
-          "generatedAt": null,
-          "regenerate": false,
-          "originalImageUrl": "https://drive.google.com/uc?id=14Rh6jYvAreesi8eSRZdkAtoT6fF954EX",
-          "pendedReason": "drive-orphaned",
-          "pendedAt": "2026-05-26"
+          "imageId": "word_病院_001",
+          "filename": "word_病院.png",
+          "imageUrl": "data/images/word_病院.png",
+          "promptRef": "data/_drafts/prompt_病院_v4_0_4.txt",
+          "generatedAt": "2026-05-29",
+          "regenerate": false
         }
       ]
     },

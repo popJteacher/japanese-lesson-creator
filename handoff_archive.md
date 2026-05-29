@@ -416,3 +416,20 @@
   - B-14 WARN 14 件は pedagogy 上正常 (ABC 教科書の典型「全 vocab をカードで提示するが例文では一部のみ使う」パターン)。user 判断で `practice_only` 化 or 例文追加かは別 task。
   - B-15 / B-16 ERROR 0 件 = migration が正しく enum 内で完了。
 - **Phase 2 残務** (次セッション): lesson-scaffold skill の Step 3 後半に Goi_List N5 補強候補抽出 + 対話判定フェーズを実装。採用語に `_sourceTag="goi_list_n5_supplement"` 自動付与。lesson_03 で初実証。
+
+## 2026-05-28 (Phase 1-S1 開始 — 銀行/病院 v3.0 Legacy → v4.0.4 採用版化への方針転換)
+
+- **背景**: 「レッスンを開始するにあたって足りない部分」を user が確認・両視点 (実授業 + 新課オーサリング) で機械導出。lesson_01 で 12 件画像不足判明 → うち 9 件 (銀行/病院 + ex_L01_012/014-018) が真の再生成対象と判定 (学校/大学/デパートは v4.0.4 採用版で本番化済・touchない)。
+- **判断ミス**: 当初「銀行/病院 を v3.0 Legacy Template (PART 4 line 230-287) で起草」を提案・user 承認のもとで実行。両 prompt は preflight PASS で user 手動生成 (BANK / HOSPITAL PNG) も完了したが、user 視認で **v4.0.4 採用版 4 件と明らかな品質ギャップ** が判明。v3.0 Legacy は単純 text-only + 70%/centered + single primary_scene_cue で、v4.0.4 採用版 (5-image reference + universal rule A-1〜A-11 + 4-5 figures activities + close-up 75-85% dominate) とは別物。HOSPITAL は「CITY HOSPITAL」2 単語ラベル違反も発生 (preflight に signage 1-word check なし)。
+- **方針修正**: 銀行/病院 を **v4.0.4 採用版化** へ転換。Plan の Phase 1-S1 を「v3.0 Legacy 2 件起草」から「v4.0.4 fields design + guide 編集 + invariants hash 更新 + smoke test + 本番化」に拡張 (1.5-2 セッション規模)。
+- **破棄対象**: 今 session 生成の BANK / HOSPITAL PNG + [data/_drafts/phase1_s1_lesson01_buildings.json](data/_drafts/phase1_s1_lesson01_buildings.json) (Legacy prompt drafts)。
+- **次セッション着手**: Phase 1-S1 Step 1 (Claude が既存 R22/R25 を pattern として銀行/病院の 14 variable fields 起草 → user 校正)。type_relevant_refs 候補は 銀行 = 会社員+アメリカ人+中国人 / 病院 = 医者+先生+学生。予算 $0.20-0.28。
+- **教訓**: PART 3.2 / PART 5.10 の「未移行 4 件」表現は「移行作業未完了の暫定形」を意味し、品質的に v4.0.4 採用版より劣る。「銀行/病院は Legacy で当面 OK」は誤解釈・既存 4 件と品質を揃える前提なら v4.0.4 fields 新規 design 必須。
+
+## 2026-05-29 (Phase 1-S1 完了 — 銀行/病院 v4.0.4 採用版化 done)
+
+- **Step 1-4 一気通貫**: design 確定 (accent 銀行=teal/病院=sage・user AskUserQuestion 確定) → guide 6 PART + invariants/preflight 編集 (BUILDING_V4_0_4_WORDS 4→6 件 / B' hash 652aa0a3cbe3→1d273f8f1c3b) → Template B v4.0.4 prompt 起草 (preflight PASS) → user 手動生成 → 両方採用 → registry generated 化。commit a7c7478 (Step2) + 本 commit (Step4)。
+- **採用版**: word_銀行.png (1.78MB) / word_病院.png (1.67MB) を data/images/ に配置。registry status pending→generated・imageId を vocab_*_001→word_*_001 に統一 (採用版 building 規約)。missing 443→441。
+- **銀行の signage 逸脱を user 許容で採用**: ATM 機に「ATM」文字が残存 (A-7/A-9 単一ラベル違反) だが user 判断で採用。registry `_v4_0_4_adopted` に逸脱明記。ルール本体 (A-9) は変えていない。**再発防止の本丸は preflight の signage 検証 (生成後 OCR/single-label check) で、依然 backlog**。
+- **品質**: 病院はルール完全適合 (単一 HOSPITAL ラベル / 赤十字=彩度例外 / 車椅子 pose OK / sage canopy / campus annex)。
+- **次**: Phase 1-S2 (lesson_01 examples 7 件) / Phase 2 (applicationExamples render) が次着手候補。

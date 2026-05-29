@@ -1,0 +1,61 @@
+[PURPOSE]
+Create a vocabulary card illustration for Japanese language learning materials.
+The building must be IMMEDIATELY and UNAMBIGUOUSLY recognizable as a bank branch at a glance.
+Echoing the style and brand voice of the 5 attached reference images:
+- image_1 (the Japanese-person card / brand voice anchor) = brand voice / line weight / palette family / illustration tone anchor
+- image_2 (the 会社員 / company-employee person card) = type-relevant person reference A (business attire figure parts)
+- image_3 (the アメリカ人 / American person card) = type-relevant person reference B (figure parts / brand voice)
+- image_4 (the 中国人 / Chinese person card) = type-relevant person reference C (figure parts / brand voice)
+- image_5 (the hospital building card / architectural & close-up framing anchor) = architectural & close-up framing anchor
+
+[SUBJECT]
+The primary subject is a 3-4 story urban mid-rise bank branch building with cream off-white walls and a slate-grey roofline; the ground floor is a glass-front banking hall and the upper 2-3 floors extend toward the top edge of the frame in close-up framing.
+The primary signature feature is the ground-floor glass-front banking hall revealing a teller counter inside, with a single ATM unit recessed in the wall beside the main entrance — render this feature clearly and prominently so that a learner identifies the building as a bank branch from this signature alone.
+Accent color: muted teal blue (a soft desaturated teal within the muted pastel family — evokes financial trust and calm; distinct from an office building's dull muted blue by its green undertone) — applied to the ATM unit surround, the entrance door frame, and the signboard frame; walls remain cream off-white; roof remains slate-grey.
+A single ENGLISH signboard with the building name "BANK" is mounted on the wall directly above the main entrance (between the banking-hall glass and the 2nd floor windows), oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent muted teal blue.
+This signboard is the ONLY text-bearing surface anywhere in the image.
+
+[SCENE & ACTION]
+A-1 Camera: street-level low-angle 3/4, positioned at adult eye-height (roughly 1.6m above ground), rotated approximately 30-45 degrees off the building's primary facade. Camera position is CLOSE to the building (not a distant overview), looking slightly UP at the building. This is NOT an isometric top-down view, NOT a bird's-eye overhead view, NOT a true elevation drawing — it is a pedestrian's eye-level perspective from the sidewalk in front of the building.
+
+A-2 Framing: CLOSE-UP — the building does NOT fit entirely within the frame. Side wings extend off-frame at left and right; the upper floors extend off-frame at the top edge (mid-rise building = upper floors off-frame required). The composition focuses on the main entrance + the central facade + the primary signature feature (glass-front banking hall + ATM unit). BUILDING DOMINATES the frame: the building occupies 75-85% of the canvas vertically, with the building edge-to-edge spanning the horizontal frame. The top of the most prominent signature feature reaches the upper 8-12% of the canvas.
+
+A-3 Figures: 4 people in the scene, EACH engaged in a DIFFERENT activity (see Figures-in-scene block below). Figures are PROMINENT — approximately 1/3 of the visible building height. Figures do NOT shrink to background scale. Figures do NOT crowd to the center (they are distributed across the entrance + sidewalk + foreground). NEVER render all figures with identical activities — the scene must read as "everyday life around the building" with natural activity variety.
+
+A-4 Palette: muted pastel family — dull blues / sand-beiges / soft warm yellows / soft greys. All palette choices stay within the muted pastel band; saturated primary colors are PROHIBITED. Walls: cream off-white — CONSTANT. Roof: slate-grey (deep slate navy with a slate-grey wash) — CONSTANT. Accent: ONE color drawn from the muted pastel family (muted teal blue, see above).
+
+A-5 Reference: 5 attached images. image_1 = brand voice anchor (Japanese-person card). image_2-4 = type-relevant person references (会社員 / アメリカ人 / 中国人 person cards — for figure parts and brand voice). image_5 = architectural & framing anchor (hospital building card). Cross-reference each image by role and aspect.
+
+A-6 Outline / Style: deep slate-navy continuous line weight (same as the person card outline convention). NO gradients, NO shadows, NO 3D effects, NO photoreal textures, NO ambient lighting, NO drop shadows. Aspect ratio 1:1 square. Iconization level 2 (flat design) for figures + iconization level 3 (detailed flat) for building signature features — building structure carries texture hints (glass banking-hall mullions, ATM unit panel lines) but maintains the flat vector style.
+
+A-7 Label / Signage: a single ENGLISH signboard with the building name "BANK". The signboard is mounted above the main entrance, between the banking hall and the 2nd floor. The signboard is the ONLY text-bearing surface in the entire image (per A-9). NO Japanese kanji / kana, NO second English word, NO RECEPTION / ATM / OPEN secondary labels, NO street numbers, NO phone numbers — ONLY the single English building-name label.
+
+A-8 Ground / Pavement: sidewalk and paved ground are CREAM OFF-WHITE — the same palette token as the building walls and the canvas background. The sidewalk has a SUBTLE slate-navy outline only (curb edge / paving joint suggestions); NEVER slate-grey, NEVER blue, NEVER asphalt-dark. nanobanana default renders sidewalks as slate-grey or asphalt-dark unless explicitly overridden — this default MUST be suppressed.
+
+A-9 Blank text surfaces: ONLY the single English building-name signboard (per A-7) bears text in the entire image. ALL OTHER plaques, walls, gates, surfaces, address plates, bulletin boards, name plates, billboards, banners, posters, window lettering, vehicle markings, and the ATM unit itself MUST be left BLANK — no text, no characters, no inscriptions, no symbols resembling letters, no decorative glyphs. No other signboards, no plaques, no billboards, no banners, no name plates, no address plates, no bulletin boards, no any other text-bearing surfaces.
+
+A-10 Surroundings context: the PRIMARY building is ONE bank branch building, but ONE contextual adjacent commercial building is included per the Surroundings block below. The surrounding building MUST be: (a) smaller / less detailed than the primary, (b) of similar muted pastel palette family, (c) BLANK on all surfaces (no text per A-9), (d) at the edge of the frame (NOT central).
+
+A-11 Cyclist pose: not applicable (no cyclist in this building's figures). One figure uses the ATM in side-view; render the ATM-user with both feet on the ground and a natural standing posture facing the ATM panel.
+
+Surroundings: an urban corner context: an adjacent commercial building of similar palette and roof slope is partially visible at the side edge of the frame (smaller / less detailed than the primary), with a cream off-white sidewalk in front of the entrance and a curbside lane edge visible at the bottom. NO other freestanding buildings beyond the primary + one adjacent. NO billboards, NO street vehicles in motion, NO traffic signs with text.
+
+Figures in scene: 4 figures in modern everyday and business-casual wear, each engaged in a DIFFERENT activity at the bank entrance: (1) one customer entering the main entrance from the sidewalk, carrying a document envelope, body angled toward the entrance; (2) one customer using the ATM unit beside the entrance, body facing the ATM in side-view; (3) one customer walking past in mid-stride along the sidewalk parallel to the facade; (4) two customers chatting as a standing pair outside the entrance, both facing each other with natural posture. All figures wear modern everyday or business-casual wear (light jacket + neat trousers / dress + loafers or sneakers); NO figure wears a teal-colored garment (avoid accent color collision with the building accent).
+
+Landscaping: flanking the entrance: 1-2 leafy summer trees with rounded canopies in muted warm green in narrow tree-pit planters along the sidewalk edge. NO flowers in pots, NO decorative urns.
+
+ASPECT RATIO: The output image MUST be 1:1 SQUARE — equal width and height (e.g., 1024×1024). DO NOT output 16:9 widescreen, 4:3 landscape, 3:4 vertical, 9:16 portrait, or any other ratio.
+
+Background: soft cream off-white background (warm off-white, NOT pure stark white) — the canvas background color (visible only in the small strip above the building roofline and any narrow vertical strips at the canvas edge). NEVER use pale sky-blue, NEVER use a graduated sky background. The cream off-white background is the universal convention shared with all other vocab_types — no per-vocab-type background overrides.
+
+[STYLE RECIPE — DO NOT CHANGE]
+Minimalist flat vector illustration. Clean continuous black outlines with consistent line weight.
+Completely flat solid color fills only. Color palette: soft cream off-white background (warm off-white, NOT pure stark white), deep slate navy outlines, slate-grey roof, muted teal blue for accent details on the ATM unit surround, the entrance door frame, and the signboard frame.
+This should look like it belongs in a brand style guide, not like AI art. Keep line weights consistent.
+
+[CONSTRAINTS]
+EXCEPTION (per PART 1.13 A-7): EXACTLY ONE short ENGLISH building-name label "BANK" is permitted — one English word, small, mounted above the main entrance, between the banking hall and the 2nd floor. This is the SOLE permitted text.
+BLANK TEXT SURFACES RULE (PART 1.13 A-9): Absolutely NO other text of any kind anywhere in the image — no Japanese (kanji/kana), no second English word, no "RECEPTION" / "ATM" / "OPEN" / "WELCOME" / "MENU" or any other label, no numbers, no titles, no captions, no street numbers, no phone numbers, no decorative symbols that resemble letters. All other plaques, walls, gates, doors, vehicles, surfaces, address plates, bulletin boards, name plates, billboards, banners, posters, window lettering, and the ATM unit MUST be left BLANK. nanobanana default behavior often adds spurious text-bearing surfaces — this constraint MUST override that default.
+
+No gradients, no shadows, no 3D effects, no photoreal textures.
+Apply zero ambient lighting, zero drop shadows, zero global illumination.
