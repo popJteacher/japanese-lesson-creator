@@ -234,9 +234,9 @@ EXCEPTION (NATIONALITY_NOUN_POLICY v4.0): a hand-held flag held in both hands in
 | 定数 | 値 |
 |---|---|
 | `BG_EXACT_CREAM` | `soft cream off-white background (warm off-white, NOT pure stark white)` |
-| `BG_EXACT_SKYBLUE` | `pale sky-blue background` (v3.0 legacy / 未移行 building 4 件のみ) |
+| `BG_EXACT_SKYBLUE` | `pale sky-blue background` (v3.0 legacy / 未移行 building 2 件 = 駅 / スーパー のみ) |
 | `NOT_TOKEN` | `NOT pure stark white` |
-| `BUILDING_V4_0_4_WORDS` | `{"学校", "大学", "デパート", "会社"}` (frozenset) — v4.0.4 採用 building。BG = CREAM / NOT_TOKEN 必須 / 5-image reference / A-1〜A-11 適用 |
+| `BUILDING_V4_0_4_WORDS` | `{"学校", "大学", "デパート", "会社", "銀行", "病院"}` (frozenset) — v4.0.4 採用 building 6 件。BG = CREAM / NOT_TOKEN 必須 / 5-image reference / A-1〜A-11 適用 |
 
 ### Regex
 
@@ -253,8 +253,8 @@ EXCEPTION (NATIONALITY_NOUN_POLICY v4.0): a hand-held flag held in both hands in
 
 | code | 条件 | 違反 message |
 |---|---|---|
-| `[C4]` | 全 vocab_type | `background string 不一致（必須: '<BG_EXACT_*>'）`。v4.0.4 building 採用 4 件は BG_EXACT_CREAM 期待 / legacy building 4 件は BG_EXACT_SKYBLUE 期待 / それ以外は BG_EXACT_CREAM 期待 |
-| `[C5]` | non-legacy path (= v4.0.4 building 採用 4 件 + 全 non-building vocab_type) | `NOT-token 不一致（必須: 'NOT pure stark white'）`。legacy building 4 件 (銀行 / 病院 / 駅 / スーパー) のみ skip |
+| `[C4]` | 全 vocab_type | `background string 不一致（必須: '<BG_EXACT_*>'）`。v4.0.4 building 採用 6 件は BG_EXACT_CREAM 期待 / legacy building 2 件は BG_EXACT_SKYBLUE 期待 / それ以外は BG_EXACT_CREAM 期待 |
+| `[C5]` | non-legacy path (= v4.0.4 building 採用 6 件 + 全 non-building vocab_type) | `NOT-token 不一致（必須: 'NOT pure stark white'）`。legacy building 2 件 (駅 / スーパー) のみ skip |
 | `[C1] full-body` | `template_kind == "person"` | `full-body / head-to-toe が無い` |
 | `[C1] area` | `template_kind == "person"` | `面積指定 'fills NN% of...' が残存` |
 | `[C1] lens` | `template_kind == "person"` | `'85mm portrait lens' が残存` |

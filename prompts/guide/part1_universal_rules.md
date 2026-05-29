@@ -688,7 +688,7 @@ Per country, the cultural_styling_hint may specify a 2-option footwear choice us
 
 ### Scope
 
-- `vocab_type == "building"` の全カード（v4.0.4 採用 4 件 + 今後の移行 4 件）。
+- `vocab_type == "building"` の全カード（v4.0.4 採用 6 件 + 今後の移行 2 件 = 駅 / スーパー）。
 - person / object / 他 vocab_type には適用しない（person カードは style 世代 0 として reference なしで生成、building 以降は person 確定品を anchor として参照する設計）。
 
 ### Principle
@@ -768,7 +768,7 @@ Long-term consideration (v5.0+): the reference-attachment approach is in-context
 - `scripts/lib/nanobanana-client.mjs`: `referenceImages: [{bytes, mimeType}]` 引数 (v4.0.4 R11 で実装済)
 - `scripts/generate-images-local.mjs`: `loadReferenceImages()` helper / per-target `styleReferences` 配列流入 / `styleRefs: total N 件 attached` log / imagen4 backend では warning 出して無視 (v4.0.4 R11 で実装済)
 - Skill output: per-building entry に `styleReferences: [absolute path, ...]` (5 件) を必ず付与する
-- 未移行 building（銀行 / 病院 / 駅 / スーパー）は当面 v3.0 path 経由で生成（reference なし・旧 Template B pale sky-blue 背景）。lesson_02 以降で v4.0.4 fields 付与時に reference attachment へ移行する
+- 未移行 building（駅 / スーパー）は当面 v3.0 path 経由で生成（reference なし・旧 Template B pale sky-blue 背景）。v4.0.4 fields 付与時に reference attachment へ移行する。銀行 / 病院 は Phase 1-S1 (2026-05-29) で v4.0.4 移行済（reference attachment 適用）
 
 ---
 
@@ -860,9 +860,9 @@ v4.0.4 学び 11: nanobanana default behavior, when given a single signboard spe
 ```
 Surroundings context (R24 で確定 / 学び 12): the PRIMARY building (vocab subject) is ONE building, but contextual surrounding buildings MAY be included depending on the vocab type's natural urban / campus context. The per-vocab-type surroundings_context field (PART 5.10) selects from:
 
-- "isolated"     = single building, NO surrounding buildings (default for 病院 / 銀行 / 駅 / スーパー when graduated)
-- "campus"       = primary building + ONE auxiliary academic building (gymnasium / annex) partially visible at frame edge (学校 / 大学)
-- "urban_corner" = primary building + ONE adjacent commercial building partially visible at frame edge + curbside lane edge (デパート / 会社)
+- "isolated"     = single building, NO surrounding buildings (default for 駅 / スーパー when graduated)
+- "campus"       = primary building + ONE auxiliary academic building (gymnasium / annex) partially visible at frame edge (学校 / 大学 / 病院 ※病院は outpatient annex)
+- "urban_corner" = primary building + ONE adjacent commercial building partially visible at frame edge + curbside lane edge (デパート / 会社 / 銀行)
 - "urban_street" = primary building + multiple adjacent buildings of similar palette (reserved for future urban-street vocab types)
 
 v4.0.4 学び 12: forcing "single freestanding building" universally (as in R1-R11) produces unnatural compositions for デパート (commercial mid-rise wants urban context) and 大学 (campus expects auxiliary buildings). Per-vocab-type surroundings selection restores natural composition without breaking the single-primary-subject principle.
@@ -910,7 +910,7 @@ Generalization to other dynamic activities: 学び 13's underlying principle (na
 - [Template B vocabulary_building](part4_prompt_templates.md#template-b-vocabulary_building) の `[SCENE & ACTION]` セクションで `{BUILDING_UNIVERSAL_RULE}` placeholder として inline 展開
 - A-1〜A-11 はテキストとして本ルール本文を Template B に注入する（外部参照ではなく inline 展開）
 - Per-vocab-type 変数（`{ACCENT}` / `{SIGNATURE}` / `{ACTIVITIES_BLOCK}` / `{SURROUNDINGS_BLOCK}` 等）は PART 5.10 BUILDING_CUES per-building entry から skill が解決して埋める
-- 未移行 building（銀行 / 病院 / 駅 / スーパー）は当面本ルール適用外（v3.0 path で生成）。lesson_02 以降で v4.0.4 fields を BUILDING_CUES に追加した時点で本ルール適用に移行する
+- 未移行 building（駅 / スーパー）は当面本ルール適用外（v3.0 path で生成）。v4.0.4 fields を BUILDING_CUES に追加した時点で本ルール適用に移行する。銀行 / 病院 は Phase 1-S1 (2026-05-29) で本ルール適用に移行済
 
 ---
 

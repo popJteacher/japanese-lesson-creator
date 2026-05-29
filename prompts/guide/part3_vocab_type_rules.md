@@ -51,9 +51,9 @@
 
 > v4.0.4 (2026-05-25) 全面改訂：worktree image-prompt-plan の R1-R26 実機検証で確立した「universal cream background + 5-image reference attachment + universal rule A-1〜A-11 + per-vocab-type 4 件テーブル」設計に移行。Stage 1 採用 4 件（学校 R25 / 大学 R26 / デパート R22 / 会社 R22）は本仕様で本番化済。
 >
-> 旧 v3.0 design（pale sky-blue background / 70% frame / single primary_scene_cue / text-only generation）は未移行 4 件（銀行 / 病院 / 駅 / スーパー）で残置。v4.0.4 移行時に下記新仕様に統一する。
+> 旧 v3.0 design（pale sky-blue background / 70% frame / single primary_scene_cue / text-only generation）は未移行 2 件（駅 / スーパー）で残置。v4.0.4 移行時に下記新仕様に統一する。銀行 / 病院 は Phase 1-S1 (2026-05-29) で移行済。
 
-### v4.0.4 採用 4 件 (学校 / 大学 / デパート / 会社)
+### v4.0.4 採用 6 件 (学校 / 大学 / デパート / 会社 / 銀行 / 病院)
 
 #### Aspect ratio / framing
 
@@ -129,9 +129,9 @@
 
 [Template B](part4_prompt_templates.md#template-b-vocabulary_building) は `{BUILDING_UNIVERSAL_RULE}` placeholder で [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) 本文を inline 展開する（A-1〜A-11 全文）。skill は per-building 変数（{ACCENT} / {SIGNATURE} / {ACTIVITIES_BLOCK} / {SURROUNDINGS_BLOCK} 等）を PART 5.10 BUILDING_CUES から解決して埋める。
 
-### 未移行 4 件 (銀行 / 病院 / 駅 / スーパー)
+### 未移行 2 件 (駅 / スーパー)
 
-> v4.0.4 fields 未付与。当面 v3.0 path で生成される（次の旧 v3.0 仕様）。lesson_02 以降で BUILDING_CUES に v4_0_4_* fields を追加した時点で v4.0.4 採用 4 件と同じ path に統合する。
+> v4.0.4 fields 未付与。当面 v3.0 path で生成される（次の旧 v3.0 仕様）。BUILDING_CUES に v4_0_4_* fields を追加した時点で v4.0.4 採用 path に統合する。銀行 / 病院 は Phase 1-S1 (2026-05-29) で移行済。
 
 #### Aspect ratio / framing (v3.0)
 

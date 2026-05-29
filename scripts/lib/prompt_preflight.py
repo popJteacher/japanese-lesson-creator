@@ -40,9 +40,10 @@ BG_EXACT_CREAM = "soft cream off-white background (warm off-white, NOT pure star
 BG_EXACT_SKYBLUE = "pale sky-blue background"
 NOT_TOKEN = "NOT pure stark white"
 
-# v4.0.4 building 採用 4 件（universal cream BG / 5-image reference / A-1〜A-11 適用）
-# 未移行 building（銀行 / 病院 / 駅 / スーパー）は legacy v3.0 pale sky-blue 経路
-BUILDING_V4_0_4_WORDS = frozenset({"学校", "大学", "デパート", "会社"})
+# v4.0.4 building 採用 6 件（universal cream BG / 5-image reference / A-1〜A-11 適用）
+# 未移行 building（駅 / スーパー）は legacy v3.0 pale sky-blue 経路
+# 銀行 / 病院 は Phase 1-S1 (2026-05-29) で v4.0.4 移行
+BUILDING_V4_0_4_WORDS = frozenset({"学校", "大学", "デパート", "会社", "銀行", "病院"})
 
 # ─────────────────────────────────────────────────────────────
 # 検出用正規表現
@@ -66,7 +67,7 @@ def _is_legacy_building(template_kind, word):
 def _expected_bg(template_kind, word):
     """template_kind + word ごとの BG 期待値を返す。
 
-    v4.0.4: building の採用 4 件は cream / 未移行 4 件は legacy sky-blue。
+    v4.0.4: building の採用 6 件は cream / 未移行 2 件 (駅 / スーパー) は legacy sky-blue。
     """
     if _is_legacy_building(template_kind, word):
         return BG_EXACT_SKYBLUE
@@ -81,7 +82,7 @@ def preflight(text, template_kind, word):
         template_kind: vocab_type 文字列 ("person" / "building" / ...) または
             "example_sentence"
         word: エラーメッセージに含める identifier（word / imageId）
-            building の場合は v4.0.4 採用 4 件か未移行 4 件かの判定にも使う
+            building の場合は v4.0.4 採用 6 件か未移行 2 件かの判定にも使う
 
     Returns:
         list[str]: 違反メッセージ list。空 list なら PASS。

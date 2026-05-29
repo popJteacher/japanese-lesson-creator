@@ -114,9 +114,9 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 
 > v4.0.4 (2026-05-25) 全面改訂：worktree image-prompt-plan の R1-R26 実機検証で確立した universal cream background + 5-image reference attachment + universal rule A-1〜A-11 + per-vocab-type 4 件テーブル 設計に移行。
 > Stage 1 採用 4 件（学校 R25 / 大学 R26 / デパート R22 / 会社 R22）は本テンプレートで本番化済。
-> v3.0 旧テンプレ（pale sky-blue background / 70% frame / single primary_scene_cue）は未移行 4 件（銀行 / 病院 / 駅 / スーパー）向けに本セクション末尾に Legacy として残置。
+> v3.0 旧テンプレ（pale sky-blue background / 70% frame / single primary_scene_cue）は未移行 2 件（駅 / スーパー）向けに本セクション末尾に Legacy として残置。銀行 / 病院 は Phase 1-S1 (2026-05-29) で v4.0.4 テンプレートに移行済。
 
-### Template B (v4.0.4 — 採用 4 件用)
+### Template B (v4.0.4 — 採用 6 件用)
 
 ```
 [PURPOSE]
@@ -188,7 +188,7 @@ No gradients, no shadows, no 3D effects, no photoreal textures.
 Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ```
 
-**Used for**: `vocab_type = "building"` AND `word` has v4.0.4 fields in [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)（学校 / 大学 / デパート / 会社）
+**Used for**: `vocab_type = "building"` AND `word` has v4.0.4 fields in [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)（学校 / 大学 / デパート / 会社 / 銀行 / 病院）
 **Aspect ratio**: 1:1
 **Rule references**: [PART 1.12 BUILDING_REFERENCE_ATTACHMENT_RULE](part1_universal_rules.md#part-112-building_reference_attachment_rule), [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4), [PART 2 color_palette](part2_style_bible.md#color_palette), [PART 3.2 building](part3_vocab_type_rules.md#32-building-vocab_type--building), [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)
 
@@ -227,7 +227,7 @@ Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ]
 ```
 
-### Template B (v3.0 Legacy — 未移行 4 件用 / 銀行 / 病院 / 駅 / スーパー)
+### Template B (v3.0 Legacy — 未移行 2 件用 / 駅 / スーパー)
 
 > v3.0 全面改訂（問題 B/C/内部矛盾を恒久解決）：看板を「英語短語ラベル 1 個」に確定、単一シーンキュー、反クラッター。
 > v4.0.4 移行待ち。lesson_02 以降で BUILDING_CUES に v4_0_4_* fields を追加した時点で本 Legacy テンプレートから上記 v4.0.4 テンプレートに移行する。
@@ -278,9 +278,9 @@ No gradients, no shadows, no 3D effects, no photoreal textures.
 Apply zero ambient lighting, zero drop shadows, zero global illumination.
 ```
 
-**Used for**: `vocab_type = "building"` AND word does NOT have v4.0.4 fields in PART 5.10 BUILDING_CUES（銀行 / 病院 / 駅 / スーパー）
+**Used for**: `vocab_type = "building"` AND word does NOT have v4.0.4 fields in PART 5.10 BUILDING_CUES（駅 / スーパー）
 **Aspect ratio**: 1:1
-**Rule references**: [PART 2 STYLE_BIBLE](part2_style_bible.md#background_by_type) (BG_EXACT_SKYBLUE for legacy), [PART 3.2 building (未移行 4 件)](part3_vocab_type_rules.md#未移行-4-件-銀行--病院--駅--スーパー), [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)
+**Rule references**: [PART 2 STYLE_BIBLE](part2_style_bible.md#background_by_type) (BG_EXACT_SKYBLUE for legacy), [PART 3.2 building (未移行 2 件)](part3_vocab_type_rules.md#未移行-2-件-駅--スーパー), [PART 5.10 BUILDING_CUES](part5_vocab_reference_appendix.md#510-building_cues)
 **Placeholders**: `[{BUILDING_TYPE}]`, `[{BUILDING_DESCRIPTION_AND_SCALE}]`, `[{SIGNAGE_TEXT}]`, `[{PRIMARY_SCENE_CUE}]`
 
 ---

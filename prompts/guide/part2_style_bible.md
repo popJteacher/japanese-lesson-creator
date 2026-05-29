@@ -20,18 +20,18 @@
 ## BACKGROUND_BY_TYPE
 
 > v3.4 (M-5) で導入された vocab_type 別の背景文字列定数。
-> v4.0.4 (2026-05-25) 改訂：building の v4.0.4 採用 4 件（学校 / 大学 / デパート / 会社）は default cream に統合。`BACKGROUND_BY_TYPE["building"]` (pale sky-blue) は未移行 4 件（銀行 / 病院 / 駅 / スーパー）の legacy v3.0 generation 経路のみで使用。
+> v4.0.4 (2026-05-25) 改訂：building の v4.0.4 採用 6 件（学校 / 大学 / デパート / 会社 / 銀行 / 病院）は default cream に統合。`BACKGROUND_BY_TYPE["building"]` (pale sky-blue) は未移行 2 件（駅 / スーパー）の legacy v3.0 generation 経路のみで使用。（銀行 / 病院 は Phase 1-S1 (2026-05-29) で移行）
 > [`scripts/invariants.mjs`](../../scripts/invariants.mjs) の C4 不変条件と整合する SSOT。
 > テンプレート本文の背景文字列はこの定数値を **一字一句一致**させる（[PART 6 preflight](part6_output_instructions.md#65-preflight-invariants-mechanical-gates) [C4] が機械検証）。
 
 | key | 値 | scope |
 |---|---|---|
-| `default` | `soft cream off-white background (warm off-white, NOT pure stark white)` | 全 vocab_type の default。v4.0.4 採用 building 4 件も本値を使用 |
-| `building` (legacy) | `pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette` | 未移行 building 4 件（銀行 / 病院 / 駅 / スーパー）の legacy v3.0 Template B 生成経路のみ |
+| `default` | `soft cream off-white background (warm off-white, NOT pure stark white)` | 全 vocab_type の default。v4.0.4 採用 building 6 件も本値を使用 |
+| `building` (legacy) | `pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette` | 未移行 building 2 件（駅 / スーパー）の legacy v3.0 Template B 生成経路のみ |
 
-`BUILDING_BACKGROUND_EXACT = BACKGROUND_BY_TYPE["building"]`（コード側エイリアス・legacy 用途のみ・v4.0.4 採用 4 件では参照されない）。
+`BUILDING_BACKGROUND_EXACT = BACKGROUND_BY_TYPE["building"]`（コード側エイリアス・legacy 用途のみ・v4.0.4 採用 6 件では参照されない）。
 
-v4.0.4 採用 4 件の [Template B](part4_prompt_templates.md#template-b-v404--採用-4-件用) は `{BG_EXACT}` placeholder を `BACKGROUND_BY_TYPE["default"]` = BG_EXACT_CREAM で埋める（全 vocab_type 統一）。
+v4.0.4 採用 6 件の [Template B](part4_prompt_templates.md#template-b-v404--採用-6-件用) は `{BG_EXACT}` placeholder を `BACKGROUND_BY_TYPE["default"]` = BG_EXACT_CREAM で埋める（全 vocab_type 統一）。
 
 ---
 
@@ -171,13 +171,13 @@ Exception (objects only): use straight front-facing (0°) ONLY when the front fa
 
 ### building_image_focal_length
 
-v4.0.4 採用 4 件（学校 / 大学 / デパート / 会社）：
+v4.0.4 採用 6 件（学校 / 大学 / デパート / 会社 / 銀行 / 病院）：
 
 ```
 50mm-equivalent lens at street-level low-angle 3/4 view, positioned at adult eye-height (~1.6m above ground), rotated 30-45 degrees off the building's primary facade, close to the building and looking slightly UP. Close-up framing — building does NOT fit entirely within frame; side wings off-frame OK; mid-rise upper floors off-frame OK.
 ```
 
-v3.0 legacy（未移行 4 件 = 銀行 / 病院 / 駅 / スーパー）：
+v3.0 legacy（未移行 2 件 = 駅 / スーパー）：
 
 ```
 35mm wide-angle lens equivalent, slight three-quarter front angle at eye level
@@ -189,8 +189,8 @@ v3.0 legacy（未移行 4 件 = 銀行 / 病院 / 駅 / スーパー）：
 |---|---|
 | `vocabulary_card` | OBJECTS / compact subjects: occupy **70-80% of the frame by AREA**. PERSONS: the full standing figure (head to soles of both feet) spans **about 80% of the image HEIGHT measured by height NOT area**, centered with empty side margins; never crop the figure to fill area |
 | `example_image` | Characters occupy **60% of the frame** |
-| `building_image` (v4.0.4 採用 4 件) | Building DOMINATES frame **75-85% vertically**, edge-to-edge horizontally; side wings off-frame; mid-rise upper floors off-frame OK; top of primary signature reaches upper 8-12% of canvas; figures prominent at ~1/3 of visible building height. Default cream off-white canvas background (universal). |
-| `building_image` (v3.0 legacy 未移行 4 件) | Building occupies about **70% of the frame**, centered, against a full-bleed pale sky-blue background. (v3.0：旧『top third を typography 用余白に』指示は削除。帯文字は GAS 側オーバーレイの責務で、画像内に空サイン枠を描かせない＝問題 C 対策) |
+| `building_image` (v4.0.4 採用 6 件) | Building DOMINATES frame **75-85% vertically**, edge-to-edge horizontally; side wings off-frame; mid-rise upper floors off-frame OK; top of primary signature reaches upper 8-12% of canvas; figures prominent at ~1/3 of visible building height. Default cream off-white canvas background (universal). |
+| `building_image` (v3.0 legacy 未移行 2 件) | Building occupies about **70% of the frame**, centered, against a full-bleed pale sky-blue background. (v3.0：旧『top third を typography 用余白に』指示は削除。帯文字は GAS 側オーバーレイの責務で、画像内に空サイン枠を描かせない＝問題 C 対策) |
 | `spatial_relation` | Reference object (基準物) occupies **40-50% of the frame**; target object clearly visible in relation |
 | `action_verb` | Action occupies **70% of the frame**; motion direction clearly readable |
 | `variant_grid` | Each variant tile occupies **equal space** in a 2×2 or 1×N grid layout |
@@ -213,8 +213,8 @@ v3.0 legacy（未移行 4 件 = 銀行 / 病院 / 駅 / スーパー）：
 | `action_verb` | `~50mm eye-level` |
 | `spatial_relation` | `~50mm eye-level side view (or first-person POV for 前/後ろ)` |
 | `demonstrative` | `~50mm eye-level` |
-| `building` (v4.0.4 採用 4 件) | `~50mm street-level low-angle 3/4 at adult eye-height (~1.6m), 30-45° off facade, close-up framing (building extends off-frame at sides / mid-rise upper floors off-frame at top)` |
-| `building` (v3.0 legacy 未移行 4 件) | `35mm wide-angle, slight three-quarter front at eye level` |
+| `building` (v4.0.4 採用 6 件) | `~50mm street-level low-angle 3/4 at adult eye-height (~1.6m), 30-45° off facade, close-up framing (building extends off-frame at sides / mid-rise upper floors off-frame at top)` |
+| `building` (v3.0 legacy 未移行 2 件) | `35mm wide-angle, slight three-quarter front at eye level` |
 | `variant_grid` | `~50mm uniform across all tiles` |
 
 ---

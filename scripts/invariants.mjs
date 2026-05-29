@@ -42,7 +42,7 @@ const CANONICAL = {
     resolve(ROOT, 'prompts/guide/part5_vocab_reference_appendix.md'),
     resolve(ROOT, 'prompts/guide/part6_output_instructions.md'),
   ],
-  guideManifestExpectedHashPrefix: '652aa0a3cbe3', // v4.0.8.1 (X-c-7 PoC validate 後) — §3.9.2 5a Required phrase の "with no pole or staff" を "optionally attached to a thin staff" に緩和 + §3.9.8.A Nationality 行同期。pole 付き flag prop が生成結果で pedagogy 的に許容と user 実視で validated されたため universal rule に反映。前 hash: a99d6c962a96 (v4.0.8 / X-c-7 PoC 投入時) — v4.0.8 example_sentence 4 改修 (X-c-7 / 2026-05-27 / Gemini 第二/三回 consult 統合) — (1) §3.9.2 5a national flag prop 必須化 (12-15% image fill / hand-held / [CONSTRAINTS] global flag ban を identity-only example_sentence で override) / (2) §3.9.3.B Institution Anchor Table 新規 (病院/銀行/学校/デパート/会社 verbatim cue / ≥2 anchors MUST appear) + unlisted institution fallback rule / (3) §3.9.8.A Archetype Cue Table 新規 (先生/学生/会社員/医者/Nationality の diegetic prop lookup) / (4) §3.9.8.C Subject Bifurcation Rule 新規 (yes-no question を Route 1 proper noun "〜さん" NAMED retain / Route 2 class attribute "〜人" or OCCUPATION_TOKEN archetype shift に skill 機械分岐) + Template C v4.0.8 に conditions (c) 拡張 / (g) §3.9.8.C bifurcation / (h) §3.9.2 5a flag override 追記 + skill md v4.0.8 仕様 10-13 追加。前 hash: 8a608d9863c8 (v4.0.7 8 subsections) / c821d13e646e (v4.0.6 5 subsections) / 15bd5fbf566b (X-c v1 / v4.0.5 PERSON_REFERENCE_ATTACHMENT_RULE) / 0673ca2d537e (v5.0 + v4.0.4 building)
+  guideManifestExpectedHashPrefix: '1d273f8f1c3b', // Phase 1-S1 (2026-05-29) — 銀行 / 病院 を v4.0.4 採用版に移行（PART 5.10 に 14 v4.0.4 fields 付与 + PART 1/2/3/4/6 の「未移行 4 件」→「2 件 (駅/スーパー)」整合 sweep + surroundings 既定 (病院=campus / 銀行=urban_corner) 反映）。BUILDING_V4_0_4_WORDS は 6 件化。前 hash: 652aa0a3cbe3 // v4.0.8.1 (X-c-7 PoC validate 後) — §3.9.2 5a Required phrase の "with no pole or staff" を "optionally attached to a thin staff" に緩和 + §3.9.8.A Nationality 行同期。pole 付き flag prop が生成結果で pedagogy 的に許容と user 実視で validated されたため universal rule に反映。前 hash: a99d6c962a96 (v4.0.8 / X-c-7 PoC 投入時) — v4.0.8 example_sentence 4 改修 (X-c-7 / 2026-05-27 / Gemini 第二/三回 consult 統合) — (1) §3.9.2 5a national flag prop 必須化 (12-15% image fill / hand-held / [CONSTRAINTS] global flag ban を identity-only example_sentence で override) / (2) §3.9.3.B Institution Anchor Table 新規 (病院/銀行/学校/デパート/会社 verbatim cue / ≥2 anchors MUST appear) + unlisted institution fallback rule / (3) §3.9.8.A Archetype Cue Table 新規 (先生/学生/会社員/医者/Nationality の diegetic prop lookup) / (4) §3.9.8.C Subject Bifurcation Rule 新規 (yes-no question を Route 1 proper noun "〜さん" NAMED retain / Route 2 class attribute "〜人" or OCCUPATION_TOKEN archetype shift に skill 機械分岐) + Template C v4.0.8 に conditions (c) 拡張 / (g) §3.9.8.C bifurcation / (h) §3.9.2 5a flag override 追記 + skill md v4.0.8 仕様 10-13 追加。前 hash: 8a608d9863c8 (v4.0.7 8 subsections) / c821d13e646e (v4.0.6 5 subsections) / 15bd5fbf566b (X-c v1 / v4.0.5 PERSON_REFERENCE_ATTACHMENT_RULE) / 0673ca2d537e (v5.0 + v4.0.4 building)
   // S列プロンプト JSON の置き場
   sColumnDir: resolve(ROOT, 'data'),
   // v3.11.1: ファイル名 _v3_11_1.json (minor patch) も match させるため
@@ -59,13 +59,14 @@ const CANONICAL = {
 //   default（人物 / 物体 / 抽象等）→ off-white
 //   building（テンプレ B / v3.0 legacy）→ pale sky-blue full-bleed
 // v4.0.4 (2026-05-25): building の採用 4 件は default cream に統合
-//   building 未移行 4 件（銀行 / 病院 / 駅 / スーパー）のみ legacy sky-blue を維持
+//   building 未移行（駅 / スーパー）のみ legacy sky-blue を維持
+//   Phase 1-S1 (2026-05-29): 銀行 / 病院 を v4.0.4 採用版に移行（採用 6 件化）
 const BACKGROUND_BY_TYPE = {
   default:  'soft cream off-white background (warm off-white, NOT pure stark white)',
   building: 'pale sky-blue background fills the entire frame edge to edge (full-bleed); no border, no vignette',
 };
 // v4.0.4 採用 building（universal cream BG / 5-image reference / A-1〜A-11 適用）
-const BUILDING_V4_0_4_WORDS = new Set(['学校', '大学', 'デパート', '会社']);
+const BUILDING_V4_0_4_WORDS = new Set(['学校', '大学', 'デパート', '会社', '銀行', '病院']);
 const BACKGROUND_EXACT = BACKGROUND_BY_TYPE.default; // 後方互換（既存参照用）
 const NOT_TOKEN = 'NOT pure stark white'; // 大文字 NOT が確定。小文字 'not' に揺れていないか
 const FORBIDDEN_PERSON_AREA = /fills\s+\d+\s*[-–]?\s*\d*\s*%\s+of\s+the\s+image\s+area/i;
@@ -217,7 +218,7 @@ async function checkSColumnInvariants() {
       continue;
     }
     // v4.0.4: skill 出力 (mode='skill') と build_prompts.py 出力 (mode='lesson01' 等) で
-    // building 検査ルールを分岐する。skill mode では v4.0.4 採用 4 件は cream BG / 未移行 4 件は sky-blue。
+    // building 検査ルールを分岐する。skill mode では v4.0.4 採用 6 件は cream BG / 未移行 2 件 (駅 / スーパー) は sky-blue。
     // build_prompts.py 出力は v3.0 path で生成された旧 artifact のため、全 building を sky-blue 扱い。
     const isSkillArtifact = (doc._meta?.mode === 'skill');
     for (const item of items) {
@@ -229,7 +230,7 @@ async function checkSColumnInvariants() {
       }
       const type = item.vocab_type ?? item.vocabType ?? '';
       const word = item.word ?? '';
-      // v4.0.4: skill mode かつ採用 4 件 → universal cream / それ以外の building → legacy sky-blue
+      // v4.0.4: skill mode かつ採用 6 件 → universal cream / それ以外の building → legacy sky-blue
       const isLegacyBuilding = type === 'building' && !(isSkillArtifact && BUILDING_V4_0_4_WORDS.has(word));
       const expectedBg = isLegacyBuilding ? BACKGROUND_BY_TYPE.building : BACKGROUND_BY_TYPE.default;
 

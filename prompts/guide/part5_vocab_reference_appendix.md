@@ -513,7 +513,7 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 > [Template B `vocabulary_building`](part4_prompt_templates.md#template-b-vocabulary_building) で使用する 8 建物のデータ。
 > v4.0.4 (2026-05-25) building 全面改訂：worktree image-prompt-plan の R1-R26 実機検証で確立した「universal cream background + 5-image reference attachment + universal rule A-1〜A-11 + per-vocab-type 4 件テーブル」設計に移行。学校 R25 / 大学 R26 / デパート R22 / 会社 R22 を採用版として本番化済。
 > v4.0.4 fields は [PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) と対応して per-building 変数を埋める。
-> 旧 v3.0 fields（building_type / building_scale / primary_scene_cue / signage_text）は後方互換と未移行 building（銀行 / 病院 / 駅 / スーパー）の現行 prompt 生成で残置。
+> 旧 v3.0 fields（building_type / building_scale / primary_scene_cue / signage_text）は後方互換と未移行 building（駅 / スーパー）の現行 prompt 生成で残置。銀行 / 病院 は Phase 1-S1 (2026-05-29) で v4.0.4 fields に移行済。
 
 ### Reference image constants (v4.0.4)
 
@@ -646,9 +646,30 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `automatic glass entrance doors with one office worker in a business suit walking in, carrying a briefcase` |
 | signage_text | `OFFICE` |
 
-### 銀行 (v4.0.4 移行待ち)
+### 銀行 (v4.0.4 fields 付与済 / R-iteration pending)
 
-> 未移行：v4.0.4 fields 未付与。現状は v3.0 fields で v3.0 Template B 経由で生成される（背景 = pale sky-blue / single primary_scene_cue）。lesson_02 以降で v4.0.4 fields を付与予定（[PART 1.13 BUILDING_UNIVERSAL_RULE_V4_0_4](part1_universal_rules.md#part-113-building_universal_rule_v4_0_4) per-building specification 手順を参照）。
+> Phase 1-S1 (2026-05-29) で v4.0.4 fields 付与。base = デパート R22 / 会社 R22 (urban mid-rise / urban_corner)。PNG 採用版確定後に行頭 comment に R-version を記録する（例: 銀行 R3 採用）。
+
+#### v4.0.4 fields
+
+| 項目 | 値 |
+|---|---|
+| `vocab_type_desc` | `bank branch` |
+| `form_desc` | `a 3-4 story urban mid-rise bank branch building with cream off-white walls and a slate-grey roofline; the ground floor is a glass-front banking hall and the upper 2-3 floors extend toward the top edge of the frame in close-up framing` |
+| `signature` | `the ground-floor glass-front banking hall revealing a teller counter inside, with a single ATM unit recessed in the wall beside the main entrance — the primary signature feature that identifies the building as a bank at a glance` |
+| `accent` | `muted teal blue (a soft desaturated teal within the muted pastel family — evokes financial trust and calm; distinct from 会社's dull muted blue by its green undertone)` |
+| `accent_targets` | `accent color appears on: the ATM unit surround, the entrance door frame, and the signboard frame — NOT on the main wall (walls stay cream)` |
+| `label` | `BANK` |
+| `signboard_location` | `a single small rectangular signboard mounted on the wall directly above the main entrance (between the banking-hall glass and the 2nd floor windows), oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent muted teal blue` |
+| `signboard_location_short` | `above the main entrance, between the banking hall and the 2nd floor` |
+| `surroundings_context` | `urban_corner` |
+| `surroundings_block` | `an urban corner context: an adjacent commercial building of similar palette and roof slope is partially visible at the side edge of the frame (smaller / less detailed than the primary), with a cream off-white sidewalk in front of the entrance and a curbside lane edge visible at the bottom. NO other freestanding buildings beyond the primary + one adjacent. NO billboards, NO street vehicles in motion, NO traffic signs with text.` |
+| `framing_extra` | `null` (default A-2 close-up framing — upper floors off-frame at top edge is intrinsic to this vocab type)` |
+| `activities_block` | `4 figures in modern everyday and business-casual wear, each engaged in a DIFFERENT activity at the bank entrance: (1) one customer entering the main entrance from the sidewalk, carrying a document envelope, body angled toward the entrance; (2) one customer using the ATM unit beside the entrance, body facing the ATM in side-view; (3) one customer walking past in mid-stride along the sidewalk parallel to the facade; (4) two customers chatting as a standing pair outside the entrance, both facing each other with natural posture. All figures wear modern everyday or business-casual wear (light jacket + neat trousers / dress + loafers or sneakers); NO figure wears a teal-colored garment (avoid accent color collision with the building accent).` |
+| `landscaping_block` | `flanking the entrance: 1-2 leafy summer trees with rounded canopies in muted warm green in narrow tree-pit planters along the sidewalk edge. NO flowers in pots, NO decorative urns.` |
+| `type_relevant_refs` | `["data/images/word_会社員.png", "data/images/word_アメリカ人.png", "data/images/word_中国人.png"]` |
+
+#### v3.0 fields (legacy / 未使用化 v4.0.4)
 
 | 項目 | 値 |
 |---|---|
@@ -657,9 +678,30 @@ _note：v2.10 新設キャラクター。東西病院・医者・ベトナム人
 | primary_scene_cue | `a single ATM unit beside the entrance door with one customer using it` |
 | signage_text | `BANK` |
 
-### 病院 (v4.0.4 移行待ち / image_5 architectural anchor として使用中)
+### 病院 (v4.0.4 fields 付与済 / R-iteration pending / image_5 architectural anchor として使用中)
 
-> 未移行：v4.0.4 fields 未付与。**ただし `data/images/vocab_病院.jpg` は全 building カードの image_5 architectural reference として現役（学校 / 大学 / デパート / 会社 4 件の生成に使用済）**。
+> Phase 1-S1 (2026-05-29) で v4.0.4 fields 付与。base = 学校 R25 (low-rise institution / campus / BUILDING SCALE EMPHASIS)。**`data/images/vocab_病院.jpg` は全 building カードの image_5 architectural reference として現役（学校 / 大学 / デパート / 会社 の生成に使用済）。病院自身の生成では image_5 が病院そのものなので fidelity が高い。** PNG 採用版確定後に行頭 comment に R-version を記録する。
+
+#### v4.0.4 fields
+
+| 項目 | 値 |
+|---|---|
+| `vocab_type_desc` | `hospital` |
+| `form_desc` | `a 2-3 story low-rise institutional hospital building with cream off-white walls, a slate-grey roof, and a covered entrance canopy projecting over the main entrance at the building's central vertical axis` |
+| `signature` | `the covered entrance canopy with a wheelchair ramp leading up to it and a clearly visible red cross symbol on the facade above the canopy — the primary signature feature that identifies the building as a hospital at a glance` |
+| `accent` | `soft warm sage green (a soft desaturated sage green within the muted pastel family — evokes clinical calm and care)` |
+| `accent_targets` | `accent color appears on: the entrance canopy fascia, the entrance door frame, and the signboard frame — NOT on the main wall (walls stay cream). The red cross symbol is a SEPARATE dominant identifier rendered in deep muted red (the single saturated element permitted, as a recognized medical symbol).` |
+| `label` | `HOSPITAL` |
+| `signboard_location` | `a single small rectangular signboard mounted on the wall directly above the entrance canopy, oriented horizontally, with the cream signboard background and a slate-navy outlined frame in accent soft warm sage green` |
+| `signboard_location_short` | `above the entrance canopy` |
+| `surroundings_context` | `campus` |
+| `surroundings_block` | `a hospital-grounds context: an auxiliary low-rise outpatient annex of similar palette and roof slope is partially visible at the edge of the frame as a secondary mass (smaller / less detailed than the primary), with a cream off-white sidewalk in front of the entrance and a few neat low shrubs flanking the entrance path beside the wheelchair ramp. NO other freestanding buildings beyond the primary + one annex. NO billboards, NO street vehicles, NO traffic signs.` |
+| `framing_extra` | `BUILDING SCALE EMPHASIS: the hospital building DOMINATES the frame vertically — the red cross symbol sits in the upper 8-12% of the canvas, the building edge-to-edge spans the horizontal frame, side wings extend off-frame at left and right. The building occupies 75% or more of the vertical canvas height. Figures are prominent at approximately 1/3 of the visible building height but do NOT shrink to background scale.` |
+| `activities_block` | `4 figures, each engaged in a DIFFERENT activity at the hospital entrance: (1) one visitor in everyday wear entering up the ramp toward the canopy entrance, body angled toward the entrance; (2) one medical staff member in light-colored scrubs walking past in mid-stride along the sidewalk parallel to the facade; (3) one wheelchair user in the foreground moving along the sidewalk toward the ramp — seated upright in the wheelchair, both hands on the wheel rims, body facing the ramp in 3/4 view; (4) two people (a visitor and a staff member) chatting as a standing pair near the entrance, both facing each other with natural posture. Visitors wear modern everyday casual; staff wear light-colored scrubs; NO figure wears a sage-green garment (avoid accent color collision with the building accent).` |
+| `landscaping_block` | `flanking the entrance path: 2-3 leafy summer trees with rounded canopies in muted warm green, drawn flat-vector style, plus a few neat low shrubs. NO flowers in pots, NO decorative urns, NO benches with text.` |
+| `type_relevant_refs` | `["data/images/word_医者.png", "data/images/word_先生.png", "data/images/word_学生.png"]` |
+
+#### v3.0 fields (legacy / 未使用化 v4.0.4)
 
 | 項目 | 値 |
 |---|---|
